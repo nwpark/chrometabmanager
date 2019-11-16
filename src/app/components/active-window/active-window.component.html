@@ -1,40 +1,42 @@
-<div style="height: 40px; margin-top: 20px">
-  <span style="float: right">
-    <button
-      mat-icon-button
-      [title]="layoutState.hidden ? 'Show window' : 'Minimize window'"
-      (click)="toggleDisplay()">
-      <mat-icon *ngIf="!layoutState.hidden">arrow_drop_down</mat-icon>
-      <mat-icon *ngIf="layoutState.hidden">arrow_right</mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      aria-label="Close window"
-      (click)="closeWindow()">
-      <mat-icon>close</mat-icon>
-    </button>
-  </span>
-  <span style="line-height: 40px; font-weight: bold; font-size: large">
-    Window
-  </span>
-</div>
+<div class="chrome-window-container">
+  <div [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
+    <span style="float: right">
+      <button class="chrome-window-header-button"
+        mat-icon-button
+        [title]="layoutState.hidden ? 'Show window' : 'Minimize window'"
+        (click)="toggleDisplay()">
+        <mat-icon *ngIf="!layoutState.hidden">arrow_drop_down</mat-icon>
+        <mat-icon *ngIf="layoutState.hidden">arrow_right</mat-icon>
+      </button>
+      <button class="chrome-window-header-button"
+        mat-icon-button
+        aria-label="Close window"
+        (click)="closeWindow()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </span>
+    <span class="chrome-window-header-text">
+      {{getTitle()}}
+    </span>
+  </div>
 
-<div
-  cdkDropList
-  class="chrome-tab-list"
-  *ngIf="!layoutState.hidden"
-  [cdkDropListData]="componentData"
-  (cdkDropListDropped)="tabDropped($event)">
   <div
-    class="example-box"
-    style="padding: 0"
-    *ngFor="let tab of componentData.tabs"
-    cdkDrag
-    [cdkDragData]="tab">
-    <app-draggable-chrome-tab
-      style="width: 100%"
-      [chromeTab]="tab"
-      (close)="closeTab($event)">
-    </app-draggable-chrome-tab>
+    cdkDropList
+    class="chrome-tab-list"
+    *ngIf="!layoutState.hidden"
+    [cdkDropListData]="componentData"
+    (cdkDropListDropped)="tabDropped($event)">
+    <div
+      class="draggable-chrome-tab"
+      *ngFor="let tab of componentData.tabs"
+      cdkDrag
+      [cdkDragData]="tab">
+      <app-draggable-chrome-tab
+        style="width: 100%"
+        [chromeTab]="tab"
+        (close)="closeTab($event)"
+        (click)="setTabActive(tab.id)">
+      </app-draggable-chrome-tab>
+    </div>
   </div>
 </div>

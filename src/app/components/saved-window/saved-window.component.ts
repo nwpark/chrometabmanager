@@ -2,7 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {TabGroupCategory, TabListComponentData} from '../../types/tab-list-component-data';
 import {SavedTabsService} from '../../services/saved-tabs.service';
-import {ChromeAPIWindowState, WindowLayoutState} from '../../types/chrome-a-p-i-window-state';
+import {ChromeAPITabState, ChromeAPIWindowState, WindowLayoutState} from '../../types/chrome-a-p-i-window-state';
+import {ChromeTabsService} from '../../services/chrome-tabs.service';
 
 @Component({
   selector: 'app-saved-window',
@@ -16,7 +17,8 @@ export class SavedWindowComponent implements OnInit {
 
   componentData: TabListComponentData;
 
-  constructor(private savedTabsService: SavedTabsService) { }
+  constructor(private savedTabsService: SavedTabsService,
+              private chromeTabsService: ChromeTabsService) { }
 
   ngOnInit() {
     this.componentData = {
@@ -27,6 +29,10 @@ export class SavedWindowComponent implements OnInit {
     };
   }
 
+  getTitle(): string {
+    return this.layoutState.hidden ? `Window (${this.chromeAPIWindow.tabs.length} tabs)` : 'Window';
+  }
+
   closeWindow() {
     this.savedTabsService.removeWindow(this.chromeAPIWindow.id);
   }
@@ -34,6 +40,10 @@ export class SavedWindowComponent implements OnInit {
   closeTab(tabId: any) {
     const index = this.chromeAPIWindow.tabs.findIndex(tab => tab.id === tabId);
     this.savedTabsService.removeTab(this.chromeAPIWindow.id, index);
+  }
+
+  replaceCurrentTab(chromeTab: ChromeAPITabState) {
+    this.chromeTabsService.replaceCurrentTab(chromeTab);
   }
 
   toggleDisplay() {

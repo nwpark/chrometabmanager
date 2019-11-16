@@ -9,6 +9,7 @@ import { SavedWindowListComponent } from './components/saved-window-list/saved-w
 import { SavedWindowComponent } from './components/saved-window/saved-window.component';
 import {MaterialModule} from './material-module';
 import { DraggableChromeTabComponent } from './components/draggable-chrome-tab/draggable-chrome-tab.component';
+import { EmptyChromeTabComponent } from './components/empty-chrome-tab/empty-chrome-tab.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { DraggableChromeTabComponent } from './components/draggable-chrome-tab/d
     ActiveWindowComponent,
     SavedWindowListComponent,
     SavedWindowComponent,
-    DraggableChromeTabComponent
+    DraggableChromeTabComponent,
+    EmptyChromeTabComponent
   ],
   imports: [
     BrowserModule,

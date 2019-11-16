@@ -1,0 +1,32 @@
+.chrome-window-container {
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.chrome-window-header, .chrome-window-header-hidden {
+  height: 30px;
+  line-height: 30px;
+  padding-left: 10px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: dimgrey;
+  background-color: #EBE9EB80;
+}
+
+.chrome-window-header {
+  border-radius: 4px 4px 0 0;
+}
+
+.chrome-window-header-hidden {
+  border-radius: 4px;
+}
+
+.chrome-window-header-button {
+  height: inherit;
+  line-height: inherit;
+}
+
+.chrome-window-header-text {
+  font-weight: bold;
+}

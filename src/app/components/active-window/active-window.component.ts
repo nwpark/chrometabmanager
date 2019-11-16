@@ -27,6 +27,10 @@ export class ActiveWindowComponent implements OnInit {
     };
   }
 
+  getTitle(): string {
+    return this.layoutState.hidden ? `Window (${this.chromeAPIWindow.tabs.length} tabs)` : 'Window';
+  }
+
   closeWindow() {
     this.chromeTabsService.removeWindow(this.chromeAPIWindow.id);
   }
@@ -34,6 +38,10 @@ export class ActiveWindowComponent implements OnInit {
   closeTab(tabId: any) {
     const index = this.chromeAPIWindow.tabs.findIndex(tab => tab.id === tabId);
     this.chromeTabsService.removeTab(this.chromeAPIWindow.id, index);
+  }
+
+  setTabActive(tabId: any) {
+    this.chromeTabsService.setTabActive(this.chromeAPIWindow.id, tabId);
   }
 
   toggleDisplay() {

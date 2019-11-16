@@ -18,7 +18,23 @@ export class ChromeTabsService {
   private windowStateUpdatedSource = new Subject<WindowListState>();
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
-  constructor() { }
+  private readonly CHROME_TAB_EVENTS = [
+    chrome.tabs.onCreated,
+    chrome.tabs.onUpdated,
+    chrome.tabs.onMoved,
+    chrome.tabs.onDetached, // potentially unnecessary
+    chrome.tabs.onAttached, // potentially unnecessary
+    chrome.tabs.onRemoved,
+    chrome.tabs.onReplaced,
+    chrome.windows.onCreated,
+    chrome.windows.onRemoved
+  ];
+
+  constructor() {
+    if (environment.production) {
+      this.CHROME_TAB_EVENTS.forEach(tabEvent => tabEvent.addListener(() => this.refreshState()));
+    }
+  }
 
   refreshState() {
     const windowList: Promise<ChromeAPIWindowState[]> = this.getChromeWindowsFromAPI();
@@ -84,6 +100,12 @@ export class ChromeTabsService {
     }
   }
 
+  replaceCurrentTab(chromeTab: ChromeAPITabState) {
+    chrome.tabs.getCurrent(currentTab => {
+      chrome.tabs.update(currentTab.id, {url: chromeTab.url});
+    });
+  }
+
   @modifiesState()
   removeTab(windowId: any, tabIndex: number) {
     const tabId = this.windowListState.getTabId(windowId, tabIndex);
@@ -107,6 +129,11 @@ export class ChromeTabsService {
   @modifiesState()
   toggleWindowDisplay(windowId: any) {
     this.windowListState.toggleWindowDisplay(windowId);
+  }
+
+  setTabActive(windowId: any, tabId: any) {
+    chrome.tabs.update(tabId, {active: true});
+    chrome.windows.update(windowId, {focused: true});
   }
 
   onStateUpdated() {

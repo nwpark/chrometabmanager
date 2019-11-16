@@ -30,8 +30,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   background: white;
 }
 
-.example-box {
-  padding: 20px 10px;
+.draggable-chrome-tab {
   border-bottom: solid 1px #ccc;
   color: rgba(0, 0, 0, 0.87);
   display: flex;
@@ -67,10 +66,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.example-box:last-child {
+.draggable-chrome-tab:last-child {
   border: none;
 }
 
-.chrome-tab-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+.chrome-tab-list.cdk-drop-list-dragging .draggable-chrome-tab:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
