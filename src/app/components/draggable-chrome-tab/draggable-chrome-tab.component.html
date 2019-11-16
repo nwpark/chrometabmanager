@@ -1,0 +1,14 @@
+<div style="height: 40px; width: 100%; overflow: hidden">
+  <span style="float: right">
+    <button
+      mat-icon-button
+      aria-label="Close tab"
+      (click)="closeTab()">
+      <mat-icon *ngIf="mouseOver">close</mat-icon>
+    </button>
+  </span>
+  <img src="{{chromeTab.favIconUrl}}" style="width: 16px; height: 16px; vertical-align: middle; padding: 0 10px">
+  <span style="line-height: 40px">
+    {{chromeTab.title}}
+  </span>
+</div>

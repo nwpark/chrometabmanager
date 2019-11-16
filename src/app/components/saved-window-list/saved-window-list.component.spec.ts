@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ActiveTabsComponent } from './active-tabs.component';
+import { SavedWindowListComponent } from './saved-window-list.component';
 
-describe('ActiveTabsComponent', () => {
-  let component: ActiveTabsComponent;
-  let fixture: ComponentFixture<ActiveTabsComponent>;
+describe('SavedWindowListComponent', () => {
+  let component: SavedWindowListComponent;
+  let fixture: ComponentFixture<SavedWindowListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ActiveTabsComponent ]
+      declarations: [ SavedWindowListComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ActiveTabsComponent);
+    fixture = TestBed.createComponent(SavedWindowListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

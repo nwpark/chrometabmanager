@@ -1,0 +1,29 @@
+<div class="example-container">
+
+  <div style="height: 40px; margin-top: 20px">
+    <span style="float: right">
+      <button
+        mat-icon-button
+        [title]="windowListState.layoutState.hidden ? 'Show active windows' : 'Minimize active windows'"
+        aria-label="Hide list"
+        (click)="toggleDisplay()">
+        <mat-icon *ngIf="!windowListState.layoutState.hidden">arrow_drop_down</mat-icon>
+        <mat-icon *ngIf="windowListState.layoutState.hidden">arrow_right</mat-icon>
+      </button>
+    </span>
+    <span style="line-height: 40px; font-weight: bold; font-size: x-large">
+      Active
+    </span>
+  </div>
+
+  <div *ngIf="!windowListState.layoutState.hidden">
+    <div *ngFor="let window of windowListState.chromeAPIWindows">
+      <app-active-window
+        *ngIf="window.type === 'normal'"
+        [chromeAPIWindow]="window"
+        [layoutState]="windowListState.getWindowLayout(window.id)">
+      </app-active-window>
+    </div>
+  </div>
+
+</div>

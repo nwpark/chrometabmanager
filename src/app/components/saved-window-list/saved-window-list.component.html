@@ -1,0 +1,35 @@
+<div class="example-container">
+
+  <div style="height: 40px; margin-top: 20px">
+    <span style="float: right">
+      <button
+        mat-icon-button
+        title="Create new window"
+        aria-label="New saved window"
+        (click)="addNewWindow()">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        [title]="windowListState.layoutState.hidden ? 'Show saved windows' : 'Minimize saved windows'"
+        aria-label="Hide list"
+        (click)="toggleDisplay()">
+        <mat-icon *ngIf="!windowListState.layoutState.hidden">arrow_drop_down</mat-icon>
+        <mat-icon *ngIf="windowListState.layoutState.hidden">arrow_right</mat-icon>
+      </button>
+    </span>
+    <span style="line-height: 40px; font-weight: bold; font-size: x-large">
+      Saved
+    </span>
+  </div>
+
+  <div *ngIf="!windowListState.layoutState.hidden">
+    <div *ngFor="let window of windowListState.chromeAPIWindows">
+      <app-saved-window
+        [chromeAPIWindow]="window"
+        [layoutState]="windowListState.getWindowLayout(window.id)">
+      </app-saved-window>
+    </div>
+  </div>
+
+</div>
