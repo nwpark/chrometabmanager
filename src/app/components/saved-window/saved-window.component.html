@@ -1,45 +1,45 @@
 <div class="chrome-window-container">
   <div [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
-    <span style="float: right">
-      <button class="chrome-window-header-button"
+    <div class="chrome-window-action-bar">
+      <button class="chrome-window-action-button"
         mat-icon-button
         [title]="layoutState.hidden ? 'Show window' : 'Minimize window'"
         (click)="toggleDisplay()">
-        <mat-icon *ngIf="!layoutState.hidden">arrow_drop_down</mat-icon>
-        <mat-icon *ngIf="layoutState.hidden">arrow_right</mat-icon>
+        <mat-icon class="icon-18" *ngIf="!layoutState.hidden">arrow_drop_down</mat-icon>
+        <mat-icon class="icon-18" *ngIf="layoutState.hidden">arrow_right</mat-icon>
       </button>
-      <button class="chrome-window-header-button"
+      <button class="chrome-window-action-button"
         mat-icon-button
         (click)="closeWindow()">
-        <mat-icon>close</mat-icon>
+        <mat-icon class="icon-18">close</mat-icon>
       </button>
-    </span>
-    <span class="chrome-window-header-text">
+    </div>
+    <div class="chrome-window-title">
       {{getTitle()}}
-    </span>
+    </div>
   </div>
 
-<div
-  cdkDropList
-  class="chrome-tab-list"
-  *ngIf="!layoutState.hidden"
-  [cdkDropListData]="componentData"
-  (cdkDropListDropped)="tabDropped($event)">
   <div
-    class="draggable-chrome-tab"
-    cdkDrag
-    *ngFor="let tab of componentData.tabs"
-    [cdkDragData]="tab">
-    <app-draggable-chrome-tab
-      style="width: 100%"
-      [chromeTab]="tab"
-      (close)="closeTab($event)"
-      (click)="replaceCurrentTab(tab)">
-    </app-draggable-chrome-tab>
-  </div>
+    cdkDropList
+    class="chrome-window-body"
+    *ngIf="!layoutState.hidden"
+    [cdkDropListData]="componentData"
+    (cdkDropListDropped)="tabDropped($event)">
+    <div
+      class="draggable-chrome-tab"
+      cdkDrag
+      *ngFor="let tab of componentData.tabs"
+      [cdkDragData]="tab">
+      <app-draggable-chrome-tab
+        style="width: 100%"
+        [chromeTab]="tab"
+        (close)="closeTab($event)"
+        (click)="replaceCurrentTab(tab)">
+      </app-draggable-chrome-tab>
+    </div>
 
-  <app-empty-chrome-tab *ngIf="componentData.tabs.length === 0">
-  </app-empty-chrome-tab>
-</div>
+    <app-empty-chrome-tab *ngIf="componentData.tabs.length === 0">
+    </app-empty-chrome-tab>
+  </div>
 </div>
 

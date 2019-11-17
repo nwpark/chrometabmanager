@@ -13,26 +13,28 @@ declare var chrome;
 })
 export class ChromeTabsService {
 
-  private windowListState: WindowListState;
-
-  private windowStateUpdatedSource = new Subject<WindowListState>();
-  public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
-
-  private readonly CHROME_TAB_EVENTS = [
+  private static readonly CHROME_WINDOW_EVENTS = environment.production && [
     chrome.tabs.onCreated,
     chrome.tabs.onUpdated,
     chrome.tabs.onMoved,
-    chrome.tabs.onDetached, // potentially unnecessary
-    chrome.tabs.onAttached, // potentially unnecessary
+    chrome.tabs.onDetached,
+    chrome.tabs.onAttached,
     chrome.tabs.onRemoved,
     chrome.tabs.onReplaced,
     chrome.windows.onCreated,
     chrome.windows.onRemoved
   ];
 
+  private windowListState: WindowListState;
+
+  private windowStateUpdatedSource = new Subject<WindowListState>();
+  public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
+
   constructor() {
+    this.windowListState = WindowListState.getDefaultInstance();
+    this.refreshState();
     if (environment.production) {
-      this.CHROME_TAB_EVENTS.forEach(tabEvent => tabEvent.addListener(() => this.refreshState()));
+      ChromeTabsService.CHROME_WINDOW_EVENTS.forEach(event => event.addListener(() => this.refreshState()));
     }
   }
 
@@ -41,11 +43,11 @@ export class ChromeTabsService {
     const windowLayoutState: Promise<WindowListLayoutState> = this.getLayoutStateFromStorage();
     Promise.all([windowList, windowLayoutState]).then(result => {
       const windowListState = new WindowListState(result[0], result[1]);
-      this.setState(windowListState);
+      this.setWindowListState(windowListState);
     });
   }
 
-  getChromeWindowsFromAPI(): Promise<ChromeAPIWindowState[]> {
+  private getChromeWindowsFromAPI(): Promise<ChromeAPIWindowState[]> {
     if (!environment.production) {
       return Promise.resolve(MOCK_ACTIVE_WINDOWS);
     }
@@ -56,7 +58,7 @@ export class ChromeTabsService {
     });
   }
 
-  getLayoutStateFromStorage(): Promise<WindowListLayoutState> {
+  private getLayoutStateFromStorage(): Promise<WindowListLayoutState> {
     if (!environment.production) {
       return Promise.resolve(WindowListState.getDefaultLayoutState());
     }
@@ -68,8 +70,12 @@ export class ChromeTabsService {
     });
   }
 
+  getWindowListState(): WindowListState {
+    return this.windowListState;
+  }
+
   @modifiesState()
-  setState(windowListState: WindowListState) {
+  setWindowListState(windowListState: WindowListState) {
     this.windowListState = windowListState;
   }
 
@@ -122,7 +128,7 @@ export class ChromeTabsService {
   }
 
   @modifiesState()
-  toggleDisplay() {
+  toggleWindowListDisplay() {
     this.windowListState.toggleDisplay();
   }
 

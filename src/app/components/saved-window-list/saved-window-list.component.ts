@@ -15,11 +15,11 @@ export class SavedWindowListComponent implements OnInit {
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
+    this.windowListState = this.savedTabsService.getWindowListState();
     this.savedTabsService.windowStateUpdated$.subscribe(windowListState => {
       this.windowListState = windowListState;
       this.changeDetectorRef.detectChanges();
     });
-    this.savedTabsService.refreshState();
   }
 
   addNewWindow() {
@@ -27,7 +27,7 @@ export class SavedWindowListComponent implements OnInit {
   }
 
   toggleDisplay() {
-    this.savedTabsService.toggleDisplay();
+    this.savedTabsService.toggleWindowListDisplay();
   }
 
 }

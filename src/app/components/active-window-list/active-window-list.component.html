@@ -1,11 +1,10 @@
-<div class="example-container">
+<div class="window-list-container">
 
   <div style="height: 40px; margin-top: 20px">
     <span style="float: right">
       <button
         mat-icon-button
         [title]="windowListState.layoutState.hidden ? 'Show active windows' : 'Minimize active windows'"
-        aria-label="Hide list"
         (click)="toggleDisplay()">
         <mat-icon *ngIf="!windowListState.layoutState.hidden">arrow_drop_down</mat-icon>
         <mat-icon *ngIf="windowListState.layoutState.hidden">arrow_right</mat-icon>

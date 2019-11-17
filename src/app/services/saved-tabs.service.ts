@@ -24,15 +24,18 @@ export class SavedTabsService {
   private windowStateUpdatedSource = new Subject<WindowListState>();
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
-  constructor() { }
+  constructor() {
+    this.windowListState = WindowListState.getDefaultInstance();
+    this.refreshState();
+  }
 
   refreshState() {
     this.getStateFromStorage().then(windowListState => {
-      this.setState(windowListState);
+      this.setWindowListState(windowListState);
     });
   }
 
-  getStateFromStorage(): Promise<WindowListState> {
+  private getStateFromStorage(): Promise<WindowListState> {
     if (!environment.production) {
       return Promise.resolve(new WindowListState(MOCK_SAVED_WINDOWS, WindowListState.getDefaultLayoutState()));
     }
@@ -48,8 +51,12 @@ export class SavedTabsService {
     });
   }
 
+  getWindowListState(): WindowListState {
+    return this.windowListState;
+  }
+
   @modifiesState()
-  setState(windowListState: WindowListState) {
+  setWindowListState(windowListState: WindowListState) {
     this.windowListState = windowListState;
   }
 
@@ -88,7 +95,7 @@ export class SavedTabsService {
   }
 
   @modifiesState()
-  toggleDisplay() {
+  toggleWindowListDisplay() {
     this.windowListState.toggleDisplay();
   }
 

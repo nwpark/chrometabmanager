@@ -1,25 +1,68 @@
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  /*font-family: sans-serif;*/
+}
 
 .mat-grid-tile .mat-figure {
   align-items: flex-start !important;
 }
 
-.example-container {
+.window-list-container {
   width: 400px;
   max-width: 100%;
-  margin: 0 25px 25px 0;
-  display: inline-block;
-  vertical-align: top;
 }
 
-.chrome-tab-list {
+.icon-18 {
+  font-size: 18px;
+}
+
+/**************************************** Chrome Window *************************************************/
+.chrome-window-container {
+  border-radius: 4px;
+  overflow: hidden; /* keeps contents within border radius */
+  margin-top: 20px;
+}
+
+/* Header */
+.chrome-window-header, .chrome-window-header-hidden {
+  height: 30px;
+  line-height: 30px;
+  padding-left: 10px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: dimgrey;
+  background-color: #EBE9EB80;
+}
+.chrome-window-header {
+  border-radius: 4px 4px 0 0;
+}
+.chrome-window-header-hidden {
+  border-radius: 4px;
+}
+
+.chrome-window-title {
+  font-weight: bold;
+}
+
+.chrome-window-action-bar {
+  float: right;
+  height: inherit;
+  line-height: inherit;
+}
+
+.chrome-window-action-button {
+  height: inherit !important;
+  line-height: inherit !important;
+}
+
+/* Body */
+.chrome-window-body {
   min-height: 40px;
-  overflow: hidden;
-  display: block;
+  overflow: hidden; /* keeps contents within border radius */
   border-width: 1px;
   border-color: dimgrey;
   border-left-style: solid;
@@ -30,6 +73,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   background: white;
 }
 
+/**************************************** Chrome Tab *************************************************/
 .draggable-chrome-tab {
   border-bottom: solid 1px #ccc;
   color: rgba(0, 0, 0, 0.87);
@@ -51,13 +95,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
-.example-custom-placeholder {
-  /*background: #ccc;*/
-  /*border: dotted 3px #999;*/
-  /*min-height: 40px;*/
-  /*transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);*/
-}
-
 .cdk-drag-placeholder {
   opacity: 0;
 }
@@ -70,6 +107,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   border: none;
 }
 
-.chrome-tab-list.cdk-drop-list-dragging .draggable-chrome-tab:not(.cdk-drag-placeholder) {
+.chrome-window-body.cdk-drop-list-dragging .draggable-chrome-tab:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }

@@ -1,28 +1,27 @@
 <div class="chrome-window-container">
   <div [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
-    <span style="float: right">
-      <button class="chrome-window-header-button"
+    <div style="float: right; height: 30px; line-height: 30px">
+      <button class="chrome-window-action-button"
         mat-icon-button
         [title]="layoutState.hidden ? 'Show window' : 'Minimize window'"
         (click)="toggleDisplay()">
-        <mat-icon *ngIf="!layoutState.hidden">arrow_drop_down</mat-icon>
-        <mat-icon *ngIf="layoutState.hidden">arrow_right</mat-icon>
+        <mat-icon class="icon-18" *ngIf="!layoutState.hidden">arrow_drop_down</mat-icon>
+        <mat-icon class="icon-18" *ngIf="layoutState.hidden">arrow_right</mat-icon>
       </button>
-      <button class="chrome-window-header-button"
+      <button class="chrome-window-action-button"
         mat-icon-button
-        aria-label="Close window"
         (click)="closeWindow()">
-        <mat-icon>close</mat-icon>
+        <mat-icon class="icon-18">close</mat-icon>
       </button>
-    </span>
-    <span class="chrome-window-header-text">
+    </div>
+    <div class="chrome-window-title">
       {{getTitle()}}
-    </span>
+    </div>
   </div>
 
   <div
     cdkDropList
-    class="chrome-tab-list"
+    class="chrome-window-body"
     *ngIf="!layoutState.hidden"
     [cdkDropListData]="componentData"
     (cdkDropListDropped)="tabDropped($event)">

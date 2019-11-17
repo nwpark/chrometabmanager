@@ -13,6 +13,10 @@ export class WindowListState {
     return {hidden: false, windowStates: []};
   }
 
+  static getDefaultInstance(): WindowListState {
+    return new WindowListState(WindowListState.getDefaultAPIWindows(), WindowListState.getDefaultLayoutState());
+  }
+
   constructor(chromeAPIWindows: ChromeAPIWindowState[],
               layoutState: WindowListLayoutState) {
     this.chromeAPIWindows = chromeAPIWindows;

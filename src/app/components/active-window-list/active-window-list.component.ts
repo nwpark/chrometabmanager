@@ -15,15 +15,15 @@ export class ActiveWindowListComponent implements OnInit {
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
+    this.windowListState = this.chromeTabsService.getWindowListState();
     this.chromeTabsService.windowStateUpdated$.subscribe(windowListState => {
       this.windowListState = windowListState;
       this.changeDetectorRef.detectChanges();
     });
-    this.chromeTabsService.refreshState();
   }
 
   toggleDisplay() {
-    this.chromeTabsService.toggleDisplay();
+    this.chromeTabsService.toggleWindowListDisplay();
   }
 
 }
