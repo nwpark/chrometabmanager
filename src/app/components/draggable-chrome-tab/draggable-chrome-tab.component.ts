@@ -1,6 +1,5 @@
 import {ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnInit, Output} from '@angular/core';
 import {ChromeAPITabState} from '../../types/chrome-a-p-i-window-state';
-import {ChromeTabsService} from '../../services/chrome-tabs.service';
 
 @Component({
   selector: 'app-draggable-chrome-tab',

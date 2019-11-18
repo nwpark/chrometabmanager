@@ -5,16 +5,8 @@ export class WindowListState {
   chromeAPIWindows: ChromeAPIWindowState[];
   layoutState: WindowListLayoutState;
 
-  static getDefaultAPIWindows(): ChromeAPIWindowState[] {
-    return [];
-  }
-
-  static getDefaultLayoutState(): WindowListLayoutState {
-    return {hidden: false, windowStates: []};
-  }
-
-  static getDefaultInstance(): WindowListState {
-    return new WindowListState(WindowListState.getDefaultAPIWindows(), WindowListState.getDefaultLayoutState());
+  static createDefaultInstance(): WindowListState {
+    return new WindowListState(WindowListUtils.getDefaultAPIWindows(), WindowListUtils.getDefaultLayoutState());
   }
 
   constructor(chromeAPIWindows: ChromeAPIWindowState[],
@@ -27,7 +19,7 @@ export class WindowListState {
   cleanupLayoutState() {
     this.chromeAPIWindows.forEach(window => {
       if (!this.containsLayoutForWindow(window.id)) {
-        const windowLayoutState = {windowId: window.id, hidden: false};
+        const windowLayoutState = WindowListUtils.getDefaultWindowLayoutState(window.id);
         this.layoutState.windowStates.push(windowLayoutState);
       }
     });
@@ -46,7 +38,7 @@ export class WindowListState {
     return this.chromeAPIWindows.find(window => window.id === windowId);
   }
 
-  getWindowLayout(windowId): WindowLayoutState {
+  getWindowLayout(windowId: any): WindowLayoutState {
     return this.layoutState.windowStates.find(windowState => windowState.windowId === windowId);
   }
 
@@ -97,6 +89,25 @@ export class WindowListState {
   setHidden(hidden: boolean) {
     this.layoutState.hidden = hidden;
   }
+
+  setWindowTitle(windowId: any, title: string) {
+    const windowLayout = this.getWindowLayout(windowId);
+    windowLayout.title = title;
+  }
+}
+
+export class WindowListUtils {
+  static getDefaultAPIWindows(): ChromeAPIWindowState[] {
+    return [];
+  }
+
+  static getDefaultLayoutState(): WindowListLayoutState {
+    return {hidden: false, windowStates: []};
+  }
+
+  static getDefaultWindowLayoutState(windowId: number): WindowLayoutState {
+    return {windowId, title: 'Window', hidden: false};
+  }
 }
 
 export interface WindowListLayoutState {
@@ -105,6 +116,7 @@ export interface WindowListLayoutState {
 }
 
 export interface WindowLayoutState {
+  title: string;
   windowId: any;
   hidden: boolean;
 }
@@ -113,7 +125,7 @@ export interface ChromeAPIWindowState {
   id: any;
   type: string;
   tabs: ChromeAPITabState[];
-  [others: string]: any;
+  [others: string]: any; // Ignore unused API fields
 }
 
 export interface ChromeAPITabState {
@@ -123,11 +135,5 @@ export interface ChromeAPITabState {
   url: string;
   title: string;
   favIconUrl: string;
-  [others: string]: any;
-}
-
-export class ChromeTabUtils {
-  static getWindow(windows: ChromeAPIWindowState[], windowId: number) {
-    return windows.find(window => window.id === windowId);
-  }
+  [others: string]: any; // Ignore unused API fields
 }

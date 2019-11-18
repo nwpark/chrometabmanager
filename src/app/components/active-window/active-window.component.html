@@ -15,7 +15,26 @@
       </button>
     </div>
     <div class="chrome-window-title">
-      {{getTitle()}}
+      <div *ngIf="!showEditForm">
+        {{getTitle()}}
+        <button class="chrome-window-action-button"
+                mat-icon-button
+                title="Edit title"
+                *ngIf="mouseOver"
+                (click)="editTitle()">
+          <mat-icon class="action-icon-18">edit</mat-icon>
+        </button>
+      </div>
+
+      <form *ngIf="showEditForm" (ngSubmit)="submitTitleForm()">
+        <input #titleInput type="text" [formControl]="titleFormControl" (blur)="submitTitleForm()" (keydown.escape)="cancelTitleForm()">
+        <button mat-icon-button
+                class="chrome-window-action-button"
+                type="submit"
+                title="Save title">
+          <mat-icon class="action-icon-18">save_alt</mat-icon>
+        </button>
+      </form>
     </div>
   </div>
 

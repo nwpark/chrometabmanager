@@ -2,7 +2,13 @@ import {Injectable} from '@angular/core';
 
 import {MOCK_ACTIVE_WINDOWS} from './mock-windows';
 import {environment} from '../../environments/environment';
-import {ChromeAPITabState, ChromeAPIWindowState, WindowListLayoutState, WindowListState} from '../types/chrome-a-p-i-window-state';
+import {
+  ChromeAPITabState,
+  ChromeAPIWindowState,
+  WindowListLayoutState,
+  WindowListState,
+  WindowListUtils
+} from '../types/chrome-a-p-i-window-state';
 import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 
@@ -31,11 +37,11 @@ export class ChromeTabsService {
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
   constructor() {
-    this.windowListState = WindowListState.getDefaultInstance();
-    this.refreshState();
+    this.windowListState = WindowListState.createDefaultInstance();
     if (environment.production) {
       ChromeTabsService.CHROME_WINDOW_EVENTS.forEach(event => event.addListener(() => this.refreshState()));
     }
+    this.refreshState();
   }
 
   private refreshState() {
@@ -60,10 +66,10 @@ export class ChromeTabsService {
 
   private getLayoutStateFromStorage(): Promise<WindowListLayoutState> {
     if (!environment.production) {
-      return Promise.resolve(WindowListState.getDefaultLayoutState());
+      return Promise.resolve(WindowListUtils.getDefaultLayoutState());
     }
     return new Promise<WindowListLayoutState>(resolve => {
-      const storageKey = { activeWindowsLayoutState: WindowListState.getDefaultLayoutState() };
+      const storageKey = { activeWindowsLayoutState: WindowListUtils.getDefaultLayoutState() };
       chrome.storage.sync.get(storageKey, data => {
         resolve(data.activeWindowsLayoutState);
       });
@@ -139,6 +145,11 @@ export class ChromeTabsService {
   setTabActive(windowId: any, tabId: any) {
     chrome.tabs.update(tabId, {active: true});
     chrome.windows.update(windowId, {focused: true});
+  }
+
+  @modifiesState()
+  setWindowTitle(windowId: any, title: string) {
+    this.windowListState.setWindowTitle(windowId, title);
   }
 
   onStateUpdated() {

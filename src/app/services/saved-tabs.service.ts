@@ -1,12 +1,6 @@
 import {Injectable} from '@angular/core';
 import {MOCK_SAVED_WINDOWS} from './mock-windows';
-import {
-  ChromeAPITabState,
-  ChromeAPIWindowState,
-  WindowLayoutState,
-  WindowListLayoutState,
-  WindowListState
-} from '../types/chrome-a-p-i-window-state';
+import {ChromeAPITabState, ChromeAPIWindowState, WindowListState, WindowListUtils} from '../types/chrome-a-p-i-window-state';
 import {Subject} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {v4 as uuid} from 'uuid';
@@ -25,7 +19,7 @@ export class SavedTabsService {
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
   constructor() {
-    this.windowListState = WindowListState.getDefaultInstance();
+    this.windowListState = WindowListState.createDefaultInstance();
     this.refreshState();
   }
 
@@ -37,12 +31,12 @@ export class SavedTabsService {
 
   private getStateFromStorage(): Promise<WindowListState> {
     if (!environment.production) {
-      return Promise.resolve(new WindowListState(MOCK_SAVED_WINDOWS, WindowListState.getDefaultLayoutState()));
+      return Promise.resolve(new WindowListState(MOCK_SAVED_WINDOWS, WindowListUtils.getDefaultLayoutState()));
     }
     return new Promise<WindowListState>(resolve => {
       const storageKey = {
-        savedWindows: WindowListState.getDefaultAPIWindows(),
-        savedWindowsLayoutState: WindowListState.getDefaultLayoutState()
+        savedWindows: WindowListUtils.getDefaultAPIWindows(),
+        savedWindowsLayoutState: WindowListUtils.getDefaultLayoutState()
       };
       chrome.storage.sync.get(storageKey, data => {
         const windowList = new WindowListState(data.savedWindows, data.savedWindowsLayoutState);
@@ -63,7 +57,7 @@ export class SavedTabsService {
   @modifiesState()
   createNewWindow() {
     const newWindow = {id: uuid(), tabs: []} as ChromeAPIWindowState;
-    const newWindowLayout = {windowId: newWindow.id, hidden: false} as WindowLayoutState;
+    const newWindowLayout = WindowListUtils.getDefaultWindowLayoutState(newWindow.id);
     this.windowListState.unshiftWindow(newWindow, newWindowLayout);
     this.windowListState.setHidden(false);
   }

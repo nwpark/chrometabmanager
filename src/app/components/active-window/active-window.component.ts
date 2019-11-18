@@ -1,22 +1,32 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {TabGroupCategory, TabListComponentData} from '../../types/tab-list-component-data';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {ChromeAPIWindowState, WindowLayoutState} from '../../types/chrome-a-p-i-window-state';
+import {FormControl} from '@angular/forms';
+import {MouseOver} from '../mouse-over';
 
 @Component({
   selector: 'app-active-window',
   templateUrl: './active-window.component.html',
   styleUrls: ['./active-window.component.css']
 })
-export class ActiveWindowComponent implements OnInit {
+export class ActiveWindowComponent extends MouseOver implements OnInit {
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
   @Input() layoutState: WindowLayoutState;
 
+  @ViewChild('titleInput', {static: false}) titleInput: ElementRef;
+
   componentData: TabListComponentData;
 
-  constructor(private chromeTabsService: ChromeTabsService) { }
+  titleFormControl: FormControl;
+  showEditForm = false;
+
+  constructor(private chromeTabsService: ChromeTabsService,
+              private changeDefectorRef: ChangeDetectorRef) {
+    super(changeDefectorRef);
+  }
 
   ngOnInit() {
     this.componentData = {
@@ -25,10 +35,11 @@ export class ActiveWindowComponent implements OnInit {
       category: TabGroupCategory.Saved,
       componentRef: this
     };
+    this.titleFormControl = new FormControl(this.layoutState.title);
   }
 
   getTitle(): string {
-    return this.layoutState.hidden ? `Window (${this.chromeAPIWindow.tabs.length} tabs)` : 'Window';
+    return this.layoutState.hidden ? `${this.layoutState.title} (${this.chromeAPIWindow.tabs.length} tabs)` : this.layoutState.title;
   }
 
   closeWindow() {
@@ -46,6 +57,23 @@ export class ActiveWindowComponent implements OnInit {
 
   toggleDisplay() {
     this.chromeTabsService.toggleWindowDisplay(this.chromeAPIWindow.id);
+  }
+
+  editTitle() {
+    this.showEditForm = true;
+    this.changeDefectorRef.detectChanges();
+    this.titleInput.nativeElement.focus();
+    this.titleInput.nativeElement.select();
+  }
+
+  submitTitleForm() {
+    this.chromeTabsService.setWindowTitle(this.chromeAPIWindow.id, this.titleFormControl.value);
+    this.showEditForm = false;
+  }
+
+  cancelTitleForm() {
+    this.titleFormControl.setValue(this.layoutState.title);
+    this.showEditForm = false;
   }
 
   tabDropped(event: CdkDragDrop<TabListComponentData>) {
