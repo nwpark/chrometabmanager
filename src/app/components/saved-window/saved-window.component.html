@@ -5,13 +5,13 @@
         mat-icon-button
         [title]="layoutState.hidden ? 'Show window' : 'Minimize window'"
         (click)="toggleDisplay()">
-        <mat-icon class="icon-18" *ngIf="!layoutState.hidden">arrow_drop_down</mat-icon>
-        <mat-icon class="icon-18" *ngIf="layoutState.hidden">arrow_right</mat-icon>
+        <mat-icon class="action-icon-18" *ngIf="!layoutState.hidden">arrow_drop_down</mat-icon>
+        <mat-icon class="action-icon-18" *ngIf="layoutState.hidden">arrow_right</mat-icon>
       </button>
       <button class="chrome-window-action-button"
         mat-icon-button
         (click)="closeWindow()">
-        <mat-icon class="icon-18">close</mat-icon>
+        <mat-icon class="action-icon-18">close</mat-icon>
       </button>
     </div>
     <div class="chrome-window-title">
@@ -26,15 +26,15 @@
     [cdkDropListData]="componentData"
     (cdkDropListDropped)="tabDropped($event)">
     <div
-      class="draggable-chrome-tab"
       cdkDrag
+      class="draggable-chrome-tab"
       *ngFor="let tab of componentData.tabs"
       [cdkDragData]="tab">
       <app-draggable-chrome-tab
-        style="width: 100%"
+        class="chrome-tab"
         [chromeTab]="tab"
-        (close)="closeTab($event)"
-        (click)="replaceCurrentTab(tab)">
+        (draggableChromeTabClose)="closeTab(tab.id)"
+        (draggableChromeTabClick)="replaceCurrentTab(tab)">
       </app-draggable-chrome-tab>
     </div>
 

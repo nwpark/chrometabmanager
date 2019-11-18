@@ -10,7 +10,8 @@ import {ChromeTabsService} from '../../services/chrome-tabs.service';
 export class DraggableChromeTabComponent implements OnInit {
 
   @Input() chromeTab: ChromeAPITabState;
-  @Output() close = new EventEmitter<any>();
+  @Output() draggableChromeTabClose = new EventEmitter<any>();
+  @Output() draggableChromeTabClick = new EventEmitter<any>();
 
   mouseOver: boolean;
 
@@ -27,10 +28,6 @@ export class DraggableChromeTabComponent implements OnInit {
   @HostListener('mouseleave') onMouseLeave() {
     this.mouseOver = false;
     this.changeDetectorRef.detectChanges();
-  }
-
-  closeTab() {
-    this.close.emit(this.chromeTab.id);
   }
 
 }

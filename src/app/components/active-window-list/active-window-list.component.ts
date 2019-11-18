@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
-import {WindowListState} from '../../types/chrome-a-p-i-window-state';
+import {ChromeAPIWindowState, WindowListState} from '../../types/chrome-a-p-i-window-state';
 
 @Component({
   selector: 'app-active-window-list',
@@ -18,12 +18,17 @@ export class ActiveWindowListComponent implements OnInit {
     this.windowListState = this.chromeTabsService.getWindowListState();
     this.chromeTabsService.windowStateUpdated$.subscribe(windowListState => {
       this.windowListState = windowListState;
+      this.triggerVirtualScrollViewportUpdate(windowListState.chromeAPIWindows);
       this.changeDetectorRef.detectChanges();
     });
   }
 
   toggleDisplay() {
     this.chromeTabsService.toggleWindowListDisplay();
+  }
+
+  triggerVirtualScrollViewportUpdate(chromeAPIWindows: ChromeAPIWindowState[]) {
+    this.windowListState.chromeAPIWindows = [...chromeAPIWindows];
   }
 
 }

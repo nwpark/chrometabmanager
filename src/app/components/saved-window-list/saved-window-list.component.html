@@ -1,33 +1,31 @@
-<div class="window-list-container">
+<div class="column-header">
+  <span style="float: right">
+    <button
+      mat-icon-button
+      title="Create new window"
+      (click)="addNewWindow()">
+      <mat-icon class="action-icon-24">add</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      [title]="windowListState.layoutState.hidden ? 'Show saved windows' : 'Minimize saved windows'"
+      (click)="toggleDisplay()">
+      <mat-icon class="action-icon-24" *ngIf="!windowListState.layoutState.hidden">arrow_drop_down</mat-icon>
+      <mat-icon class="action-icon-24" *ngIf="windowListState.layoutState.hidden">arrow_right</mat-icon>
+    </button>
+  </span>
+  <span class="column-title-text">
+    Saved
+  </span>
+</div>
 
-  <div style="height: 40px; margin-top: 20px">
-    <span style="float: right">
-      <button
-        mat-icon-button
-        title="Create new window"
-        (click)="addNewWindow()">
-        <mat-icon>add</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        [title]="windowListState.layoutState.hidden ? 'Show saved windows' : 'Minimize saved windows'"
-        (click)="toggleDisplay()">
-        <mat-icon *ngIf="!windowListState.layoutState.hidden">arrow_drop_down</mat-icon>
-        <mat-icon *ngIf="windowListState.layoutState.hidden">arrow_right</mat-icon>
-      </button>
-    </span>
-    <span style="line-height: 40px; font-weight: bold; font-size: x-large">
-      Saved
-    </span>
+<div
+  class="column-scrollable-content"
+  *ngIf="!windowListState.layoutState.hidden">
+  <div *ngFor="let window of windowListState.chromeAPIWindows">
+    <app-saved-window
+      [chromeAPIWindow]="window"
+      [layoutState]="windowListState.getWindowLayout(window.id)">
+    </app-saved-window>
   </div>
-
-  <div *ngIf="!windowListState.layoutState.hidden">
-    <div *ngFor="let window of windowListState.chromeAPIWindows">
-      <app-saved-window
-        [chromeAPIWindow]="window"
-        [layoutState]="windowListState.getWindowLayout(window.id)">
-      </app-saved-window>
-    </div>
-  </div>
-
 </div>

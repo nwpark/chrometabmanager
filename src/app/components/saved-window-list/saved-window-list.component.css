@@ -1,0 +1,18 @@
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00000044;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/*::-webkit-scrollbar the scrollbar.*/
+/*::-webkit-scrollbar-button the buttons on the scrollbar (arrows pointing upwards and downwards).*/
+/*::-webkit-scrollbar-thumb the draggable scrolling handle.*/
+/*::-webkit-scrollbar-track the track (progress bar) of the scrollbar.*/
+/*::-webkit-scrollbar-track-piece the track (progress bar) NOT covered by the handle.*/

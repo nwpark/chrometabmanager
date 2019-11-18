@@ -38,7 +38,7 @@ export class ChromeTabsService {
     }
   }
 
-  refreshState() {
+  private refreshState() {
     const windowList: Promise<ChromeAPIWindowState[]> = this.getChromeWindowsFromAPI();
     const windowLayoutState: Promise<WindowListLayoutState> = this.getLayoutStateFromStorage();
     Promise.all([windowList, windowLayoutState]).then(result => {
@@ -75,7 +75,7 @@ export class ChromeTabsService {
   }
 
   @modifiesState()
-  setWindowListState(windowListState: WindowListState) {
+  private setWindowListState(windowListState: WindowListState) {
     this.windowListState = windowListState;
   }
 
@@ -99,7 +99,6 @@ export class ChromeTabsService {
 
   @modifiesState()
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
-    // todo: update tab in callback
     this.windowListState.insertTab(windowId, tabIndex, chromeTab);
     if (environment.production) {
       chrome.tabs.create({windowId, index: tabIndex, url: chromeTab.url, active: false});
@@ -124,7 +123,7 @@ export class ChromeTabsService {
   @modifiesState()
   removeWindow(windowId: any) {
     this.windowListState.removeWindow(windowId);
-    // todo: call api
+    chrome.windows.remove(windowId);
   }
 
   @modifiesState()
