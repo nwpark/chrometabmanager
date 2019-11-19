@@ -18,8 +18,6 @@ export class ActiveWindowListComponent implements OnInit {
     this.windowListState = this.chromeTabsService.getWindowListState();
     this.chromeTabsService.windowStateUpdated$.subscribe(windowListState => {
       this.windowListState = windowListState;
-      // console.log(windowListState);
-      this.windowListState.chromeAPIWindows = [...windowListState.chromeAPIWindows];
       this.changeDetectorRef.detectChanges();
     });
   }

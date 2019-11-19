@@ -1,11 +1,8 @@
 import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {ChromeAPITabState, ChromeAPIWindowState, WindowLayoutState} from '../../types/chrome-a-p-i-window-state';
-import {TabGroupCategory, TabListComponentData} from '../../types/tab-list-component-data';
+import {TabListComponentData} from '../../types/tab-list-component-data';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {TabsService} from '../../interfaces/tabs-service';
-import {MouseOver} from '../mouse-over';
-import {SavedTabsService} from '../../services/saved-tabs.service';
-import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {FormControl} from '@angular/forms';
 
 @Component({
@@ -13,7 +10,7 @@ import {FormControl} from '@angular/forms';
   templateUrl: './chrome-window.component.html',
   styleUrls: ['./chrome-window.component.css']
 })
-export class ChromeWindowComponent extends MouseOver implements OnInit {
+export class ChromeWindowComponent implements OnInit {
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
   @Input() layoutState: WindowLayoutState;
@@ -25,9 +22,7 @@ export class ChromeWindowComponent extends MouseOver implements OnInit {
 
   componentData: TabListComponentData;
 
-  constructor(protected changeDetectorRef: ChangeDetectorRef) {
-    super(changeDetectorRef);
-  }
+  constructor(private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.componentData = {
@@ -35,6 +30,12 @@ export class ChromeWindowComponent extends MouseOver implements OnInit {
       tabsService: this.tabsService
     };
     this.titleFormControl = new FormControl(this.layoutState.title);
+  }
+
+  getTitle(): string {
+    return this.layoutState.hidden
+      ? `${this.layoutState.title} (${this.chromeAPIWindow.tabs.length} tabs)`
+      : this.layoutState.title;
   }
 
   editTitle() {
@@ -49,19 +50,13 @@ export class ChromeWindowComponent extends MouseOver implements OnInit {
     this.showEditForm = false;
   }
 
-  cancelTitleForm() {
+  cancelTitleFormEdit() {
     this.titleFormControl.setValue(this.layoutState.title);
     this.showEditForm = false;
   }
 
   setTabActive(chromeTab: ChromeAPITabState) {
     this.tabsService.setTabActive(this.chromeAPIWindow.id, chromeTab);
-  }
-
-  getTitle(): string {
-    return this.layoutState.hidden
-      ? `${this.layoutState.title} (${this.chromeAPIWindow.tabs.length} tabs)`
-      : this.layoutState.title;
   }
 
   closeWindow() {

@@ -112,7 +112,7 @@ export class ChromeTabsService implements TabsService {
     }
   }
 
-  updateCurrentTab(chromeTab: ChromeAPITabState) {
+  updateCurrentTabUrl(chromeTab: ChromeAPITabState) {
     chrome.tabs.getCurrent(currentTab => {
       chrome.tabs.update(currentTab.id, {url: chromeTab.url});
     });

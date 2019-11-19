@@ -10,6 +10,7 @@ import {DraggableChromeTabComponent} from './components/draggable-chrome-tab/dra
 import {EmptyChromeTabComponent} from './components/empty-chrome-tab/empty-chrome-tab.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ChromeWindowComponent} from './components/chrome-window/chrome-window.component';
+import { MouseOverDirective } from './directives/mouse-over.directive';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {ChromeWindowComponent} from './components/chrome-window/chrome-window.co
     SavedWindowListComponent,
     DraggableChromeTabComponent,
     EmptyChromeTabComponent,
-    ChromeWindowComponent
+    ChromeWindowComponent,
+    MouseOverDirective
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,8 @@
 <div class="chrome-window-container">
-  <div [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
+  <div
+    appMouseOver
+    #windowHeader=app-mouse-over
+    [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
     <div class="chrome-window-action-bar">
       <button class="chrome-window-action-button"
         mat-icon-button
@@ -22,14 +25,14 @@
         <button class="chrome-window-action-button"
                 mat-icon-button
                 title="Edit title"
-                *ngIf="mouseOver"
+                *ngIf="windowHeader.mouseOver"
                 (click)="editTitle()">
           <mat-icon class="action-icon-18">edit</mat-icon>
         </button>
       </div>
 
       <form *ngIf="showEditForm" (ngSubmit)="submitTitleForm()">
-        <input #titleInput type="text" [formControl]="titleFormControl" (blur)="submitTitleForm()" (keydown.escape)="cancelTitleForm()">
+        <input #titleInput type="text" [formControl]="titleFormControl" (blur)="submitTitleForm()" (keydown.escape)="cancelTitleFormEdit()">
         <button mat-icon-button
                 class="chrome-window-action-button"
                 type="submit"

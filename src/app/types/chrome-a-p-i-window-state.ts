@@ -51,11 +51,6 @@ export class WindowListState {
     chromeWindow.tabs.splice(index, 0, chromeTab);
   }
 
-  // removeTab(windowId: any, tabIndex: number) {
-  //   const chromeWindow = this.getWindow(windowId);
-  //   chromeWindow.tabs.splice(tabIndex, 1);
-  // }
-
   removeTab(windowId: any, tabId: any) {
     const chromeWindow = this.getWindow(windowId);
     chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);

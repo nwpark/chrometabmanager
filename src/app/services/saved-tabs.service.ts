@@ -106,11 +106,11 @@ export class SavedTabsService implements TabsService {
   }
 
   setTabActive(windowId: any, chromeTab: ChromeAPITabState) {
-    this.chromeTabsService.updateCurrentTab(chromeTab);
+    this.chromeTabsService.updateCurrentTabUrl(chromeTab);
   }
 
   onStateUpdated() {
-    // console.log(this.windowListState);
+    console.log(this.windowListState);
     this.windowStateUpdatedSource.next(this.windowListState);
     if (environment.production) {
       chrome.storage.sync.set({
