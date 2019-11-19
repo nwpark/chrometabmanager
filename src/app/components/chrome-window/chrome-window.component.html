@@ -14,6 +14,8 @@
         <mat-icon class="action-icon-18">close</mat-icon>
       </button>
     </div>
+
+    <!--Title text-->
     <div class="chrome-window-title">
       <div *ngIf="!showEditForm">
         {{getTitle()}}
@@ -47,14 +49,18 @@
     <div
       cdkDrag
       class="draggable-chrome-tab"
-      *ngFor="let tab of componentData.tabs"
+      *ngFor="let tab of chromeAPIWindow.tabs"
       [cdkDragData]="tab">
       <app-draggable-chrome-tab
         class="chrome-tab"
         [chromeTab]="tab"
         (draggableChromeTabClose)="closeTab(tab.id)"
-        (draggableChromeTabClick)="setTabActive(tab.id)">
+        (draggableChromeTabClick)="setTabActive(tab)">
       </app-draggable-chrome-tab>
     </div>
+
+    <app-empty-chrome-tab *ngIf="chromeAPIWindow.tabs.length === 0">
+    </app-empty-chrome-tab>
   </div>
 </div>
+

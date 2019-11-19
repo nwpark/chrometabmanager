@@ -2,13 +2,9 @@ import {ChangeDetectorRef, HostListener} from '@angular/core';
 
 export abstract class MouseOver {
 
-  changeDetectorRef: ChangeDetectorRef;
-
   mouseOver: boolean;
 
-  protected constructor(changeDetectorRef: ChangeDetectorRef) {
-    this.changeDetectorRef = changeDetectorRef;
-  }
+  protected constructor(protected changeDetectorRef: ChangeDetectorRef) { }
 
   @HostListener('mouseenter') onMouseEnter() {
     this.mouseOver = true;

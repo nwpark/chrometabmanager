@@ -11,7 +11,7 @@ export class SavedWindowListComponent implements OnInit {
 
   windowListState: WindowListState;
 
-  constructor(private savedTabsService: SavedTabsService,
+  constructor(public savedTabsService: SavedTabsService,
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {

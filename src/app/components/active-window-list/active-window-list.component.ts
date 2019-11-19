@@ -11,14 +11,15 @@ export class ActiveWindowListComponent implements OnInit {
 
   windowListState: WindowListState;
 
-  constructor(private chromeTabsService: ChromeTabsService,
+  constructor(public chromeTabsService: ChromeTabsService,
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.windowListState = this.chromeTabsService.getWindowListState();
     this.chromeTabsService.windowStateUpdated$.subscribe(windowListState => {
       this.windowListState = windowListState;
-      this.triggerVirtualScrollViewportUpdate(windowListState.chromeAPIWindows);
+      // console.log(windowListState);
+      this.windowListState.chromeAPIWindows = [...windowListState.chromeAPIWindows];
       this.changeDetectorRef.detectChanges();
     });
   }
@@ -26,9 +27,4 @@ export class ActiveWindowListComponent implements OnInit {
   toggleDisplay() {
     this.chromeTabsService.toggleWindowListDisplay();
   }
-
-  triggerVirtualScrollViewportUpdate(chromeAPIWindows: ChromeAPIWindowState[]) {
-    this.windowListState.chromeAPIWindows = [...chromeAPIWindows];
-  }
-
 }

@@ -6,6 +6,7 @@ import {environment} from '../../environments/environment';
 import {v4 as uuid} from 'uuid';
 import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
+import {ChromeTabsService} from './chrome-tabs.service';
 
 declare var chrome;
 
@@ -19,7 +20,7 @@ export class SavedTabsService implements TabsService {
   private windowStateUpdatedSource = new Subject<WindowListState>();
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
-  constructor() {
+  constructor(private chromeTabsService: ChromeTabsService) {
     this.windowListState = WindowListState.createDefaultInstance();
     this.refreshState();
   }
@@ -80,8 +81,8 @@ export class SavedTabsService implements TabsService {
   }
 
   @modifiesState()
-  removeTab(windowId: any, tabIndex: number) {
-    this.windowListState.removeTab(windowId, tabIndex);
+  removeTab(windowId: any, tabId: any) {
+    this.windowListState.removeTab(windowId, tabId);
   }
 
   @modifiesState()
@@ -99,8 +100,17 @@ export class SavedTabsService implements TabsService {
     this.windowListState.toggleWindowDisplay(windowId);
   }
 
+  @modifiesState()
+  setWindowTitle(windowId: any, title: string) {
+    this.windowListState.setWindowTitle(windowId, title);
+  }
+
+  setTabActive(windowId: any, chromeTab: ChromeAPITabState) {
+    this.chromeTabsService.updateCurrentTab(chromeTab);
+  }
+
   onStateUpdated() {
-    console.log(this.windowListState);
+    // console.log(this.windowListState);
     this.windowStateUpdatedSource.next(this.windowListState);
     if (environment.production) {
       chrome.storage.sync.set({

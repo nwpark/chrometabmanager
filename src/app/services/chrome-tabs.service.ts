@@ -112,16 +112,15 @@ export class ChromeTabsService implements TabsService {
     }
   }
 
-  replaceCurrentTab(chromeTab: ChromeAPITabState) {
+  updateCurrentTab(chromeTab: ChromeAPITabState) {
     chrome.tabs.getCurrent(currentTab => {
       chrome.tabs.update(currentTab.id, {url: chromeTab.url});
     });
   }
 
   @modifiesState()
-  removeTab(windowId: any, tabIndex: number) {
-    const tabId = this.windowListState.getTabId(windowId, tabIndex);
-    this.windowListState.removeTab(windowId, tabIndex);
+  removeTab(windowId: any, tabId: any) {
+    this.windowListState.removeTab(windowId, tabId);
     if (environment.production) {
       chrome.tabs.remove(tabId);
     }
@@ -143,8 +142,8 @@ export class ChromeTabsService implements TabsService {
     this.windowListState.toggleWindowDisplay(windowId);
   }
 
-  setTabActive(windowId: any, tabId: any) {
-    chrome.tabs.update(tabId, {active: true});
+  setTabActive(windowId: any, chromeTab: ChromeAPITabState) {
+    chrome.tabs.update(chromeTab.id, {active: true});
     chrome.windows.update(windowId, {focused: true});
   }
 

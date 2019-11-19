@@ -17,10 +17,16 @@
   class="column-scrollable-content"
   *ngIf="!windowListState.layoutState.hidden">
   <div *ngFor="let window of windowListState.chromeAPIWindows">
-    <app-active-window
+<!--    <app-active-window-->
+<!--      *ngIf="window.type === 'normal'"-->
+<!--      [chromeAPIWindow]="window"-->
+<!--      [layoutState]="windowListState.getWindowLayout(window.id)">-->
+<!--    </app-active-window>-->
+    <app-chrome-window
       *ngIf="window.type === 'normal'"
       [chromeAPIWindow]="window"
-      [layoutState]="windowListState.getWindowLayout(window.id)">
-    </app-active-window>
+      [layoutState]="windowListState.getWindowLayout(window.id)"
+      [tabsService]="chromeTabsService">
+    </app-chrome-window>
   </div>
 </div>

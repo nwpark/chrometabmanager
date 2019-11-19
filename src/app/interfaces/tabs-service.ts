@@ -10,12 +10,16 @@ export interface TabsService {
 
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState);
 
-  removeTab(windowId: any, tabIndex: number);
+  removeTab(windowId: any, tabId: any);
 
   removeWindow(windowId: any);
 
   toggleWindowListDisplay();
 
   toggleWindowDisplay(windowId: any);
+
+  setWindowTitle(windowId: any, title: string);
+
+  setTabActive(windowId: any, chromeTab: ChromeAPITabState);
 
 }

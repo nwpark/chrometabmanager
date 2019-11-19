@@ -1,4 +1,5 @@
 import {ChromeAPITabState, ChromeAPIWindowState} from './chrome-a-p-i-window-state';
+import {TabsService} from '../interfaces/tabs-service';
 
 export enum TabGroupCategory {
   Active,
@@ -7,7 +8,6 @@ export enum TabGroupCategory {
 
 export class TabListComponentData {
   windowId: number;
-  tabs: ChromeAPITabState[];
-  category: TabGroupCategory;
-  componentRef: any;
+  // category: TabGroupCategory;
+  tabsService: TabsService;
 }

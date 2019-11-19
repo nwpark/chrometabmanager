@@ -1,24 +1,67 @@
-import {ChangeDetectorRef, Input, OnInit} from '@angular/core';
-import {ChromeAPIWindowState, WindowLayoutState} from '../../types/chrome-a-p-i-window-state';
+import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {ChromeAPITabState, ChromeAPIWindowState, WindowLayoutState} from '../../types/chrome-a-p-i-window-state';
 import {TabGroupCategory, TabListComponentData} from '../../types/tab-list-component-data';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {TabsService} from '../../interfaces/tabs-service';
 import {MouseOver} from '../mouse-over';
+import {SavedTabsService} from '../../services/saved-tabs.service';
+import {ChromeTabsService} from '../../services/chrome-tabs.service';
+import {FormControl} from '@angular/forms';
 
-export abstract class ChromeWindowComponent extends MouseOver {
+@Component({
+  selector: 'app-chrome-window',
+  templateUrl: './chrome-window.component.html',
+  styleUrls: ['./chrome-window.component.css']
+})
+export class ChromeWindowComponent extends MouseOver implements OnInit {
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
   @Input() layoutState: WindowLayoutState;
+  @Input() tabsService: TabsService;
 
-  private tabsService: TabsService;
+  @ViewChild('titleInput', {static: false}) titleInput: ElementRef;
+  titleFormControl: FormControl;
+  showEditForm = false;
 
-  protected constructor(tabsService: TabsService, changeDefectorRef: ChangeDetectorRef) {
-    super(changeDefectorRef);
-    this.tabsService = tabsService;
+  componentData: TabListComponentData;
+
+  constructor(protected changeDetectorRef: ChangeDetectorRef) {
+    super(changeDetectorRef);
+  }
+
+  ngOnInit() {
+    this.componentData = {
+      windowId: this.chromeAPIWindow.id,
+      tabsService: this.tabsService
+    };
+    this.titleFormControl = new FormControl(this.layoutState.title);
+  }
+
+  editTitle() {
+    this.showEditForm = true;
+    this.changeDetectorRef.detectChanges();
+    this.titleInput.nativeElement.focus();
+    this.titleInput.nativeElement.select();
+  }
+
+  submitTitleForm() {
+    this.tabsService.setWindowTitle(this.chromeAPIWindow.id, this.titleFormControl.value);
+    this.showEditForm = false;
+  }
+
+  cancelTitleForm() {
+    this.titleFormControl.setValue(this.layoutState.title);
+    this.showEditForm = false;
+  }
+
+  setTabActive(chromeTab: ChromeAPITabState) {
+    this.tabsService.setTabActive(this.chromeAPIWindow.id, chromeTab);
   }
 
   getTitle(): string {
-    return this.layoutState.hidden ? `${this.layoutState.title} (${this.chromeAPIWindow.tabs.length} tabs)` : this.layoutState.title;
+    return this.layoutState.hidden
+      ? `${this.layoutState.title} (${this.chromeAPIWindow.tabs.length} tabs)`
+      : this.layoutState.title;
   }
 
   closeWindow() {
@@ -26,8 +69,7 @@ export abstract class ChromeWindowComponent extends MouseOver {
   }
 
   closeTab(tabId: any) {
-    const index = this.chromeAPIWindow.tabs.findIndex(tab => tab.id === tabId);
-    this.tabsService.removeTab(this.chromeAPIWindow.id, index);
+    this.tabsService.removeTab(this.chromeAPIWindow.id, tabId);
   }
 
   toggleDisplay() {
@@ -42,13 +84,13 @@ export abstract class ChromeWindowComponent extends MouseOver {
       this.tabsService.moveTabInWindow(targetTabList.windowId,
         event.previousIndex,
         event.currentIndex);
-    } else if (previousTabList.category === targetTabList.category) {
+    } else if (previousTabList.tabsService === targetTabList.tabsService) {
       this.tabsService.transferTab(previousTabList.windowId,
         targetTabList.windowId,
         event.previousIndex,
         event.currentIndex);
     } else {
-      previousTabList.componentRef.closeTab(event.item.data.id);
+      previousTabList.tabsService.removeTab(previousTabList.windowId, event.item.data.id);
       this.tabsService.createTab(targetTabList.windowId, event.currentIndex, event.item.data);
     }
   }
