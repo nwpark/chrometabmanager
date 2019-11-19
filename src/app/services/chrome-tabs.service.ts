@@ -11,13 +11,14 @@ import {
 } from '../types/chrome-a-p-i-window-state';
 import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
+import {TabsService} from '../interfaces/tabs-service';
 
 declare var chrome;
 
 @Injectable({
   providedIn: 'root'
 })
-export class ChromeTabsService {
+export class ChromeTabsService implements TabsService {
 
   private static readonly CHROME_WINDOW_EVENTS = environment.production && [
     chrome.tabs.onCreated,

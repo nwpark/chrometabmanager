@@ -5,13 +5,14 @@ import {Subject} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {v4 as uuid} from 'uuid';
 import {modifiesState} from '../decorators/modifies-state';
+import {TabsService} from '../interfaces/tabs-service';
 
 declare var chrome;
 
 @Injectable({
   providedIn: 'root'
 })
-export class SavedTabsService {
+export class SavedTabsService implements TabsService {
 
   private windowListState: WindowListState;
 
@@ -50,7 +51,7 @@ export class SavedTabsService {
   }
 
   @modifiesState()
-  setWindowListState(windowListState: WindowListState) {
+  private setWindowListState(windowListState: WindowListState) {
     this.windowListState = windowListState;
   }
 

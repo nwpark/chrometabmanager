@@ -10,7 +10,6 @@ import {ChromeAPIWindowState, WindowListState} from '../../types/chrome-a-p-i-wi
 export class SavedWindowListComponent implements OnInit {
 
   windowListState: WindowListState;
-  chromeAPIWindows: ChromeAPIWindowState[];
 
   constructor(private savedTabsService: SavedTabsService,
               private changeDetectorRef: ChangeDetectorRef) { }
@@ -19,8 +18,6 @@ export class SavedWindowListComponent implements OnInit {
     this.windowListState = this.savedTabsService.getWindowListState();
     this.savedTabsService.windowStateUpdated$.subscribe(windowListState => {
       this.windowListState = windowListState;
-      this.chromeAPIWindows = [...windowListState.chromeAPIWindows];
-      this.triggerVirtualScrollViewportUpdate(windowListState.chromeAPIWindows);
       this.changeDetectorRef.detectChanges();
     });
   }
@@ -32,11 +29,4 @@ export class SavedWindowListComponent implements OnInit {
   toggleDisplay() {
     this.savedTabsService.toggleWindowListDisplay();
   }
-
-  // This is an ugly hack to force cdk-virtual-scroll-viewport to update when the array is modified.
-  // See https://github.com/angular/components/pull/14639 (review pending).
-  triggerVirtualScrollViewportUpdate(chromeAPIWindows: ChromeAPIWindowState[]) {
-    this.windowListState.chromeAPIWindows = [...chromeAPIWindows];
-  }
-
 }

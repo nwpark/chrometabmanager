@@ -1,71 +1,36 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {TabGroupCategory, TabListComponentData} from '../../types/tab-list-component-data';
 import {SavedTabsService} from '../../services/saved-tabs.service';
 import {ChromeAPITabState, ChromeAPIWindowState, WindowLayoutState} from '../../types/chrome-a-p-i-window-state';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
+import {ChromeWindowComponent} from '../chrome-window/chrome-window.component';
 
 @Component({
   selector: 'app-saved-window',
   templateUrl: './saved-window.component.html',
   styleUrls: ['./saved-window.component.css']
 })
-export class SavedWindowComponent implements OnInit {
-
-  @Input() chromeAPIWindow: ChromeAPIWindowState;
-  @Input() layoutState: WindowLayoutState;
+export class SavedWindowComponent extends ChromeWindowComponent implements OnInit {
 
   componentData: TabListComponentData;
 
   constructor(private savedTabsService: SavedTabsService,
-              private chromeTabsService: ChromeTabsService) { }
+              private chromeTabsService: ChromeTabsService,
+              changeDetectorRef: ChangeDetectorRef) {
+    super(savedTabsService, changeDetectorRef);
+  }
 
   ngOnInit() {
     this.componentData = {
       windowId: this.chromeAPIWindow.id,
       tabs: this.chromeAPIWindow.tabs,
-      category: TabGroupCategory.Active,
+      category: TabGroupCategory.Saved,
       componentRef: this
     };
   }
 
-  getTitle(): string {
-    return this.layoutState.hidden ? `Window (${this.chromeAPIWindow.tabs.length} tabs)` : 'Window';
-  }
-
-  closeWindow() {
-    this.savedTabsService.removeWindow(this.chromeAPIWindow.id);
-  }
-
-  closeTab(tabId: any) {
-    const index = this.chromeAPIWindow.tabs.findIndex(tab => tab.id === tabId);
-    this.savedTabsService.removeTab(this.chromeAPIWindow.id, index);
-  }
-
   replaceCurrentTab(chromeTab: ChromeAPITabState) {
     this.chromeTabsService.replaceCurrentTab(chromeTab);
-  }
-
-  toggleDisplay() {
-    this.savedTabsService.toggleWindowDisplay(this.chromeAPIWindow.id);
-  }
-
-  tabDropped(event: CdkDragDrop<TabListComponentData>) {
-    const targetTabList: TabListComponentData = event.container.data;
-    const previousTabList: TabListComponentData = event.previousContainer.data;
-
-    if (event.previousContainer === event.container) {
-      this.savedTabsService.moveTabInWindow(targetTabList.windowId,
-        event.previousIndex,
-        event.currentIndex);
-    } else if (previousTabList.category === targetTabList.category) {
-      this.savedTabsService.transferTab(previousTabList.windowId,
-        targetTabList.windowId,
-        event.previousIndex,
-        event.currentIndex);
-    } else {
-      previousTabList.componentRef.closeTab(event.item.data.id);
-      this.savedTabsService.createTab(targetTabList.windowId, event.currentIndex, event.item.data);
-    }
   }
 }
