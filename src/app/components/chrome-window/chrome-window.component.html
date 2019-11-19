@@ -32,7 +32,12 @@
       </div>
 
       <form *ngIf="showEditForm" (ngSubmit)="submitTitleForm()">
-        <input #titleInput type="text" [formControl]="titleFormControl" (blur)="submitTitleForm()" (keydown.escape)="cancelTitleFormEdit()">
+        <input
+            #titleInput
+            type="text"
+            [formControl]="titleFormControl"
+            (blur)="submitTitleForm()"
+            (keydown.escape)="cancelTitleFormEdit()">
         <button mat-icon-button
                 class="chrome-window-action-button"
                 type="submit"
@@ -62,7 +67,9 @@
       </app-draggable-chrome-tab>
     </div>
 
-    <app-empty-chrome-tab *ngIf="chromeAPIWindow.tabs.length === 0">
+    <app-empty-chrome-tab
+      style="position: relative;"
+      *ngIf="chromeAPIWindow.tabs.length === 0">
     </app-empty-chrome-tab>
   </div>
 </div>

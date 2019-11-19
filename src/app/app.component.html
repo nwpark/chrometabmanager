@@ -3,15 +3,16 @@
 <!--<div cdkDropListGroup [ngStyle]="{background: 'url(/assets/hussain-matheen-Q3JQ1ww-oCw-unsplash.jpg) no-repeat center center fixed', backgroundSize: 'cover'}">-->
 <!--<div cdkDropListGroup [ngStyle]="{background: 'url(/assets/32139955053_ee887b64de_6k.jpg) no-repeat center center fixed', backgroundSize: 'cover', height: '10000px'}">-->
 <div cdkDropListGroup [ngStyle]="{background: 'url(/assets/32139955053_ee887b64de_6k.jpg) no-repeat center center fixed', backgroundSize: 'cover', height: '100%'}">
-<!--  <mat-grid-list cols="3" rowHeight="10000px">-->
-  <mat-grid-list cols="3" style="height: 100%" rowHeight="fit">
-    <mat-grid-tile>
+  <mat-grid-list cols="{{cols}}" style="height: 100%" rowHeight="fit" (window:resize)="onResize($event)">
+    <mat-grid-tile *ngIf="cols > 1">
       <app-saved-window-list class="full-height-column"></app-saved-window-list>
     </mat-grid-tile>
+
     <mat-grid-tile>
       <app-active-window-list class="full-height-column"></app-active-window-list>
     </mat-grid-tile>
-    <mat-grid-tile>
+
+    <mat-grid-tile *ngIf="cols > 2">
     </mat-grid-tile>
   </mat-grid-list>
 </div>
