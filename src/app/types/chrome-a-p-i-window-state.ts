@@ -16,6 +16,7 @@ export class WindowListState {
     this.cleanupLayoutState();
   }
 
+  // todo: move this logic to storage service
   cleanupLayoutState() {
     this.chromeAPIWindows.forEach(window => {
       if (!this.containsLayoutForWindow(window.id)) {

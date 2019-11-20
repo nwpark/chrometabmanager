@@ -12,6 +12,7 @@ import {
 import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
+import {StorageService} from './storage.service';
 
 declare var chrome;
 
@@ -37,7 +38,7 @@ export class ChromeTabsService implements TabsService {
   private windowStateUpdatedSource = new Subject<WindowListState>();
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
-  constructor() {
+  constructor(private storageService: StorageService) {
     this.windowListState = WindowListState.createDefaultInstance();
     if (environment.production) {
       ChromeTabsService.CHROME_WINDOW_EVENTS.forEach(event => event.addListener(() => this.refreshState()));
@@ -46,10 +47,9 @@ export class ChromeTabsService implements TabsService {
   }
 
   private refreshState() {
-    const windowList: Promise<ChromeAPIWindowState[]> = this.getChromeWindowsFromAPI();
-    const windowLayoutState: Promise<WindowListLayoutState> = this.getLayoutStateFromStorage();
-    Promise.all([windowList, windowLayoutState]).then(result => {
-      const windowListState = new WindowListState(result[0], result[1]);
+    this.getChromeWindowsFromAPI().then(windowList => {
+      const windowLayoutState = this.storageService.getChromeWindowsLayoutState();
+      const windowListState = new WindowListState(windowList, windowLayoutState);
       this.setWindowListState(windowListState);
     });
   }
@@ -61,18 +61,6 @@ export class ChromeTabsService implements TabsService {
     return new Promise<ChromeAPIWindowState[]>(resolve => {
       chrome.windows.getAll({populate: true}, chromeWindows => {
         resolve(chromeWindows);
-      });
-    });
-  }
-
-  private getLayoutStateFromStorage(): Promise<WindowListLayoutState> {
-    if (!environment.production) {
-      return Promise.resolve(WindowListUtils.getDefaultLayoutState());
-    }
-    return new Promise<WindowListLayoutState>(resolve => {
-      const storageKey = { activeWindowsLayoutState: WindowListUtils.getDefaultLayoutState() };
-      chrome.storage.sync.get(storageKey, data => {
-        resolve(data.activeWindowsLayoutState);
       });
     });
   }
@@ -154,11 +142,7 @@ export class ChromeTabsService implements TabsService {
 
   onStateUpdated() {
     this.windowStateUpdatedSource.next(this.windowListState);
-    if (environment.production) {
-      chrome.storage.sync.set({
-        activeWindowsLayoutState: this.windowListState.layoutState
-      });
-    }
+    this.storageService.setChromeWindowsLayoutState(this.windowListState.layoutState);
   }
 
 }
