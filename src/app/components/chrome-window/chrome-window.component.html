@@ -4,15 +4,16 @@
     #windowHeader=app-mouse-over
     [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
     <div class="chrome-window-action-bar">
-      <button class="chrome-window-action-button"
+      <button class="action-button-30"
         mat-icon-button
         [title]="layoutState.hidden ? 'Show window' : 'Minimize window'"
         (click)="toggleDisplay()">
         <mat-icon class="action-icon-18" *ngIf="!layoutState.hidden">arrow_drop_down</mat-icon>
         <mat-icon class="action-icon-18" *ngIf="layoutState.hidden">arrow_right</mat-icon>
       </button>
-      <button class="chrome-window-action-button"
+      <button class="action-button-30"
         mat-icon-button
+        title="Close window"
         (click)="closeWindow()">
         <mat-icon class="action-icon-18">close</mat-icon>
       </button>
@@ -22,7 +23,7 @@
     <div class="chrome-window-title">
       <div *ngIf="!showEditForm">
         {{getTitle()}}
-        <button class="chrome-window-action-button"
+        <button class="action-button-30"
                 mat-icon-button
                 title="Edit title"
                 *ngIf="windowHeader.mouseOver"
@@ -37,9 +38,10 @@
             type="text"
             [formControl]="titleFormControl"
             (blur)="submitTitleForm()"
+            (keydown.enter)="submitTitleForm()"
             (keydown.escape)="cancelTitleFormEdit()">
         <button mat-icon-button
-                class="chrome-window-action-button"
+                class="action-button-30"
                 type="submit"
                 title="Save title">
           <mat-icon class="action-icon-18">save_alt</mat-icon>

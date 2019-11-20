@@ -1,14 +1,27 @@
 import {Component, OnInit} from '@angular/core';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  animations: [
+    trigger('simpleFadeAnimation', [
+      state('fadeIn', style({opacity: 1})),
+      transition(':enter', [
+        style({opacity: 0}),
+        animate(200)
+      ])
+    ])
+  ]
 })
 export class AppComponent implements OnInit {
 
-  static readonly BREAKPOINT_M = 1400;
-  static readonly BREAKPOINT_S = 900;
+  static readonly BREAKPOINTS = [
+    {windowWidth: 1400, cols: 3},
+    {windowWidth: 900, cols: 2},
+    {windowWidth: 0, cols: 1}
+  ];
 
   title = 'tabmanager';
   cols: number;
@@ -22,13 +35,7 @@ export class AppComponent implements OnInit {
   }
 
   getCols(windowWidth: number) {
-    if (window.innerWidth > AppComponent.BREAKPOINT_M) {
-      return 3;
-    }
-    if (window.innerWidth > AppComponent.BREAKPOINT_S) {
-      return 2;
-    }
-    return 1;
+    return AppComponent.BREAKPOINTS.find(breakpoint => windowWidth > breakpoint.windowWidth).cols;
   }
 
 }

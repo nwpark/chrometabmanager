@@ -1,14 +1,15 @@
-  <span style="float: right">
-    <button
-      mat-icon-button
-      aria-label="Close tab"
-      (click)="draggableChromeTabClose.emit()">
-      <mat-icon class="action-icon-18" *ngIf="mouseOver">close</mat-icon>
-    </button>
-  </span>
-  <div style="width: 360px" (click)="draggableChromeTabClick.emit()">
-    <img src="{{chromeTab.favIconUrl}}" style="width: 16px; height: 16px; vertical-align: middle; padding: 0 10px">
-    <span style="line-height: 40px">
-      {{chromeTab.title}}
-    </span>
-  </div>
+<button
+  mat-icon-button
+  class="action-button-30"
+  style="float: right"
+  title="Close tab"
+  (click)="draggableChromeTabClose.emit()">
+  <mat-icon class="action-icon-18" *ngIf="mouseOver">close</mat-icon>
+</button>
+<div
+  class="chrome-tab-title"
+  (click)="draggableChromeTabClick.emit()">
+  <img class="favicon-icon" src="{{chromeTab.favIconUrl}}" *ngIf="chromeTab.favIconUrl">
+  <img class="favicon-icon" src="assets/chrome-favicon.png" *ngIf="!chromeTab.favIconUrl">
+  {{chromeTab.title}}
+</div>

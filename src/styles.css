@@ -2,7 +2,6 @@ html, body { height: 100%; }
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  /*font-family: sans-serif;*/
 }
 
 .mat-grid-tile .mat-figure {
@@ -11,6 +10,12 @@ body {
 
 .mat-icon-button {
   cursor: default !important;
+}
+
+.action-button-30 {
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 30px !important;
 }
 
 .action-icon-18 {
@@ -74,6 +79,7 @@ body {
 
 .chrome-window-title {
   font-weight: bold;
+  font-size: medium;
 }
 
 .chrome-window-action-bar {
@@ -82,14 +88,9 @@ body {
   line-height: inherit;
 }
 
-.chrome-window-action-button {
-  height: inherit !important;
-  line-height: inherit !important;
-}
-
 /* Body */
 .chrome-window-body {
-  min-height: 40px;
+  min-height: 30px; /* TAB_HEIGHT */
   overflow: hidden; /* keeps contents within border radius */
   border-width: 1px;
   border-color: dimgrey;
@@ -111,11 +112,16 @@ body {
 
 .chrome-tab {
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.87);
+  /*color: rgba(0, 0, 0, 0.87);*/
+  color: black;
   overflow: hidden;
-  height: 40px;
+  height: 30px; /* TAB_HEIGHT */
   width: 100%;
   background: white;
+}
+.chrome-tab:hover {
+  /*background: #f1f1f1;*/
+  background: #f8f8f8;
 }
 
 .cdk-drag-preview {

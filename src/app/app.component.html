@@ -1,8 +1,7 @@
-<!--<div cdkDropListGroup [ngStyle]="{background: 'url(/assets/damian-markutt-8uXthE3xeBI-unsplash.jpg) no-repeat center center fixed', backgroundSize: 'cover'}">-->
-<!--<div cdkDropListGroup [ngStyle]="{background: 'url(/assets/33833709921_c116245e78_o.jpg) no-repeat center center fixed', backgroundSize: 'cover'}">-->
-<!--<div cdkDropListGroup [ngStyle]="{background: 'url(/assets/hussain-matheen-Q3JQ1ww-oCw-unsplash.jpg) no-repeat center center fixed', backgroundSize: 'cover'}">-->
-<!--<div cdkDropListGroup [ngStyle]="{background: 'url(/assets/32139955053_ee887b64de_6k.jpg) no-repeat center center fixed', backgroundSize: 'cover', height: '10000px'}">-->
-<div cdkDropListGroup [ngStyle]="{background: 'url(/assets/32139955053_ee887b64de_6k.jpg) no-repeat center center fixed', backgroundSize: 'cover', height: '100%'}">
+<div
+  cdkDropListGroup
+  [@simpleFadeAnimation]="'fadeIn'"
+  [ngStyle]="{background: 'url(/assets/32139955053_237df2fcb3_3k.jpg) no-repeat center center fixed', backgroundSize: 'cover', height: '100%'}">
   <mat-grid-list cols="{{cols}}" style="height: 100%" rowHeight="fit" (window:resize)="onResize($event)">
     <mat-grid-tile *ngIf="cols > 1">
       <app-saved-window-list class="full-height-column"></app-saved-window-list>

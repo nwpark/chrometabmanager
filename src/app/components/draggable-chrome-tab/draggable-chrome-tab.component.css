@@ -1,0 +1,12 @@
+.chrome-tab-title {
+  width: 360px;
+  line-height: 30px; /* TAB_HEIGHT */
+  font-size: small;
+}
+
+.favicon-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  padding: 0 10px
+}
