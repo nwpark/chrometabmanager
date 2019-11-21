@@ -21,6 +21,7 @@
       *ngIf="window.type === 'normal'"
       [chromeAPIWindow]="window"
       [layoutState]="windowListState.getWindowLayout(window.id)"
+      [windowCategory]="windowCategory"
       [tabsService]="chromeTabsService">
     </app-chrome-window>
   </div>

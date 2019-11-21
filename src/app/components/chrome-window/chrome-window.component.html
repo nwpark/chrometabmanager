@@ -5,6 +5,13 @@
     [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
     <div class="chrome-window-action-bar">
       <button class="action-button-30"
+              mat-icon-button
+              title="Open window"
+              *ngIf="isSavedWindow()"
+              (click)="openWindow()">
+        <mat-icon class="action-icon-18">open_in_new</mat-icon>
+      </button>
+      <button class="action-button-30"
         mat-icon-button
         [title]="layoutState.hidden ? 'Show window' : 'Minimize window'"
         (click)="toggleDisplay()">

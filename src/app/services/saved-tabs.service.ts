@@ -19,7 +19,7 @@ export class SavedTabsService implements TabsService {
 
   constructor(private chromeTabsService: ChromeTabsService,
               private storageService: StorageService) {
-    this.windowListState = WindowListState.createDefaultInstance();
+    this.windowListState = WindowListUtils.createEmptyWindowListState();
     this.storageService.getSavedWindowsState().then(windowListState => {
       this.setWindowListState(windowListState);
     });
@@ -37,7 +37,7 @@ export class SavedTabsService implements TabsService {
   @modifiesState()
   createNewWindow() {
     const newWindow = {id: uuid(), tabs: []} as ChromeAPIWindowState;
-    const newWindowLayout = WindowListUtils.getDefaultWindowLayoutState(newWindow.id);
+    const newWindowLayout = WindowListUtils.createBasicWindowLayoutState(newWindow.id);
     this.windowListState.unshiftWindow(newWindow, newWindowLayout);
     this.windowListState.setHidden(false);
   }

@@ -2,13 +2,7 @@ import {Injectable} from '@angular/core';
 
 import {MOCK_ACTIVE_WINDOWS} from './mock-windows';
 import {environment} from '../../environments/environment';
-import {
-  ChromeAPITabState,
-  ChromeAPIWindowState,
-  WindowListLayoutState,
-  WindowListState,
-  WindowListUtils
-} from '../types/chrome-a-p-i-window-state';
+import {ChromeAPITabState, ChromeAPIWindowState, WindowListState, WindowListUtils} from '../types/chrome-a-p-i-window-state';
 import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
@@ -39,7 +33,7 @@ export class ChromeTabsService implements TabsService {
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
   constructor(private storageService: StorageService) {
-    this.windowListState = WindowListState.createDefaultInstance();
+    this.windowListState = WindowListUtils.createEmptyWindowListState();
     if (environment.production) {
       ChromeTabsService.CHROME_WINDOW_EVENTS.forEach(event => event.addListener(() => this.refreshState()));
     }
@@ -48,9 +42,8 @@ export class ChromeTabsService implements TabsService {
 
   private refreshState() {
     this.getChromeWindowsFromAPI().then(windowList => {
-      const windowLayoutState = this.storageService.getChromeWindowsLayoutState();
-      const windowListState = new WindowListState(windowList, windowLayoutState);
-      this.setWindowListState(windowListState);
+      const layoutState = this.storageService.getChromeWindowsLayoutState(windowList);
+      this.setWindowListState(new WindowListState(windowList, layoutState));
     });
   }
 
@@ -138,6 +131,11 @@ export class ChromeTabsService implements TabsService {
   @modifiesState()
   setWindowTitle(windowId: any, title: string) {
     this.windowListState.setWindowTitle(windowId, title);
+  }
+
+  createWindow(window: ChromeAPIWindowState) {
+    const tabsUrls = window.tabs.map(tab => tab.url);
+    chrome.windows.create({url: tabsUrls, focused: true});
   }
 
   onStateUpdated() {

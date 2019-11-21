@@ -5,34 +5,10 @@ export class WindowListState {
   chromeAPIWindows: ChromeAPIWindowState[];
   layoutState: WindowListLayoutState;
 
-  static createDefaultInstance(): WindowListState {
-    return new WindowListState(WindowListUtils.getDefaultAPIWindows(), WindowListUtils.getDefaultLayoutState());
-  }
-
   constructor(chromeAPIWindows: ChromeAPIWindowState[],
               layoutState: WindowListLayoutState) {
     this.chromeAPIWindows = chromeAPIWindows;
     this.layoutState = layoutState;
-    this.cleanupLayoutState();
-  }
-
-  // todo: move this logic to storage service
-  cleanupLayoutState() {
-    this.chromeAPIWindows.forEach(window => {
-      if (!this.containsLayoutForWindow(window.id)) {
-        const windowLayoutState = WindowListUtils.getDefaultWindowLayoutState(window.id);
-        this.layoutState.windowStates.push(windowLayoutState);
-      }
-    });
-    this.layoutState.windowStates.filter(windowState => this.containsWindow(windowState.windowId));
-  }
-
-  containsWindow(windowId: any) {
-    return this.chromeAPIWindows.some(window => window.id === windowId);
-  }
-
-  containsLayoutForWindow(windowId: any) {
-    return this.layoutState.windowStates.some(windowState => windowState.windowId === windowId);
   }
 
   getWindow(windowId: any): ChromeAPIWindowState {
@@ -98,16 +74,32 @@ export class WindowListState {
 }
 
 export class WindowListUtils {
-  static getDefaultAPIWindows(): ChromeAPIWindowState[] {
-    return [];
+  static createEmptyWindowListState(): WindowListState {
+    return new WindowListState([], WindowListUtils.createBasicListLayoutState([]));
   }
 
-  static getDefaultLayoutState(): WindowListLayoutState {
-    return {hidden: false, windowStates: []};
+  static createBasicListLayoutState(chromeAPIWindows: ChromeAPIWindowState[]): WindowListLayoutState {
+    const layoutState = {hidden: false, windowStates: []};
+    return WindowListUtils.cleanupLayoutState(layoutState, chromeAPIWindows);
   }
 
-  static getDefaultWindowLayoutState(windowId: number): WindowLayoutState {
+  static createBasicWindowLayoutState(windowId: number): WindowLayoutState {
     return {windowId, title: 'Window', hidden: false};
+  }
+
+  static cleanupLayoutState(layoutState: WindowListLayoutState,
+                            chromeAPIWindows: ChromeAPIWindowState[]): WindowListLayoutState {
+    // Create layout state for each window that doesn't have one.
+    chromeAPIWindows.forEach(window => {
+      if (!layoutState.windowStates.some(windowState => windowState.windowId === window.id)) {
+        layoutState.windowStates.push(WindowListUtils.createBasicWindowLayoutState(window.id));
+      }
+    });
+    // Remove layout states for windows that no longer exist.
+    layoutState.windowStates = layoutState.windowStates.filter(windowState =>
+      chromeAPIWindows.some(window => window.id === windowState.windowId)
+    );
+    return layoutState;
   }
 }
 

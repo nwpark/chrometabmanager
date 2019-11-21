@@ -1,9 +1,10 @@
 import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {ChromeAPITabState, ChromeAPIWindowState, WindowLayoutState} from '../../types/chrome-a-p-i-window-state';
-import {TabListComponentData} from '../../types/tab-list-component-data';
+import {TabListComponentData, WindowCategory} from '../../types/tab-list-component-data';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {TabsService} from '../../interfaces/tabs-service';
 import {FormControl} from '@angular/forms';
+import {ChromeTabsService} from '../../services/chrome-tabs.service';
 
 @Component({
   selector: 'app-chrome-window',
@@ -14,6 +15,7 @@ export class ChromeWindowComponent implements OnInit {
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
   @Input() layoutState: WindowLayoutState;
+  @Input() windowCategory: WindowCategory;
   @Input() tabsService: TabsService;
 
   @ViewChild('titleInput', {static: false}) titleInput: ElementRef;
@@ -22,7 +24,8 @@ export class ChromeWindowComponent implements OnInit {
 
   componentData: TabListComponentData;
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) { }
+  constructor(private changeDetectorRef: ChangeDetectorRef,
+              private chromeTabsService: ChromeTabsService) { }
 
   ngOnInit() {
     this.componentData = {
@@ -65,6 +68,14 @@ export class ChromeWindowComponent implements OnInit {
 
   closeTab(tabId: any) {
     this.tabsService.removeTab(this.chromeAPIWindow.id, tabId);
+  }
+
+  isSavedWindow(): boolean {
+    return this.windowCategory === WindowCategory.Saved;
+  }
+
+  openWindow() {
+    this.chromeTabsService.createWindow(this.chromeAPIWindow);
   }
 
   toggleDisplay() {
