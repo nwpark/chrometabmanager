@@ -7,6 +7,6 @@ export enum WindowCategory {
 
 export class TabListComponentData {
   windowId: number;
-  // category: TabGroupCategory;
+  category: WindowCategory;
   tabsService: TabsService;
 }

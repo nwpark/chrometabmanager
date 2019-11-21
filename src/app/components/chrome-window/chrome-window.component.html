@@ -1,8 +1,7 @@
 <div class="chrome-window-container">
-  <div
-    appMouseOver
-    #windowHeader=app-mouse-over
-    [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
+  <!--Header-->
+  <div [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
+    <!--Action bar-->
     <div class="chrome-window-action-bar">
       <button class="action-button-30"
               mat-icon-button
@@ -28,12 +27,15 @@
 
     <!--Title text-->
     <div class="chrome-window-title">
-      <div *ngIf="!showEditForm">
+      <div
+        appMouseOver
+        #titleTextDiv=app-mouse-over
+        *ngIf="!showEditForm">
         {{getTitle()}}
         <button class="action-button-30"
                 mat-icon-button
                 title="Edit title"
-                *ngIf="windowHeader.mouseOver"
+                *ngIf="titleTextDiv.mouseOver"
                 (click)="editTitle()">
           <mat-icon class="action-icon-18">edit</mat-icon>
         </button>
@@ -57,6 +59,7 @@
     </div>
   </div>
 
+  <!--Body-->
   <div
     cdkDropList
     class="chrome-window-body"

@@ -30,6 +30,7 @@ export class ChromeWindowComponent implements OnInit {
   ngOnInit() {
     this.componentData = {
       windowId: this.chromeAPIWindow.id,
+      category: this.windowCategory,
       tabsService: this.tabsService
     };
     this.titleFormControl = new FormControl(this.layoutState.title);
@@ -90,7 +91,7 @@ export class ChromeWindowComponent implements OnInit {
       this.tabsService.moveTabInWindow(targetTabList.windowId,
         event.previousIndex,
         event.currentIndex);
-    } else if (previousTabList.tabsService === targetTabList.tabsService) {
+    } else if (previousTabList.category === targetTabList.category) {
       this.tabsService.transferTab(previousTabList.windowId,
         targetTabList.windowId,
         event.previousIndex,

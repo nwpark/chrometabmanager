@@ -8,7 +8,7 @@ import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {StorageService} from './storage.service';
 
-declare var chrome;
+// declare var chrome;
 
 @Injectable({
   providedIn: 'root'
@@ -53,7 +53,7 @@ export class ChromeTabsService implements TabsService {
     }
     return new Promise<ChromeAPIWindowState[]>(resolve => {
       chrome.windows.getAll({populate: true}, chromeWindows => {
-        resolve(chromeWindows);
+        resolve(chromeWindows as ChromeAPIWindowState[]);
       });
     });
   }

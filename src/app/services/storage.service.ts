@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {ChromeAPIWindowState, WindowListLayoutState, WindowListState, WindowListUtils} from '../types/chrome-a-p-i-window-state';
 import {environment} from '../../environments/environment';
 import {MOCK_SAVED_WINDOWS} from './mock-windows';
+import {RecentlyClosedTabsService} from './recently-closed-tabs.service';
 
 declare var chrome;
 
@@ -14,18 +15,19 @@ export class StorageService {
   static readonly SAVED_WINDOWS_LAYOUT_STATE = 'savedWindowsLayoutState';
   static readonly ACTIVE_WINDOWS_LAYOUT_STATE = 'activeWindowsLayoutState';
 
-  constructor() { }
+  constructor(c: RecentlyClosedTabsService) { }
 
   getSavedWindowsState(): Promise<WindowListState> {
     if (!environment.production) {
       return Promise.resolve(new WindowListState(MOCK_SAVED_WINDOWS, WindowListUtils.createBasicListLayoutState(MOCK_SAVED_WINDOWS)));
     }
     return new Promise<WindowListState>(resolve => {
-      chrome.storage.sync.get([StorageService.SAVED_WINDOWS, StorageService.SAVED_WINDOWS_LAYOUT_STATE], data => {
+      chrome.storage.local.get([StorageService.SAVED_WINDOWS, StorageService.SAVED_WINDOWS_LAYOUT_STATE], data => {
         if (data.savedWindows) {
           resolve(new WindowListState(data.savedWindows, data.savedWindowsLayoutState));
+        } else {
+          resolve(WindowListUtils.createEmptyWindowListState());
         }
-        resolve(WindowListUtils.createEmptyWindowListState());
       });
     });
   }
@@ -35,7 +37,7 @@ export class StorageService {
       const windowListData = {};
       windowListData[StorageService.SAVED_WINDOWS] = windowListState.chromeAPIWindows;
       windowListData[StorageService.SAVED_WINDOWS_LAYOUT_STATE] = windowListState.layoutState;
-      chrome.storage.sync.set(windowListData);
+      chrome.storage.local.set(windowListData);
     }
   }
 

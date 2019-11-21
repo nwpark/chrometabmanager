@@ -21,6 +21,7 @@
             "aot": false,
             "assets": [
               "src/manifest.json",
+              "src/background-script.js",
               "src/favicon.ico",
               "src/assets"
             ],
