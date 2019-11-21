@@ -8,8 +8,6 @@ import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {StorageService} from './storage.service';
 
-// declare var chrome;
-
 @Injectable({
   providedIn: 'root'
 })

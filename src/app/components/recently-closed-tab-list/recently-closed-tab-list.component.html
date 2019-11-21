@@ -1,0 +1,34 @@
+<div class="column-header">
+  <span style="float: right">
+    <button
+      mat-icon-button
+      [title]="hidden ? 'Show recently closed tabs' : 'Minimize recently closed tabs'"
+      (click)="toggleDisplay()">
+      <mat-icon class="action-icon-24" *ngIf="!hidden">arrow_drop_down</mat-icon>
+      <mat-icon class="action-icon-24" *ngIf="hidden">arrow_right</mat-icon>
+    </button>
+  </span>
+  <span class="column-title-text">
+    Recently Closed
+  </span>
+</div>
+
+<div
+  class="column-scrollable-content"
+  *ngIf="!hidden">
+  <div *ngFor="let closedSession of recentlyClosedSessions">
+    <app-chrome-window
+      *ngIf="closedSession.isWindow"
+      [chromeAPIWindow]="closedSession.window.window"
+      [layoutState]="getLayoutState(closedSession)"
+      [windowCategory]="windowCategory">
+    </app-chrome-window>
+
+    <app-chrome-window
+      *ngIf="!closedSession.isWindow"
+      [chromeAPIWindow]="createFakeAPIWindow(closedSession.tabs)"
+      [layoutState]="getLayoutState(closedSession)"
+      [windowCategory]="windowCategory">
+    </app-chrome-window>
+  </div>
+</div>

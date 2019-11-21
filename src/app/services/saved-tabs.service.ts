@@ -88,7 +88,6 @@ export class SavedTabsService implements TabsService {
   }
 
   onStateUpdated() {
-    console.log(this.windowListState);
     this.windowStateUpdatedSource.next(this.windowListState);
     this.storageService.setSavedWindowsState(this.windowListState);
   }

@@ -1,27 +1,46 @@
 import {Injectable} from '@angular/core';
-import {WindowListState} from '../types/chrome-a-p-i-window-state';
+import {RecentlyClosedSession} from '../types/chrome-a-p-i-window-state';
 import {Subject} from 'rxjs';
 import {environment} from '../../environments/environment';
-
-declare var chrome;
+import {modifiesState} from '../decorators/modifies-state';
+import {StorageService} from './storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecentlyClosedTabsService {
 
-  private windowListState: WindowListState;
+  private recentlyClosedSessions: RecentlyClosedSession[];
 
-  private windowStateUpdatedSource = new Subject<WindowListState>();
-  public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
+  private sessionClosedSource = new Subject<RecentlyClosedSession[]>();
+  public sessionClosed$ = this.sessionClosedSource.asObservable();
 
-  constructor() {
+  constructor(private storageService: StorageService) {
+    this.recentlyClosedSessions = [];
+    this.storageService.getRecentlyClosedSessions().then(recentlyClosedSessions => {
+      this.setRecentlyClosedSessions(recentlyClosedSessions);
+    });
     if (environment.production) {
-      chrome.storage.onChanged.addListener(((changes, areaName) => {
-        if (changes.recentlyClosedWindows) {
-          // changes.recentlyClosedWindows.newValue;
+      // todo: move to storage service
+      chrome.storage.onChanged.addListener((changes, areaName) => {
+        if (changes.recentlyClosedSessions) {
+          this.setRecentlyClosedSessions(changes.recentlyClosedSessions.newValue);
         }
-      }));
+      });
     }
+  }
+
+  getRecentlyClosedSessions(): RecentlyClosedSession[] {
+    return this.recentlyClosedSessions;
+  }
+
+  @modifiesState()
+  private setRecentlyClosedSessions(recentlyClosedSessions: RecentlyClosedSession[]) {
+    this.recentlyClosedSessions = recentlyClosedSessions;
+  }
+
+  onStateUpdated() {
+    this.sessionClosedSource.next(this.recentlyClosedSessions);
+    // this.storageService.setSavedWindowsState(this.recentlyClosedSessions);
   }
 }

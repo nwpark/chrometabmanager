@@ -143,3 +143,19 @@ export interface ChromeAPITabState {
   favIconUrl: string;
   [others: string]: any; // Ignore unused API fields
 }
+
+export interface RecentlyClosedSession {
+  isWindow: boolean;
+  window?: RecentlyClosedWindow;
+  tabs?: RecentlyClosedTab[];
+}
+
+export interface RecentlyClosedWindow {
+  timestamp: Date;
+  window: ChromeAPIWindowState;
+}
+
+export interface RecentlyClosedTab {
+  timestamp: Date;
+  tab: ChromeAPITabState;
+}
