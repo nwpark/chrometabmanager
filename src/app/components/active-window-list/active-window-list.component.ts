@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
-import {WindowListState} from '../../types/chrome-a-p-i-window-state';
-import {WindowCategory} from '../../types/tab-list-component-data';
+import {WindowListState} from '../../types/window-list-state';
+import {WindowCategory} from '../../types/chrome-window-component-data';
 
 @Component({
   selector: 'app-active-window-list',

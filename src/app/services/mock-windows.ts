@@ -1,4 +1,4 @@
-import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-a-p-i-window-state';
+import {ChromeAPIWindowState} from '../types/chrome-api-types';
 
 export const MOCK_WINDOWS = [
   {"alwaysOnTop":false,"focused":false,"height":1056,"id":193,"incognito":false,"left":-1928,"state":"maximized","tabs":[

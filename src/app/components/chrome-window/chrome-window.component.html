@@ -1,12 +1,14 @@
 <div class="chrome-window-container">
   <!--Header-->
-  <div [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
+  <div appMouseOver
+       #headerDiv=app-mouse-over
+       [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
     <!--Action bar-->
     <div class="chrome-window-action-bar">
       <button class="action-button-30"
               mat-icon-button
               title="Open window"
-              *ngIf="isSavedWindow()"
+              *ngIf="shouldShowOpenWindowButton() && headerDiv.mouseOver"
               (click)="openWindow()">
         <mat-icon class="action-icon-18">open_in_new</mat-icon>
       </button>
@@ -35,7 +37,7 @@
         <button class="action-button-30"
                 mat-icon-button
                 title="Edit title"
-                *ngIf="titleTextDiv.mouseOver"
+                *ngIf="isMutable && titleTextDiv.mouseOver"
                 (click)="editTitle()">
           <mat-icon class="action-icon-18">edit</mat-icon>
         </button>
@@ -64,6 +66,8 @@
     cdkDropList
     class="chrome-window-body"
     *ngIf="!layoutState.hidden"
+    [cdkDropListDisabled]="!isMutable"
+    [cdkDropListEnterPredicate]="dropListEnterPredicate"
     [cdkDropListData]="componentData"
     (cdkDropListDropped)="tabDropped($event)">
     <div

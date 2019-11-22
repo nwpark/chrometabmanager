@@ -1,10 +1,12 @@
 import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import {ChromeAPITabState, ChromeAPIWindowState} from './chrome-api-types';
 
 export class WindowListState {
 
   chromeAPIWindows: ChromeAPIWindowState[];
   layoutState: WindowListLayoutState;
 
+  // todo: make constructor private
   constructor(chromeAPIWindows: ChromeAPIWindowState[],
               layoutState: WindowListLayoutState) {
     this.chromeAPIWindows = chromeAPIWindows;
@@ -127,35 +129,3 @@ export interface WindowLayoutState {
   hidden: boolean;
 }
 
-export interface ChromeAPIWindowState {
-  id: any;
-  type: string;
-  tabs: ChromeAPITabState[];
-  [others: string]: any; // Ignore unused API fields
-}
-
-export interface ChromeAPITabState {
-  id: any;
-  index: number;
-  windowId: number;
-  url: string;
-  title: string;
-  favIconUrl: string;
-  [others: string]: any; // Ignore unused API fields
-}
-
-export interface RecentlyClosedSession {
-  isWindow: boolean;
-  window?: RecentlyClosedWindow;
-  tabs?: RecentlyClosedTab[];
-}
-
-export interface RecentlyClosedWindow {
-  timestamp: Date;
-  window: ChromeAPIWindowState;
-}
-
-export interface RecentlyClosedTab {
-  timestamp: Date;
-  tab: ChromeAPITabState;
-}

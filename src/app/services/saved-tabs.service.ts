@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
-import {ChromeAPITabState, ChromeAPIWindowState, WindowListState, WindowListUtils} from '../types/chrome-a-p-i-window-state';
+import {WindowListState, WindowListUtils} from '../types/window-list-state';
 import {Subject} from 'rxjs';
 import {v4 as uuid} from 'uuid';
 import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {StorageService} from './storage.service';
+import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 
 @Injectable({
   providedIn: 'root'

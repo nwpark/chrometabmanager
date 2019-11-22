@@ -2,33 +2,57 @@
   <span style="float: right">
     <button
       mat-icon-button
-      [title]="hidden ? 'Show recently closed tabs' : 'Minimize recently closed tabs'"
+      title="Clear"
+      *ngIf="!sessionListState.layoutState.hidden"
+      (click)="clear()">
+      <mat-icon class="action-icon-24">clear</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      [title]="sessionListState.layoutState.hidden ? 'Show recently closed tabs' : 'Minimize recently closed tabs'"
       (click)="toggleDisplay()">
-      <mat-icon class="action-icon-24" *ngIf="!hidden">arrow_drop_down</mat-icon>
-      <mat-icon class="action-icon-24" *ngIf="hidden">arrow_right</mat-icon>
+      <mat-icon class="action-icon-24" *ngIf="!sessionListState.layoutState.hidden">arrow_drop_down</mat-icon>
+      <mat-icon class="action-icon-24" *ngIf="sessionListState.layoutState.hidden">arrow_right</mat-icon>
     </button>
   </span>
   <span class="column-title-text">
-    Recently Closed
+    {{title}}
   </span>
 </div>
 
 <div
   class="column-scrollable-content"
-  *ngIf="!hidden">
-  <div *ngFor="let closedSession of recentlyClosedSessions">
+  *ngIf="!sessionListState.layoutState.hidden">
+<!--  <h2 style="text-align: center">Today</h2>-->
+<!--  <div style="width: 400px; height: 30px; line-height: 30px; text-align: center; margin-bottom: 20px;-->
+<!--              background-color: #EBE9EB80; font-weight: bold; font-size: large;-->
+<!--              border: 1px solid dimgrey; border-radius: 4px">-->
+<!--    Today-->
+<!--  </div>-->
+
+  <div *ngFor="let session of sessionListState.recentlyClosedSessions">
     <app-chrome-window
-      *ngIf="closedSession.isWindow"
-      [chromeAPIWindow]="closedSession.window.window"
-      [layoutState]="getLayoutState(closedSession)"
-      [windowCategory]="windowCategory">
+      *ngIf="session.isWindow"
+      [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
+      [layoutState]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id)"
+      [windowCategory]="windowCategory"
+      [tabsService]="recentlyClosedTabsService">
     </app-chrome-window>
 
-    <app-chrome-window
-      *ngIf="!closedSession.isWindow"
-      [chromeAPIWindow]="createFakeAPIWindow(closedSession.tabs)"
-      [layoutState]="getLayoutState(closedSession)"
-      [windowCategory]="windowCategory">
-    </app-chrome-window>
+    <div class="chrome-window-container"
+         *ngIf="!session.isWindow">
+      <div class="chrome-window-body" style="border-style: solid; border-radius: inherit">
+        <div
+          class="draggable-chrome-tab"
+          *ngFor="let closedTab of session.closedTabs">
+          <app-draggable-chrome-tab
+            class="chrome-tab"
+            [chromeTab]="closedTab.chromeAPITab"
+            (draggableChromeTabClose)="closeTab(closedTab.chromeAPITab.id)"
+            (draggableChromeTabClick)="setTabActive(closedTab.chromeAPITab)">
+          </app-draggable-chrome-tab>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

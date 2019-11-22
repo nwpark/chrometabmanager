@@ -1,7 +1,8 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {ChromeAPITabState, RecentlyClosedSession, RecentlyClosedTab, WindowLayoutState} from '../../types/chrome-a-p-i-window-state';
 import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
-import {WindowCategory} from '../../types/tab-list-component-data';
+import {WindowCategory} from '../../types/chrome-window-component-data';
+import {ChromeAPITabState} from '../../types/chrome-api-types';
+import {SessionListState} from '../../types/closed-session-list-state';
 
 @Component({
   selector: 'app-recently-closed-tab-list',
@@ -10,37 +11,42 @@ import {WindowCategory} from '../../types/tab-list-component-data';
 })
 export class RecentlyClosedTabListComponent implements OnInit {
 
-  recentlyClosedSessions: RecentlyClosedSession[];
-  windowCategory = WindowCategory.Active;
-  hidden = false;
+  sessionListState: SessionListState;
+  windowCategory = WindowCategory.RecentlyClosed;
 
   constructor(public recentlyClosedTabsService: RecentlyClosedTabsService,
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
-    this.recentlyClosedSessions = this.recentlyClosedTabsService.getRecentlyClosedSessions() as RecentlyClosedSession[];
-    this.recentlyClosedTabsService.sessionClosed$.subscribe(recentlyClosedSessions => {
-      this.recentlyClosedSessions = recentlyClosedSessions as RecentlyClosedSession[];
+    this.sessionListState = this.recentlyClosedTabsService.getSessionListState();
+    this.recentlyClosedTabsService.sessionStateUpdated$.subscribe(sessionListState => {
+      this.sessionListState = sessionListState;
       this.changeDetectorRef.detectChanges();
     });
   }
 
+  get title(): string {
+    let title = 'Recently Closed';
+    if (this.sessionListState.recentlyClosedSessions.length > 0
+      && this.sessionListState.layoutState.hidden) {
+      title += ` (${this.sessionListState.recentlyClosedSessions.length})`;
+    }
+    return title;
+  }
+
   toggleDisplay() {
-    this.hidden = !this.hidden;
+    this.recentlyClosedTabsService.toggleSessionListDisplay();
   }
 
-  createFakeAPIWindow(tabs: RecentlyClosedTab[]) {
-    console.log(tabs.map(tab => tab.tab));
-    return {id: 0, type: 'normal', tabs: tabs.map(tab => tab.tab)};
+  setTabActive(chromeTab: ChromeAPITabState) {
+    this.recentlyClosedTabsService.setTabActive(null, chromeTab);
   }
 
-  getLayoutState(closedSession: RecentlyClosedSession): WindowLayoutState {
-    // const date = new Date(closedSession.window.timestamp);
-    const date = new Date();
-    return {
-      title: `${date.toTimeString().substring(0, 5)}`,
-      windowId: 0,
-      hidden: false
-    };
+  closeTab(tabId: any) {
+    this.recentlyClosedTabsService.removeDetachedTab(tabId);
+  }
+
+  clear() {
+    this.recentlyClosedTabsService.clear();
   }
 }

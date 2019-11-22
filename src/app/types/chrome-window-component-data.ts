@@ -6,7 +6,7 @@ export enum WindowCategory {
   RecentlyClosed
 }
 
-export class TabListComponentData {
+export class ChromeWindowComponentData {
   windowId: number;
   category: WindowCategory;
   tabsService: TabsService;

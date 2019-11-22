@@ -1,10 +1,11 @@
 import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {ChromeAPITabState, ChromeAPIWindowState, WindowLayoutState} from '../../types/chrome-a-p-i-window-state';
-import {TabListComponentData, WindowCategory} from '../../types/tab-list-component-data';
-import {CdkDragDrop} from '@angular/cdk/drag-drop';
+import {WindowLayoutState} from '../../types/window-list-state';
+import {ChromeWindowComponentData, WindowCategory} from '../../types/chrome-window-component-data';
+import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {TabsService} from '../../interfaces/tabs-service';
 import {FormControl} from '@angular/forms';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
+import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
 
 @Component({
   selector: 'app-chrome-window',
@@ -22,7 +23,7 @@ export class ChromeWindowComponent implements OnInit {
   titleFormControl: FormControl;
   showEditForm = false;
 
-  componentData: TabListComponentData;
+  componentData: ChromeWindowComponentData;
 
   constructor(private changeDetectorRef: ChangeDetectorRef,
               private chromeTabsService: ChromeTabsService) { }
@@ -71,8 +72,8 @@ export class ChromeWindowComponent implements OnInit {
     this.tabsService.removeTab(this.chromeAPIWindow.id, tabId);
   }
 
-  isSavedWindow(): boolean {
-    return this.windowCategory === WindowCategory.Saved;
+  shouldShowOpenWindowButton(): boolean {
+    return this.windowCategory !== WindowCategory.Active;
   }
 
   openWindow() {
@@ -83,9 +84,17 @@ export class ChromeWindowComponent implements OnInit {
     this.tabsService.toggleWindowDisplay(this.chromeAPIWindow.id);
   }
 
-  tabDropped(event: CdkDragDrop<TabListComponentData>) {
-    const targetTabList: TabListComponentData = event.container.data;
-    const previousTabList: TabListComponentData = event.previousContainer.data;
+  get isMutable(): boolean {
+    return this.windowCategory !== WindowCategory.RecentlyClosed;
+  }
+
+  dropListEnterPredicate(drag: CdkDrag, drop: CdkDropList<ChromeWindowComponentData>): boolean {
+    return drop.data.category !== WindowCategory.RecentlyClosed;
+  }
+
+  tabDropped(event: CdkDragDrop<ChromeWindowComponentData>) {
+    const targetTabList: ChromeWindowComponentData = event.container.data;
+    const previousTabList: ChromeWindowComponentData = event.previousContainer.data;
 
     if (event.previousContainer === event.container) {
       this.tabsService.moveTabInWindow(targetTabList.windowId,

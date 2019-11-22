@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 
 import {MOCK_ACTIVE_WINDOWS} from './mock-windows';
 import {environment} from '../../environments/environment';
-import {ChromeAPITabState, ChromeAPIWindowState, WindowListState, WindowListUtils} from '../types/chrome-a-p-i-window-state';
+import {ChromeAPITabState, ChromeAPIWindowState, WindowListState, WindowListUtils} from '../types/window-list-state';
 import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';

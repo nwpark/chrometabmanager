@@ -1,8 +1,6 @@
-import {ChromeAPITabState, WindowListState} from '../types/chrome-a-p-i-window-state';
+import {ChromeAPITabState} from '../types/window-list-state';
 
 export interface TabsService {
-
-  getWindowListState(): WindowListState;
 
   moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number);
 
@@ -13,8 +11,6 @@ export interface TabsService {
   removeTab(windowId: any, tabId: any);
 
   removeWindow(windowId: any);
-
-  toggleWindowListDisplay();
 
   toggleWindowDisplay(windowId: any);
 

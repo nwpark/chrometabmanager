@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {SavedTabsService} from '../../services/saved-tabs.service';
-import {ChromeAPIWindowState, WindowListState} from '../../types/chrome-a-p-i-window-state';
-import {WindowCategory} from '../../types/tab-list-component-data';
+import {WindowListState} from '../../types/window-list-state';
+import {WindowCategory} from '../../types/chrome-window-component-data';
 
 @Component({
   selector: 'app-saved-window-list',

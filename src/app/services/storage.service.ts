@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {
   ChromeAPIWindowState,
-  RecentlyClosedSession,
   WindowListLayoutState,
   WindowListState,
   WindowListUtils
-} from '../types/chrome-a-p-i-window-state';
+} from '../types/window-list-state';
 import {environment} from '../../environments/environment';
 import {MOCK_SAVED_WINDOWS} from './mock-windows';
+import {RecentlyClosedSession, RecentlyClosedWindow, SessionListState, SessionListUtils} from '../types/closed-session-list-state';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +18,7 @@ export class StorageService {
   static readonly SAVED_WINDOWS_LAYOUT_STATE = 'savedWindowsLayoutState';
   static readonly ACTIVE_WINDOWS_LAYOUT_STATE = 'activeWindowsLayoutState';
   static readonly RECENTLY_CLOSED_SESSIONS = 'recentlyClosedSessions';
-  static readonly RECENTLY_CLOSED_WINDOWS = 'recentlyClosedWindows';
-  static readonly RECENTLY_CLOSED_WINDOWS_LAYOUT_STATE = 'recentlyClosedWindowsLayoutState';
+  static readonly RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE = 'recentlyClosedSessionsLayoutState';
 
   constructor() { }
 
@@ -29,6 +28,7 @@ export class StorageService {
     }
     return new Promise<WindowListState>(resolve => {
       chrome.storage.local.get([StorageService.SAVED_WINDOWS, StorageService.SAVED_WINDOWS_LAYOUT_STATE], data => {
+        // todo: check for layout state
         if (data[StorageService.SAVED_WINDOWS]) {
           resolve(new WindowListState(data[StorageService.SAVED_WINDOWS], data[StorageService.SAVED_WINDOWS_LAYOUT_STATE]));
         } else {
@@ -47,26 +47,6 @@ export class StorageService {
     }
   }
 
-  getRecentlyClosedWindowsState(): Promise<WindowListState> {
-    return this.getWindowListState(StorageService.RECENTLY_CLOSED_WINDOWS, StorageService.RECENTLY_CLOSED_WINDOWS_LAYOUT_STATE);
-  }
-
-  setRecentlyClosedWindowsState(windowListState: WindowListState) {
-    this.setWindowListState(windowListState, StorageService.RECENTLY_CLOSED_WINDOWS, StorageService.RECENTLY_CLOSED_WINDOWS_LAYOUT_STATE);
-  }
-
-  getRecentlyClosedSessions(): Promise<RecentlyClosedSession[]> {
-    return new Promise<RecentlyClosedSession[]>(resolve => {
-      chrome.storage.local.get(StorageService.RECENTLY_CLOSED_SESSIONS, data => {
-        if (data[StorageService.RECENTLY_CLOSED_SESSIONS]) {
-          resolve(data[StorageService.RECENTLY_CLOSED_SESSIONS]);
-        } else {
-          resolve([]);
-        }
-      });
-    });
-  }
-
   getChromeWindowsLayoutState(chromeAPIWindows: ChromeAPIWindowState[]): WindowListLayoutState {
     const layoutState = JSON.parse(localStorage.getItem(StorageService.ACTIVE_WINDOWS_LAYOUT_STATE));
     if (layoutState) {
@@ -79,31 +59,38 @@ export class StorageService {
     localStorage.setItem(StorageService.ACTIVE_WINDOWS_LAYOUT_STATE, JSON.stringify(windowListLayoutState));
   }
 
-  getWindowListState(chromeAPIWindowsKey: string, layoutStateKey: string): Promise<WindowListState> {
-    if (!environment.production) {
-      return Promise.resolve(new WindowListState(MOCK_SAVED_WINDOWS, WindowListUtils.createBasicListLayoutState(MOCK_SAVED_WINDOWS)));
-    }
-    return new Promise<WindowListState>(resolve => {
-      chrome.storage.local.get([chromeAPIWindowsKey, layoutStateKey], data => {
-        if (data[chromeAPIWindowsKey] && data[layoutStateKey]) {
-          // todo: cleanup layoutstate
-          resolve(new WindowListState(data[chromeAPIWindowsKey], data[layoutStateKey]));
-        } else if (data[chromeAPIWindowsKey]) {
-          const layoutState = WindowListUtils.createBasicListLayoutState(data[chromeAPIWindowsKey]);
-          resolve(new WindowListState(data[chromeAPIWindowsKey], layoutState));
+  getRecentlyClosedSessionsState(): Promise<SessionListState> {
+    return new Promise<SessionListState>(resolve => {
+      chrome.storage.local.get([StorageService.RECENTLY_CLOSED_SESSIONS, StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE], data => {
+        const recentlyClosedSessions = data[StorageService.RECENTLY_CLOSED_SESSIONS] as RecentlyClosedSession[];
+        const layoutState = data[StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE] as WindowListLayoutState;
+        if (recentlyClosedSessions) {
+          const closedWindows = SessionListUtils.getClosedWindows(recentlyClosedSessions);
+          if (layoutState) {
+            resolve(new SessionListState(recentlyClosedSessions, SessionListUtils.cleanupLayoutState(layoutState, closedWindows)));
+          } else {
+            resolve(new SessionListState(recentlyClosedSessions, SessionListUtils.createBasicListLayoutState(closedWindows)));
+          }
         } else {
-          resolve(WindowListUtils.createEmptyWindowListState());
+          resolve(new SessionListState([], WindowListUtils.createEmptyListLayoutState()));
         }
       });
     });
   }
 
-  setWindowListState(windowListState: WindowListState, chromeAPIWindowsKey: string, layoutStateKey: string) {
-    if (environment.production) {
-      const windowListData = {};
-      windowListData[chromeAPIWindowsKey] = windowListState.chromeAPIWindows;
-      windowListData[layoutStateKey] = windowListState.layoutState;
-      chrome.storage.local.set(windowListData);
-    }
+  setRecentlyClosedSessionsState(sessionListState: SessionListState) {
+    const writeData = {};
+    writeData[StorageService.RECENTLY_CLOSED_SESSIONS] = sessionListState.recentlyClosedSessions;
+    writeData[StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE] = sessionListState.layoutState;
+    chrome.storage.local.set(writeData);
+  }
+
+  addClosedSessionListener(callback: (closedSessions: RecentlyClosedSession[]) => void) {
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (changes.recentlyClosedSessions) {
+        const closedSessions = changes.recentlyClosedSessions.newValue as RecentlyClosedSession[];
+        callback(closedSessions);
+      }
+    });
   }
 }
