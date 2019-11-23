@@ -1,17 +1,11 @@
 import {Injectable} from '@angular/core';
-import {
-  ChromeAPITabState,
-  WindowListLayoutState,
-  WindowListState,
-  WindowListUtils
-} from '../types/window-list-state';
 import {Subject} from 'rxjs';
-import {environment} from '../../environments/environment';
 import {modifiesState} from '../decorators/modifies-state';
 import {StorageService} from './storage.service';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {RecentlyClosedSession, SessionListState, SessionListUtils} from '../types/closed-session-list-state';
+import {ChromeAPITabState} from '../types/chrome-api-types';
 
 @Injectable({
   providedIn: 'root'

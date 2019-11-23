@@ -26,12 +26,11 @@ export class RecentlyClosedTabListComponent implements OnInit {
   }
 
   get title(): string {
-    let title = 'Recently Closed';
     if (this.sessionListState.recentlyClosedSessions.length > 0
       && this.sessionListState.layoutState.hidden) {
-      title += ` (${this.sessionListState.recentlyClosedSessions.length})`;
+      return `Recently Closed (${this.sessionListState.recentlyClosedSessions.length})`;
     }
-    return title;
+    return 'Recently Closed';
   }
 
   toggleDisplay() {

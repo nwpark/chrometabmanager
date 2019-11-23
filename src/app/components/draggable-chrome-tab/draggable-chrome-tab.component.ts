@@ -29,4 +29,9 @@ export class DraggableChromeTabComponent implements OnInit {
     this.changeDetectorRef.detectChanges();
   }
 
+  get title() {
+    return this.chromeTab.title.length > 0
+      ? this.chromeTab.title
+      : this.chromeTab.url;
+  }
 }

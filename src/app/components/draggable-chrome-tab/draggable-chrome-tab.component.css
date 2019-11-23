@@ -2,6 +2,9 @@
   width: 360px;
   line-height: 30px; /* TAB_HEIGHT */
   font-size: small;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .favicon-icon {

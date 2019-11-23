@@ -2,11 +2,12 @@ import {Injectable} from '@angular/core';
 
 import {MOCK_ACTIVE_WINDOWS} from './mock-windows';
 import {environment} from '../../environments/environment';
-import {ChromeAPITabState, ChromeAPIWindowState, WindowListState, WindowListUtils} from '../types/window-list-state';
+import {WindowListState, WindowListUtils} from '../types/window-list-state';
 import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {StorageService} from './storage.service';
+import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +34,7 @@ export class ChromeTabsService implements TabsService {
   constructor(private storageService: StorageService) {
     this.windowListState = WindowListUtils.createEmptyWindowListState();
     if (environment.production) {
+      // todo: listen for message from background instead
       ChromeTabsService.CHROME_WINDOW_EVENTS.forEach(event => event.addListener(() => this.refreshState()));
     }
     this.refreshState();

@@ -67,7 +67,7 @@
     class="chrome-window-body"
     *ngIf="!layoutState.hidden"
     [cdkDropListDisabled]="!isMutable"
-    [cdkDropListEnterPredicate]="dropListEnterPredicate"
+    [cdkDropListEnterPredicate]="dropTargetIsMutable"
     [cdkDropListData]="componentData"
     (cdkDropListDropped)="tabDropped($event)">
     <div

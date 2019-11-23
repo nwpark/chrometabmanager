@@ -1,4 +1,4 @@
-import {ChromeAPITabState} from '../types/window-list-state';
+import {ChromeAPITabState} from '../types/chrome-api-types';
 
 export interface TabsService {
 

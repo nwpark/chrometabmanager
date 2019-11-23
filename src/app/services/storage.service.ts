@@ -1,13 +1,9 @@
 import {Injectable} from '@angular/core';
-import {
-  ChromeAPIWindowState,
-  WindowListLayoutState,
-  WindowListState,
-  WindowListUtils
-} from '../types/window-list-state';
+import {WindowListLayoutState, WindowListState, WindowListUtils} from '../types/window-list-state';
 import {environment} from '../../environments/environment';
 import {MOCK_SAVED_WINDOWS} from './mock-windows';
-import {RecentlyClosedSession, RecentlyClosedWindow, SessionListState, SessionListUtils} from '../types/closed-session-list-state';
+import {RecentlyClosedSession, SessionListState, SessionListUtils} from '../types/closed-session-list-state';
+import {ChromeAPIWindowState} from '../types/chrome-api-types';
 
 @Injectable({
   providedIn: 'root'

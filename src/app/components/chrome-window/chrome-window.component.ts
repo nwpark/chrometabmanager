@@ -88,7 +88,7 @@ export class ChromeWindowComponent implements OnInit {
     return this.windowCategory !== WindowCategory.RecentlyClosed;
   }
 
-  dropListEnterPredicate(drag: CdkDrag, drop: CdkDropList<ChromeWindowComponentData>): boolean {
+  dropTargetIsMutable(drag: CdkDrag, drop: CdkDropList<ChromeWindowComponentData>): boolean {
     return drop.data.category !== WindowCategory.RecentlyClosed;
   }
 
