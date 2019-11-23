@@ -14,17 +14,7 @@ import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types
 })
 export class ChromeTabsService implements TabsService {
 
-  private static readonly CHROME_WINDOW_EVENTS = environment.production && [
-    chrome.tabs.onCreated,
-    chrome.tabs.onUpdated,
-    chrome.tabs.onMoved,
-    chrome.tabs.onDetached,
-    chrome.tabs.onAttached,
-    chrome.tabs.onRemoved,
-    chrome.tabs.onReplaced,
-    chrome.windows.onCreated,
-    chrome.windows.onRemoved
-  ];
+  static readonly ACTIVE_WINDOWS_UPDATED = 'activeWindowsUpdated';
 
   private windowListState: WindowListState;
 
@@ -33,11 +23,12 @@ export class ChromeTabsService implements TabsService {
 
   constructor(private storageService: StorageService) {
     this.windowListState = WindowListUtils.createEmptyWindowListState();
-    if (environment.production) {
-      // todo: listen for message from background instead
-      ChromeTabsService.CHROME_WINDOW_EVENTS.forEach(event => event.addListener(() => this.refreshState()));
-    }
     this.refreshState();
+    chrome.runtime.onMessage.addListener(message => {
+      if (message[ChromeTabsService.ACTIVE_WINDOWS_UPDATED]) {
+        this.refreshState();
+      }
+    });
   }
 
   private refreshState() {

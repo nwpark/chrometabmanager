@@ -11,8 +11,9 @@ const CHROME_WINDOW_UPDATE_EVENTS = [
 const RECENTLY_CLOSED_SESSIONS = 'recentlyClosedSessions';
 const RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE = 'recentlyClosedSessionsLayoutState';
 const ACTIVE_CHROME_WINDOWS = 'activeChromeWindows';
+const ACTIVE_WINDOWS_UPDATED = 'activeWindowsUpdated';
 const IGNORED_TAB_URLS = ['chrome://newtab/'];
-const WINDOW_UPDATE_TIMEOUT_MILLIS = 50; // throttle window updates
+const WINDOW_UPDATE_TIMEOUT_MILLIS = 100; // throttle window updates
 
 let chromeWindowUpdateQueued = false;
 // todo: replace with async-lock
@@ -46,6 +47,9 @@ function updateStoredWindowState() {
       chrome.storage.local.set(writeData);
     }
   });
+  let message = {};
+  message[ACTIVE_WINDOWS_UPDATED] = true;
+  chrome.runtime.sendMessage(message);
 }
 
 chrome.windows.onRemoved.addListener((windowId) => {
