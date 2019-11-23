@@ -6,6 +6,7 @@ import {TabsService} from '../../interfaces/tabs-service';
 import {FormControl} from '@angular/forms';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
+import {SavedTabsService} from '../../services/saved-tabs.service';
 
 @Component({
   selector: 'app-chrome-window',
@@ -26,7 +27,8 @@ export class ChromeWindowComponent implements OnInit {
   componentData: ChromeWindowComponentData;
 
   constructor(private changeDetectorRef: ChangeDetectorRef,
-              private chromeTabsService: ChromeTabsService) { }
+              private chromeTabsService: ChromeTabsService,
+              private savedTabsService: SavedTabsService) { }
 
   ngOnInit() {
     this.componentData = {
@@ -70,6 +72,14 @@ export class ChromeWindowComponent implements OnInit {
 
   closeTab(tabId: any) {
     this.tabsService.removeTab(this.chromeAPIWindow.id, tabId);
+  }
+
+  shouldShowSaveWindowButton(): boolean {
+    return this.windowCategory === WindowCategory.Active;
+  }
+
+  saveWindow() {
+    this.savedTabsService.saveWindow(this.chromeAPIWindow);
   }
 
   shouldShowOpenWindowButton(): boolean {

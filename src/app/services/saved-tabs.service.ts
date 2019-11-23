@@ -88,6 +88,12 @@ export class SavedTabsService implements TabsService {
     this.chromeTabsService.updateCurrentTabUrl(chromeTab);
   }
 
+  @modifiesState()
+  saveWindow(window: ChromeAPIWindowState) {
+    const layoutState = WindowListUtils.createBasicWindowLayoutState(window.id);
+    this.windowListState.addWindow(window, layoutState);
+  }
+
   onStateUpdated() {
     this.windowStateUpdatedSource.next(this.windowListState);
     this.storageService.setSavedWindowsState(this.windowListState);

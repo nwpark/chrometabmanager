@@ -76,7 +76,7 @@ export class StorageService {
     chrome.storage.local.set(writeData);
   }
 
-  addClosedSessionListener(callback: (sessionListState: SessionListState) => void) {
+  addClosedSessionStateListener(callback: (sessionListState: SessionListState) => void) {
     chrome.storage.onChanged.addListener((changes, areaName) => {
       if (changes[StorageService.RECENTLY_CLOSED_SESSIONS]) {
         this.getRecentlyClosedSessionsState()

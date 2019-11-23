@@ -23,7 +23,7 @@ export class RecentlyClosedTabsService implements TabsService {
     this.storageService.getRecentlyClosedSessionsState().then(sessionListState => {
       this.setSessionListState(sessionListState);
     });
-    this.storageService.addClosedSessionListener(sessionListState => {
+    this.storageService.addClosedSessionStateListener(sessionListState => {
       this.setSessionListState(sessionListState);
     });
   }

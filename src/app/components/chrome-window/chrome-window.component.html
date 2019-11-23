@@ -7,6 +7,13 @@
     <div class="chrome-window-action-bar">
       <button class="action-button-30"
               mat-icon-button
+              title="Save window"
+              *ngIf="shouldShowSaveWindowButton() && headerDiv.mouseOver"
+              (click)="saveWindow()">
+        <mat-icon class="action-icon-18">save_alt</mat-icon>
+      </button>
+      <button class="action-button-30"
+              mat-icon-button
               title="Open window"
               *ngIf="shouldShowOpenWindowButton() && headerDiv.mouseOver"
               (click)="openWindow()">

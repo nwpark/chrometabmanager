@@ -56,6 +56,11 @@ export class WindowListState {
     this.layoutState.windowStates = this.layoutState.windowStates.filter(windowState => windowState.windowId !== windowId);
   }
 
+  addWindow(window: ChromeAPIWindowState, layoutState: WindowLayoutState) {
+    this.chromeAPIWindows.push(window);
+    this.layoutState.windowStates.push(layoutState);
+  }
+
   toggleDisplay() {
     this.layoutState.hidden = !this.layoutState.hidden;
   }
