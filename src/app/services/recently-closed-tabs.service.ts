@@ -4,7 +4,7 @@ import {modifiesState} from '../decorators/modifies-state';
 import {StorageService} from './storage.service';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
-import {RecentlyClosedSession, SessionListState, SessionListUtils} from '../types/closed-session-list-state';
+import {SessionListState} from '../types/closed-session-list-state';
 import {ChromeAPITabState} from '../types/chrome-api-types';
 
 @Injectable({
@@ -22,10 +22,9 @@ export class RecentlyClosedTabsService implements TabsService {
     this.sessionListState = SessionListState.empty();
     this.storageService.getRecentlyClosedSessionsState().then(sessionListState => {
       this.setSessionListState(sessionListState);
-
-      this.storageService.addClosedSessionListener(closedSessions => {
-        this.setClosedSessions(closedSessions);
-      });
+    });
+    this.storageService.addClosedSessionListener(sessionListState => {
+      this.setSessionListState(sessionListState);
     });
   }
 
@@ -36,13 +35,6 @@ export class RecentlyClosedTabsService implements TabsService {
   @modifiesState()
   private setSessionListState(sessionListState: SessionListState) {
     this.sessionListState = sessionListState;
-  }
-
-  @modifiesState()
-  private setClosedSessions(closedSessions: RecentlyClosedSession[]) {
-    const closedWindows = SessionListUtils.getClosedWindows(closedSessions);
-    SessionListUtils.cleanupLayoutState(this.sessionListState.layoutState, closedWindows);
-    this.sessionListState.recentlyClosedSessions = closedSessions;
   }
 
   @modifiesState()

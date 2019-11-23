@@ -9,6 +9,7 @@ const CHROME_WINDOW_UPDATE_EVENTS = [
 ];
 
 const RECENTLY_CLOSED_SESSIONS = 'recentlyClosedSessions';
+const RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE = 'recentlyClosedSessionsLayoutState';
 const ACTIVE_CHROME_WINDOWS = 'activeChromeWindows';
 const IGNORED_TAB_URLS = ['chrome://newtab/'];
 const WINDOW_UPDATE_TIMEOUT_MILLIS = 50; // throttle window updates
@@ -35,7 +36,7 @@ function updateStoredWindowStateThrottled() {
 }
 
 function updateStoredWindowState() {
-  console.log('storeCurrentChromeWindowState invoked');
+  console.log('updateStoredWindowState invoked');
   chrome.windows.getAll({populate: true}, chromeWindows => {
     if (!chromeWindowStorageLock) {
       console.log('storing windows:');
@@ -53,8 +54,7 @@ chrome.windows.onRemoved.addListener((windowId) => {
     console.log(`window removed: ${windowId}`);
     console.log(data);
     let chromeWindow = data[ACTIVE_CHROME_WINDOWS].find(chromeWindow => chromeWindow.id === windowId);
-    let recentlyClosedWindow = {timestamp: Date.now(), chromeAPIWindow: chromeWindow};
-    storeRecentlyClosedWindow(recentlyClosedWindow);
+    storeRecentlyClosedWindow(chromeWindow);
     chromeWindowStorageLock = false;
     updateStoredWindowState();
   });
@@ -76,11 +76,17 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
   }
 });
 
-function storeRecentlyClosedWindow(recentlyClosedWindow) {
-  // todo: create a layout state here
-  chrome.storage.local.get(keyWithDefault(RECENTLY_CLOSED_SESSIONS, []), (data) => {
-    let recentlyClosedSession = {isWindow: true, closedWindow: recentlyClosedWindow};
-    data[RECENTLY_CLOSED_SESSIONS].unshift(recentlyClosedSession);
+function storeRecentlyClosedWindow(chromeWindow) {
+  let storageKey = {};
+  storageKey[RECENTLY_CLOSED_SESSIONS] = [];
+  storageKey[RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE] = {hidden: true, windowStates: []};
+  chrome.storage.local.get(storageKey, data => {
+    let closedWindow = {timestamp: Date.now(), chromeAPIWindow: chromeWindow};
+    let closedSession = {isWindow: true, closedWindow: closedWindow};
+    // let windowLayoutState = {windowId: chromeWindow.id, title: null, hidden: true};
+    let windowLayoutState = {windowId: chromeWindow.id, title: `${new Date().toTimeString().substring(0, 5)}`, hidden: true};
+    data[RECENTLY_CLOSED_SESSIONS].unshift(closedSession);
+    data[RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE].windowStates.unshift(windowLayoutState);
     chrome.storage.local.set(data);
   });
 }

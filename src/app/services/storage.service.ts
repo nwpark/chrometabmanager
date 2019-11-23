@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {WindowListLayoutState, WindowListState, WindowListUtils} from '../types/window-list-state';
 import {environment} from '../../environments/environment';
 import {MOCK_SAVED_WINDOWS} from './mock-windows';
-import {RecentlyClosedSession, SessionListState, SessionListUtils} from '../types/closed-session-list-state';
+import {RecentlyClosedSession, SessionListState} from '../types/closed-session-list-state';
 import {ChromeAPIWindowState} from '../types/chrome-api-types';
 
 @Injectable({
@@ -60,13 +60,8 @@ export class StorageService {
       chrome.storage.local.get([StorageService.RECENTLY_CLOSED_SESSIONS, StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE], data => {
         const recentlyClosedSessions = data[StorageService.RECENTLY_CLOSED_SESSIONS] as RecentlyClosedSession[];
         const layoutState = data[StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE] as WindowListLayoutState;
-        if (recentlyClosedSessions) {
-          const closedWindows = SessionListUtils.getClosedWindows(recentlyClosedSessions);
-          if (layoutState) {
-            resolve(new SessionListState(recentlyClosedSessions, SessionListUtils.cleanupLayoutState(layoutState, closedWindows)));
-          } else {
-            resolve(new SessionListState(recentlyClosedSessions, SessionListUtils.createBasicListLayoutState(closedWindows)));
-          }
+        if (recentlyClosedSessions && layoutState) {
+          resolve(new SessionListState(recentlyClosedSessions, layoutState));
         } else {
           resolve(new SessionListState([], WindowListUtils.createEmptyListLayoutState()));
         }
@@ -81,11 +76,11 @@ export class StorageService {
     chrome.storage.local.set(writeData);
   }
 
-  addClosedSessionListener(callback: (closedSessions: RecentlyClosedSession[]) => void) {
+  addClosedSessionListener(callback: (sessionListState: SessionListState) => void) {
     chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (changes.recentlyClosedSessions) {
-        const closedSessions = changes.recentlyClosedSessions.newValue as RecentlyClosedSession[];
-        callback(closedSessions);
+      if (changes[StorageService.RECENTLY_CLOSED_SESSIONS]) {
+        this.getRecentlyClosedSessionsState()
+          .then(sessionListState => callback(sessionListState));
       }
     });
   }
