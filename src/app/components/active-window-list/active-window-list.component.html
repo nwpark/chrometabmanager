@@ -16,7 +16,7 @@
 <div
   class="column-scrollable-content"
   *ngIf="!windowListState.layoutState.hidden">
-  <div *ngFor="let window of windowListState.chromeAPIWindows">
+  <div *ngFor="let window of windowListState.chromeWindows">
     <app-chrome-window
       *ngIf="window.type === 'normal'"
       [chromeAPIWindow]="window"

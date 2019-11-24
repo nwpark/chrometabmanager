@@ -7,7 +7,7 @@ export enum WindowCategory {
 }
 
 export class ChromeWindowComponentData {
-  windowId: number;
+  windowId: number | string;
   category: WindowCategory;
   tabsService: TabsService;
 }

@@ -76,7 +76,7 @@ export interface RecentlyClosedSession {
 
 export interface RecentlyClosedWindow {
   timestamp: number;
-  chromeAPIWindow: ChromeAPIWindowState;
+  chromeAPIWindow: ChromeAPIWindowState; // todo: convert to saved window
 }
 
 export interface RecentlyClosedTab {

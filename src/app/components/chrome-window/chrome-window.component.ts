@@ -5,7 +5,7 @@ import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {TabsService} from '../../interfaces/tabs-service';
 import {FormControl} from '@angular/forms';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
-import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
+import {ChromeAPITabState, ChromeWindowState} from '../../types/chrome-api-types';
 import {SavedTabsService} from '../../services/saved-tabs.service';
 
 @Component({
@@ -15,7 +15,7 @@ import {SavedTabsService} from '../../services/saved-tabs.service';
 })
 export class ChromeWindowComponent implements OnInit {
 
-  @Input() chromeAPIWindow: ChromeAPIWindowState;
+  @Input() chromeAPIWindow: ChromeWindowState;
   @Input() layoutState: WindowLayoutState;
   @Input() windowCategory: WindowCategory;
   @Input() tabsService: TabsService;

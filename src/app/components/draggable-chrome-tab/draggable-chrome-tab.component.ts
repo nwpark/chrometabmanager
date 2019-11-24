@@ -10,8 +10,8 @@ export class DraggableChromeTabComponent implements OnInit {
 
   @Input() chromeTab: ChromeAPITabState;
   @Input() timestamp: number;
-  @Output() draggableChromeTabClose = new EventEmitter<any>();
-  @Output() draggableChromeTabClick = new EventEmitter<any>();
+  @Output() draggableChromeTabClose = new EventEmitter();
+  @Output() draggableChromeTabClick = new EventEmitter();
 
   mouseOver: boolean;
 
