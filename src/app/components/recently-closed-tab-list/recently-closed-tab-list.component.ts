@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
 import {WindowCategory} from '../../types/chrome-window-component-data';
-import {ActiveTabState, ChromeAPITabState, SavedTabState} from '../../types/chrome-api-types';
+import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {SessionListState, SessionListUtils} from '../../types/closed-session-list-state';
 
 @Component({
@@ -38,11 +38,11 @@ export class RecentlyClosedTabListComponent implements OnInit {
     this.recentlyClosedTabsService.toggleSessionListDisplay();
   }
 
-  setTabActive(chromeTab: ActiveTabState) {
+  setTabActive(chromeTab: ChromeAPITabState) {
     this.recentlyClosedTabsService.setTabActive(null, chromeTab);
   }
 
-  closeTab(tabId: number) {
+  closeTab(tabId: any) {
     this.recentlyClosedTabsService.removeDetachedTab(tabId);
   }
 

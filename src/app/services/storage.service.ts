@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {SavedWindowListState, WindowListLayoutState, WindowListState, WindowListUtils} from '../types/window-list-state';
+import {WindowListLayoutState, WindowListState, WindowListUtils} from '../types/window-list-state';
 import {environment} from '../../environments/environment';
 import {MOCK_SAVED_WINDOWS} from './mock-windows';
 import {RecentlyClosedSession, SessionListState} from '../types/closed-session-list-state';
-import {ActiveWindowState} from '../types/chrome-api-types';
+import {ChromeAPIWindowState} from '../types/chrome-api-types';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +18,11 @@ export class StorageService {
 
   constructor() { }
 
-  getSavedWindowsState(): Promise<SavedWindowListState> {
-    return new Promise<SavedWindowListState>(resolve => {
+  getSavedWindowsState(): Promise<WindowListState> {
+    if (!environment.production) {
+      return Promise.resolve(new WindowListState(MOCK_SAVED_WINDOWS, WindowListUtils.createBasicListLayoutState(MOCK_SAVED_WINDOWS)));
+    }
+    return new Promise<WindowListState>(resolve => {
       chrome.storage.local.get([StorageService.SAVED_WINDOWS, StorageService.SAVED_WINDOWS_LAYOUT_STATE], data => {
         // todo: check for layout state
         if (data[StorageService.SAVED_WINDOWS]) {
@@ -31,14 +34,16 @@ export class StorageService {
     });
   }
 
-  setSavedWindowsState(windowListState: SavedWindowListState) {
-    const windowListData = {};
-    windowListData[StorageService.SAVED_WINDOWS] = windowListState.chromeAPIWindows;
-    windowListData[StorageService.SAVED_WINDOWS_LAYOUT_STATE] = windowListState.layoutState;
-    chrome.storage.local.set(windowListData);
+  setSavedWindowsState(windowListState: WindowListState) {
+    if (environment.production) {
+      const windowListData = {};
+      windowListData[StorageService.SAVED_WINDOWS] = windowListState.chromeAPIWindows;
+      windowListData[StorageService.SAVED_WINDOWS_LAYOUT_STATE] = windowListState.layoutState;
+      chrome.storage.local.set(windowListData);
+    }
   }
 
-  getChromeWindowsLayoutState(chromeAPIWindows: ActiveWindowState[]): WindowListLayoutState {
+  getChromeWindowsLayoutState(chromeAPIWindows: ChromeAPIWindowState[]): WindowListLayoutState {
     const layoutState = JSON.parse(localStorage.getItem(StorageService.ACTIVE_WINDOWS_LAYOUT_STATE));
     if (layoutState) {
       return WindowListUtils.cleanupLayoutState(layoutState, chromeAPIWindows);

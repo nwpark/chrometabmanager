@@ -1,66 +1,62 @@
 import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {ChromeAPITabState, ChromeAPIWindowState} from './chrome-api-types';
 
-export type ActiveWindowListState = WindowListState<number>;
-export type SavedWindowListState = WindowListState<string>;
+export class WindowListState {
 
-export class WindowListState<T> {
-
-  chromeAPIWindows: ChromeAPIWindowState<T>[];
+  chromeAPIWindows: ChromeAPIWindowState[];
   layoutState: WindowListLayoutState;
 
   // todo: make constructor private
-  constructor(chromeAPIWindows: ChromeAPIWindowState<T>[],
+  constructor(chromeAPIWindows: ChromeAPIWindowState[],
               layoutState: WindowListLayoutState) {
     this.chromeAPIWindows = chromeAPIWindows;
     this.layoutState = layoutState;
   }
 
-  // todo: make all windowId types T
-  getWindow(windowId: T): ChromeAPIWindowState<T> {
+  getWindow(windowId: any): ChromeAPIWindowState {
     return this.chromeAPIWindows.find(window => window.id === windowId);
   }
 
-  getWindowLayout(windowId: T): WindowLayoutState {
+  getWindowLayout(windowId: any): WindowLayoutState {
     return this.layoutState.windowStates.find(windowState => windowState.windowId === windowId);
   }
 
-  getTabId(windowId: T, tabIndex: number): T {
+  getTabId(windowId: any, tabIndex: number): number {
     return this.getWindow(windowId).tabs[tabIndex].id;
   }
 
-  insertTab(windowId: T, index: number, chromeTab: ChromeAPITabState<T>) {
+  insertTab(windowId: any, index: number, chromeTab: ChromeAPITabState) {
     const chromeWindow = this.getWindow(windowId);
     chromeWindow.tabs.splice(index, 0, chromeTab);
   }
 
-  removeTab(windowId: T, tabId: T) {
+  removeTab(windowId: any, tabId: any) {
     const chromeWindow = this.getWindow(windowId);
     chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);
   }
 
-  moveTabInWindow(windowId: T, sourceIndex: number, targetIndex: number) {
+  moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
     const targetWindow = this.getWindow(windowId);
     moveItemInArray(targetWindow.tabs, sourceIndex, targetIndex);
   }
 
-  transferTab(sourceWindowId: T, targetWindowId: T, sourceIndex: number, targetIndex: number) {
+  transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) {
     const previousWindow = this.getWindow(sourceWindowId);
     const targetWindow = this.getWindow(targetWindowId);
     transferArrayItem(previousWindow.tabs, targetWindow.tabs, sourceIndex, targetIndex);
   }
 
-  unshiftWindow(window: ChromeAPIWindowState<T>, windowLayoutState: WindowLayoutState) {
+  unshiftWindow(window: ChromeAPIWindowState, windowLayoutState: WindowLayoutState) {
     this.chromeAPIWindows.unshift(window);
     this.layoutState.windowStates.unshift(windowLayoutState);
   }
 
-  removeWindow(windowId: T) {
+  removeWindow(windowId: any) {
     this.chromeAPIWindows = this.chromeAPIWindows.filter(window => window.id !== windowId);
     this.layoutState.windowStates = this.layoutState.windowStates.filter(windowState => windowState.windowId !== windowId);
   }
 
-  addWindow(window: ChromeAPIWindowState<T>, layoutState: WindowLayoutState) {
+  addWindow(window: ChromeAPIWindowState, layoutState: WindowLayoutState) {
     this.chromeAPIWindows.push(window);
     this.layoutState.windowStates.push(layoutState);
   }
@@ -69,7 +65,7 @@ export class WindowListState<T> {
     this.layoutState.hidden = !this.layoutState.hidden;
   }
 
-  toggleWindowDisplay(windowId: T) {
+  toggleWindowDisplay(windowId: any) {
     const windowLayout = this.getWindowLayout(windowId);
     windowLayout.hidden = !windowLayout.hidden;
   }
@@ -78,14 +74,14 @@ export class WindowListState<T> {
     this.layoutState.hidden = hidden;
   }
 
-  setWindowTitle(windowId: T, title: string) {
+  setWindowTitle(windowId: any, title: string) {
     const windowLayout = this.getWindowLayout(windowId);
     windowLayout.title = title;
   }
 }
 
 export class WindowListUtils {
-  static createEmptyWindowListState<T>(): WindowListState<T> {
+  static createEmptyWindowListState(): WindowListState {
     return new WindowListState([], WindowListUtils.createEmptyListLayoutState());
   }
 
@@ -93,21 +89,21 @@ export class WindowListUtils {
     return {hidden: false, windowStates: []};
   }
 
-  static createBasicListLayoutState<T>(chromeAPIWindows: ChromeAPIWindowState<T>[]): WindowListLayoutState {
+  static createBasicListLayoutState(chromeAPIWindows: ChromeAPIWindowState[]): WindowListLayoutState {
     const layoutState = WindowListUtils.createEmptyListLayoutState();
     WindowListUtils.fillMissingLayoutStates(layoutState, chromeAPIWindows);
     return layoutState;
   }
 
-  static cleanupLayoutState<T>(layoutState: WindowListLayoutState,
-                               chromeAPIWindows: ChromeAPIWindowState<T>[]): WindowListLayoutState {
+  static cleanupLayoutState(layoutState: WindowListLayoutState,
+                            chromeAPIWindows: ChromeAPIWindowState[]): WindowListLayoutState {
     WindowListUtils.fillMissingLayoutStates(layoutState, chromeAPIWindows);
     WindowListUtils.removeRedundantLayoutStates(layoutState, chromeAPIWindows);
     return layoutState;
   }
 
-  static fillMissingLayoutStates<T>(layoutState: WindowListLayoutState,
-                                    chromeAPIWindows: ChromeAPIWindowState<T>[]) {
+  static fillMissingLayoutStates(layoutState: WindowListLayoutState,
+                                 chromeAPIWindows: ChromeAPIWindowState[]) {
     chromeAPIWindows.forEach(window => {
       if (!layoutState.windowStates.some(windowState => windowState.windowId === window.id)) {
         layoutState.windowStates.push(WindowListUtils.createBasicWindowLayoutState(window.id));
@@ -115,14 +111,14 @@ export class WindowListUtils {
     });
   }
 
-  static removeRedundantLayoutStates<T>(layoutState: WindowListLayoutState,
-                                        chromeAPIWindows: ChromeAPIWindowState<T>[]) {
+  static removeRedundantLayoutStates(layoutState: WindowListLayoutState,
+                                     chromeAPIWindows: ChromeAPIWindowState[]) {
     layoutState.windowStates = layoutState.windowStates.filter(windowState =>
       chromeAPIWindows.some(window => window.id === windowState.windowId)
     );
   }
 
-  static createBasicWindowLayoutState<T>(windowId: T): WindowLayoutState {
+  static createBasicWindowLayoutState(windowId: number): WindowLayoutState {
     return {windowId, title: 'Window', hidden: false};
   }
 }
@@ -134,6 +130,7 @@ export interface WindowListLayoutState {
 
 export interface WindowLayoutState {
   title: string;
-  windowId: any; // todo
+  windowId: any;
   hidden: boolean;
 }
+

@@ -16,23 +16,23 @@ export class SessionListState {
     this.layoutState = layoutState;
   }
 
-  getWindow(windowId: number): ChromeAPIWindowState<number> {
+  getWindow(windowId: any): ChromeAPIWindowState {
     return this.recentlyClosedSessions
       .filter(session => session.isWindow)
       .map(session => session.closedWindow.chromeAPIWindow)
       .find(window => window.id === windowId);
   }
 
-  getWindowLayout(windowId: number): WindowLayoutState {
+  getWindowLayout(windowId: any): WindowLayoutState {
     return this.layoutState.windowStates.find(windowState => windowState.windowId === windowId);
   }
 
-  removeTab(windowId: number, tabId: number) {
+  removeTab(windowId: any, tabId: any) {
     const chromeWindow = this.getWindow(windowId);
     chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);
   }
 
-  removeDetachedTab(tabId: number) {
+  removeDetachedTab(tabId: any) {
     this.recentlyClosedSessions
       .filter(session => !session.isWindow)
       .forEach(session => {
@@ -41,7 +41,7 @@ export class SessionListState {
       });
   }
 
-  removeWindow(windowId: number) {
+  removeWindow(windowId: any) {
     this.recentlyClosedSessions = this.recentlyClosedSessions
       .filter(session => !session.isWindow || session.closedWindow.chromeAPIWindow.id !== windowId);
     this.layoutState.windowStates = this.layoutState.windowStates
@@ -52,7 +52,7 @@ export class SessionListState {
     this.layoutState.hidden = !this.layoutState.hidden;
   }
 
-  toggleWindowDisplay(windowId: number) {
+  toggleWindowDisplay(windowId: any) {
     const windowLayout = this.getWindowLayout(windowId);
     windowLayout.hidden = !windowLayout.hidden;
   }
@@ -76,10 +76,10 @@ export interface RecentlyClosedSession {
 
 export interface RecentlyClosedWindow {
   timestamp: number;
-  chromeAPIWindow: ChromeAPIWindowState<number>; // todo: convert to string
+  chromeAPIWindow: ChromeAPIWindowState;
 }
 
 export interface RecentlyClosedTab {
   timestamp: number;
-  chromeAPITab: ChromeAPITabState<number>; // todo: convert to string
+  chromeAPITab: ChromeAPITabState;
 }

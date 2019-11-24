@@ -1,21 +1,24 @@
 import {Injectable} from '@angular/core';
-import {ActiveWindowListState, WindowListState, WindowListUtils} from '../types/window-list-state';
+
+import {MOCK_ACTIVE_WINDOWS} from './mock-windows';
+import {environment} from '../../environments/environment';
+import {WindowListState, WindowListUtils} from '../types/window-list-state';
 import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {StorageService} from './storage.service';
-import {ActiveTabState, ActiveWindowState, ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
+import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ChromeTabsService implements TabsService<number> {
+export class ChromeTabsService implements TabsService {
 
   static readonly ACTIVE_WINDOWS_UPDATED = 'activeWindowsUpdated';
 
-  private windowListState: ActiveWindowListState;
+  private windowListState: WindowListState;
 
-  private windowStateUpdatedSource = new Subject<ActiveWindowListState>();
+  private windowStateUpdatedSource = new Subject<WindowListState>();
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
   constructor(private storageService: StorageService) {
@@ -35,58 +38,68 @@ export class ChromeTabsService implements TabsService<number> {
     });
   }
 
-  private getChromeWindowsFromAPI(): Promise<ActiveWindowState[]> {
-    return new Promise<ActiveWindowState[]>(resolve => {
+  private getChromeWindowsFromAPI(): Promise<ChromeAPIWindowState[]> {
+    if (!environment.production) {
+      return Promise.resolve(MOCK_ACTIVE_WINDOWS);
+    }
+    return new Promise<ChromeAPIWindowState[]>(resolve => {
       chrome.windows.getAll({populate: true}, chromeWindows => {
-        resolve(chromeWindows as ActiveWindowState[]);
+        resolve(chromeWindows as ChromeAPIWindowState[]);
       });
     });
   }
 
-  getWindowListState(): ActiveWindowListState {
+  getWindowListState(): WindowListState {
     return this.windowListState;
   }
 
   @modifiesState()
-  private setWindowListState(windowListState: ActiveWindowListState) {
+  private setWindowListState(windowListState: WindowListState) {
     this.windowListState = windowListState;
   }
 
   @modifiesState()
-  moveTabInWindow(windowId: number, sourceIndex: number, targetIndex: number) {
+  moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
     const tabId = this.windowListState.getTabId(windowId, sourceIndex);
     this.windowListState.moveTabInWindow(windowId, sourceIndex, targetIndex);
-    chrome.tabs.move(tabId, {index: targetIndex});
+    if (environment.production) {
+      chrome.tabs.move(tabId, {index: targetIndex});
+    }
   }
 
   @modifiesState()
-  transferTab(sourceWindowId: number, targetWindowId: number, sourceIndex: number, targetIndex: number) {
+  transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) {
     const tabId = this.windowListState.getTabId(sourceWindowId, sourceIndex);
     this.windowListState.transferTab(sourceWindowId, targetWindowId, sourceIndex, targetIndex);
-    chrome.tabs.move(tabId, {windowId: targetWindowId, index: targetIndex});
+    if (environment.production) {
+      chrome.tabs.move(tabId, {windowId: targetWindowId, index: targetIndex});
+    }
   }
 
   @modifiesState()
-  createTab(windowId: number, tabIndex: number, chromeTab: ChromeAPITabState<any>) {
-    // todo: sort out <any>
+  createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
     this.windowListState.insertTab(windowId, tabIndex, chromeTab);
-    chrome.tabs.create({windowId, index: tabIndex, url: chromeTab.url, active: false});
+    if (environment.production) {
+      chrome.tabs.create({windowId, index: tabIndex, url: chromeTab.url, active: false});
+    }
   }
 
-  updateCurrentTabUrl(url: string) {
+  updateCurrentTabUrl(chromeTab: ChromeAPITabState) {
     chrome.tabs.getCurrent(currentTab => {
-      chrome.tabs.update(currentTab.id, {url});
+      chrome.tabs.update(currentTab.id, {url: chromeTab.url});
     });
   }
 
   @modifiesState()
-  removeTab(windowId: number, tabId: number) {
+  removeTab(windowId: any, tabId: any) {
     this.windowListState.removeTab(windowId, tabId);
-    chrome.tabs.remove(tabId);
+    if (environment.production) {
+      chrome.tabs.remove(tabId);
+    }
   }
 
   @modifiesState()
-  removeWindow(windowId: number) {
+  removeWindow(windowId: any) {
     this.windowListState.removeWindow(windowId);
     chrome.windows.remove(windowId);
   }
@@ -97,22 +110,22 @@ export class ChromeTabsService implements TabsService<number> {
   }
 
   @modifiesState()
-  toggleWindowDisplay(windowId: number) {
+  toggleWindowDisplay(windowId: any) {
     this.windowListState.toggleWindowDisplay(windowId);
   }
 
-  setTabActive(windowId: number, chromeTab: ActiveTabState) {
+  setTabActive(windowId: any, chromeTab: ChromeAPITabState) {
     chrome.tabs.update(chromeTab.id, {active: true});
     chrome.windows.update(windowId, {focused: true});
   }
 
   @modifiesState()
-  setWindowTitle(windowId: number, title: string) {
+  setWindowTitle(windowId: any, title: string) {
     this.windowListState.setWindowTitle(windowId, title);
   }
 
-  createWindow(chromeWindow: ChromeAPIWindowState<any>) {
-    const tabsUrls = chromeWindow.tabs.map(tab => tab.url);
+  createWindow(window: ChromeAPIWindowState) {
+    const tabsUrls = window.tabs.map(tab => tab.url);
     chrome.windows.create({url: tabsUrls, focused: true});
   }
 

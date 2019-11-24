@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
-import {ActiveWindowListState, WindowListState} from '../../types/window-list-state';
+import {WindowListState} from '../../types/window-list-state';
 import {WindowCategory} from '../../types/chrome-window-component-data';
 
 @Component({
@@ -10,7 +10,7 @@ import {WindowCategory} from '../../types/chrome-window-component-data';
 })
 export class ActiveWindowListComponent implements OnInit {
 
-  windowListState: ActiveWindowListState;
+  windowListState: WindowListState;
   windowCategory = WindowCategory.Active;
 
   constructor(public chromeTabsService: ChromeTabsService,
