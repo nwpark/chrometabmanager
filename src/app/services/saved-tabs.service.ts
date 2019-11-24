@@ -6,7 +6,7 @@ import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {StorageService} from './storage.service';
-import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
+import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from '../types/chrome-api-types';
 
 @Injectable({
   providedIn: 'root'
@@ -55,9 +55,8 @@ export class SavedTabsService implements TabsService {
 
   @modifiesState()
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
-    const clonedTab = {...chromeTab};
-    clonedTab.id = uuid();
-    this.windowListState.insertTab(windowId, tabIndex, clonedTab);
+    const savedTab = WindowStateUtils.cloneTabWithNewId(chromeTab);
+    this.windowListState.insertTab(windowId, tabIndex, savedTab);
   }
 
   @modifiesState()
@@ -90,11 +89,10 @@ export class SavedTabsService implements TabsService {
   }
 
   @modifiesState()
-  saveWindow(window: ChromeAPIWindowState) {
-    const clonedWindow = {...window};
-    clonedWindow.id = uuid();
-    const layoutState = WindowListUtils.createBasicWindowLayoutState(clonedWindow.id);
-    this.windowListState.addWindow(clonedWindow, layoutState);
+  saveWindow(chromeWindow: ChromeAPIWindowState) {
+    const savedWindow = WindowStateUtils.cloneWindowWithNewId(chromeWindow);
+    const layoutState = WindowListUtils.createBasicWindowLayoutState(savedWindow.id);
+    this.windowListState.addWindow(savedWindow, layoutState);
   }
 
   onStateUpdated() {
