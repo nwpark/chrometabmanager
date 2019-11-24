@@ -9,6 +9,7 @@ import {ChromeAPITabState} from '../../types/chrome-api-types';
 export class DraggableChromeTabComponent implements OnInit {
 
   @Input() chromeTab: ChromeAPITabState;
+  @Input() timestamp: number;
   @Output() draggableChromeTabClose = new EventEmitter<any>();
   @Output() draggableChromeTabClick = new EventEmitter<any>();
 
@@ -33,5 +34,9 @@ export class DraggableChromeTabComponent implements OnInit {
     return this.chromeTab.title.length > 0
       ? this.chromeTab.title
       : this.chromeTab.url;
+  }
+
+  get timestampString(): string {
+    return new Date(this.timestamp).toTimeString().substring(0, 5);
   }
 }

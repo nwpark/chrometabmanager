@@ -1,8 +1,9 @@
 {
   "manifest_version": 2,
   "name": "Chrome Tab Manager",
-  "version": "0.2.0",
+  "version": "0.2.1",
 
+  "description": "A simple, powerful tab manager.",
   "icons": { "128": "assets/icon128.png" },
 
   "background": {

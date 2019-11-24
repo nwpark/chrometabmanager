@@ -13,3 +13,16 @@
   vertical-align: middle;
   padding: 0 10px
 }
+
+.vertical-divider {
+  display: inline-block;
+  height: 20px; /* TAB_HEIGHT */
+  border-left: 1px solid #ccc;
+  transform: translateY(5px);
+}
+
+.timestamp {
+  padding-left: 10px;
+  padding-right: 10px;
+  display: inline-block;
+}

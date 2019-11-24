@@ -58,6 +58,16 @@ export class SessionListState {
   }
 }
 
+export class SessionListUtils {
+  static getTabCount(sessionListState: SessionListState): number {
+    return sessionListState.recentlyClosedSessions
+      .map(session => session.isWindow
+        ? session.closedWindow.chromeAPIWindow.tabs.length
+        : session.closedTabs.length)
+      .reduce((a, b) => a + b, 0);
+  }
+}
+
 export interface RecentlyClosedSession {
   isWindow: boolean;
   closedWindow?: RecentlyClosedWindow;
@@ -65,11 +75,11 @@ export interface RecentlyClosedSession {
 }
 
 export interface RecentlyClosedWindow {
-  timestamp: Date;
+  timestamp: number;
   chromeAPIWindow: ChromeAPIWindowState;
 }
 
 export interface RecentlyClosedTab {
-  timestamp: Date;
+  timestamp: number;
   chromeAPITab: ChromeAPITabState;
 }

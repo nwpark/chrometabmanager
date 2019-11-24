@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
 import {WindowCategory} from '../../types/chrome-window-component-data';
 import {ChromeAPITabState} from '../../types/chrome-api-types';
-import {SessionListState} from '../../types/closed-session-list-state';
+import {SessionListState, SessionListUtils} from '../../types/closed-session-list-state';
 
 @Component({
   selector: 'app-recently-closed-tab-list',
@@ -27,8 +27,9 @@ export class RecentlyClosedTabListComponent implements OnInit {
 
   get title(): string {
     if (this.sessionListState.recentlyClosedSessions.length > 0
-      && this.sessionListState.layoutState.hidden) {
-      return `Recently Closed (${this.sessionListState.recentlyClosedSessions.length})`;
+          && this.sessionListState.layoutState.hidden) {
+      const tabCount = SessionListUtils.getTabCount(this.sessionListState);
+      return `Recently Closed (${tabCount})`;
     }
     return 'Recently Closed';
   }

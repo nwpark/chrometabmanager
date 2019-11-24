@@ -55,8 +55,9 @@ export class SavedTabsService implements TabsService {
 
   @modifiesState()
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
-    // todo: modify the tab id first
-    this.windowListState.insertTab(windowId, tabIndex, chromeTab);
+    const clonedTab = {...chromeTab};
+    clonedTab.id = uuid();
+    this.windowListState.insertTab(windowId, tabIndex, clonedTab);
   }
 
   @modifiesState()
@@ -90,8 +91,10 @@ export class SavedTabsService implements TabsService {
 
   @modifiesState()
   saveWindow(window: ChromeAPIWindowState) {
-    const layoutState = WindowListUtils.createBasicWindowLayoutState(window.id);
-    this.windowListState.addWindow(window, layoutState);
+    const clonedWindow = {...window};
+    clonedWindow.id = uuid();
+    const layoutState = WindowListUtils.createBasicWindowLayoutState(clonedWindow.id);
+    this.windowListState.addWindow(clonedWindow, layoutState);
   }
 
   onStateUpdated() {

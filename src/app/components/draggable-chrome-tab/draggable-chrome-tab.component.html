@@ -9,6 +9,10 @@
 <div
   class="chrome-tab-title"
   (click)="draggableChromeTabClick.emit()">
+  <ng-container *ngIf="timestamp">
+    <div class="timestamp">{{timestampString}}</div>
+    <div class="vertical-divider"></div>
+  </ng-container>
   <img class="favicon-icon" src="{{chromeTab.favIconUrl}}" *ngIf="chromeTab.favIconUrl">
   <img class="favicon-icon" src="assets/chrome-favicon.png" *ngIf="!chromeTab.favIconUrl">
   {{title}}
