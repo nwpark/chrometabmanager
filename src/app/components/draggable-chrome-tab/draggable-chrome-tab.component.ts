@@ -6,12 +6,12 @@ import {ChromeAPITabState} from '../../types/chrome-api-types';
   templateUrl: './draggable-chrome-tab.component.html',
   styleUrls: ['./draggable-chrome-tab.component.css']
 })
-export class DraggableChromeTabComponent implements OnInit {
+export class DraggableChromeTabComponent<T> implements OnInit {
 
-  @Input() chromeTab: ChromeAPITabState;
+  @Input() chromeTab: ChromeAPITabState<T>;
   @Input() timestamp: number;
-  @Output() draggableChromeTabClose = new EventEmitter<any>();
-  @Output() draggableChromeTabClick = new EventEmitter<any>();
+  @Output() draggableChromeTabClose = new EventEmitter();
+  @Output() draggableChromeTabClick = new EventEmitter();
 
   mouseOver: boolean;
 
@@ -20,6 +20,7 @@ export class DraggableChromeTabComponent implements OnInit {
   ngOnInit() {
   }
 
+  // todo: use mouseover directive
   @HostListener('mouseenter') onMouseEnter() {
     this.mouseOver = true;
     this.changeDetectorRef.detectChanges();

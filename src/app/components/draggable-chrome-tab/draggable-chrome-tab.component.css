@@ -18,7 +18,7 @@
   display: inline-block;
   height: 20px; /* TAB_HEIGHT */
   border-left: 1px solid #ccc;
-  transform: translateY(5px);
+  transform: translateY(5px); /* TAB_HEIGHT */
 }
 
 .timestamp {

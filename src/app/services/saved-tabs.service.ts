@@ -1,21 +1,28 @@
 import {Injectable} from '@angular/core';
-import {WindowListState, WindowListUtils} from '../types/window-list-state';
+import {SavedWindowListState, WindowListUtils} from '../types/window-list-state';
 import {Subject} from 'rxjs';
 import {v4 as uuid} from 'uuid';
 import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {StorageService} from './storage.service';
-import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
+import {
+  ActiveWindowState,
+  ChromeAPITabState,
+  ChromeAPIWindowState,
+  SavedTabState,
+  SavedWindowState,
+  WindowStateUtils
+} from '../types/chrome-api-types';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SavedTabsService implements TabsService {
+export class SavedTabsService implements TabsService<string> {
 
-  private windowListState: WindowListState;
+  private windowListState: SavedWindowListState;
 
-  private windowStateUpdatedSource = new Subject<WindowListState>();
+  private windowStateUpdatedSource = new Subject<SavedWindowListState>();
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
   constructor(private chromeTabsService: ChromeTabsService,
@@ -26,47 +33,46 @@ export class SavedTabsService implements TabsService {
     });
   }
 
-  getWindowListState(): WindowListState {
+  getWindowListState(): SavedWindowListState {
     return this.windowListState;
   }
 
   @modifiesState()
-  private setWindowListState(windowListState: WindowListState) {
+  private setWindowListState(windowListState: SavedWindowListState) {
     this.windowListState = windowListState;
   }
 
   @modifiesState()
   createNewWindow() {
-    const newWindow = {id: uuid(), tabs: []} as ChromeAPIWindowState;
+    const newWindow = {id: uuid(), tabs: []} as SavedWindowState;
     const newWindowLayout = WindowListUtils.createBasicWindowLayoutState(newWindow.id);
     this.windowListState.unshiftWindow(newWindow, newWindowLayout);
     this.windowListState.setHidden(false);
   }
 
   @modifiesState()
-  moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
+  moveTabInWindow(windowId: string, sourceIndex: number, targetIndex: number) {
     this.windowListState.moveTabInWindow(windowId, sourceIndex, targetIndex);
   }
 
   @modifiesState()
-  transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) {
+  transferTab(sourceWindowId: string, targetWindowId: string, sourceIndex: number, targetIndex: number) {
     this.windowListState.transferTab(sourceWindowId, targetWindowId, sourceIndex, targetIndex);
   }
 
   @modifiesState()
-  createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
-    const clonedTab = {...chromeTab};
-    clonedTab.id = uuid();
-    this.windowListState.insertTab(windowId, tabIndex, clonedTab);
+  createTab(windowId: string, tabIndex: number, chromeTab: ChromeAPITabState<any>) {
+    const savedTab = WindowStateUtils.convertToSavedTab(chromeTab, windowId);
+    this.windowListState.insertTab(windowId, tabIndex, savedTab);
   }
 
   @modifiesState()
-  removeTab(windowId: any, tabId: any) {
+  removeTab(windowId: string, tabId: string) {
     this.windowListState.removeTab(windowId, tabId);
   }
 
   @modifiesState()
-  removeWindow(windowId: any) {
+  removeWindow(windowId: string) {
     this.windowListState.removeWindow(windowId);
   }
 
@@ -76,25 +82,24 @@ export class SavedTabsService implements TabsService {
   }
 
   @modifiesState()
-  toggleWindowDisplay(windowId: any) {
+  toggleWindowDisplay(windowId: string) {
     this.windowListState.toggleWindowDisplay(windowId);
   }
 
   @modifiesState()
-  setWindowTitle(windowId: any, title: string) {
+  setWindowTitle(windowId: string, title: string) {
     this.windowListState.setWindowTitle(windowId, title);
   }
 
-  setTabActive(windowId: any, chromeTab: ChromeAPITabState) {
-    this.chromeTabsService.updateCurrentTabUrl(chromeTab);
+  setTabActive(windowId: string, chromeTab: SavedTabState) {
+    this.chromeTabsService.updateCurrentTabUrl(chromeTab.url);
   }
 
   @modifiesState()
-  saveWindow(window: ChromeAPIWindowState) {
-    const clonedWindow = {...window};
-    clonedWindow.id = uuid();
-    const layoutState = WindowListUtils.createBasicWindowLayoutState(clonedWindow.id);
-    this.windowListState.addWindow(clonedWindow, layoutState);
+  saveWindow(chromeWindow: ChromeAPIWindowState<any>) {
+    const savedWindow = WindowStateUtils.convertToSavedWindow(chromeWindow);
+    const layoutState = WindowListUtils.createBasicWindowLayoutState(savedWindow.id);
+    this.windowListState.addWindow(savedWindow, layoutState);
   }
 
   onStateUpdated() {

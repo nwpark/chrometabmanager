@@ -5,12 +5,12 @@ import {StorageService} from './storage.service';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {SessionListState} from '../types/closed-session-list-state';
-import {ChromeAPITabState} from '../types/chrome-api-types';
+import {ActiveTabState, ChromeAPITabState, SavedTabState} from '../types/chrome-api-types';
 
 @Injectable({
   providedIn: 'root'
 })
-export class RecentlyClosedTabsService implements TabsService {
+export class RecentlyClosedTabsService implements TabsService<number> {
 
   private sessionListState: SessionListState;
 
@@ -43,27 +43,27 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   @modifiesState()
-  removeTab(windowId: any, tabId: any) {
+  removeTab(windowId: number, tabId: number) {
     this.sessionListState.removeTab(windowId, tabId);
   }
 
   @modifiesState()
-  removeDetachedTab(tabId: any) {
+  removeDetachedTab(tabId: number) {
     this.sessionListState.removeDetachedTab(tabId);
   }
 
   @modifiesState()
-  removeWindow(windowId: any) {
+  removeWindow(windowId: number) {
     this.sessionListState.removeWindow(windowId);
   }
 
   @modifiesState()
-  toggleWindowDisplay(windowId: any) {
+  toggleWindowDisplay(windowId: number) {
     this.sessionListState.toggleWindowDisplay(windowId);
   }
 
-  setTabActive(windowId: any, chromeTab: ChromeAPITabState) {
-    this.chromeTabsService.updateCurrentTabUrl(chromeTab);
+  setTabActive(windowId: number, chromeTab: ActiveTabState) {
+    this.chromeTabsService.updateCurrentTabUrl(chromeTab.url);
   }
 
   @modifiesState()
@@ -72,13 +72,13 @@ export class RecentlyClosedTabsService implements TabsService {
     this.sessionListState.layoutState.windowStates = [];
   }
 
-  moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) { /* do nothing */ }
+  moveTabInWindow(windowId: number, sourceIndex: number, targetIndex: number) { /* Recently closed tabs are immutable */ }
 
-  transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) { /* do nothing */ }
+  transferTab(sourceWindowId: number, targetWindowId: number, sourceIndex: number, targetIndex: number) { /* Recently closed tabs are immutable */ }
 
-  createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) { /* do nothing */ }
+  createTab(windowId: number, tabIndex: number, chromeTab: ChromeAPITabState<any>) { /* Recently closed tabs are immutable */ }
 
-  setWindowTitle(windowId: any, title: string) { /* do nothing */ }
+  setWindowTitle(windowId: number, title: string) { /* Recently closed tabs are immutable */ }
 
   onStateUpdated() {
     this.sessionStateUpdatedSource.next(this.sessionListState);

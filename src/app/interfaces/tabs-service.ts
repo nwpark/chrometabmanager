@@ -1,21 +1,21 @@
 import {ChromeAPITabState} from '../types/chrome-api-types';
 
-export interface TabsService {
+export interface TabsService<T> {
 
-  moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number);
+  moveTabInWindow(windowId: T, sourceIndex: number, targetIndex: number);
 
-  transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number);
+  transferTab(sourceWindowId: T, targetWindowId: T, sourceIndex: number, targetIndex: number);
 
-  createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState);
+  createTab(windowId: T, tabIndex: number, chromeTab: ChromeAPITabState<T>); // todo: make interface generic
 
-  removeTab(windowId: any, tabId: any);
+  removeTab(windowId: T, tabId: T);
 
-  removeWindow(windowId: any);
+  removeWindow(windowId: T);
 
-  toggleWindowDisplay(windowId: any);
+  toggleWindowDisplay(windowId: T);
 
-  setWindowTitle(windowId: any, title: string);
+  setWindowTitle(windowId: T, title: string);
 
-  setTabActive(windowId: any, chromeTab: ChromeAPITabState);
+  setTabActive(windowId: T, chromeTab: ChromeAPITabState<T>); // todo: make interface generic
 
 }

@@ -13,12 +13,12 @@ import {SavedTabsService} from '../../services/saved-tabs.service';
   templateUrl: './chrome-window.component.html',
   styleUrls: ['./chrome-window.component.css']
 })
-export class ChromeWindowComponent implements OnInit {
+export class ChromeWindowComponent<T> implements OnInit {
 
-  @Input() chromeAPIWindow: ChromeAPIWindowState;
+  @Input() chromeAPIWindow: ChromeAPIWindowState<T>;
   @Input() layoutState: WindowLayoutState;
   @Input() windowCategory: WindowCategory;
-  @Input() tabsService: TabsService;
+  @Input() tabsService: TabsService<T>;
 
   @ViewChild('titleInput', {static: false}) titleInput: ElementRef;
   titleFormControl: FormControl;
@@ -62,7 +62,7 @@ export class ChromeWindowComponent implements OnInit {
     this.showEditForm = false;
   }
 
-  setTabActive(chromeTab: ChromeAPITabState) {
+  setTabActive(chromeTab: ChromeAPITabState<T>) {
     this.tabsService.setTabActive(this.chromeAPIWindow.id, chromeTab);
   }
 
@@ -70,7 +70,7 @@ export class ChromeWindowComponent implements OnInit {
     this.tabsService.removeWindow(this.chromeAPIWindow.id);
   }
 
-  closeTab(tabId: any) {
+  closeTab(tabId: T) {
     this.tabsService.removeTab(this.chromeAPIWindow.id, tabId);
   }
 

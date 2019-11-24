@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {SavedTabsService} from '../../services/saved-tabs.service';
-import {WindowListState} from '../../types/window-list-state';
+import {SavedWindowListState} from '../../types/window-list-state';
 import {WindowCategory} from '../../types/chrome-window-component-data';
 
 @Component({
@@ -10,7 +10,7 @@ import {WindowCategory} from '../../types/chrome-window-component-data';
 })
 export class SavedWindowListComponent implements OnInit {
 
-  windowListState: WindowListState;
+  windowListState: SavedWindowListState;
   windowCategory = WindowCategory.Saved;
 
   constructor(public savedTabsService: SavedTabsService,
