@@ -82,20 +82,6 @@
     [cdkDropListEnterPredicate]="dropTargetIsMutable"
     [cdkDropListData]="componentData"
     (cdkDropListDropped)="tabDropped($event)">
-<!--    <div-->
-<!--      cdkDrag-->
-<!--      class="draggable-chrome-tab"-->
-<!--      *ngFor="let tab of chromeAPIWindow.tabs"-->
-<!--      [cdkDragData]="tab"-->
-<!--      [cdkDragDisabled]="!isDragEnabled(tab)"-->
-<!--      (cdkDragStarted)="beginDrag()">-->
-<!--      <app-draggable-chrome-tab-->
-<!--        class="chrome-tab"-->
-<!--        [chromeTab]="tab"-->
-<!--        (draggableChromeTabClose)="closeTab(tab.id)"-->
-<!--        (draggableChromeTabClick)="setTabActive(tab)">-->
-<!--      </app-draggable-chrome-tab>-->
-<!--    </div>-->
     <app-draggable-chrome-tab
       cdkDrag
       class="chrome-tab-border"

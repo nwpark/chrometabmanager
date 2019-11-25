@@ -70,15 +70,4 @@ export class StorageService {
     writeData[StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE] = sessionListState.layoutState;
     chrome.storage.local.set(writeData);
   }
-
-  // todo: copy this method for saved tabs in case there are multiple new tab windows
-  // todo: move to event service
-  addClosedSessionStateListener(callback: (sessionListState: SessionListState) => void) {
-    chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (changes[StorageService.RECENTLY_CLOSED_SESSIONS]) {
-        this.getRecentlyClosedSessionsState()
-          .then(sessionListState => callback(sessionListState));
-      }
-    });
-  }
 }

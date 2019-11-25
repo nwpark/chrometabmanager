@@ -7,6 +7,7 @@ import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {StorageService} from './storage.service';
 import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from '../types/chrome-api-types';
+import {ChromeEventHandlerService} from './chrome-event-handler.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,20 +20,28 @@ export class SavedTabsService implements TabsService {
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
   constructor(private chromeTabsService: ChromeTabsService,
-              private storageService: StorageService) {
+              private storageService: StorageService,
+              private chromeEventHandlerService: ChromeEventHandlerService) {
     this.windowListState = WindowListUtils.createEmptyWindowListState();
+    this.chromeEventHandlerService.addSavedWindowsUpdatedListener(() => {
+      this.refreshState();
+    });
+    this.refreshState();
+  }
+
+  private refreshState() {
     this.storageService.getSavedWindowsState().then(windowListState => {
       this.setWindowListState(windowListState);
     });
   }
 
-  getWindowListState(): WindowListState {
-    return this.windowListState;
-  }
-
   @modifiesState()
   private setWindowListState(windowListState: WindowListState) {
     this.windowListState = windowListState;
+  }
+
+  getWindowListState(): WindowListState {
+    return this.windowListState;
   }
 
   @modifiesState()

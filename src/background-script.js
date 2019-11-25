@@ -64,6 +64,7 @@ chrome.windows.onRemoved.addListener((windowId) => {
   });
 });
 
+// todo: limit total number of recently closed tabs
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
   chromeWindowStorageLock = true;
   if (!removeInfo.isWindowClosing) {

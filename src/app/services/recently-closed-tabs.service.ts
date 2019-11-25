@@ -6,6 +6,7 @@ import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {SessionListState} from '../types/closed-session-list-state';
 import {ChromeAPITabState} from '../types/chrome-api-types';
+import {ChromeEventHandlerService} from './chrome-event-handler.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,23 +19,28 @@ export class RecentlyClosedTabsService implements TabsService {
   public sessionStateUpdated$ = this.sessionStateUpdatedSource.asObservable();
 
   constructor(private storageService: StorageService,
-              private chromeTabsService: ChromeTabsService) {
+              private chromeTabsService: ChromeTabsService,
+              private chromeEventHandlerService: ChromeEventHandlerService) {
     this.sessionListState = SessionListState.empty();
+    this.chromeEventHandlerService.addClosedSessionStateListener(() => {
+      this.refreshState();
+    });
+    this.refreshState();
+  }
+
+  private refreshState() {
     this.storageService.getRecentlyClosedSessionsState().then(sessionListState => {
       this.setSessionListState(sessionListState);
     });
-    this.storageService.addClosedSessionStateListener(sessionListState => {
-      this.setSessionListState(sessionListState);
-    });
-  }
-
-  getSessionListState(): SessionListState {
-    return this.sessionListState;
   }
 
   @modifiesState()
   private setSessionListState(sessionListState: SessionListState) {
     this.sessionListState = sessionListState;
+  }
+
+  getSessionListState(): SessionListState {
+    return this.sessionListState;
   }
 
   @modifiesState()

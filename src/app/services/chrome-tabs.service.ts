@@ -42,13 +42,13 @@ export class ChromeTabsService implements TabsService {
     });
   }
 
-  getWindowListState(): WindowListState {
-    return this.windowListState;
-  }
-
   @modifiesState()
   private setWindowListState(windowListState: WindowListState) {
     this.windowListState = windowListState;
+  }
+
+  getWindowListState(): WindowListState {
+    return this.windowListState;
   }
 
   @modifiesState()
