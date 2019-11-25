@@ -36,6 +36,10 @@ export class DraggableChromeTabComponent implements OnInit {
       : this.chromeTab.url;
   }
 
+  shouldShowLoadingSpinner(): boolean {
+    return this.chromeTab.status === 'loading' && !this.timestamp;
+  }
+
   get timestampString(): string {
     return new Date(this.timestamp).toTimeString().substring(0, 5);
   }

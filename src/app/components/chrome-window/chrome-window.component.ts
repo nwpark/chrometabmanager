@@ -109,7 +109,8 @@ export class ChromeWindowComponent implements OnInit {
   }
 
   isDragEnabled() {
-    return this.isMutable && !this.dragDropService.isDragging();
+    return this.isMutable
+      && !this.dragDropService.isDragging();
   }
 
   beginDrag() {

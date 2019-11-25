@@ -87,7 +87,7 @@
       class="draggable-chrome-tab"
       *ngFor="let tab of chromeAPIWindow.tabs"
       [cdkDragData]="tab"
-      [cdkDragDisabled]="!isDragEnabled()"
+      [cdkDragDisabled]="!isDragEnabled() || !tab.id"
       (cdkDragStarted)="beginDrag()">
       <app-draggable-chrome-tab
         class="chrome-tab"

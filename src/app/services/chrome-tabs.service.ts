@@ -5,7 +5,7 @@ import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {StorageService} from './storage.service';
-import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
+import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from '../types/chrome-api-types';
 import {ChromeEventHandlerService} from './chrome-event-handler.service';
 
 @Injectable({
@@ -67,8 +67,8 @@ export class ChromeTabsService implements TabsService {
 
   @modifiesState()
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
-    // todo: set loading to true and prevent dragging
-    this.windowListState.insertTab(windowId, tabIndex, chromeTab);
+    const activeTab = WindowStateUtils.convertToActiveTab(chromeTab);
+    this.windowListState.insertTab(windowId, tabIndex, activeTab);
     chrome.tabs.create({windowId, index: tabIndex, url: chromeTab.url, active: false});
   }
 

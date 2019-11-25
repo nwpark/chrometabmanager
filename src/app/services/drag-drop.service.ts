@@ -41,8 +41,8 @@ export class DragDropService {
     );
   }
 
-  // Buffer events when item is being dragged.
-  // Emit latest event when item is dropped.
+  // Buffer events when an item is being dragged.
+  // Emit the latest event when the item is dropped.
   bufferWhenDragging<T>(observable$: Observable<T>): Observable<T> {
     return observable$.pipe(
       filter(() => this.dragging),

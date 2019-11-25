@@ -19,9 +19,10 @@ export class StorageService {
   getSavedWindowsState(): Promise<WindowListState> {
     return new Promise<WindowListState>(resolve => {
       chrome.storage.local.get([StorageService.SAVED_WINDOWS, StorageService.SAVED_WINDOWS_LAYOUT_STATE], data => {
-        // todo: check for layout state
-        if (data[StorageService.SAVED_WINDOWS]) {
-          resolve(new WindowListState(data[StorageService.SAVED_WINDOWS], data[StorageService.SAVED_WINDOWS_LAYOUT_STATE]));
+        const savedWindows = data[StorageService.SAVED_WINDOWS];
+        const layoutState = data[StorageService.SAVED_WINDOWS_LAYOUT_STATE];
+        if (savedWindows && layoutState) {
+          resolve(new WindowListState(savedWindows, layoutState));
         } else {
           resolve(WindowListUtils.createEmptyWindowListState());
         }
@@ -37,6 +38,7 @@ export class StorageService {
   }
 
   getChromeWindowsLayoutState(chromeAPIWindows: ChromeAPIWindowState[]): WindowListLayoutState {
+    // todo: switch to chrome storage
     const layoutState = JSON.parse(localStorage.getItem(StorageService.ACTIVE_WINDOWS_LAYOUT_STATE));
     if (layoutState) {
       return WindowListUtils.cleanupLayoutState(layoutState, chromeAPIWindows);
@@ -69,6 +71,8 @@ export class StorageService {
     chrome.storage.local.set(writeData);
   }
 
+  // todo: copy this method for saved tabs in case there are multiple new tab windows
+  // todo: move to event service
   addClosedSessionStateListener(callback: (sessionListState: SessionListState) => void) {
     chrome.storage.onChanged.addListener((changes, areaName) => {
       if (changes[StorageService.RECENTLY_CLOSED_SESSIONS]) {
