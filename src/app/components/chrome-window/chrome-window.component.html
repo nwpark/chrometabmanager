@@ -7,6 +7,12 @@
     <div class="chrome-window-action-bar">
       <button class="action-button-30"
               mat-icon-button
+              title="Debug"
+              (click)="debug()">
+        <mat-icon class="action-icon-18">bug_report</mat-icon>
+      </button>
+      <button class="action-button-30"
+              mat-icon-button
               title="Save window"
               *ngIf="shouldShowSaveWindowButton() && headerDiv.mouseOver"
               (click)="saveWindow()">
@@ -73,7 +79,6 @@
     cdkDropList
     class="chrome-window-body"
     *ngIf="!layoutState.hidden"
-    [cdkDropListDisabled]="!isMutable"
     [cdkDropListEnterPredicate]="dropTargetIsMutable"
     [cdkDropListData]="componentData"
     (cdkDropListDropped)="tabDropped($event)">
@@ -82,8 +87,8 @@
       class="draggable-chrome-tab"
       *ngFor="let tab of chromeAPIWindow.tabs"
       [cdkDragData]="tab"
-      (cdkDragStarted)="blockUpdates()"
-      (cdkDragEnded)="enableUpdates()">
+      [cdkDragDisabled]="!isDragEnabled()"
+      (cdkDragStarted)="beginDrag()">
       <app-draggable-chrome-tab
         class="chrome-tab"
         [chromeTab]="tab"

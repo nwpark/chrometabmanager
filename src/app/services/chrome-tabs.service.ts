@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 
 import {WindowListState, WindowListUtils} from '../types/window-list-state';
-import {Observable, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {StorageService} from './storage.service';
@@ -16,13 +16,11 @@ export class ChromeTabsService implements TabsService {
   private windowListState: WindowListState;
 
   private windowStateUpdatedSource = new Subject<WindowListState>();
-  public windowStateUpdated$: Observable<WindowListState>;
+  public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
   constructor(private storageService: StorageService,
               private chromeEventHandlerService: ChromeEventHandlerService) {
     this.windowListState = WindowListUtils.createEmptyWindowListState();
-    this.windowStateUpdatedSource = new Subject<WindowListState>();
-    this.windowStateUpdated$ = this.chromeEventHandlerService.getFilteredObservable(this.windowStateUpdatedSource.asObservable());
     this.chromeEventHandlerService.addActiveWindowsUpdatedListener(() => {
       this.refreshState();
     });
@@ -69,6 +67,7 @@ export class ChromeTabsService implements TabsService {
 
   @modifiesState()
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
+    // todo: set loading to true and prevent dragging
     this.windowListState.insertTab(windowId, tabIndex, chromeTab);
     chrome.tabs.create({windowId, index: tabIndex, url: chromeTab.url, active: false});
   }

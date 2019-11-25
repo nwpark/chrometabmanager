@@ -7,7 +7,7 @@ import {FormControl} from '@angular/forms';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {SavedTabsService} from '../../services/saved-tabs.service';
-import {ChromeEventHandlerService} from '../../services/chrome-event-handler.service';
+import {DragDropService} from '../../services/drag-drop.service';
 
 @Component({
   selector: 'app-chrome-window',
@@ -30,7 +30,7 @@ export class ChromeWindowComponent implements OnInit {
   constructor(private changeDetectorRef: ChangeDetectorRef,
               private chromeTabsService: ChromeTabsService,
               private savedTabsService: SavedTabsService,
-              private chromeEventHandlerService: ChromeEventHandlerService) { }
+              private dragDropService: DragDropService) { }
 
   ngOnInit() {
     this.componentData = {
@@ -39,6 +39,10 @@ export class ChromeWindowComponent implements OnInit {
       tabsService: this.tabsService
     };
     this.titleFormControl = new FormControl(this.layoutState.title);
+  }
+
+  debug() {
+    console.log(this);
   }
 
   getTitle(): string {
@@ -104,30 +108,34 @@ export class ChromeWindowComponent implements OnInit {
     return drop.data.category !== WindowCategory.RecentlyClosed;
   }
 
-  blockUpdates() {
-    this.chromeEventHandlerService.blockUpdates();
+  isDragEnabled() {
+    return this.isMutable && !this.dragDropService.isDragging();
   }
 
-  enableUpdates() {
-    this.chromeEventHandlerService.enableUpdates();
+  beginDrag() {
+    this.dragDropService.beginDrag();
   }
 
   tabDropped(event: CdkDragDrop<ChromeWindowComponentData>) {
-    const targetTabList: ChromeWindowComponentData = event.container.data;
-    const previousTabList: ChromeWindowComponentData = event.previousContainer.data;
+    try {
+      const targetTabList: ChromeWindowComponentData = event.container.data;
+      const previousTabList: ChromeWindowComponentData = event.previousContainer.data;
 
-    if (event.previousContainer === event.container) {
-      this.tabsService.moveTabInWindow(targetTabList.windowId,
-        event.previousIndex,
-        event.currentIndex);
-    } else if (previousTabList.category === targetTabList.category) {
-      this.tabsService.transferTab(previousTabList.windowId,
-        targetTabList.windowId,
-        event.previousIndex,
-        event.currentIndex);
-    } else {
-      previousTabList.tabsService.removeTab(previousTabList.windowId, event.item.data.id);
-      this.tabsService.createTab(targetTabList.windowId, event.currentIndex, event.item.data);
+      if (event.previousContainer === event.container) {
+        this.tabsService.moveTabInWindow(targetTabList.windowId,
+          event.previousIndex,
+          event.currentIndex);
+      } else if (previousTabList.category === targetTabList.category) {
+        this.tabsService.transferTab(previousTabList.windowId,
+          targetTabList.windowId,
+          event.previousIndex,
+          event.currentIndex);
+      } else {
+        previousTabList.tabsService.removeTab(previousTabList.windowId, event.item.data.id);
+        this.tabsService.createTab(targetTabList.windowId, event.currentIndex, event.item.data);
+      }
+    } finally {
+      this.dragDropService.endDrag();
     }
   }
 
