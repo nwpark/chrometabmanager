@@ -1,32 +1,32 @@
 import {Injectable} from '@angular/core';
 
 import {WindowListState, WindowListUtils} from '../types/window-list-state';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {StorageService} from './storage.service';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
+import {ChromeEventHandlerService} from './chrome-event-handler.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChromeTabsService implements TabsService {
 
-  static readonly ACTIVE_WINDOWS_UPDATED = 'activeWindowsUpdated';
-
   private windowListState: WindowListState;
 
   private windowStateUpdatedSource = new Subject<WindowListState>();
-  public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
+  public windowStateUpdated$: Observable<WindowListState>;
 
-  constructor(private storageService: StorageService) {
+  constructor(private storageService: StorageService,
+              private chromeEventHandlerService: ChromeEventHandlerService) {
     this.windowListState = WindowListUtils.createEmptyWindowListState();
-    this.refreshState();
-    chrome.runtime.onMessage.addListener(message => {
-      if (message[ChromeTabsService.ACTIVE_WINDOWS_UPDATED]) {
-        this.refreshState();
-      }
+    this.windowStateUpdatedSource = new Subject<WindowListState>();
+    this.windowStateUpdated$ = this.chromeEventHandlerService.getFilteredObservable(this.windowStateUpdatedSource.asObservable());
+    this.chromeEventHandlerService.addActiveWindowsUpdatedListener(() => {
+      this.refreshState();
     });
+    this.refreshState();
   }
 
   private refreshState() {

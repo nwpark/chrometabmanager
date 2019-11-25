@@ -7,6 +7,7 @@ import {FormControl} from '@angular/forms';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {SavedTabsService} from '../../services/saved-tabs.service';
+import {ChromeEventHandlerService} from '../../services/chrome-event-handler.service';
 
 @Component({
   selector: 'app-chrome-window',
@@ -28,7 +29,8 @@ export class ChromeWindowComponent implements OnInit {
 
   constructor(private changeDetectorRef: ChangeDetectorRef,
               private chromeTabsService: ChromeTabsService,
-              private savedTabsService: SavedTabsService) { }
+              private savedTabsService: SavedTabsService,
+              private chromeEventHandlerService: ChromeEventHandlerService) { }
 
   ngOnInit() {
     this.componentData = {
@@ -100,6 +102,14 @@ export class ChromeWindowComponent implements OnInit {
 
   dropTargetIsMutable(drag: CdkDrag, drop: CdkDropList<ChromeWindowComponentData>): boolean {
     return drop.data.category !== WindowCategory.RecentlyClosed;
+  }
+
+  blockUpdates() {
+    this.chromeEventHandlerService.blockUpdates();
+  }
+
+  enableUpdates() {
+    this.chromeEventHandlerService.enableUpdates();
   }
 
   tabDropped(event: CdkDragDrop<ChromeWindowComponentData>) {
