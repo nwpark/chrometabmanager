@@ -1,5 +1,15 @@
+.chrome-tab {
+  height: 30px; /* TAB_HEIGHT */
+  background: white;
+  cursor: pointer;
+  user-select: none;
+}
+.chrome-tab:hover {
+  background: #f8f8f8;
+}
+
 .chrome-tab-title {
-  width: 360px;
+  width: 368px;
   line-height: 30px; /* TAB_HEIGHT */
   font-size: small;
   overflow: hidden;

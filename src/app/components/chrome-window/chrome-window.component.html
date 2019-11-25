@@ -82,20 +82,31 @@
     [cdkDropListEnterPredicate]="dropTargetIsMutable"
     [cdkDropListData]="componentData"
     (cdkDropListDropped)="tabDropped($event)">
-    <div
+<!--    <div-->
+<!--      cdkDrag-->
+<!--      class="draggable-chrome-tab"-->
+<!--      *ngFor="let tab of chromeAPIWindow.tabs"-->
+<!--      [cdkDragData]="tab"-->
+<!--      [cdkDragDisabled]="!isDragEnabled(tab)"-->
+<!--      (cdkDragStarted)="beginDrag()">-->
+<!--      <app-draggable-chrome-tab-->
+<!--        class="chrome-tab"-->
+<!--        [chromeTab]="tab"-->
+<!--        (draggableChromeTabClose)="closeTab(tab.id)"-->
+<!--        (draggableChromeTabClick)="setTabActive(tab)">-->
+<!--      </app-draggable-chrome-tab>-->
+<!--    </div>-->
+    <app-draggable-chrome-tab
       cdkDrag
-      class="draggable-chrome-tab"
+      class="chrome-tab-border"
       *ngFor="let tab of chromeAPIWindow.tabs"
       [cdkDragData]="tab"
-      [cdkDragDisabled]="!isDragEnabled() || !tab.id"
-      (cdkDragStarted)="beginDrag()">
-      <app-draggable-chrome-tab
-        class="chrome-tab"
-        [chromeTab]="tab"
-        (draggableChromeTabClose)="closeTab(tab.id)"
-        (draggableChromeTabClick)="setTabActive(tab)">
-      </app-draggable-chrome-tab>
-    </div>
+      [cdkDragDisabled]="!isDragEnabled(tab)"
+      (cdkDragStarted)="beginDrag()"
+      [chromeTab]="tab"
+      (draggableChromeTabClose)="closeTab(tab.id)"
+      (draggableChromeTabClick)="setTabActive(tab)">
+    </app-draggable-chrome-tab>
 
     <app-empty-chrome-tab
       style="position: relative;"

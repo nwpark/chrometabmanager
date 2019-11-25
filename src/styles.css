@@ -104,30 +104,13 @@ body {
 }
 
 /**************************************** Chrome Tab *************************************************/
-.draggable-chrome-tab {
+.chrome-tab-border {
   border-bottom: solid 1px #ccc;
-  display: flex;
+  display: block;
   box-sizing: border-box;
-  cursor: pointer;
-  user-select: none;
 }
-
-.draggable-chrome-tab:last-child {
+.chrome-tab-border:last-child {
   border: none;
-}
-
-.chrome-tab {
-  font-size: 14px;
-  /*color: rgba(0, 0, 0, 0.87);*/
-  color: black;
-  overflow: hidden;
-  height: 30px; /* TAB_HEIGHT */
-  width: 100%;
-  background: white;
-}
-.chrome-tab:hover {
-  /*background: #f1f1f1;*/
-  background: #f8f8f8;
 }
 
 .cdk-drag-preview {
@@ -147,7 +130,7 @@ body {
   transition: transform 100ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.chrome-window-body.cdk-drop-list-dragging .draggable-chrome-tab:not(.cdk-drag-placeholder) {
+.chrome-window-body.cdk-drop-list-dragging .chrome-tab-border:not(.cdk-drag-placeholder) {
   /*transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);*/
   transition: transform 100ms cubic-bezier(0, 0, 0.2, 1);
 }

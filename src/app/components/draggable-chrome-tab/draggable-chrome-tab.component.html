@@ -1,24 +1,26 @@
-<button
-  mat-icon-button
-  class="action-button-30"
-  style="float: right"
-  title="Close tab"
-  (click)="draggableChromeTabClose.emit()">
-  <mat-icon class="action-icon-18" *ngIf="mouseOver">close</mat-icon>
-</button>
-<div
-  class="chrome-tab-title"
-  (click)="draggableChromeTabClick.emit()">
-  <ng-container *ngIf="timestamp">
-    <div class="timestamp">{{timestampString}}</div>
-    <div class="vertical-divider"></div>
-  </ng-container>
-  <div class="favicon-icon" style="display: inline-block" *ngIf="shouldShowLoadingSpinner()">
-    <mat-spinner [diameter]="16"></mat-spinner>
+<div class="chrome-tab">
+  <button
+    mat-icon-button
+    class="action-button-30"
+    style="float: right"
+    title="Close tab"
+    (click)="draggableChromeTabClose.emit()">
+    <mat-icon class="action-icon-18" *ngIf="mouseOver">close</mat-icon>
+  </button>
+  <div
+    class="chrome-tab-title"
+    (click)="draggableChromeTabClick.emit()">
+    <ng-container *ngIf="timestamp">
+      <div class="timestamp">{{timestampString}}</div>
+      <div class="vertical-divider"></div>
+    </ng-container>
+    <div class="favicon-icon" style="display: inline-block" *ngIf="shouldShowLoadingSpinner()">
+      <mat-spinner [diameter]="16"></mat-spinner>
+    </div>
+    <ng-container *ngIf="!shouldShowLoadingSpinner()">
+      <img class="favicon-icon" src="{{chromeTab.favIconUrl}}" *ngIf="chromeTab.favIconUrl">
+      <img class="favicon-icon" src="assets/chrome-favicon.png" *ngIf="!chromeTab.favIconUrl">
+    </ng-container>
+    {{title}}
   </div>
-  <ng-container *ngIf="!shouldShowLoadingSpinner()">
-    <img class="favicon-icon" src="{{chromeTab.favIconUrl}}" *ngIf="chromeTab.favIconUrl">
-    <img class="favicon-icon" src="assets/chrome-favicon.png" *ngIf="!chromeTab.favIconUrl">
-  </ng-container>
-  {{title}}
 </div>

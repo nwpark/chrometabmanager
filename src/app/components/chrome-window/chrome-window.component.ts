@@ -108,9 +108,10 @@ export class ChromeWindowComponent implements OnInit {
     return drop.data.category !== WindowCategory.RecentlyClosed;
   }
 
-  isDragEnabled() {
+  isDragEnabled(chromeTab: ChromeAPITabState) {
     return this.isMutable
-      && !this.dragDropService.isDragging();
+      && !this.dragDropService.isDragging()
+      && chromeTab.id !== undefined;
   }
 
   beginDrag() {

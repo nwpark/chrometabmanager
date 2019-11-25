@@ -39,20 +39,16 @@
       [tabsService]="recentlyClosedTabsService">
     </app-chrome-window>
 
-    <div class="chrome-window-container"
-         *ngIf="!session.isWindow">
+    <div class="chrome-window-container" *ngIf="!session.isWindow">
       <div class="chrome-window-body" style="border-style: solid; border-radius: inherit">
-        <div
-          class="draggable-chrome-tab"
-          *ngFor="let closedTab of session.closedTabs">
-          <app-draggable-chrome-tab
-            class="chrome-tab"
-            [chromeTab]="closedTab.chromeAPITab"
-            [timestamp]="closedTab.timestamp"
-            (draggableChromeTabClose)="closeTab(closedTab.chromeAPITab.id)"
-            (draggableChromeTabClick)="setTabActive(closedTab.chromeAPITab)">
-          </app-draggable-chrome-tab>
-        </div>
+        <app-draggable-chrome-tab
+          class="chrome-tab-border"
+          *ngFor="let closedTab of session.closedTabs"
+          [chromeTab]="closedTab.chromeAPITab"
+          [timestamp]="closedTab.timestamp"
+          (draggableChromeTabClose)="closeTab(closedTab.chromeAPITab.id)"
+          (draggableChromeTabClick)="setTabActive(closedTab.chromeAPITab)">
+        </app-draggable-chrome-tab>
       </div>
     </div>
   </div>
