@@ -26,6 +26,8 @@
     <app-chrome-window
       [chromeAPIWindow]="window"
       [layoutState]="windowListState.getWindowLayout(window.id)"
+      [actionButtons]="actionButtons"
+      [isMutable]="true"
       [windowCategory]="windowCategory"
       [tabsService]="savedTabsService">
     </app-chrome-window>

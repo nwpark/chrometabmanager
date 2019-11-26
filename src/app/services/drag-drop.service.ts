@@ -8,7 +8,7 @@ import {buffer, filter, map} from 'rxjs/operators';
 export class DragDropService {
 
   private dragStatusUpdated = new Subject<boolean>();
-  public dragStatusUpdated$ = this.dragStatusUpdated.asObservable();
+  private dragStatusUpdated$ = this.dragStatusUpdated.asObservable();
 
   private dragging = false;
 

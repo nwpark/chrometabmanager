@@ -10,4 +10,5 @@ export class ChromeWindowComponentData {
   windowId: number;
   category: WindowCategory;
   tabsService: TabsService;
+  windowIsMutable: boolean;
 }

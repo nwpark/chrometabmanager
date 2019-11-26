@@ -27,11 +27,13 @@ export class SessionListState {
     return this.layoutState.windowStates.find(windowState => windowState.windowId === windowId);
   }
 
+  // todo: check if last remaining tab in group
   removeTab(windowId: any, tabId: any) {
     const chromeWindow = this.getWindow(windowId);
     chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);
   }
 
+  // todo: check if last remaining tab in group
   removeDetachedTab(tabId: any) {
     this.recentlyClosedSessions
       .filter(session => !session.isWindow)

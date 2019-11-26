@@ -6,7 +6,6 @@ export class WindowListState {
   chromeAPIWindows: ChromeAPIWindowState[];
   layoutState: WindowListLayoutState;
 
-  // todo: make constructor private
   constructor(chromeAPIWindows: ChromeAPIWindowState[],
               layoutState: WindowListLayoutState) {
     this.chromeAPIWindows = chromeAPIWindows;

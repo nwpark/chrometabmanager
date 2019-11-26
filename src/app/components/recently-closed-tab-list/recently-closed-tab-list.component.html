@@ -35,6 +35,8 @@
       *ngIf="session.isWindow"
       [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
       [layoutState]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id)"
+      [actionButtons]="actionButtons"
+      [isMutable]="false"
       [windowCategory]="windowCategory"
       [tabsService]="recentlyClosedTabsService">
     </app-chrome-window>

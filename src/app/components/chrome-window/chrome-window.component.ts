@@ -8,6 +8,7 @@ import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {SavedTabsService} from '../../services/saved-tabs.service';
 import {DragDropService} from '../../services/drag-drop.service';
+import {ActionButton} from '../../types/action-bar';
 
 @Component({
   selector: 'app-chrome-window',
@@ -18,6 +19,8 @@ export class ChromeWindowComponent implements OnInit {
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
   @Input() layoutState: WindowLayoutState;
+  @Input() actionButtons: ActionButton[];
+  @Input() isMutable: boolean;
   @Input() windowCategory: WindowCategory;
   @Input() tabsService: TabsService;
 
@@ -36,7 +39,8 @@ export class ChromeWindowComponent implements OnInit {
     this.componentData = {
       windowId: this.chromeAPIWindow.id,
       category: this.windowCategory,
-      tabsService: this.tabsService
+      tabsService: this.tabsService,
+      windowIsMutable: this.isMutable
     };
     this.titleFormControl = new FormControl(this.layoutState.title);
   }
@@ -72,40 +76,16 @@ export class ChromeWindowComponent implements OnInit {
     this.tabsService.setTabActive(this.chromeAPIWindow.id, chromeTab);
   }
 
-  closeWindow() {
-    this.tabsService.removeWindow(this.chromeAPIWindow.id);
-  }
-
   closeTab(tabId: any) {
     this.tabsService.removeTab(this.chromeAPIWindow.id, tabId);
-  }
-
-  shouldShowSaveWindowButton(): boolean {
-    return this.windowCategory === WindowCategory.Active;
-  }
-
-  saveWindow() {
-    this.savedTabsService.saveWindow(this.chromeAPIWindow);
-  }
-
-  shouldShowOpenWindowButton(): boolean {
-    return this.windowCategory !== WindowCategory.Active;
-  }
-
-  openWindow() {
-    this.chromeTabsService.createWindow(this.chromeAPIWindow);
   }
 
   toggleDisplay() {
     this.tabsService.toggleWindowDisplay(this.chromeAPIWindow.id);
   }
 
-  get isMutable(): boolean {
-    return this.windowCategory !== WindowCategory.RecentlyClosed;
-  }
-
   dropTargetIsMutable(drag: CdkDrag, drop: CdkDropList<ChromeWindowComponentData>): boolean {
-    return drop.data.category !== WindowCategory.RecentlyClosed;
+    return drop.data.windowIsMutable;
   }
 
   isDragEnabled(chromeTab: ChromeAPITabState) {

@@ -5,39 +5,22 @@
        [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
     <!--Action bar-->
     <div class="chrome-window-action-bar">
-      <button class="action-button-30"
-              mat-icon-button
-              title="Debug"
-              (click)="debug()">
-        <mat-icon class="action-icon-18">bug_report</mat-icon>
-      </button>
-      <button class="action-button-30"
-              mat-icon-button
-              title="Save window"
-              *ngIf="shouldShowSaveWindowButton() && headerDiv.mouseOver"
-              (click)="saveWindow()">
-        <mat-icon class="action-icon-18">save_alt</mat-icon>
-      </button>
-      <button class="action-button-30"
-              mat-icon-button
-              title="Open window"
-              *ngIf="shouldShowOpenWindowButton() && headerDiv.mouseOver"
-              (click)="openWindow()">
-        <mat-icon class="action-icon-18">open_in_new</mat-icon>
-      </button>
-      <button class="action-button-30"
-        mat-icon-button
-        [title]="layoutState.hidden ? 'Show window' : 'Minimize window'"
-        (click)="toggleDisplay()">
-        <mat-icon class="action-icon-18" *ngIf="!layoutState.hidden">arrow_drop_down</mat-icon>
-        <mat-icon class="action-icon-18" *ngIf="layoutState.hidden">arrow_right</mat-icon>
-      </button>
-      <button class="action-button-30"
-        mat-icon-button
-        title="Close window"
-        (click)="closeWindow()">
-        <mat-icon class="action-icon-18">close</mat-icon>
-      </button>
+<!--      <button class="action-button-30"-->
+<!--              mat-icon-button-->
+<!--              title="Debug"-->
+<!--              (click)="debug()">-->
+<!--        <mat-icon class="action-icon-18">bug_report</mat-icon>-->
+<!--      </button>-->
+      <ng-container *ngFor="let button of actionButtons">
+        <button class="action-button-30"
+                mat-icon-button
+                *ngIf="!button.requiresMouseover || headerDiv.mouseOver"
+                [title]="button.title"
+                (click)="button.callback(chromeAPIWindow)">
+          <mat-icon class="action-icon-18" *ngIf="!layoutState.hidden">{{button.icon}}</mat-icon>
+          <mat-icon class="action-icon-18" *ngIf="layoutState.hidden">{{button.iconWhenHidden || button.icon}}</mat-icon>
+        </button>
+      </ng-container>
     </div>
 
     <!--Title text-->
