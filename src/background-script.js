@@ -37,11 +37,8 @@ function updateStoredWindowStateThrottled() {
 }
 
 function updateStoredWindowState() {
-  console.log('updateStoredWindowState invoked');
   chrome.windows.getAll({populate: true}, chromeWindows => {
     if (!chromeWindowStorageLock) {
-      console.log('storing windows:');
-      console.log(chromeWindows);
       let writeData = {};
       writeData[ACTIVE_CHROME_WINDOWS] = chromeWindows;
       chrome.storage.local.set(writeData);
@@ -55,10 +52,8 @@ function updateStoredWindowState() {
 chrome.windows.onRemoved.addListener((windowId) => {
   chromeWindowStorageLock = true;
   chrome.storage.local.get(ACTIVE_CHROME_WINDOWS, data => {
-    console.log(`window removed: ${windowId}`);
-    console.log(data);
     let chromeWindow = data[ACTIVE_CHROME_WINDOWS].find(chromeWindow => chromeWindow.id === windowId);
-    storeRecentlyClosedWindow(chromeWindow);
+    storeRecentlyClosedWindow(convertToClosedWindow(chromeWindow));
     chromeWindowStorageLock = false;
     updateStoredWindowState();
   });
@@ -72,8 +67,7 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
       let chromeWindow = data[ACTIVE_CHROME_WINDOWS].find(chromeWindow => chromeWindow.id === removeInfo.windowId);
       let chromeTab = chromeWindow.tabs.find(chromeTab => chromeTab.id === tabId);
       if (!IGNORED_TAB_URLS.includes(chromeTab.url)) {
-        let recentlyClosedTab = {timestamp: Date.now(), chromeAPITab: chromeTab};
-        storeRecentlyClosedTab(recentlyClosedTab);
+        storeRecentlyClosedTab(convertToClosedTab(chromeTab));
       }
       chromeWindowStorageLock = false;
       updateStoredWindowState();
@@ -88,7 +82,6 @@ function storeRecentlyClosedWindow(chromeWindow) {
   chrome.storage.local.get(storageKey, data => {
     let closedWindow = {timestamp: Date.now(), chromeAPIWindow: chromeWindow};
     let closedSession = {isWindow: true, closedWindow: closedWindow};
-    // let windowLayoutState = {windowId: chromeWindow.id, title: null, hidden: true};
     let windowLayoutState = {windowId: chromeWindow.id, title: `${new Date().toTimeString().substring(0, 5)}`, hidden: true};
     data[RECENTLY_CLOSED_SESSIONS].unshift(closedSession);
     data[RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE].windowStates.unshift(windowLayoutState);
@@ -96,16 +89,30 @@ function storeRecentlyClosedWindow(chromeWindow) {
   });
 }
 
-function storeRecentlyClosedTab(recentlyClosedTab) {
+function storeRecentlyClosedTab(chromeTab) {
   chrome.storage.local.get(keyWithDefault(RECENTLY_CLOSED_SESSIONS, []), data => {
+    let closedTab = {timestamp: Date.now(), chromeAPITab: chromeTab};
     if (data[RECENTLY_CLOSED_SESSIONS].length === 0 || data[RECENTLY_CLOSED_SESSIONS][0].isWindow) {
-      let recentlyClosedSession = {isWindow: false, closedTabs: [recentlyClosedTab]};
+      let recentlyClosedSession = {isWindow: false, closedTabs: [closedTab]};
       data[RECENTLY_CLOSED_SESSIONS].unshift(recentlyClosedSession);
     } else {
-      data[RECENTLY_CLOSED_SESSIONS][0].closedTabs.unshift(recentlyClosedTab);
+      data[RECENTLY_CLOSED_SESSIONS][0].closedTabs.unshift(closedTab);
     }
     chrome.storage.local.set(data);
   });
+}
+
+// todo: needs new id
+function convertToClosedWindow(chromeWindow) {
+  const clonedWindow = JSON.parse(JSON.stringify(chromeWindow));
+  const closedTabs = clonedWindow.tabs.map(tab => convertToClosedTab(tab));
+  return {...clonedWindow, tabs: closedTabs};
+}
+
+// todo: needs new id
+function convertToClosedTab(chromeTab) {
+  const clonedTab = JSON.parse(JSON.stringify(chromeTab));
+  return {...clonedTab, status: 'complete'};
 }
 
 function keyWithDefault(keyName, defaultValue) {

@@ -27,20 +27,29 @@ export class SessionListState {
     return this.layoutState.windowStates.find(windowState => windowState.windowId === windowId);
   }
 
-  // todo: check if last remaining tab in group
   removeTab(windowId: any, tabId: any) {
     const chromeWindow = this.getWindow(windowId);
     chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);
+    if (chromeWindow.tabs.length === 0) {
+      this.removeWindow(windowId);
+    }
   }
 
-  // todo: check if last remaining tab in group
   removeDetachedTab(tabId: any) {
     this.recentlyClosedSessions
       .filter(session => !session.isWindow)
-      .forEach(session => {
+      .forEach((session, index) => {
         session.closedTabs = session.closedTabs
           .filter(closedTab => closedTab.chromeAPITab.id !== tabId);
       });
+    this.removeEmptySessions();
+  }
+
+  private removeEmptySessions() {
+    this.recentlyClosedSessions = this.recentlyClosedSessions.filter(session => {
+      return (session.isWindow && session.closedWindow.chromeAPIWindow.tabs.length > 0)
+        || (!session.isWindow && session.closedTabs.length > 0);
+    });
   }
 
   removeWindow(windowId: any) {
