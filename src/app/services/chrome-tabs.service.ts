@@ -29,8 +29,9 @@ export class ChromeTabsService implements TabsService {
 
   private refreshState() {
     this.getChromeWindowsFromAPI().then(windowList => {
-      const layoutState = this.storageService.getChromeWindowsLayoutState(windowList);
-      this.setWindowListState(new WindowListState(windowList, layoutState));
+      this.storageService.getChromeWindowsLayoutState(windowList).then(layoutState => {
+        this.setWindowListState(new WindowListState(windowList, layoutState));
+      });
     });
   }
 
