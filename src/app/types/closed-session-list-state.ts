@@ -38,7 +38,7 @@ export class SessionListState {
   removeDetachedTab(tabId: any) {
     this.recentlyClosedSessions
       .filter(session => !session.isWindow)
-      .forEach((session, index) => {
+      .forEach(session => {
         session.closedTabs = session.closedTabs
           .filter(closedTab => closedTab.chromeAPITab.id !== tabId);
       });

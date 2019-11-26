@@ -20,6 +20,7 @@ export class DraggableChromeTabComponent implements OnInit {
   ngOnInit() {
   }
 
+  // todo: replace with directive
   @HostListener('mouseenter') onMouseEnter() {
     this.mouseOver = true;
     this.changeDetectorRef.detectChanges();
@@ -36,9 +37,8 @@ export class DraggableChromeTabComponent implements OnInit {
       : this.chromeTab.url;
   }
 
-  // todo: check why this shows on recently closed windows
   shouldShowLoadingSpinner(): boolean {
-    return this.chromeTab.status === 'loading' && !this.timestamp;
+    return this.chromeTab.status === 'loading';
   }
 
   get timestampString(): string {
