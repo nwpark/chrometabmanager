@@ -35,10 +35,6 @@ export class SavedTabsService implements TabsService {
     });
   }
 
-  getIds() {
-    return this.windowListState.chromeAPIWindows.map(chromeWindow => chromeWindow.id);
-  }
-
   @modifiesState()
   private setWindowListState(windowListState: WindowListState) {
     this.windowListState = windowListState;

@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {SavedTabsService} from '../../services/saved-tabs.service';
 import {WindowListState} from '../../types/window-list-state';
-import {ChromeWindowComponentData, WindowCategory} from '../../types/chrome-window-component-data';
+import {WindowCategory} from '../../types/chrome-window-component-data';
 import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {DragDropService} from '../../services/drag-drop.service';
@@ -28,7 +28,8 @@ export class SavedWindowListComponent implements OnInit {
 
   ngOnInit() {
     this.windowListState = this.savedTabsService.getWindowListState();
-    this.initActionButtons();
+    this.actionButtons = ActionButtonFactory
+      .createSavedWindowActionButtons(this.savedTabsService, this.chromeTabsService);
     this.dragDropService.ignoreWhenDragging(this.savedTabsService.windowStateUpdated$)
       .subscribe(windowListState => {
         this.windowListState = windowListState;
@@ -42,21 +43,6 @@ export class SavedWindowListComponent implements OnInit {
 
   toggleDisplay() {
     this.savedTabsService.toggleWindowListDisplay();
-  }
-
-  // todo: move to factory
-  initActionButtons() {
-    this.actionButtons = [
-      ActionButtonFactory.createOpenButton(chromeWindow => {
-        this.chromeTabsService.createWindow(chromeWindow);
-      }),
-      ActionButtonFactory.createMinimizeButton(chromeWindow => {
-        this.savedTabsService.toggleWindowDisplay(chromeWindow.id);
-      }),
-      ActionButtonFactory.createCloseButton(chromeWindow => {
-        this.savedTabsService.removeWindow(chromeWindow.id);
-      })
-    ];
   }
 
   beginDrag() {

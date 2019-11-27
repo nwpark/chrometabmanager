@@ -28,7 +28,8 @@ export class ActiveWindowListComponent implements OnInit {
 
   ngOnInit() {
     this.windowListState = this.chromeTabsService.getWindowListState();
-    this.initActionButtons();
+    this.actionButtons = ActionButtonFactory
+      .createActiveWindowActionButtons(this.savedTabsService, this.chromeTabsService);
     this.dragDropService.ignoreWhenDragging(this.chromeTabsService.windowStateUpdated$)
       .subscribe(windowListState => {
         this.windowListState = windowListState;
@@ -38,20 +39,6 @@ export class ActiveWindowListComponent implements OnInit {
 
   toggleDisplay() {
     this.chromeTabsService.toggleWindowListDisplay();
-  }
-
-  initActionButtons() {
-    this.actionButtons = [
-      ActionButtonFactory.createSaveButton(chromeWindow => {
-        this.savedTabsService.insertWindow(chromeWindow, 0);
-      }),
-      ActionButtonFactory.createMinimizeButton(chromeWindow => {
-        this.chromeTabsService.toggleWindowDisplay(chromeWindow.id);
-      }),
-      ActionButtonFactory.createCloseButton(chromeWindow => {
-        this.chromeTabsService.removeWindow(chromeWindow.id);
-      })
-    ];
   }
 
   beginDrag() {

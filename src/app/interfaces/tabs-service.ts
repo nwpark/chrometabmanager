@@ -1,4 +1,4 @@
-import {ChromeAPITabState} from '../types/chrome-api-types';
+import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 
 export interface TabsService {
 
@@ -17,5 +17,7 @@ export interface TabsService {
   setWindowTitle(windowId: any, title: string);
 
   setTabActive(windowId: any, chromeTab: ChromeAPITabState);
+
+  insertWindow(chromeWindow: ChromeAPIWindowState, index: number);
 
 }

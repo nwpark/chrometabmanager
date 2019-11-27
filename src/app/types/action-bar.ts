@@ -1,22 +1,57 @@
 import {ChromeAPIWindowState} from './chrome-api-types';
+import {TabsService} from '../interfaces/tabs-service';
+import {SavedTabsService} from '../services/saved-tabs.service';
+import {ChromeTabsService} from '../services/chrome-tabs.service';
 
 export interface ActionButton {
   title: string;
-  titleWhenHidden: string;
+  titleWhenHidden?: string;
   icon: string;
-  iconWhenHidden: string;
+  iconWhenHidden?: string;
   requiresMouseover: boolean;
   callback: (chromeWindow: ChromeAPIWindowState) => void;
 }
 
 export class ActionButtonFactory {
+  static createActiveWindowActionButtons(
+    savedTabsService: SavedTabsService,
+    chromeTabsService: ChromeTabsService): ActionButton[] {
+    return [
+      ActionButtonFactory.createSaveButton(chromeWindow => {
+        savedTabsService.insertWindow(chromeWindow, 0);
+      }),
+      ActionButtonFactory.createMinimizeButton(chromeWindow => {
+        chromeTabsService.toggleWindowDisplay(chromeWindow.id);
+      }),
+      ActionButtonFactory.createCloseButton(chromeWindow => {
+        chromeTabsService.removeWindow(chromeWindow.id);
+      })
+    ];
+  }
+
+  static createSavedWindowActionButtons(
+    savedTabsService: SavedTabsService,
+    chromeTabsService: ChromeTabsService): ActionButton[] {
+    return [
+      ActionButtonFactory.createOpenButton(chromeWindow => {
+        chromeTabsService.createWindow(chromeWindow);
+      }),
+      ActionButtonFactory.createMinimizeButton(chromeWindow => {
+        savedTabsService.toggleWindowDisplay(chromeWindow.id);
+      }),
+      ActionButtonFactory.createCloseButton(chromeWindow => {
+        savedTabsService.removeWindow(chromeWindow.id);
+      })
+    ];
+  }
+
   static createCloseButton(callback: (chromeWindow: ChromeAPIWindowState) => void): ActionButton {
     return {
       title: 'Close window',
       icon: 'close',
       requiresMouseover: false,
       callback
-    } as ActionButton;
+    };
   }
 
   static createMinimizeButton(callback: (chromeWindow: ChromeAPIWindowState) => void): ActionButton {
@@ -27,7 +62,7 @@ export class ActionButtonFactory {
       iconWhenHidden: 'arrow_right',
       requiresMouseover: false,
       callback
-    } as ActionButton;
+    };
   }
 
   static createOpenButton(callback: (chromeWindow: ChromeAPIWindowState) => void): ActionButton {
@@ -36,7 +71,7 @@ export class ActionButtonFactory {
       icon: 'open_in_new',
       requiresMouseover: true,
       callback
-    } as ActionButton;
+    };
   }
 
   static createSaveButton(callback: (chromeWindow: ChromeAPIWindowState) => void): ActionButton {
@@ -45,6 +80,6 @@ export class ActionButtonFactory {
       icon: 'save_alt',
       requiresMouseover: true,
       callback
-    } as ActionButton;
+    };
   }
 }
