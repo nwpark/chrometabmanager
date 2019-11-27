@@ -1,89 +1,26 @@
-<div class="chrome-window-container">
-  <!--Header-->
-  <div appMouseOver
-       #headerDiv=app-mouse-over
-       [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
-    <!--Action bar-->
-    <div class="chrome-window-action-bar">
-      <ng-container *ngFor="let button of actionButtons">
-        <button class="action-button-30"
-                mat-icon-button
-                *ngIf="!button.requiresMouseover || headerDiv.mouseOver"
-                [title]="button.title"
-                (click)="button.callback(chromeAPIWindow)">
-          <mat-icon class="action-icon-18" *ngIf="!layoutState.hidden">{{button.icon}}</mat-icon>
-          <mat-icon class="action-icon-18" *ngIf="layoutState.hidden">{{button.iconWhenHidden || button.icon}}</mat-icon>
-        </button>
-      </ng-container>
-    </div>
-    <button class="chrome-window-action-bar action-button-30"
-            mat-icon-button
-            *ngIf="headerDiv.mouseOver"
-            [title]="'debug'"
-            (click)="debug()">
-      <mat-icon class="action-icon-18">bug_report</mat-icon>
-    </button>
+<div
+  cdkDropList
+  class="chrome-window-body"
+  *ngIf="!layoutState.hidden"
+  [id]="chromeAPIWindow.id.toString()"
+  [cdkDropListConnectedTo]="connectedWindowIds"
+  [cdkDropListData]="dragDropData"
+  [cdkDropListEnterPredicate]="dropTargetIsMutable"
+  (cdkDropListDropped)="tabDropped($event)">
+  <app-draggable-chrome-tab
+    cdkDrag
+    class="chrome-tab-border"
+    *ngFor="let tab of chromeAPIWindow.tabs"
+    [cdkDragData]="tab"
+    [cdkDragDisabled]="!isDragEnabled(tab)"
+    [chromeTab]="tab"
+    (cdkDragStarted)="beginDrag()"
+    (draggableChromeTabClose)="closeTab(tab.id)"
+    (draggableChromeTabClick)="setTabActive(tab)">
+  </app-draggable-chrome-tab>
 
-    <!--Title text-->
-    <div class="chrome-window-title">
-      <div
-        appMouseOver
-        #titleTextDiv=app-mouse-over
-        *ngIf="!showEditForm">
-        {{getTitle()}}
-        <button class="action-button-30"
-                mat-icon-button
-                title="Edit title"
-                *ngIf="isMutable && titleTextDiv.mouseOver"
-                (click)="editTitle()">
-          <mat-icon class="action-icon-18">edit</mat-icon>
-        </button>
-      </div>
-
-      <form *ngIf="showEditForm" (ngSubmit)="submitTitleForm()">
-        <input
-            #titleInput
-            type="text"
-            [formControl]="titleFormControl"
-            (blur)="submitTitleForm()"
-            (keydown.enter)="submitTitleForm()"
-            (keydown.escape)="cancelTitleFormEdit()">
-        <button mat-icon-button
-                class="action-button-30"
-                type="submit"
-                title="Save title">
-          <mat-icon class="action-icon-18">save_alt</mat-icon>
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!--Body-->
-  <div
-    cdkDropList
-    class="chrome-window-body"
-    *ngIf="!layoutState.hidden"
-    [id]="chromeAPIWindow.id.toString()"
-    [cdkDropListConnectedTo]="connectedWindowIds"
-    [cdkDropListData]="componentData"
-    [cdkDropListEnterPredicate]="dropTargetIsMutable"
-    (cdkDropListDropped)="tabDropped($event)">
-    <app-draggable-chrome-tab
-      cdkDrag
-      class="chrome-tab-border"
-      *ngFor="let tab of chromeAPIWindow.tabs"
-      [cdkDragData]="tab"
-      [cdkDragDisabled]="!isDragEnabled(tab)"
-      [chromeTab]="tab"
-      (cdkDragStarted)="beginDrag()"
-      (draggableChromeTabClose)="closeTab(tab.id)"
-      (draggableChromeTabClick)="setTabActive(tab)">
-    </app-draggable-chrome-tab>
-
-    <app-empty-chrome-tab
-      style="position: relative;"
-      *ngIf="chromeAPIWindow.tabs.length === 0">
-    </app-empty-chrome-tab>
-  </div>
+  <app-empty-chrome-tab
+    style="position: relative;"
+    *ngIf="chromeAPIWindow.tabs.length === 0">
+  </app-empty-chrome-tab>
 </div>
-

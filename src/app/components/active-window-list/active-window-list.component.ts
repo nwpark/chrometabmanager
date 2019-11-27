@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {WindowListState} from '../../types/window-list-state';
-import {WindowCategory} from '../../types/chrome-window-component-data';
+import {ChromeWindowComponentProps, WindowCategory} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {SavedTabsService} from '../../services/saved-tabs.service';
@@ -15,8 +15,8 @@ import {CdkDragDrop} from '@angular/cdk/drag-drop';
 export class ActiveWindowListComponent implements OnInit {
 
   windowListState: WindowListState;
-  windowCategory = WindowCategory.Active;
   actionButtons: ActionButton[];
+  windowProps: ChromeWindowComponentProps;
 
   windowListId = DragDropService.ACTIVE_WINDOW_LIST_ID;
   connectedWindowListIds = DragDropService.CONNECTED_WINDOW_LIST_IDS;
@@ -28,6 +28,11 @@ export class ActiveWindowListComponent implements OnInit {
 
   ngOnInit() {
     this.windowListState = this.chromeTabsService.getWindowListState();
+    this.windowProps = {
+      category: WindowCategory.Active,
+      tabsService: this.chromeTabsService,
+      windowIsMutable: true
+    };
     this.actionButtons = ActionButtonFactory
       .createActiveWindowActionButtons(this.savedTabsService, this.chromeTabsService);
     this.dragDropService.ignoreWhenDragging(this.chromeTabsService.windowStateUpdated$)

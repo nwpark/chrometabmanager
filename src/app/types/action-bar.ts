@@ -1,7 +1,7 @@
 import {ChromeAPIWindowState} from './chrome-api-types';
-import {TabsService} from '../interfaces/tabs-service';
 import {SavedTabsService} from '../services/saved-tabs.service';
 import {ChromeTabsService} from '../services/chrome-tabs.service';
+import {RecentlyClosedTabsService} from '../services/recently-closed-tabs.service';
 
 export interface ActionButton {
   title: string;
@@ -15,7 +15,8 @@ export interface ActionButton {
 export class ActionButtonFactory {
   static createActiveWindowActionButtons(
     savedTabsService: SavedTabsService,
-    chromeTabsService: ChromeTabsService): ActionButton[] {
+    chromeTabsService: ChromeTabsService
+  ): ActionButton[] {
     return [
       ActionButtonFactory.createSaveButton(chromeWindow => {
         savedTabsService.insertWindow(chromeWindow, 0);
@@ -31,7 +32,8 @@ export class ActionButtonFactory {
 
   static createSavedWindowActionButtons(
     savedTabsService: SavedTabsService,
-    chromeTabsService: ChromeTabsService): ActionButton[] {
+    chromeTabsService: ChromeTabsService
+  ): ActionButton[] {
     return [
       ActionButtonFactory.createOpenButton(chromeWindow => {
         chromeTabsService.createWindow(chromeWindow);
@@ -41,6 +43,23 @@ export class ActionButtonFactory {
       }),
       ActionButtonFactory.createCloseButton(chromeWindow => {
         savedTabsService.removeWindow(chromeWindow.id);
+      })
+    ];
+  }
+
+  static createRecentlyClosedWindowActionButtons(
+    chromeTabsService: ChromeTabsService,
+    recentlyClosedTabsService: RecentlyClosedTabsService
+  ): ActionButton[] {
+    return [
+      ActionButtonFactory.createOpenButton(chromeWindow => {
+        chromeTabsService.createWindow(chromeWindow);
+      }),
+      ActionButtonFactory.createMinimizeButton(chromeWindow => {
+        recentlyClosedTabsService.toggleWindowDisplay(chromeWindow.id);
+      }),
+      ActionButtonFactory.createCloseButton(chromeWindow => {
+        recentlyClosedTabsService.removeWindow(chromeWindow.id);
       })
     ];
   }

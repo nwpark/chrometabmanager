@@ -25,14 +25,22 @@
     *ngFor="let layoutState of windowListState.layoutState.windowStates"
     [cdkDragData]="windowListState.getWindow(layoutState.windowId)"
     (cdkDragStarted)="beginDrag()">
-    <app-chrome-window
-      *ngIf="windowListState.getWindow(layoutState.windowId).type === 'normal'"
-      [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
-      [layoutState]="layoutState"
-      [actionButtons]="actionButtons"
-      [isMutable]="true"
-      [windowCategory]="windowCategory"
-      [tabsService]="chromeTabsService">
-    </app-chrome-window>
+    <div
+      class="chrome-window-container"
+      *ngIf="windowListState.getWindow(layoutState.windowId).type === 'normal'">
+      <div cdkDragHandle>
+        <app-chrome-window-header
+          [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
+          [layoutState]="layoutState"
+          [actionButtons]="actionButtons"
+          [props]="windowProps">
+        </app-chrome-window-header>
+      </div>
+      <app-chrome-window
+        [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
+        [layoutState]="layoutState"
+        [props]="windowProps">
+      </app-chrome-window>
+    </div>
   </div>
 </div>

@@ -21,6 +21,8 @@ export class WindowListState {
   }
 
   getTabId(windowId: any, tabIndex: number): number {
+    console.log(windowId, tabIndex);
+    console.log(this);
     return this.getWindow(windowId).tabs[tabIndex].id;
   }
 

@@ -1,4 +1,5 @@
 import {TabsService} from '../interfaces/tabs-service';
+import {ChromeAPIWindowState} from './chrome-api-types';
 
 export enum WindowCategory {
   Active,
@@ -6,8 +7,14 @@ export enum WindowCategory {
   RecentlyClosed
 }
 
-export class ChromeWindowComponentData {
-  windowId: number;
+export class ChromeWindowComponentProps {
+  category: WindowCategory;
+  tabsService: TabsService;
+  windowIsMutable: boolean;
+}
+
+export class ChromeWindowDragDropData {
+  chromeWindowId: any;
   category: WindowCategory;
   tabsService: TabsService;
   windowIsMutable: boolean;

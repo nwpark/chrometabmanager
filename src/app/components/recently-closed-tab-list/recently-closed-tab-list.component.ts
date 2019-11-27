@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
-import {WindowCategory} from '../../types/chrome-window-component-data';
+import {ChromeWindowComponentProps, WindowCategory} from '../../types/chrome-window-component-data';
 import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {SessionListState, SessionListUtils} from '../../types/closed-session-list-state';
 import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
@@ -15,8 +15,8 @@ import {DragDropService} from '../../services/drag-drop.service';
 export class RecentlyClosedTabListComponent implements OnInit {
 
   sessionListState: SessionListState;
-  windowCategory = WindowCategory.RecentlyClosed;
   actionButtons: ActionButton[];
+  windowProps: ChromeWindowComponentProps;
 
   constructor(public recentlyClosedTabsService: RecentlyClosedTabsService,
               private chromeTabsService: ChromeTabsService,
@@ -25,7 +25,13 @@ export class RecentlyClosedTabListComponent implements OnInit {
 
   ngOnInit() {
     this.sessionListState = this.recentlyClosedTabsService.getSessionListState();
-    this.initActionButtons();
+    this.windowProps = {
+      category: WindowCategory.RecentlyClosed,
+      tabsService: this.recentlyClosedTabsService,
+      windowIsMutable: false
+    };
+    this.actionButtons = ActionButtonFactory
+      .createRecentlyClosedWindowActionButtons(this.chromeTabsService, this.recentlyClosedTabsService);
     this.dragDropService.ignoreWhenDragging(this.recentlyClosedTabsService.sessionStateUpdated$)
       .subscribe(sessionListState => {
         this.sessionListState = sessionListState;
@@ -56,19 +62,5 @@ export class RecentlyClosedTabListComponent implements OnInit {
 
   clear() {
     this.recentlyClosedTabsService.clear();
-  }
-
-  initActionButtons() {
-    this.actionButtons = [
-      ActionButtonFactory.createOpenButton(chromeWindow => {
-        this.chromeTabsService.createWindow(chromeWindow);
-      }),
-      ActionButtonFactory.createMinimizeButton(chromeWindow => {
-        this.recentlyClosedTabsService.toggleWindowDisplay(chromeWindow.id);
-      }),
-      ActionButtonFactory.createCloseButton(chromeWindow => {
-        this.recentlyClosedTabsService.removeWindow(chromeWindow.id);
-      })
-    ];
   }
 }

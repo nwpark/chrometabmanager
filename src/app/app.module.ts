@@ -12,6 +12,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ChromeWindowComponent} from './components/chrome-window/chrome-window.component';
 import { MouseOverDirective } from './directives/mouse-over.directive';
 import { RecentlyClosedTabListComponent } from './components/recently-closed-tab-list/recently-closed-tab-list.component';
+import { ChromeWindowHeaderComponent } from './components/chrome-window-header/chrome-window-header.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { RecentlyClosedTabListComponent } from './components/recently-closed-tab
     EmptyChromeTabComponent,
     ChromeWindowComponent,
     MouseOverDirective,
-    RecentlyClosedTabListComponent
+    RecentlyClosedTabListComponent,
+    ChromeWindowHeaderComponent
   ],
   imports: [
     BrowserModule,

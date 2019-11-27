@@ -54,6 +54,7 @@ export class ChromeTabsService implements TabsService {
 
   @modifiesState()
   moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
+    console.log(windowId, sourceIndex, targetIndex);
     const tabId = this.windowListState.getTabId(windowId, sourceIndex);
     this.windowListState.moveTabInWindow(windowId, sourceIndex, targetIndex);
     chrome.tabs.move(tabId, {index: targetIndex});

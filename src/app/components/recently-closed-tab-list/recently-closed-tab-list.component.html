@@ -33,15 +33,19 @@
 <!--  </div>-->
 
   <div *ngFor="let session of sessionListState.recentlyClosedSessions">
-    <app-chrome-window
-      *ngIf="session.isWindow"
-      [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
-      [layoutState]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id)"
-      [actionButtons]="actionButtons"
-      [isMutable]="false"
-      [windowCategory]="windowCategory"
-      [tabsService]="recentlyClosedTabsService">
-    </app-chrome-window>
+    <div class="chrome-window-container" *ngIf="session.isWindow">
+      <app-chrome-window-header
+        [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
+        [layoutState]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id)"
+        [actionButtons]="actionButtons"
+        [props]="windowProps">
+      </app-chrome-window-header>
+      <app-chrome-window
+        [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
+        [layoutState]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id)"
+        [props]="windowProps">
+      </app-chrome-window>
+    </div>
 
     <div class="chrome-window-container" *ngIf="!session.isWindow">
       <div class="chrome-window-body" style="border-style: solid; border-radius: inherit">
