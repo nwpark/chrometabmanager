@@ -29,20 +29,22 @@ export class ChromeWindowComponent implements OnInit {
   showEditForm = false;
 
   componentData: ChromeWindowComponentData;
+  connectedWindowIds = this.dragDropService.connectedWindowIds;
 
   constructor(private changeDetectorRef: ChangeDetectorRef,
-              private chromeTabsService: ChromeTabsService,
-              private savedTabsService: SavedTabsService,
               private dragDropService: DragDropService) { }
 
   ngOnInit() {
     this.componentData = {
       windowId: this.chromeAPIWindow.id,
       category: this.windowCategory,
+      // todo: replace with callbacks
       tabsService: this.tabsService,
       windowIsMutable: this.isMutable
     };
     this.titleFormControl = new FormControl(this.layoutState.title);
+    this.dragDropService.ignoreWhenDragging(this.dragDropService.connectedWindowIdsUpdated$)
+      .subscribe(connectedWindowIds => this.connectedWindowIds = connectedWindowIds);
   }
 
   debug() {

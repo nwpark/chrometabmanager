@@ -5,6 +5,7 @@ import {WindowCategory} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {SavedTabsService} from '../../services/saved-tabs.service';
+import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-active-window-list',
@@ -16,6 +17,9 @@ export class ActiveWindowListComponent implements OnInit {
   windowListState: WindowListState;
   windowCategory = WindowCategory.Active;
   actionButtons: ActionButton[];
+
+  windowListId = DragDropService.ACTIVE_WINDOW_LIST_ID;
+  connectedWindowListIds = DragDropService.CONNECTED_WINDOW_LIST_IDS;
 
   constructor(public chromeTabsService: ChromeTabsService,
               private savedTabsService: SavedTabsService,
@@ -39,7 +43,7 @@ export class ActiveWindowListComponent implements OnInit {
   initActionButtons() {
     this.actionButtons = [
       ActionButtonFactory.createSaveButton(chromeWindow => {
-        this.savedTabsService.saveWindow(chromeWindow);
+        this.savedTabsService.insertWindow(chromeWindow, 0);
       }),
       ActionButtonFactory.createMinimizeButton(chromeWindow => {
         this.chromeTabsService.toggleWindowDisplay(chromeWindow.id);
@@ -48,5 +52,22 @@ export class ActiveWindowListComponent implements OnInit {
         this.chromeTabsService.removeWindow(chromeWindow.id);
       })
     ];
+  }
+
+  beginDrag() {
+    this.dragDropService.beginDrag();
+  }
+
+  windowDropped(event: CdkDragDrop<any>) {
+    try {
+      if (event.previousContainer === event.container) {
+        this.chromeTabsService.moveWindowInList(event.previousIndex, event.currentIndex);
+      } else {
+        this.savedTabsService.removeWindow(event.item.data.id);
+        this.chromeTabsService.insertWindow(event.item.data, event.currentIndex);
+      }
+    } finally {
+      this.dragDropService.endDrag();
+    }
   }
 }

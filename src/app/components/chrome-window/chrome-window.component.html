@@ -5,12 +5,6 @@
        [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
     <!--Action bar-->
     <div class="chrome-window-action-bar">
-<!--      <button class="action-button-30"-->
-<!--              mat-icon-button-->
-<!--              title="Debug"-->
-<!--              (click)="debug()">-->
-<!--        <mat-icon class="action-icon-18">bug_report</mat-icon>-->
-<!--      </button>-->
       <ng-container *ngFor="let button of actionButtons">
         <button class="action-button-30"
                 mat-icon-button
@@ -22,6 +16,13 @@
         </button>
       </ng-container>
     </div>
+    <button class="chrome-window-action-bar action-button-30"
+            mat-icon-button
+            *ngIf="headerDiv.mouseOver"
+            [title]="'debug'"
+            (click)="debug()">
+      <mat-icon class="action-icon-18">bug_report</mat-icon>
+    </button>
 
     <!--Title text-->
     <div class="chrome-window-title">
@@ -62,8 +63,10 @@
     cdkDropList
     class="chrome-window-body"
     *ngIf="!layoutState.hidden"
-    [cdkDropListEnterPredicate]="dropTargetIsMutable"
+    [id]="chromeAPIWindow.id.toString()"
+    [cdkDropListConnectedTo]="connectedWindowIds"
     [cdkDropListData]="componentData"
+    [cdkDropListEnterPredicate]="dropTargetIsMutable"
     (cdkDropListDropped)="tabDropped($event)">
     <app-draggable-chrome-tab
       cdkDrag
@@ -71,8 +74,8 @@
       *ngFor="let tab of chromeAPIWindow.tabs"
       [cdkDragData]="tab"
       [cdkDragDisabled]="!isDragEnabled(tab)"
-      (cdkDragStarted)="beginDrag()"
       [chromeTab]="tab"
+      (cdkDragStarted)="beginDrag()"
       (draggableChromeTabClose)="closeTab(tab.id)"
       (draggableChromeTabClick)="setTabActive(tab)">
     </app-draggable-chrome-tab>

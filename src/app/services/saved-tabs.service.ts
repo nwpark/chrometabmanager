@@ -35,6 +35,10 @@ export class SavedTabsService implements TabsService {
     });
   }
 
+  getIds() {
+    return this.windowListState.chromeAPIWindows.map(chromeWindow => chromeWindow.id);
+  }
+
   @modifiesState()
   private setWindowListState(windowListState: WindowListState) {
     this.windowListState = windowListState;
@@ -98,12 +102,18 @@ export class SavedTabsService implements TabsService {
   }
 
   @modifiesState()
-  saveWindow(chromeWindow: ChromeAPIWindowState) {
+  insertWindow(chromeWindow: ChromeAPIWindowState, index: number) {
     const savedWindow = WindowStateUtils.convertToSavedWindow(chromeWindow);
     const layoutState = WindowListUtils.createBasicWindowLayoutState(savedWindow.id);
-    this.windowListState.addWindow(savedWindow, layoutState);
+    this.windowListState.insertWindow(savedWindow, layoutState, index);
   }
 
+  @modifiesState()
+  moveWindowInList(sourceIndex: number, targetIndex: number) {
+    this.windowListState.moveWindowInList(sourceIndex, targetIndex);
+  }
+
+  // Called by all methods decorated with @modifiesState
   onStateUpdated() {
     this.windowStateUpdatedSource.next(this.windowListState);
     this.storageService.setSavedWindowsState(this.windowListState);

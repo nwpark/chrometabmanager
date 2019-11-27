@@ -45,6 +45,11 @@ export class WindowListState {
     transferArrayItem(previousWindow.tabs, targetWindow.tabs, sourceIndex, targetIndex);
   }
 
+  moveWindowInList(sourceIndex: number, targetIndex: number) {
+    moveItemInArray(this.chromeAPIWindows, sourceIndex, targetIndex);
+    moveItemInArray(this.layoutState.windowStates, sourceIndex, targetIndex);
+  }
+
   unshiftWindow(window: ChromeAPIWindowState, windowLayoutState: WindowLayoutState) {
     this.chromeAPIWindows.unshift(window);
     this.layoutState.windowStates.unshift(windowLayoutState);
@@ -55,9 +60,13 @@ export class WindowListState {
     this.layoutState.windowStates = this.layoutState.windowStates.filter(windowState => windowState.windowId !== windowId);
   }
 
-  addWindow(window: ChromeAPIWindowState, layoutState: WindowLayoutState) {
-    this.chromeAPIWindows.push(window);
-    this.layoutState.windowStates.push(layoutState);
+  insertWindow(window: ChromeAPIWindowState, layoutState: WindowLayoutState, index: number) {
+    this.chromeAPIWindows.splice(index, 0, window);
+    this.insertWindowLayoutState(layoutState, index);
+  }
+
+  insertWindowLayoutState(layoutState: WindowLayoutState, index: number) {
+    this.layoutState.windowStates.splice(index, 0, layoutState);
   }
 
   toggleDisplay() {

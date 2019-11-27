@@ -28,6 +28,12 @@ export class WindowStateUtils {
     return {...clonedTab, id: uuid(), status: 'complete'};
   }
 
+  static convertToActiveWindow(chromeWindow: ChromeAPIWindowState): ChromeAPIWindowState {
+    const clonedWindow = JSON.parse(JSON.stringify(chromeWindow)) as ChromeAPIWindowState;
+    const activeTabs = clonedWindow.tabs.map(tab => this.convertToActiveTab(tab)) as ChromeAPITabState[];
+    return {...clonedWindow, id: uuid(), tabs: activeTabs};
+  }
+
   static convertToActiveTab(chromeTab: ChromeAPITabState): ChromeAPITabState {
     const clonedTab = JSON.parse(JSON.stringify(chromeTab)) as ChromeAPITabState;
     return {...clonedTab, id: undefined, status: 'loading'};

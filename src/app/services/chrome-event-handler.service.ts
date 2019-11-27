@@ -16,11 +16,17 @@ export class ChromeEventHandlerService {
         callback();
       }
     });
+    chrome.storage.onChanged.addListener(changes => {
+      if (changes[StorageService.ACTIVE_WINDOWS_LAYOUT_STATE]) {
+        callback();
+      }
+    });
   }
 
   addClosedSessionStateListener(callback: () => void) {
     chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (changes[StorageService.RECENTLY_CLOSED_SESSIONS]) {
+      if (changes[StorageService.RECENTLY_CLOSED_SESSIONS]
+        || changes[StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE]) {
         callback();
       }
     });
@@ -28,7 +34,8 @@ export class ChromeEventHandlerService {
 
   addSavedWindowsUpdatedListener(callback: () => void) {
     chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (changes[StorageService.SAVED_WINDOWS]) {
+      if (changes[StorageService.SAVED_WINDOWS]
+        || changes[StorageService.SAVED_WINDOWS_LAYOUT_STATE]) {
         callback();
       }
     });

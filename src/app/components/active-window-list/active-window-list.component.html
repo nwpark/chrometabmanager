@@ -14,13 +14,21 @@
 </div>
 
 <div
+  cdkDropList
   class="column-scrollable-content"
-  *ngIf="!windowListState.layoutState.hidden">
-  <div *ngFor="let window of windowListState.chromeAPIWindows">
+  *ngIf="!windowListState.layoutState.hidden"
+  [id]="windowListId"
+  [cdkDropListConnectedTo]="connectedWindowListIds"
+  (cdkDropListDropped)="windowDropped($event)">
+  <div
+    cdkDrag
+    *ngFor="let layoutState of windowListState.layoutState.windowStates"
+    [cdkDragData]="windowListState.getWindow(layoutState.windowId)"
+    (cdkDragStarted)="beginDrag()">
     <app-chrome-window
-      *ngIf="window.type === 'normal'"
-      [chromeAPIWindow]="window"
-      [layoutState]="windowListState.getWindowLayout(window.id)"
+      *ngIf="windowListState.getWindow(layoutState.windowId).type === 'normal'"
+      [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
+      [layoutState]="layoutState"
       [actionButtons]="actionButtons"
       [isMutable]="true"
       [windowCategory]="windowCategory"

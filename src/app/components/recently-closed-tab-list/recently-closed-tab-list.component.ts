@@ -5,6 +5,7 @@ import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {SessionListState, SessionListUtils} from '../../types/closed-session-list-state';
 import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
+import {DragDropService} from '../../services/drag-drop.service';
 
 @Component({
   selector: 'app-recently-closed-tab-list',
@@ -19,15 +20,17 @@ export class RecentlyClosedTabListComponent implements OnInit {
 
   constructor(public recentlyClosedTabsService: RecentlyClosedTabsService,
               private chromeTabsService: ChromeTabsService,
+              private dragDropService: DragDropService,
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.sessionListState = this.recentlyClosedTabsService.getSessionListState();
     this.initActionButtons();
-    this.recentlyClosedTabsService.sessionStateUpdated$.subscribe(sessionListState => {
-      this.sessionListState = sessionListState;
-      this.changeDetectorRef.detectChanges();
-    });
+    this.dragDropService.ignoreWhenDragging(this.recentlyClosedTabsService.sessionStateUpdated$)
+      .subscribe(sessionListState => {
+        this.sessionListState = sessionListState;
+        this.changeDetectorRef.detectChanges();
+      });
   }
 
   get title(): string {

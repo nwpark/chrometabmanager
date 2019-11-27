@@ -47,7 +47,8 @@ body {
 }
 
 .column-scrollable-content {
-  width: 420px;
+  width: 410px;
+  padding-right: 10px;
   height: calc(100% - 80px);
   overflow-y: scroll;
 }
@@ -57,8 +58,6 @@ body {
   border-radius: 4px;
   overflow: hidden; /* keeps contents within border radius */
   margin-bottom: 20px;
-  margin-right: 10px;
-  min-width: 400px; /* temp */
 }
 
 /* Header */
@@ -114,23 +113,26 @@ body {
 }
 
 .cdk-drag-preview {
-  box-sizing: border-box;
+  /*box-sizing: border-box;*/
   border-radius: 4px;
+  margin: 0 !important;
+  padding: 0 !important;
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
   0 8px 10px 1px rgba(0, 0, 0, 0.14),
   0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
 .cdk-drag-placeholder {
+  /*opacity: 10%;*/
   opacity: 0;
 }
 
-.cdk-drag-animating {
-  /*transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);*/
-  transition: transform 100ms cubic-bezier(0, 0, 0.2, 1);
+/* Animate items as they're being sorted. */
+.chrome-window-body.cdk-drop-list-dragging .chrome-tab-border:not(.cdk-drag-placeholder) {
+  transition: transform 150ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.chrome-window-body.cdk-drop-list-dragging .chrome-tab-border:not(.cdk-drag-placeholder) {
-  /*transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);*/
+/* Animate an item that has been dropped. */
+.cdk-drag-animating {
   transition: transform 100ms cubic-bezier(0, 0, 0.2, 1);
 }

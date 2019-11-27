@@ -32,7 +32,7 @@ export class ActionButtonFactory {
 
   static createOpenButton(callback: (chromeWindow: ChromeAPIWindowState) => void): ActionButton {
     return {
-      title: 'Open window',
+      title: 'Restore window',
       icon: 'open_in_new',
       requiresMouseover: true,
       callback
