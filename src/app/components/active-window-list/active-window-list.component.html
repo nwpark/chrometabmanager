@@ -27,7 +27,7 @@
     (cdkDragStarted)="beginDrag()">
     <div
       class="chrome-window-container"
-      *ngIf="windowListState.getWindow(layoutState.windowId).type === 'normal'">
+      *ngIf="windowListState.getWindow(layoutState.windowId).type === 'normal' && !layoutState.deleted">
       <div cdkDragHandle>
         <app-chrome-window-header
           [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"

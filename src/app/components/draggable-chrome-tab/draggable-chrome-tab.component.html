@@ -14,13 +14,19 @@
       <div class="timestamp">{{timestampString}}</div>
       <div class="vertical-divider"></div>
     </ng-container>
-    <div class="favicon-icon" style="display: inline-block" *ngIf="shouldShowLoadingSpinner()">
-      <mat-spinner [diameter]="16"></mat-spinner>
-    </div>
-    <ng-container *ngIf="!shouldShowLoadingSpinner()">
-      <img class="favicon-icon" src="{{chromeTab.favIconUrl}}" *ngIf="chromeTab.favIconUrl">
-      <img class="favicon-icon" src="assets/chrome-favicon.png" *ngIf="!chromeTab.favIconUrl">
+    <ng-container *ngIf="shouldShowFaviconIcon()">
+      <div
+        class="favicon-icon"
+        *ngIf="shouldShowLoadingSpinner()">
+        <mat-spinner [diameter]="16"></mat-spinner>
+      </div>
+      <ng-container
+        *ngIf="!shouldShowLoadingSpinner()">
+        <img class="favicon-icon" src="{{chromeTab.favIconUrl}}" *ngIf="chromeTab.favIconUrl">
+        <img class="favicon-icon" src="assets/chrome-favicon.png" *ngIf="!chromeTab.favIconUrl">
+      </ng-container>
     </ng-container>
+    <span class="favicon-icon" *ngIf="!shouldShowFaviconIcon()"></span>
     {{title}}
   </div>
 </div>

@@ -31,13 +31,10 @@ export class SavedTabsService implements TabsService {
 
   private refreshState() {
     this.storageService.getSavedWindowsState().then(windowListState => {
-      this.setWindowListState(windowListState);
+      console.log(new Date().toTimeString().substring(0, 8), '- refreshing saved windows');
+      this.windowListState = windowListState;
+      this.windowStateUpdatedSource.next(this.windowListState);
     });
-  }
-
-  @modifiesState()
-  private setWindowListState(windowListState: WindowListState) {
-    this.windowListState = windowListState;
   }
 
   getWindowListState(): WindowListState {
@@ -110,7 +107,8 @@ export class SavedTabsService implements TabsService {
   }
 
   // Called by all methods decorated with @modifiesState
-  onStateUpdated() {
+  onStateModified() {
+    console.log(new Date().toTimeString().substring(0, 8), '- updating saved windows');
     this.windowStateUpdatedSource.next(this.windowListState);
     this.storageService.setSavedWindowsState(this.windowListState);
   }

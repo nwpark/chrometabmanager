@@ -21,8 +21,6 @@ export class WindowListState {
   }
 
   getTabId(windowId: any, tabIndex: number): number {
-    console.log(windowId, tabIndex);
-    console.log(this);
     return this.getWindow(windowId).tabs[tabIndex].id;
   }
 
@@ -60,6 +58,10 @@ export class WindowListState {
   removeWindow(windowId: any) {
     this.chromeAPIWindows = this.chromeAPIWindows.filter(window => window.id !== windowId);
     this.layoutState.windowStates = this.layoutState.windowStates.filter(windowState => windowState.windowId !== windowId);
+  }
+
+  markWindowAsDeleted(windowId: any) {
+    this.getWindowLayout(windowId).deleted = true;
   }
 
   insertWindow(window: ChromeAPIWindowState, layoutState: WindowLayoutState, index: number) {
@@ -142,5 +144,6 @@ export interface WindowLayoutState {
   title: string;
   windowId: any;
   hidden: boolean;
+  deleted?: boolean;
 }
 

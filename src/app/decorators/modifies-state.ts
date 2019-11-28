@@ -4,7 +4,7 @@ export function modifiesState(): MethodDecorator {
 
     descriptor.value =  function(...args: any[]) {
       const result = originalMethod.apply(this, args);
-      this.onStateUpdated();
+      this.onStateModified();
       return result;
     };
 

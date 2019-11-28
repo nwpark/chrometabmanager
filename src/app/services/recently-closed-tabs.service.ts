@@ -30,13 +30,10 @@ export class RecentlyClosedTabsService implements TabsService {
 
   private refreshState() {
     this.storageService.getRecentlyClosedSessionsState().then(sessionListState => {
-      this.setSessionListState(sessionListState);
+      console.log(new Date().toTimeString().substring(0, 8), '- refreshing recently closed windows');
+      this.sessionListState = sessionListState;
+      this.sessionStateUpdatedSource.next(this.sessionListState);
     });
-  }
-
-  @modifiesState()
-  private setSessionListState(sessionListState: SessionListState) {
-    this.sessionListState = sessionListState;
   }
 
   getSessionListState(): SessionListState {
@@ -88,7 +85,8 @@ export class RecentlyClosedTabsService implements TabsService {
 
   setWindowTitle(windowId: any, title: string) { /* do nothing */ }
 
-  onStateUpdated() {
+  onStateModified() {
+    console.log(new Date().toTimeString().substring(0, 8), '- updating recently closed windows');
     this.sessionStateUpdatedSource.next(this.sessionListState);
     this.storageService.setRecentlyClosedSessionsState(this.sessionListState);
   }

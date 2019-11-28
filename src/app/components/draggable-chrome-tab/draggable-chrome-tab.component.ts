@@ -38,6 +38,10 @@ export class DraggableChromeTabComponent implements OnInit {
       : this.chromeTab.url;
   }
 
+  shouldShowFaviconIcon(): boolean {
+    return this.chromeTab.url !== 'chrome://newtab/';
+  }
+
   shouldShowLoadingSpinner(): boolean {
     return this.chromeTab.status === 'loading';
   }

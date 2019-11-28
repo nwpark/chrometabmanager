@@ -30,7 +30,10 @@ export class ChromeTabsService implements TabsService {
   private refreshState() {
     this.getChromeWindowsFromAPI().then(windowList => {
       this.storageService.getChromeWindowsLayoutState(windowList).then(layoutState => {
-        this.setWindowListState(new WindowListState(windowList, layoutState));
+        // todo: sanity check
+        console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
+        this.windowListState = new WindowListState(windowList, layoutState);
+        this.windowStateUpdatedSource.next(this.windowListState);
       });
     });
   }
@@ -43,18 +46,12 @@ export class ChromeTabsService implements TabsService {
     });
   }
 
-  @modifiesState()
-  private setWindowListState(windowListState: WindowListState) {
-    this.windowListState = windowListState;
-  }
-
   getWindowListState(): WindowListState {
     return this.windowListState;
   }
 
   @modifiesState()
   moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
-    console.log(windowId, sourceIndex, targetIndex);
     const tabId = this.windowListState.getTabId(windowId, sourceIndex);
     this.windowListState.moveTabInWindow(windowId, sourceIndex, targetIndex);
     chrome.tabs.move(tabId, {index: targetIndex});
@@ -88,7 +85,7 @@ export class ChromeTabsService implements TabsService {
 
   @modifiesState()
   removeWindow(windowId: any) {
-    this.windowListState.removeWindow(windowId);
+    this.windowListState.markWindowAsDeleted(windowId);
     chrome.windows.remove(windowId);
   }
 
@@ -144,7 +141,8 @@ export class ChromeTabsService implements TabsService {
     this.windowListState.moveWindowInList(sourceIndex, targetIndex);
   }
 
-  onStateUpdated() {
+  onStateModified() {
+    console.log(new Date().toTimeString().substring(0, 8), '- updating active windows');
     this.windowStateUpdatedSource.next(this.windowListState);
     this.storageService.setChromeWindowsLayoutState(this.windowListState.layoutState);
   }
