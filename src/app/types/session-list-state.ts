@@ -1,4 +1,4 @@
-import {ChromeAPITabState, ChromeAPIWindowState} from './chrome-api-types';
+import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from './chrome-api-types';
 import {WindowLayoutState, WindowListLayoutState, WindowListUtils} from './window-list-state';
 
 export class SessionListState {
@@ -76,6 +76,24 @@ export class SessionListUtils {
         ? session.closedWindow.chromeAPIWindow.tabs.length
         : session.closedTabs.length)
       .reduce((a, b) => a + b, 0);
+  }
+
+  static createClosedSessionFromWindow(chromeWindow: ChromeAPIWindowState) {
+    const closedWindow = {timestamp: Date.now(), chromeAPIWindow: chromeWindow} as RecentlyClosedWindow;
+    return {isWindow: true, closedWindow} as RecentlyClosedSession;
+  }
+
+  static createClosedSessionFromTab(chromeTab: ChromeAPITabState) {
+    const closedTab = SessionListUtils.createClosedTab(chromeTab);
+    return {isWindow: false, closedTabs: [closedTab]};
+  }
+
+  static createClosedTab(chromeTab: ChromeAPITabState) {
+    return {timestamp: Date.now(), chromeAPITab: chromeTab};
+  }
+
+  static createBasicWindowLayoutState(windowId: number): WindowLayoutState {
+    return {windowId, title: `${new Date().toTimeString().substring(0, 5)}`, hidden: true};
   }
 }
 

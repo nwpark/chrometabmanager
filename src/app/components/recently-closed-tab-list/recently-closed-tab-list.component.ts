@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
 import {ChromeWindowComponentProps, WindowCategory} from '../../types/chrome-window-component-data';
 import {ChromeAPITabState} from '../../types/chrome-api-types';
-import {SessionListState, SessionListUtils} from '../../types/closed-session-list-state';
+import {SessionListState, SessionListUtils} from '../../types/session-list-state';
 import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {DragDropService} from '../../services/drag-drop.service';

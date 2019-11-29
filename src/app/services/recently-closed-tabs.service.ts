@@ -4,7 +4,7 @@ import {modifiesState} from '../decorators/modifies-state';
 import {StorageService} from './storage.service';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
-import {SessionListState} from '../types/closed-session-list-state';
+import {SessionListState} from '../types/session-list-state';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {ChromeEventHandlerService} from './chrome-event-handler.service';
 

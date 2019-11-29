@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {WindowListLayoutState, WindowListState, WindowListUtils} from '../types/window-list-state';
-import {RecentlyClosedSession, SessionListState} from '../types/closed-session-list-state';
+import {RecentlyClosedSession, SessionListState} from '../types/session-list-state';
 import {ChromeAPIWindowState} from '../types/chrome-api-types';
 
 @Injectable({
