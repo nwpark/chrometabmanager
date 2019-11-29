@@ -1,3 +1,3 @@
 module.exports = {
-  entry: { background: 'src/background.ts' },
+  entry: { background: 'src/background.ts' }
 };

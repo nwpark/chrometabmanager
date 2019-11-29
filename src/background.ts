@@ -1,3 +1,11 @@
+import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from './app/types/chrome-api-types';
+import {RecentlyClosedSession, RecentlyClosedWindow} from './app/types/closed-session-list-state';
+import {WindowLayoutState} from './app/types/window-list-state';
+import {StorageService} from './app/services/storage.service';
+import {ChromeEventHandlerService} from './app/services/chrome-event-handler.service';
+import {merge, Observable, Subject, timer} from 'rxjs';
+import {bufferToggle, filter, map, throttleTime} from 'rxjs/operators';
+
 const CHROME_WINDOW_UPDATE_EVENTS = [
   chrome.tabs.onCreated,
   chrome.tabs.onUpdated,
@@ -8,45 +16,53 @@ const CHROME_WINDOW_UPDATE_EVENTS = [
   chrome.windows.onCreated,
 ];
 
-const RECENTLY_CLOSED_SESSIONS = 'recentlyClosedSessions';
-const RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE = 'recentlyClosedSessionsLayoutState';
+const RECENTLY_CLOSED_SESSIONS = StorageService.RECENTLY_CLOSED_SESSIONS;
+const RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE = StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE;
+const ACTIVE_WINDOWS_UPDATED = ChromeEventHandlerService.ACTIVE_WINDOWS_UPDATED;
 const ACTIVE_CHROME_WINDOWS = 'activeChromeWindows';
-const ACTIVE_WINDOWS_UPDATED = 'activeWindowsUpdated';
 
 const MAX_CLOSED_TABS = 50;
 const IGNORED_TAB_URLS = ['chrome://newtab/'];
-const WINDOW_UPDATE_TIMEOUT_MILLIS = 100; // throttle window updates
-
-let chromeWindowUpdateQueued = false;
+const WINDOW_UPDATE_THROTTLE_TIME = 100;
 // todo: replace with async-lock
 let chromeWindowStorageLock = false;
 
+const windowStateUpdated = new Subject();
+const windowStateUpdated$ = windowStateUpdated.asObservable();
+
+throttleWithBuffer(windowStateUpdated$).subscribe(() => {
+  updateStoredWindowState();
+});
 
 CHROME_WINDOW_UPDATE_EVENTS.forEach(windowEvent => {
   windowEvent.addListener(() => {
-    updateStoredWindowStateThrottled();
+    windowStateUpdated.next();
   });
 });
 
-function updateStoredWindowStateThrottled() {
-  if (!chromeWindowUpdateQueued) {
-    chromeWindowUpdateQueued = true;
-    setTimeout(() => {
-      updateStoredWindowState();
-      chromeWindowUpdateQueued = false;
-    }, WINDOW_UPDATE_TIMEOUT_MILLIS);
-  }
+function throttleWithBuffer<T>(observable$: Observable<T>): Observable<T> {
+  const throttled = observable$.pipe(
+    throttleTime(WINDOW_UPDATE_THROTTLE_TIME)
+  );
+
+  const buffered = observable$.pipe(
+    bufferToggle(throttled, () => timer(WINDOW_UPDATE_THROTTLE_TIME)),
+    filter(buff => buff.length > 1),
+    map(buff => buff[buff.length - 1])
+  );
+
+  return merge(throttled, buffered);
 }
 
 function updateStoredWindowState() {
   chrome.windows.getAll({populate: true}, chromeWindows => {
     if (!chromeWindowStorageLock) {
-      let writeData = {};
+      const writeData = {};
       writeData[ACTIVE_CHROME_WINDOWS] = chromeWindows;
       chrome.storage.local.set(writeData);
     }
   });
-  let message = {};
+  const message = {};
   message[ACTIVE_WINDOWS_UPDATED] = true;
   chrome.runtime.sendMessage(message);
 }
@@ -54,8 +70,8 @@ function updateStoredWindowState() {
 chrome.windows.onRemoved.addListener((windowId) => {
   chromeWindowStorageLock = true;
   chrome.storage.local.get(ACTIVE_CHROME_WINDOWS, data => {
-    let chromeWindow = data[ACTIVE_CHROME_WINDOWS].find(chromeWindow => chromeWindow.id === windowId);
-    storeRecentlyClosedWindow(convertToClosedWindow(chromeWindow));
+    const chromeWindow = data[ACTIVE_CHROME_WINDOWS].find(window => window.id === windowId);
+    storeRecentlyClosedWindow(WindowStateUtils.convertToSavedWindow(chromeWindow));
     chromeWindowStorageLock = false;
     updateStoredWindowState();
   });
@@ -65,10 +81,10 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
   chromeWindowStorageLock = true;
   if (!removeInfo.isWindowClosing) {
     chrome.storage.local.get(ACTIVE_CHROME_WINDOWS, data => {
-      let chromeWindow = data[ACTIVE_CHROME_WINDOWS].find(chromeWindow => chromeWindow.id === removeInfo.windowId);
-      let chromeTab = chromeWindow.tabs.find(chromeTab => chromeTab.id === tabId);
+      const chromeWindow = data[ACTIVE_CHROME_WINDOWS].find(window => window.id === removeInfo.windowId);
+      const chromeTab = chromeWindow.tabs.find(tab => tab.id === tabId);
       if (!IGNORED_TAB_URLS.includes(chromeTab.url)) {
-        storeRecentlyClosedTab(convertToClosedTab(chromeTab));
+        storeRecentlyClosedTab(WindowStateUtils.convertToSavedTab(chromeTab));
       }
       chromeWindowStorageLock = false;
       updateStoredWindowState();
@@ -76,14 +92,14 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
   }
 });
 
-function storeRecentlyClosedWindow(chromeWindow) {
-  let storageKey = {};
+function storeRecentlyClosedWindow(chromeWindow: ChromeAPIWindowState) {
+  const storageKey = {};
   storageKey[RECENTLY_CLOSED_SESSIONS] = [];
   storageKey[RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE] = {hidden: true, windowStates: []};
   chrome.storage.local.get(storageKey, data => {
-    let closedWindow = {timestamp: Date.now(), chromeAPIWindow: chromeWindow};
-    let closedSession = {isWindow: true, closedWindow: closedWindow};
-    let windowLayoutState = {windowId: chromeWindow.id, title: `${new Date().toTimeString().substring(0, 5)}`, hidden: true};
+    const closedWindow = {timestamp: Date.now(), chromeAPIWindow: chromeWindow} as RecentlyClosedWindow;
+    const closedSession = {isWindow: true, closedWindow} as RecentlyClosedSession;
+    const windowLayoutState = {windowId: chromeWindow.id, title: `${new Date().toTimeString().substring(0, 5)}`, hidden: true} as WindowLayoutState;
     data[RECENTLY_CLOSED_SESSIONS].unshift(closedSession);
     data[RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE].windowStates.unshift(windowLayoutState);
     data[RECENTLY_CLOSED_SESSIONS] = trimClosedSessions(data[RECENTLY_CLOSED_SESSIONS]);
@@ -91,11 +107,11 @@ function storeRecentlyClosedWindow(chromeWindow) {
   });
 }
 
-function storeRecentlyClosedTab(chromeTab) {
+function storeRecentlyClosedTab(chromeTab: ChromeAPITabState) {
   chrome.storage.local.get(keyWithDefault(RECENTLY_CLOSED_SESSIONS, []), data => {
-    let closedTab = {timestamp: Date.now(), chromeAPITab: chromeTab};
+    const closedTab = {timestamp: Date.now(), chromeAPITab: chromeTab};
     if (data[RECENTLY_CLOSED_SESSIONS].length === 0 || data[RECENTLY_CLOSED_SESSIONS][0].isWindow) {
-      let recentlyClosedSession = {isWindow: false, closedTabs: [closedTab]};
+      const recentlyClosedSession = {isWindow: false, closedTabs: [closedTab]};
       data[RECENTLY_CLOSED_SESSIONS].unshift(recentlyClosedSession);
     } else {
       data[RECENTLY_CLOSED_SESSIONS][0].closedTabs.unshift(closedTab);
@@ -105,30 +121,19 @@ function storeRecentlyClosedTab(chromeTab) {
   });
 }
 
-// todo: needs new id
-function convertToClosedWindow(chromeWindow) {
-  const clonedWindow = JSON.parse(JSON.stringify(chromeWindow));
-  const closedTabs = clonedWindow.tabs.map(tab => convertToClosedTab(tab));
-  return {...clonedWindow, tabs: closedTabs};
-}
-
-// todo: needs new id
-function convertToClosedTab(chromeTab) {
-  const clonedTab = JSON.parse(JSON.stringify(chromeTab));
-  return {...clonedTab, status: 'complete'};
-}
-
-function keyWithDefault(keyName, defaultValue) {
-  let key = {};
+function keyWithDefault(keyName: string, defaultValue: any) {
+  const key = {};
   key[keyName] = defaultValue;
   return key;
+  // return JSON.parse(`${keyName}: ${defaultValue}`);
 }
 
 // todo: add fields to data structure to reduce work required here
-function trimClosedSessions(closedSessions) {
-  let maxIndex, tabsAtMax;
+function trimClosedSessions(closedSessions: RecentlyClosedSession[]) {
+  let maxIndex;
+  let tabsAtMax;
   closedSessions.reduce((acc, session, index) => {
-    let totalTabs = acc + (session.isWindow
+    const totalTabs = acc + (session.isWindow
       ? session.closedWindow.chromeAPIWindow.tabs.length
       : session.closedTabs.length);
     if (acc < MAX_CLOSED_TABS && totalTabs >= MAX_CLOSED_TABS) {
@@ -142,7 +147,7 @@ function trimClosedSessions(closedSessions) {
     console.log(tabsAtMax);
     closedSessions = closedSessions.slice(0, maxIndex + 1);
     if (!closedSessions[maxIndex].isWindow && tabsAtMax > MAX_CLOSED_TABS) {
-      closedSessions[maxIndex].closedTabs= closedSessions[maxIndex].closedTabs.slice(0, MAX_CLOSED_TABS - tabsAtMax);
+      closedSessions[maxIndex].closedTabs = closedSessions[maxIndex].closedTabs.slice(0, MAX_CLOSED_TABS - tabsAtMax);
     }
   }
   return closedSessions;
