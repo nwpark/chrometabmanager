@@ -6,6 +6,7 @@ import {ChromeEventHandlerService} from './app/services/chrome-event-handler.ser
 import {Subject} from 'rxjs';
 import {throttleTime} from 'rxjs/operators';
 import {async} from 'rxjs/internal/scheduler/async';
+import Mutex from 'async-mutex/lib/Mutex';
 
 const CHROME_WINDOW_UPDATE_EVENTS = [
   chrome.tabs.onCreated,
@@ -25,8 +26,7 @@ const ACTIVE_CHROME_WINDOWS = 'activeChromeWindows';
 const MAX_CLOSED_TABS = 50;
 const IGNORED_TAB_URLS = ['chrome://newtab/'];
 const WINDOW_UPDATE_THROTTLE_TIME = 100;
-// todo: replace with async-lock
-let chromeWindowStorageLock = false;
+const activeWindowStorageMutex = new Mutex();
 
 const windowStateUpdated = new Subject();
 const windowStateUpdated$ = windowStateUpdated.asObservable();
@@ -34,7 +34,7 @@ const windowStateUpdated$ = windowStateUpdated.asObservable();
 windowStateUpdated$.pipe(
   throttleTime(WINDOW_UPDATE_THROTTLE_TIME, async, { leading: true, trailing: true })
 ).subscribe(() => {
-  updateStoredWindowState();
+  updateActiveWindowState();
 });
 
 CHROME_WINDOW_UPDATE_EVENTS.forEach(windowEvent => {
@@ -43,44 +43,54 @@ CHROME_WINDOW_UPDATE_EVENTS.forEach(windowEvent => {
   });
 });
 
-function updateStoredWindowState() {
-  chrome.windows.getAll({populate: true}, chromeWindows => {
-    if (!chromeWindowStorageLock) {
-      const writeData = {};
-      writeData[ACTIVE_CHROME_WINDOWS] = chromeWindows;
-      chrome.storage.local.set(writeData);
-    }
-  });
-  const message = {};
-  message[ACTIVE_WINDOWS_UPDATED] = true;
-  chrome.runtime.sendMessage(message);
-}
-
 chrome.windows.onRemoved.addListener((windowId) => {
-  chromeWindowStorageLock = true;
-  chrome.storage.local.get(ACTIVE_CHROME_WINDOWS, data => {
-    const chromeWindow = data[ACTIVE_CHROME_WINDOWS].find(window => window.id === windowId);
+  getActiveChromeWindowsFromStorage().then(chromeWindows => {
+    const chromeWindow = chromeWindows.find(window => window.id === windowId);
     storeRecentlyClosedWindow(WindowStateUtils.convertToSavedWindow(chromeWindow));
-    chromeWindowStorageLock = false;
-    updateStoredWindowState();
+    updateActiveWindowState();
   });
 });
 
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-  chromeWindowStorageLock = true;
-  if (!removeInfo.isWindowClosing) {
-    chrome.storage.local.get(ACTIVE_CHROME_WINDOWS, data => {
-      const chromeWindow = data[ACTIVE_CHROME_WINDOWS].find(window => window.id === removeInfo.windowId);
-      const chromeTab = chromeWindow.tabs.find(tab => tab.id === tabId);
-      if (!IGNORED_TAB_URLS.includes(chromeTab.url)) {
-        storeRecentlyClosedTab(WindowStateUtils.convertToSavedTab(chromeTab));
-      }
-      chromeWindowStorageLock = false;
-      updateStoredWindowState();
-    });
+  if (removeInfo.isWindowClosing) {
+    return;
   }
+  getActiveChromeWindowsFromStorage().then(chromeWindows => {
+    const chromeWindow = chromeWindows.find(window => window.id === removeInfo.windowId);
+    const chromeTab = chromeWindow.tabs.find(tab => tab.id === tabId);
+    if (!IGNORED_TAB_URLS.includes(chromeTab.url)) {
+      storeRecentlyClosedTab(WindowStateUtils.convertToSavedTab(chromeTab));
+    }
+    updateActiveWindowState();
+  });
 });
 
+// todo: move these functions to active window class
+function updateActiveWindowState() {
+  chrome.runtime.sendMessage(keyWithValue(ACTIVE_WINDOWS_UPDATED, true));
+  chrome.windows.getAll({populate: true}, chromeWindows => {
+    storeActiveChromeWindows(chromeWindows as ChromeAPIWindowState[]);
+  });
+}
+
+function storeActiveChromeWindows(chromeWindows: ChromeAPIWindowState[]) {
+  activeWindowStorageMutex.acquire().then(releaseLock => {
+    chrome.storage.local.set(keyWithValue(ACTIVE_CHROME_WINDOWS, chromeWindows), releaseLock);
+  });
+}
+
+function getActiveChromeWindowsFromStorage(): Promise<ChromeAPIWindowState[]> {
+  return new Promise<ChromeAPIWindowState[]>(resolve => {
+    activeWindowStorageMutex.acquire().then(releaseLock => {
+      chrome.storage.local.get(ACTIVE_CHROME_WINDOWS, data => {
+        releaseLock();
+        resolve(data[ACTIVE_CHROME_WINDOWS] as ChromeAPIWindowState[]);
+      });
+    });
+  });
+}
+
+// todo: move these functions to recently closed window class
 function storeRecentlyClosedWindow(chromeWindow: ChromeAPIWindowState) {
   const storageKey = {};
   storageKey[RECENTLY_CLOSED_SESSIONS] = [];
@@ -91,13 +101,13 @@ function storeRecentlyClosedWindow(chromeWindow: ChromeAPIWindowState) {
     const windowLayoutState = {windowId: chromeWindow.id, title: `${new Date().toTimeString().substring(0, 5)}`, hidden: true} as WindowLayoutState;
     data[RECENTLY_CLOSED_SESSIONS].unshift(closedSession);
     data[RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE].windowStates.unshift(windowLayoutState);
-    data[RECENTLY_CLOSED_SESSIONS] = trimClosedSessions(data[RECENTLY_CLOSED_SESSIONS]);
+    data[RECENTLY_CLOSED_SESSIONS] = removeExpiredSessions(data[RECENTLY_CLOSED_SESSIONS]);
     chrome.storage.local.set(data);
   });
 }
 
 function storeRecentlyClosedTab(chromeTab: ChromeAPITabState) {
-  chrome.storage.local.get(keyWithDefault(RECENTLY_CLOSED_SESSIONS, []), data => {
+  chrome.storage.local.get(keyWithValue(RECENTLY_CLOSED_SESSIONS, []), data => {
     const closedTab = {timestamp: Date.now(), chromeAPITab: chromeTab};
     if (data[RECENTLY_CLOSED_SESSIONS].length === 0 || data[RECENTLY_CLOSED_SESSIONS][0].isWindow) {
       const recentlyClosedSession = {isWindow: false, closedTabs: [closedTab]};
@@ -105,20 +115,13 @@ function storeRecentlyClosedTab(chromeTab: ChromeAPITabState) {
     } else {
       data[RECENTLY_CLOSED_SESSIONS][0].closedTabs.unshift(closedTab);
     }
-    data[RECENTLY_CLOSED_SESSIONS] = trimClosedSessions(data[RECENTLY_CLOSED_SESSIONS]);
+    data[RECENTLY_CLOSED_SESSIONS] = removeExpiredSessions(data[RECENTLY_CLOSED_SESSIONS]);
     chrome.storage.local.set(data);
   });
 }
 
-function keyWithDefault(keyName: string, defaultValue: any) {
-  const key = {};
-  key[keyName] = defaultValue;
-  return key;
-  // return JSON.parse(`${keyName}: ${defaultValue}`);
-}
-
 // todo: add fields to data structure to reduce work required here
-function trimClosedSessions(closedSessions: RecentlyClosedSession[]) {
+function removeExpiredSessions(closedSessions: RecentlyClosedSession[]) {
   let maxIndex;
   let tabsAtMax;
   closedSessions.reduce((acc, session, index) => {
@@ -140,4 +143,10 @@ function trimClosedSessions(closedSessions: RecentlyClosedSession[]) {
     }
   }
   return closedSessions;
+}
+
+function keyWithValue(keyName: string, defaultValue: any) {
+  const key = {};
+  key[keyName] = defaultValue;
+  return key;
 }
