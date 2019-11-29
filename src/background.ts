@@ -3,8 +3,9 @@ import {RecentlyClosedSession, RecentlyClosedWindow} from './app/types/closed-se
 import {WindowLayoutState} from './app/types/window-list-state';
 import {StorageService} from './app/services/storage.service';
 import {ChromeEventHandlerService} from './app/services/chrome-event-handler.service';
-import {merge, Observable, Subject, timer} from 'rxjs';
-import {bufferToggle, filter, map, throttleTime} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {throttleTime} from 'rxjs/operators';
+import {async} from 'rxjs/internal/scheduler/async';
 
 const CHROME_WINDOW_UPDATE_EVENTS = [
   chrome.tabs.onCreated,
@@ -30,7 +31,9 @@ let chromeWindowStorageLock = false;
 const windowStateUpdated = new Subject();
 const windowStateUpdated$ = windowStateUpdated.asObservable();
 
-throttleWithBuffer(windowStateUpdated$).subscribe(() => {
+windowStateUpdated$.pipe(
+  throttleTime(WINDOW_UPDATE_THROTTLE_TIME, async, { leading: true, trailing: true })
+).subscribe(() => {
   updateStoredWindowState();
 });
 
@@ -39,20 +42,6 @@ CHROME_WINDOW_UPDATE_EVENTS.forEach(windowEvent => {
     windowStateUpdated.next();
   });
 });
-
-function throttleWithBuffer<T>(observable$: Observable<T>): Observable<T> {
-  const throttled = observable$.pipe(
-    throttleTime(WINDOW_UPDATE_THROTTLE_TIME)
-  );
-
-  const buffered = observable$.pipe(
-    bufferToggle(throttled, () => timer(WINDOW_UPDATE_THROTTLE_TIME)),
-    filter(buff => buff.length > 1),
-    map(buff => buff[buff.length - 1])
-  );
-
-  return merge(throttled, buffered);
-}
 
 function updateStoredWindowState() {
   chrome.windows.getAll({populate: true}, chromeWindows => {

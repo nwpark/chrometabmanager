@@ -55,6 +55,7 @@ export class DragDropService {
     return this.dragging;
   }
 
+  // todo: return MonoTypeOperatorFunction
   ignoreWhenDragging<T>(observable$: Observable<T>): Observable<T> {
     return merge(
       this.filterWhenDragging(observable$),
