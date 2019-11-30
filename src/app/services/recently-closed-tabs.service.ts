@@ -19,17 +19,17 @@ export class RecentlyClosedTabsService implements TabsService {
   public sessionStateUpdated$ = this.sessionStateUpdatedSource.asObservable();
 
   constructor(private storageService: StorageService,
-              private chromeTabsService: ChromeTabsService,
-              private chromeEventHandlerService: ChromeEventHandlerService) {
+              private chromeTabsService: ChromeTabsService) {
     this.sessionListState = SessionListState.empty();
-    this.chromeEventHandlerService.addClosedSessionStateListener(() => {
+    ChromeEventHandlerService.addClosedSessionStateListener(() => {
+      // todo: check id of sender
       this.refreshState();
     });
     this.refreshState();
   }
 
   private refreshState() {
-    this.storageService.getRecentlyClosedSessionsState().then(sessionListState => {
+    StorageService.getRecentlyClosedSessionsState().then(sessionListState => {
       console.log(new Date().toTimeString().substring(0, 8), '- refreshing recently closed windows');
       this.sessionListState = sessionListState;
       this.sessionStateUpdatedSource.next(this.sessionListState);

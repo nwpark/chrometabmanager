@@ -1,10 +1,9 @@
-import {WindowStateUtils} from '../app/types/chrome-api-types';
 import {Subject} from 'rxjs';
 import {throttleTime} from 'rxjs/operators';
 import {async} from 'rxjs/internal/scheduler/async';
 import {ActiveChromeWindowStateManager} from './ActiveChromeWindowStateManager';
-import {storeRecentlyClosedTab, storeRecentlyClosedWindow} from './RecentlyClosedSessionUtils';
 import {ThrottleConfig} from 'rxjs/src/internal/operators/throttle';
+import {ClosedSessionStateManager} from './ClosedSessionStateManager';
 
 const chromeWindowUpdateEvents = [
   chrome.tabs.onCreated,
@@ -21,6 +20,7 @@ const throttleTimeConfig = { leading: true, trailing: true } as ThrottleConfig;
 const ignoredTabUrls = ['chrome://newtab/'];
 
 const activeWindowStateManager = new ActiveChromeWindowStateManager();
+const closedSessionStateManager = new ClosedSessionStateManager();
 
 const windowStateUpdated = new Subject();
 const windowStateUpdated$ = windowStateUpdated.asObservable();
@@ -40,8 +40,9 @@ windowStateUpdated$.pipe(
 chrome.windows.onRemoved.addListener((windowId) => {
   activeWindowStateManager.getActiveChromeWindowsFromStorage().then(chromeWindows => {
     const chromeWindow = chromeWindows.find(window => window.id === windowId);
-    // storeRecentlyClosedWindow(WindowStateUtils.convertToSavedWindow(chromeWindow));
-    storeRecentlyClosedWindow(chromeWindow);
+    if (chromeWindow.tabs.length > 0) {
+      closedSessionStateManager.storeClosedWindow(chromeWindow);
+    }
     activeWindowStateManager.updateActiveWindowState();
   });
 });
@@ -54,8 +55,7 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
     const chromeWindow = chromeWindows.find(window => window.id === removeInfo.windowId);
     const chromeTab = chromeWindow.tabs.find(tab => tab.id === tabId);
     if (!ignoredTabUrls.includes(chromeTab.url)) {
-      // storeRecentlyClosedTab(WindowStateUtils.convertToSavedTab(chromeTab));
-      storeRecentlyClosedTab(chromeTab);
+      closedSessionStateManager.storeClosedTab(chromeTab);
     }
     activeWindowStateManager.updateActiveWindowState();
   });

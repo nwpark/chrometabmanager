@@ -67,6 +67,46 @@ export class SessionListState {
     const windowLayout = this.getWindowLayout(windowId);
     windowLayout.hidden = !windowLayout.hidden;
   }
+
+  unshiftSession(closedSession: RecentlyClosedSession) {
+    this.recentlyClosedSessions.unshift(closedSession);
+  }
+
+  unshiftLayoutState(windowLayoutState: WindowLayoutState) {
+    this.layoutState.windowStates.unshift(windowLayoutState);
+  }
+
+  unshiftClosedTab(closedTab: RecentlyClosedTab) {
+    if (this.recentlyClosedSessions.length === 0 || this.recentlyClosedSessions[0].isWindow) {
+      const closedSession = SessionListUtils.createSessionFromClosedTab(closedTab);
+      this.unshiftSession(closedSession);
+    } else {
+      this.recentlyClosedSessions[0].closedTabs.unshift(closedTab);
+    }
+  }
+
+  removeExpiredSessions(maxTabCount: number) {
+    let size = this.getSize();
+    while (size > maxTabCount) {
+      this.pop();
+      size--;
+    }
+  }
+
+  private pop() {
+    const tail = this.recentlyClosedSessions[this.recentlyClosedSessions.length - 1];
+    if (tail.isWindow || tail.closedTabs.length <= 1) {
+      this.recentlyClosedSessions.pop();
+    } else {
+      tail.closedTabs.pop();
+    }
+  }
+
+  private getSize(): number {
+    return this.recentlyClosedSessions.reduce((acc, session) => {
+      return acc + (session.isWindow ? 1 : session.closedTabs.length);
+    }, 0);
+  }
 }
 
 export class SessionListUtils {
@@ -78,17 +118,16 @@ export class SessionListUtils {
       .reduce((a, b) => a + b, 0);
   }
 
-  static createClosedSessionFromWindow(chromeWindow: ChromeAPIWindowState) {
+  static createClosedSessionFromWindow(chromeWindow: ChromeAPIWindowState): RecentlyClosedSession {
     const closedWindow = {timestamp: Date.now(), chromeAPIWindow: chromeWindow} as RecentlyClosedWindow;
-    return {isWindow: true, closedWindow} as RecentlyClosedSession;
+    return {isWindow: true, closedWindow};
   }
 
-  static createClosedSessionFromTab(chromeTab: ChromeAPITabState) {
-    const closedTab = SessionListUtils.createClosedTab(chromeTab);
+  static createSessionFromClosedTab(closedTab: RecentlyClosedTab): RecentlyClosedSession {
     return {isWindow: false, closedTabs: [closedTab]};
   }
 
-  static createClosedTab(chromeTab: ChromeAPITabState) {
+  static createClosedTab(chromeTab: ChromeAPITabState): RecentlyClosedTab {
     return {timestamp: Date.now(), chromeAPITab: chromeTab};
   }
 

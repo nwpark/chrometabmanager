@@ -5,7 +5,7 @@ import {ChromeEventHandlerService} from '../app/services/chrome-event-handler.se
 export class ActiveChromeWindowStateManager {
 
   static readonly ACTIVE_WINDOWS_UPDATED = ChromeEventHandlerService.ACTIVE_WINDOWS_UPDATED;
-  static readonly ACTIVE_CHROME_WINDOWS = 'activeChromeWindows';
+  static readonly ACTIVE_CHROME_WINDOWS = 'activeChromeWindows_ActiveChromeWindowStateManager';
 
   activeWindowStorageMutex: Mutex;
 
@@ -14,7 +14,7 @@ export class ActiveChromeWindowStateManager {
   }
 
   updateActiveWindowState() {
-    chrome.runtime.sendMessage(keyWithValue(ActiveChromeWindowStateManager.ACTIVE_WINDOWS_UPDATED, true));
+    chrome.runtime.sendMessage({[ActiveChromeWindowStateManager.ACTIVE_WINDOWS_UPDATED]: true});
     chrome.windows.getAll({populate: true}, chromeWindows => {
       this.storeActiveChromeWindows(chromeWindows as ChromeAPIWindowState[]);
     });
@@ -22,7 +22,7 @@ export class ActiveChromeWindowStateManager {
 
   storeActiveChromeWindows(chromeWindows: ChromeAPIWindowState[]) {
     this.activeWindowStorageMutex.acquire().then(releaseLock => {
-      const writeData = keyWithValue(ActiveChromeWindowStateManager.ACTIVE_CHROME_WINDOWS, chromeWindows);
+      const writeData = {[ActiveChromeWindowStateManager.ACTIVE_CHROME_WINDOWS]: chromeWindows};
       chrome.storage.local.set(writeData, releaseLock);
     });
   }
@@ -37,10 +37,4 @@ export class ActiveChromeWindowStateManager {
       });
     });
   }
-}
-
-function keyWithValue(keyName: string, defaultValue: any) {
-  const key = {};
-  key[keyName] = defaultValue;
-  return key;
 }

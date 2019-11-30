@@ -23,7 +23,7 @@ export class ChromeEventHandlerService {
     });
   }
 
-  addClosedSessionStateListener(callback: () => void) {
+  static addClosedSessionStateListener(callback: () => void) {
     chrome.storage.onChanged.addListener((changes, areaName) => {
       if (changes[StorageService.RECENTLY_CLOSED_SESSIONS]
         || changes[StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE]) {

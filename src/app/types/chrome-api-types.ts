@@ -1,5 +1,4 @@
 import {v4 as uuid} from 'uuid';
-import {RecentlyClosedSession, RecentlyClosedWindow} from './session-list-state';
 
 export interface ChromeAPIWindowState {
   id: any;

@@ -56,7 +56,7 @@ export class StorageService {
     chrome.storage.local.set(writeData);
   }
 
-  getRecentlyClosedSessionsState(): Promise<SessionListState> {
+  static getRecentlyClosedSessionsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
       chrome.storage.local.get([StorageService.RECENTLY_CLOSED_SESSIONS, StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE], data => {
         const recentlyClosedSessions = data[StorageService.RECENTLY_CLOSED_SESSIONS] as RecentlyClosedSession[];
