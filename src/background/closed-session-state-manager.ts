@@ -1,20 +1,17 @@
 import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from '../app/types/chrome-api-types';
 import {SessionListState, SessionListUtils} from '../app/types/session-list-state';
 import {StorageService} from '../app/services/storage.service';
-import {ChromeEventHandlerService} from '../app/services/chrome-event-handler.service';
+import {MessagePassingService} from '../app/services/message-passing.service';
 import {modifiesState} from '../app/decorators/modifies-state';
-
-const recentlyClosedSessions = StorageService.RECENTLY_CLOSED_SESSIONS;
-const recentlyClosedSessionsLayoutState = StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE;
 
 export class ClosedSessionStateManager {
 
-  static readonly MAX_CLOSED_TABS = 10;
+  static readonly MAX_CLOSED_TABS = 30;
 
   private sessionListState: SessionListState;
 
   constructor() {
-    ChromeEventHandlerService.addClosedSessionStateListener(() => {
+    MessagePassingService.addClosedSessionStateListener(() => {
       this.refreshState();
     });
     this.refreshState();
@@ -48,9 +45,6 @@ export class ClosedSessionStateManager {
 
   private onStateModified() {
     this.sessionListState.removeExpiredSessions(ClosedSessionStateManager.MAX_CLOSED_TABS);
-    chrome.storage.local.set({
-      [recentlyClosedSessions]: this.sessionListState.recentlyClosedSessions,
-      [recentlyClosedSessionsLayoutState]: this.sessionListState.layoutState
-    });
+    StorageService.setRecentlyClosedSessionsState(this.sessionListState);
   }
 }

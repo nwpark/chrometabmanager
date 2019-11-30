@@ -18,24 +18,22 @@ export interface ChromeAPITabState {
 
 export class WindowStateUtils {
   static convertToSavedWindow(chromeWindow: ChromeAPIWindowState): ChromeAPIWindowState {
-    const clonedWindow = JSON.parse(JSON.stringify(chromeWindow)) as ChromeAPIWindowState;
-    const savedTabs = clonedWindow.tabs.map(tab => this.convertToSavedTab(tab)) as ChromeAPITabState[];
-    return {...clonedWindow, id: uuid(), tabs: savedTabs};
+    const {type} = chromeWindow;
+    const savedTabs = chromeWindow.tabs.map(tab => this.convertToSavedTab(tab));
+    return {id: uuid(), tabs: savedTabs, type};
   }
 
   static convertToSavedTab(chromeTab: ChromeAPITabState): ChromeAPITabState {
-    const clonedTab = JSON.parse(JSON.stringify(chromeTab)) as ChromeAPITabState;
-    return {...clonedTab, id: uuid(), status: 'complete'};
+    const {url, title, favIconUrl} = chromeTab;
+    return {id: uuid(), status: 'complete', url, title, favIconUrl};
   }
 
   static convertToActiveWindow(chromeWindow: ChromeAPIWindowState): ChromeAPIWindowState {
-    const clonedWindow = JSON.parse(JSON.stringify(chromeWindow)) as ChromeAPIWindowState;
-    const activeTabs = clonedWindow.tabs.map(tab => this.convertToActiveTab(tab)) as ChromeAPITabState[];
-    return {...clonedWindow, id: uuid(), tabs: activeTabs};
+    const activeTabs = chromeWindow.tabs.map(tab => this.convertToActiveTab(tab));
+    return {...chromeWindow, id: uuid(), tabs: activeTabs};
   }
 
   static convertToActiveTab(chromeTab: ChromeAPITabState): ChromeAPITabState {
-    const clonedTab = JSON.parse(JSON.stringify(chromeTab)) as ChromeAPITabState;
-    return {...clonedTab, id: undefined, status: 'loading'};
+    return {...chromeTab, id: undefined, status: 'loading'};
   }
 }

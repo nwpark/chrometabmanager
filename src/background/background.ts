@@ -1,9 +1,9 @@
 import {Subject} from 'rxjs';
 import {throttleTime} from 'rxjs/operators';
 import {async} from 'rxjs/internal/scheduler/async';
-import {ActiveChromeWindowStateManager} from './ActiveChromeWindowStateManager';
+import {ActiveChromeWindowStateManager} from './active-chrome-window-state-manager';
 import {ThrottleConfig} from 'rxjs/src/internal/operators/throttle';
-import {ClosedSessionStateManager} from './ClosedSessionStateManager';
+import {ClosedSessionStateManager} from './closed-session-state-manager';
 
 const chromeWindowUpdateEvents = [
   chrome.tabs.onCreated,

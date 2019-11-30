@@ -6,7 +6,7 @@ import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {SessionListState} from '../types/session-list-state';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
-import {ChromeEventHandlerService} from './chrome-event-handler.service';
+import {MessagePassingService} from './message-passing.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +21,7 @@ export class RecentlyClosedTabsService implements TabsService {
   constructor(private storageService: StorageService,
               private chromeTabsService: ChromeTabsService) {
     this.sessionListState = SessionListState.empty();
-    ChromeEventHandlerService.addClosedSessionStateListener(() => {
-      // todo: check id of sender
+    MessagePassingService.addClosedSessionStateListener(() => {
       this.refreshState();
     });
     this.refreshState();
@@ -88,6 +87,6 @@ export class RecentlyClosedTabsService implements TabsService {
   onStateModified() {
     console.log(new Date().toTimeString().substring(0, 8), '- updating recently closed windows');
     this.sessionStateUpdatedSource.next(this.sessionListState);
-    this.storageService.setRecentlyClosedSessionsState(this.sessionListState);
+    StorageService.setRecentlyClosedSessionsState(this.sessionListState);
   }
 }

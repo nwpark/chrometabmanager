@@ -1,11 +1,10 @@
 import {ChromeAPIWindowState} from '../app/types/chrome-api-types';
 import Mutex from 'async-mutex/lib/Mutex';
-import {ChromeEventHandlerService} from '../app/services/chrome-event-handler.service';
+import {MessagePassingService} from '../app/services/message-passing.service';
 
 export class ActiveChromeWindowStateManager {
 
-  static readonly ACTIVE_WINDOWS_UPDATED = ChromeEventHandlerService.ACTIVE_WINDOWS_UPDATED;
-  static readonly ACTIVE_CHROME_WINDOWS = 'activeChromeWindows_ActiveChromeWindowStateManager';
+  static readonly ACTIVE_CHROME_WINDOWS = 'activeChromeWindows_6aec4a56';
 
   activeWindowStorageMutex: Mutex;
 
@@ -15,7 +14,7 @@ export class ActiveChromeWindowStateManager {
   }
 
   updateActiveWindowState() {
-    chrome.runtime.sendMessage({[ActiveChromeWindowStateManager.ACTIVE_WINDOWS_UPDATED]: true});
+    MessagePassingService.notifyActiveWindowStateListeners();
     chrome.windows.getAll({populate: true}, chromeWindows => {
       this.storeActiveChromeWindows(chromeWindows as ChromeAPIWindowState[]);
     });

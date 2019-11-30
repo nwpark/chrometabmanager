@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ChromeEventHandlerService } from './chrome-event-handler.service';
+import { MessagePassingService } from './message-passing.service';
 
 describe('ChromeEventHandlerService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: ChromeEventHandlerService = TestBed.get(ChromeEventHandlerService);
+    const service: MessagePassingService = TestBed.get(MessagePassingService);
     expect(service).toBeTruthy();
   });
 });

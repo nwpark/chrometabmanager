@@ -7,7 +7,7 @@ import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {StorageService} from './storage.service';
 import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from '../types/chrome-api-types';
-import {ChromeEventHandlerService} from './chrome-event-handler.service';
+import {MessagePassingService} from './message-passing.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,18 +19,16 @@ export class SavedTabsService implements TabsService {
   private windowStateUpdatedSource = new Subject<WindowListState>();
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
-  constructor(private chromeTabsService: ChromeTabsService,
-              private storageService: StorageService,
-              private chromeEventHandlerService: ChromeEventHandlerService) {
+  constructor(private chromeTabsService: ChromeTabsService) {
     this.windowListState = WindowListUtils.createEmptyWindowListState();
-    this.chromeEventHandlerService.addSavedWindowsUpdatedListener(() => {
+    MessagePassingService.addSavedWindowStateListener(() => {
       this.refreshState();
     });
     this.refreshState();
   }
 
   private refreshState() {
-    this.storageService.getSavedWindowsState().then(windowListState => {
+    StorageService.getSavedWindowsState().then(windowListState => {
       console.log(new Date().toTimeString().substring(0, 8), '- refreshing saved windows');
       this.windowListState = windowListState;
       this.windowStateUpdatedSource.next(this.windowListState);
@@ -106,10 +104,10 @@ export class SavedTabsService implements TabsService {
     this.windowListState.moveWindowInList(sourceIndex, targetIndex);
   }
 
-  // Called by all methods decorated with @modifiesState
+  // Called by @modifiesState decorator
   onStateModified() {
     console.log(new Date().toTimeString().substring(0, 8), '- updating saved windows');
     this.windowStateUpdatedSource.next(this.windowListState);
-    this.storageService.setSavedWindowsState(this.windowListState);
+    StorageService.setSavedWindowsState(this.windowListState);
   }
 }

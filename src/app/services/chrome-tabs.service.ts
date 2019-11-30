@@ -6,7 +6,7 @@ import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {StorageService} from './storage.service';
 import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from '../types/chrome-api-types';
-import {ChromeEventHandlerService} from './chrome-event-handler.service';
+import {MessagePassingService} from './message-passing.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +18,9 @@ export class ChromeTabsService implements TabsService {
   private windowStateUpdatedSource = new Subject<WindowListState>();
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
-  constructor(private storageService: StorageService,
-              private chromeEventHandlerService: ChromeEventHandlerService) {
+  constructor() {
     this.windowListState = WindowListUtils.createEmptyWindowListState();
-    this.chromeEventHandlerService.addActiveWindowsUpdatedListener(() => {
+    MessagePassingService.addActiveWindowStateListener(() => {
       this.refreshState();
     });
     this.refreshState();
@@ -29,8 +28,7 @@ export class ChromeTabsService implements TabsService {
 
   private refreshState() {
     this.getChromeWindowsFromAPI().then(windowList => {
-      this.storageService.getChromeWindowsLayoutState(windowList).then(layoutState => {
-        // todo: sanity check
+      StorageService.getChromeWindowsLayoutState(windowList).then(layoutState => {
         console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
         this.windowListState = new WindowListState(windowList, layoutState);
         this.windowStateUpdatedSource.next(this.windowListState);
@@ -144,7 +142,7 @@ export class ChromeTabsService implements TabsService {
   onStateModified() {
     console.log(new Date().toTimeString().substring(0, 8), '- updating active windows');
     this.windowStateUpdatedSource.next(this.windowListState);
-    this.storageService.setChromeWindowsLayoutState(this.windowListState.layoutState);
+    StorageService.setChromeWindowsLayoutState(this.windowListState.layoutState);
   }
 
 }
