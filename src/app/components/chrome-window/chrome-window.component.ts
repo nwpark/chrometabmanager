@@ -30,8 +30,8 @@ export class ChromeWindowComponent implements OnInit {
       .subscribe(connectedWindowIds => this.connectedWindowIds = connectedWindowIds);
   }
 
-  setTabActive(chromeTab: ChromeAPITabState) {
-    this.props.tabsService.setTabActive(this.chromeAPIWindow.id, chromeTab);
+  tabClicked(chromeTab: ChromeAPITabState, event: MouseEvent) {
+    this.props.tabsService.setTabActive(chromeTab, event.ctrlKey);
   }
 
   closeTab(tabId: any) {

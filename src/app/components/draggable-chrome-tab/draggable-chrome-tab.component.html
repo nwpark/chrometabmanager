@@ -12,7 +12,7 @@
   </button>
   <div
     class="chrome-tab-title"
-    (click)="draggableChromeTabClick.emit()">
+    (click)="draggableChromeTabClick.emit($event)">
     <ng-container *ngIf="timestamp">
       <div class="timestamp">{{timestampString}}</div>
       <div class="vertical-divider"></div>

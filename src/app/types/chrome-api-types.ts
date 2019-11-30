@@ -9,6 +9,7 @@ export interface ChromeAPIWindowState {
 
 export interface ChromeAPITabState {
   id: any;
+  windowId?: any;
   url: string;
   title: string;
   favIconUrl: string;

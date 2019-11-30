@@ -64,8 +64,12 @@ export class RecentlyClosedTabsService implements TabsService {
     this.sessionListState.toggleWindowDisplay(windowId);
   }
 
-  setTabActive(windowId: any, chromeTab: ChromeAPITabState) {
-    this.chromeTabsService.updateCurrentTabUrl(chromeTab);
+  setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean) {
+    if (openInNewTab) {
+      this.chromeTabsService.openUrlInNewTab(chromeTab.url);
+    } else {
+      this.chromeTabsService.updateCurrentTabUrl(chromeTab.url);
+    }
   }
 
   @modifiesState()

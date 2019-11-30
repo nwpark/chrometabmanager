@@ -69,9 +69,13 @@ export class ChromeTabsService implements TabsService {
     chrome.tabs.create({windowId, index: tabIndex, url: chromeTab.url, active: false});
   }
 
-  updateCurrentTabUrl(chromeTab: ChromeAPITabState) {
+  openUrlInNewTab(url: string) {
+    chrome.tabs.create({url, active: false});
+  }
+
+  updateCurrentTabUrl(url: string) {
     chrome.tabs.getCurrent(currentTab => {
-      chrome.tabs.update(currentTab.id, {url: chromeTab.url});
+      chrome.tabs.update(currentTab.id, {url});
     });
   }
 
@@ -97,9 +101,9 @@ export class ChromeTabsService implements TabsService {
     this.windowListState.toggleWindowDisplay(windowId);
   }
 
-  setTabActive(windowId: any, chromeTab: ChromeAPITabState) {
+  setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean) {
     chrome.tabs.update(chromeTab.id, {active: true});
-    chrome.windows.update(windowId, {focused: true});
+    chrome.windows.update(chromeTab.windowId, {focused: true});
   }
 
   @modifiesState()

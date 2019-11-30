@@ -10,14 +10,12 @@ export class DraggableChromeTabComponent implements OnInit {
 
   @Input() chromeTab: ChromeAPITabState;
   @Input() timestamp: number;
-  // todo: middle click
   @Output() draggableChromeTabClose = new EventEmitter();
-  @Output() draggableChromeTabClick = new EventEmitter();
+  @Output() draggableChromeTabClick = new EventEmitter<MouseEvent>();
 
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   get title() {
     return this.chromeTab.title.length > 0

@@ -55,7 +55,7 @@
           [chromeTab]="closedTab.chromeAPITab"
           [timestamp]="closedTab.timestamp"
           (draggableChromeTabClose)="closeTab(closedTab.chromeAPITab.id)"
-          (draggableChromeTabClick)="setTabActive(closedTab.chromeAPITab)">
+          (draggableChromeTabClick)="tabClicked(closedTab.chromeAPITab, $event)">
         </app-draggable-chrome-tab>
       </div>
     </div>

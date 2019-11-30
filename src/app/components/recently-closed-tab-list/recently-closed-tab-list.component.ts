@@ -53,8 +53,8 @@ export class RecentlyClosedTabListComponent implements OnInit {
     this.recentlyClosedTabsService.toggleSessionListDisplay();
   }
 
-  setTabActive(chromeTab: ChromeAPITabState) {
-    this.recentlyClosedTabsService.setTabActive(null, chromeTab);
+  tabClicked(chromeTab: ChromeAPITabState, event: MouseEvent) {
+    this.recentlyClosedTabsService.setTabActive(chromeTab, event.ctrlKey);
   }
 
   closeTab(tabId: any) {

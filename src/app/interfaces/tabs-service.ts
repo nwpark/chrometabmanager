@@ -16,7 +16,7 @@ export interface TabsService {
 
   setWindowTitle(windowId: any, title: string);
 
-  setTabActive(windowId: any, chromeTab: ChromeAPITabState);
+  setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean);
 
   insertWindow(chromeWindow: ChromeAPIWindowState, index: number);
 
