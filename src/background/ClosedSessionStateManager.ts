@@ -33,7 +33,7 @@ export class ClosedSessionStateManager {
       const closedSession = SessionListUtils.createClosedSessionFromWindow(savedWindow);
       const windowLayoutState = SessionListUtils.createBasicWindowLayoutState(closedSession.closedWindow.chromeAPIWindow.id);
       this.sessionListState.unshiftSession(closedSession);
-      this.sessionListState.unshiftLayoutState(windowLayoutState);
+      this.sessionListState.unshiftWindowLayoutState(windowLayoutState);
     }
   }
 

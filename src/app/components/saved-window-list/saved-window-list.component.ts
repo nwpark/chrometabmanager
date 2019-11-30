@@ -35,7 +35,8 @@ export class SavedWindowListComponent implements OnInit {
     };
     this.actionButtons = ActionButtonFactory
       .createSavedWindowActionButtons(this.savedTabsService, this.chromeTabsService);
-    this.dragDropService.ignoreWhenDragging(this.savedTabsService.windowStateUpdated$)
+    this.savedTabsService.windowStateUpdated$
+      .pipe(this.dragDropService.ignoreWhenDragging())
       .subscribe(windowListState => {
         this.windowListState = windowListState;
         this.changeDetectorRef.detectChanges();

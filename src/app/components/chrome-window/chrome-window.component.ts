@@ -25,7 +25,8 @@ export class ChromeWindowComponent implements OnInit {
   ngOnInit() {
     this.dragDropData = {chromeWindowId: this.chromeAPIWindow.id, ...this.props};
     this.connectedWindowIds = this.dragDropService.connectedWindowIds;
-    this.dragDropService.ignoreWhenDragging(this.dragDropService.connectedWindowIdsUpdated$)
+    this.dragDropService.connectedWindowIdsUpdated$
+      .pipe(this.dragDropService.ignoreWhenDragging())
       .subscribe(connectedWindowIds => this.connectedWindowIds = connectedWindowIds);
   }
 

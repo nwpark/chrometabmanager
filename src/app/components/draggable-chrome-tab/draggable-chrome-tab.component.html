@@ -1,11 +1,14 @@
-<div class="chrome-tab">
+<div
+  appMouseOver
+  #tabContainer=app-mouse-over
+  class="chrome-tab">
   <button
     mat-icon-button
     class="action-button-30"
     style="float: right"
     title="Close tab"
     (click)="draggableChromeTabClose.emit()">
-    <mat-icon class="action-icon-18" *ngIf="mouseOver">close</mat-icon>
+    <mat-icon class="action-icon-18" *ngIf="tabContainer.mouseOver">close</mat-icon>
   </button>
   <div
     class="chrome-tab-title"

@@ -72,7 +72,7 @@ export class SessionListState {
     this.recentlyClosedSessions.unshift(closedSession);
   }
 
-  unshiftLayoutState(windowLayoutState: WindowLayoutState) {
+  unshiftWindowLayoutState(windowLayoutState: WindowLayoutState) {
     this.layoutState.windowStates.unshift(windowLayoutState);
   }
 
@@ -86,7 +86,7 @@ export class SessionListState {
   }
 
   removeExpiredSessions(maxTabCount: number) {
-    let size = this.getSize();
+    let size = this.size();
     while (size > maxTabCount) {
       this.pop();
       size--;
@@ -102,7 +102,7 @@ export class SessionListState {
     }
   }
 
-  private getSize(): number {
+  private size(): number {
     return this.recentlyClosedSessions.reduce((acc, session) => {
       return acc + (session.isWindow ? 1 : session.closedTabs.length);
     }, 0);

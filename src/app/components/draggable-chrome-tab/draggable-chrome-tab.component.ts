@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ChromeAPITabState} from '../../types/chrome-api-types';
 
 @Component({
@@ -14,22 +14,9 @@ export class DraggableChromeTabComponent implements OnInit {
   @Output() draggableChromeTabClose = new EventEmitter();
   @Output() draggableChromeTabClick = new EventEmitter();
 
-  mouseOver: boolean;
-
-  constructor(private changeDetectorRef: ChangeDetectorRef) { }
+  constructor() { }
 
   ngOnInit() {
-  }
-
-  // todo: replace with directive
-  @HostListener('mouseenter') onMouseEnter() {
-    this.mouseOver = true;
-    this.changeDetectorRef.detectChanges();
-  }
-
-  @HostListener('mouseleave') onMouseLeave() {
-    this.mouseOver = false;
-    this.changeDetectorRef.detectChanges();
   }
 
   get title() {

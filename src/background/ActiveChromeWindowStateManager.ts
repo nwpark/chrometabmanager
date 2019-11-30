@@ -11,6 +11,7 @@ export class ActiveChromeWindowStateManager {
 
   constructor() {
     this.activeWindowStorageMutex = new Mutex();
+    this.updateActiveWindowState();
   }
 
   updateActiveWindowState() {

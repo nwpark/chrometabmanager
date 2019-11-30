@@ -32,7 +32,8 @@ export class RecentlyClosedTabListComponent implements OnInit {
     };
     this.actionButtons = ActionButtonFactory
       .createRecentlyClosedWindowActionButtons(this.chromeTabsService, this.recentlyClosedTabsService);
-    this.dragDropService.ignoreWhenDragging(this.recentlyClosedTabsService.sessionStateUpdated$)
+    this.recentlyClosedTabsService.sessionStateUpdated$
+      .pipe(this.dragDropService.ignoreWhenDragging())
       .subscribe(sessionListState => {
         this.sessionListState = sessionListState;
         this.changeDetectorRef.detectChanges();

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {merge, Observable, Subject} from 'rxjs';
+import {merge, MonoTypeOperatorFunction, Observable, Subject} from 'rxjs';
 import {buffer, filter, map} from 'rxjs/operators';
 import {SavedTabsService} from './saved-tabs.service';
 import {ChromeTabsService} from './chrome-tabs.service';
@@ -26,9 +26,11 @@ export class DragDropService {
   constructor(private savedTabsService: SavedTabsService,
               private chromeTabsService: ChromeTabsService) {
     this.refreshWindowIds();
-    this.ignoreWhenDragging(this.savedTabsService.windowStateUpdated$)
+    this.savedTabsService.windowStateUpdated$
+      .pipe(this.ignoreWhenDragging())
       .subscribe(() => this.refreshWindowIds());
-    this.ignoreWhenDragging(this.chromeTabsService.windowStateUpdated$)
+    this.chromeTabsService.windowStateUpdated$
+      .pipe(this.ignoreWhenDragging())
       .subscribe(() => this.refreshWindowIds());
   }
 
@@ -55,24 +57,21 @@ export class DragDropService {
     return this.dragging;
   }
 
-  // todo: return MonoTypeOperatorFunction
-  ignoreWhenDragging<T>(observable$: Observable<T>): Observable<T> {
-    return merge(
-      this.filterWhenDragging(observable$),
-      this.bufferWhenDragging(observable$)
+  ignoreWhenDragging<T>(): MonoTypeOperatorFunction<T> {
+    return (source$: Observable<T>) => merge(
+      source$.pipe(this.filterWhenDragging()),
+      source$.pipe(this.bufferWhenDragging())
     );
   }
 
-  filterWhenDragging<T>(observable$: Observable<T>): Observable<T> {
-    return observable$.pipe(
+  filterWhenDragging<T>(): MonoTypeOperatorFunction<T> {
+    return (source$: Observable<T>) => source$.pipe(
       filter(() => !this.dragging),
     );
   }
 
-  // Buffer events when an item is being dragged.
-  // Emit the latest event when the item is dropped.
-  bufferWhenDragging<T>(observable$: Observable<T>): Observable<T> {
-    return observable$.pipe(
+  bufferWhenDragging<T>(): MonoTypeOperatorFunction<T> {
+    return (source$: Observable<T>) => source$.pipe(
       filter(() => this.dragging),
       buffer(this.dragStatusUpdated$),
       filter(buff => buff.length > 0),
