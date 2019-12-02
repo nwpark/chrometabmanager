@@ -35,7 +35,7 @@ export class PreferencesService {
     return this.preferences;
   }
 
-  getCloseWindowOnSave(): boolean {
+  shouldCloseWindowOnSave(): boolean {
     return this.preferences.closeWindowOnSave;
   }
 
@@ -44,7 +44,7 @@ export class PreferencesService {
   }
 
   @modifiesState()
-  shouldCloseWindowOnSave(closeWindowOnSave: boolean) {
+  setCloseWindowOnSave(closeWindowOnSave: boolean) {
     this.preferences.closeWindowOnSave = closeWindowOnSave;
   }
 

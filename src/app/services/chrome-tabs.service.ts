@@ -28,11 +28,10 @@ export class ChromeTabsService implements TabsService {
 
   private refreshState() {
     this.getChromeWindowsFromAPI().then(windowList => {
-      // todo: store layout state
+      // todo: sanity check
       StorageService.getChromeWindowsLayoutState(windowList).then(layoutState => {
         console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
-        this.windowListState = new WindowListState(windowList, layoutState);
-        this.windowStateUpdatedSource.next(this.windowListState);
+        this.setWindowListState(new WindowListState(windowList, layoutState));
       });
     });
   }
@@ -43,6 +42,11 @@ export class ChromeTabsService implements TabsService {
         resolve(chromeWindows as ChromeAPIWindowState[]);
       });
     });
+  }
+
+  @modifiesState()
+  private setWindowListState(windowListState: WindowListState) {
+    this.windowListState = windowListState;
   }
 
   getWindowListState(): WindowListState {

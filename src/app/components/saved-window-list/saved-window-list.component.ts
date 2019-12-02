@@ -83,7 +83,7 @@ export class SavedWindowListComponent implements OnInit {
       if (event.previousContainer === event.container) {
         this.savedTabsService.moveWindowInList(event.previousIndex, event.currentIndex);
       } else {
-        if (this.preferencesService.getCloseWindowOnSave()) {
+        if (this.preferencesService.shouldCloseWindowOnSave()) {
           this.chromeTabsService.removeWindow(event.item.data.id);
         }
         this.savedTabsService.insertWindow(event.item.data, event.currentIndex);

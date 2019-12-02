@@ -78,7 +78,7 @@ export class ActiveWindowListComponent implements OnInit {
       if (event.previousContainer === event.container) {
         this.chromeTabsService.moveWindowInList(event.previousIndex, event.currentIndex);
       } else {
-        if (this.preferencesService.getCloseWindowOnSave()) {
+        if (this.preferencesService.shouldCloseWindowOnSave()) {
           this.savedTabsService.removeWindow(event.item.data.id);
         }
         this.chromeTabsService.insertWindow(event.item.data, event.currentIndex);

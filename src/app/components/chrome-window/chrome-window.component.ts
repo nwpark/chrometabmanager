@@ -69,8 +69,7 @@ export class ChromeWindowComponent implements OnInit {
           event.previousIndex,
           event.currentIndex);
       } else {
-        console.log(this.preferencesService);
-        if (this.preferencesService.getCloseWindowOnSave()) {
+        if (this.preferencesService.shouldCloseWindowOnSave()) {
           sourceTabList.tabsService.removeTab(sourceTabList.chromeWindowId, event.item.data.id);
         }
         targetTabList.tabsService.createTab(targetTabList.chromeWindowId, event.currentIndex, event.item.data);

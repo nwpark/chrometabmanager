@@ -34,7 +34,7 @@ export class OptionsComponent implements OnInit {
   }
 
   setCloseWindowOnSave(event: MatSlideToggleChange) {
-    this.preferencesService.shouldCloseWindowOnSave(event.checked);
+    this.preferencesService.setCloseWindowOnSave(event.checked);
   }
 
   setEnableDebugging(event: MatSlideToggleChange) {
