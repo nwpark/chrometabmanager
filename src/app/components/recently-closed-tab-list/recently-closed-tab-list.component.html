@@ -33,12 +33,17 @@
 <!--  </div>-->
 
   <div *ngFor="let session of sessionListState.recentlyClosedSessions">
-    <div class="chrome-window-container" *ngIf="session.isWindow">
+    <div
+      class="chrome-window-container"
+      *ngIf="session.isWindow"
+      [@collapse-item]="session.status"
+      (@collapse-item.done)="completeWindowCloseAnimation($event, session.closedWindow.chromeAPIWindow.id)">
       <app-chrome-window-header
         [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
         [layoutState]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id)"
-        [actionButtons]="actionButtons"
-        [props]="windowProps">
+        [extraActionButtons]="actionButtons"
+        [props]="windowProps"
+        (chromeWindowClose)="closeWindow(session)">
       </app-chrome-window-header>
       <app-chrome-window
         [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
@@ -47,14 +52,21 @@
       </app-chrome-window>
     </div>
 
-    <div class="chrome-window-container" *ngIf="!session.isWindow">
-      <div class="chrome-window-body" style="border-style: solid; border-radius: inherit">
+    <div
+      class="chrome-window-container"
+      *ngIf="!session.isWindow"
+      [@collapse-item]="session.status">
+      <div
+        class="chrome-window-body"
+        style="border-style: solid; border-radius: inherit">
         <app-draggable-chrome-tab
           class="chrome-tab-border"
           *ngFor="let closedTab of session.closedTabs"
+          [@collapse-item]="closedTab.status"
+          (@collapse-item.done)="completeTabCloseAnimation($event, closedTab.chromeAPITab.id)"
           [chromeTab]="closedTab.chromeAPITab"
           [timestamp]="closedTab.timestamp"
-          (draggableChromeTabClose)="closeTab(closedTab.chromeAPITab.id)"
+          (draggableChromeTabClose)="closeTab(session, closedTab)"
           (draggableChromeTabClick)="tabClicked(closedTab.chromeAPITab, $event)">
         </app-draggable-chrome-tab>
       </div>

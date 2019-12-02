@@ -1,16 +1,25 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
-import {WindowListState} from '../../types/window-list-state';
+import {WindowLayoutState, WindowListState} from '../../types/window-list-state';
 import {ChromeWindowComponentProps, WindowCategory} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {SavedTabsService} from '../../services/saved-tabs.service';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
+import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
+import {collapseAnimation, CollapseAnimationState} from '../../animations';
 
 @Component({
   selector: 'app-active-window-list',
   templateUrl: './active-window-list.component.html',
-  styleUrls: ['./active-window-list.component.css']
+  styleUrls: ['./active-window-list.component.css'],
+  animations: [
+    trigger('collapse-item', [
+      transition(`* => ${CollapseAnimationState.Closing}`, [
+        useAnimation(collapseAnimation, {})
+      ])
+    ])
+  ]
 })
 export class ActiveWindowListComponent implements OnInit {
 
@@ -49,6 +58,17 @@ export class ActiveWindowListComponent implements OnInit {
 
   beginDrag() {
     this.dragDropService.beginDrag();
+  }
+
+  closeWindow(layoutState: WindowLayoutState) {
+    layoutState.status = CollapseAnimationState.Closing;
+    this.changeDetectorRef.detectChanges();
+  }
+
+  completeCloseAnimation(event: AnimationEvent, windowId: any) {
+    if (event.toState === CollapseAnimationState.Closing) {
+      this.chromeTabsService.removeWindow(windowId);
+    }
   }
 
   windowDropped(event: CdkDragDrop<any>) {

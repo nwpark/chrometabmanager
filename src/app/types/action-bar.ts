@@ -23,9 +23,6 @@ export class ActionButtonFactory {
       }),
       ActionButtonFactory.createMinimizeButton(chromeWindow => {
         chromeTabsService.toggleWindowDisplay(chromeWindow.id);
-      }),
-      ActionButtonFactory.createCloseButton(chromeWindow => {
-        chromeTabsService.removeWindow(chromeWindow.id);
       })
     ];
   }
@@ -40,9 +37,6 @@ export class ActionButtonFactory {
       }),
       ActionButtonFactory.createMinimizeButton(chromeWindow => {
         savedTabsService.toggleWindowDisplay(chromeWindow.id);
-      }),
-      ActionButtonFactory.createCloseButton(chromeWindow => {
-        savedTabsService.removeWindow(chromeWindow.id);
       })
     ];
   }
@@ -57,9 +51,6 @@ export class ActionButtonFactory {
       }),
       ActionButtonFactory.createMinimizeButton(chromeWindow => {
         recentlyClosedTabsService.toggleWindowDisplay(chromeWindow.id);
-      }),
-      ActionButtonFactory.createCloseButton(chromeWindow => {
-        recentlyClosedTabsService.removeWindow(chromeWindow.id);
       })
     ];
   }

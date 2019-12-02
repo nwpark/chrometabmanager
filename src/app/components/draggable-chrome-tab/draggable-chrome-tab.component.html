@@ -1,13 +1,15 @@
 <div
   appMouseOver
   #tabContainer=app-mouse-over
-  class="chrome-tab">
+  class="chrome-tab"
+  [@collapse-item]="chromeTab.status"
+  (@collapse-item.done)="completeCloseAnimation($event)">
   <button
     mat-icon-button
     class="action-button-30"
     style="float: right"
     title="Close tab"
-    (click)="draggableChromeTabClose.emit()">
+    (click)="closeTab()">
     <mat-icon class="action-icon-18" *ngIf="tabContainer.mouseOver">close</mat-icon>
   </button>
   <div
@@ -17,19 +19,20 @@
       <div class="timestamp">{{timestampString}}</div>
       <div class="vertical-divider"></div>
     </ng-container>
-    <ng-container *ngIf="shouldShowFaviconIcon()">
-      <div
-        class="favicon-icon"
-        *ngIf="shouldShowLoadingSpinner()">
-        <mat-spinner [diameter]="16"></mat-spinner>
-      </div>
-      <ng-container
-        *ngIf="!shouldShowLoadingSpinner()">
-        <img class="favicon-icon" src="{{chromeTab.favIconUrl}}" *ngIf="chromeTab.favIconUrl">
-        <img class="favicon-icon" src="assets/chrome-favicon.png" *ngIf="!chromeTab.favIconUrl">
-      </ng-container>
-    </ng-container>
-    <span class="favicon-icon" *ngIf="!shouldShowFaviconIcon()"></span>
+    <img
+      class="favicon-icon"
+      src="{{getFaviconIconUrl()}}"
+      *ngIf="shouldShowFaviconIcon()">
+    <mat-icon
+      class="favicon-icon"
+      *ngIf="isNewTab()">
+      tab
+    </mat-icon>
+    <div
+      class="favicon-icon"
+      *ngIf="isLoading()">
+      <mat-spinner [diameter]="16"></mat-spinner>
+    </div>
     {{title}}
   </div>
 </div>

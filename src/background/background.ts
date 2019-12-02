@@ -15,7 +15,7 @@ const chromeWindowUpdateEvents = [
   chrome.windows.onCreated,
 ];
 
-const windowUpdateThrottleTime = 200;
+const windowUpdateThrottleTime = 500;
 const throttleTimeConfig = { leading: true, trailing: true } as ThrottleConfig;
 const ignoredTabUrls = ['chrome://newtab/'];
 

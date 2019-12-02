@@ -2,15 +2,24 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
 import {ChromeWindowComponentProps, WindowCategory} from '../../types/chrome-window-component-data';
 import {ChromeAPITabState} from '../../types/chrome-api-types';
-import {SessionListState, SessionListUtils} from '../../types/session-list-state';
+import {RecentlyClosedSession, RecentlyClosedTab, SessionListState, SessionListUtils} from '../../types/session-list-state';
 import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {DragDropService} from '../../services/drag-drop.service';
+import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
+import {collapseAnimation, CollapseAnimationState} from '../../animations';
 
 @Component({
   selector: 'app-recently-closed-tab-list',
   templateUrl: './recently-closed-tab-list.component.html',
-  styleUrls: ['./recently-closed-tab-list.component.css']
+  styleUrls: ['./recently-closed-tab-list.component.css'],
+  animations: [
+    trigger('collapse-item', [
+      transition(`* => ${CollapseAnimationState.Closing}`, [
+        useAnimation(collapseAnimation, {})
+      ])
+    ])
+  ]
 })
 export class RecentlyClosedTabListComponent implements OnInit {
 
@@ -57,8 +66,29 @@ export class RecentlyClosedTabListComponent implements OnInit {
     this.recentlyClosedTabsService.setTabActive(chromeTab, event.ctrlKey);
   }
 
-  closeTab(tabId: any) {
-    this.recentlyClosedTabsService.removeDetachedTab(tabId);
+  closeTab(session: RecentlyClosedSession, tab: RecentlyClosedTab) {
+    if (session.closedTabs.length === 1) {
+      session.status = CollapseAnimationState.Closing;
+    }
+    tab.status = CollapseAnimationState.Closing;
+    this.changeDetectorRef.detectChanges();
+  }
+
+  completeTabCloseAnimation(event: AnimationEvent, tabId: any) {
+    if (event.toState === CollapseAnimationState.Closing) {
+      this.recentlyClosedTabsService.removeDetachedTab(tabId);
+    }
+  }
+
+  closeWindow(session: RecentlyClosedSession) {
+    session.status = CollapseAnimationState.Closing;
+    this.changeDetectorRef.detectChanges();
+  }
+
+  completeWindowCloseAnimation(event: AnimationEvent, windowId: any) {
+    if (event.toState === CollapseAnimationState.Closing) {
+      this.recentlyClosedTabsService.removeWindow(windowId);
+    }
   }
 
   clear() {

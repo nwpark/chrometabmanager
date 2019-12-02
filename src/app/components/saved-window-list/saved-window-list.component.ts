@@ -1,16 +1,25 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {SavedTabsService} from '../../services/saved-tabs.service';
-import {WindowListState} from '../../types/window-list-state';
+import {WindowLayoutState, WindowListState} from '../../types/window-list-state';
 import {ChromeWindowComponentProps, WindowCategory} from '../../types/chrome-window-component-data';
 import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {DragDropService} from '../../services/drag-drop.service';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
+import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
+import {collapseAnimation, CollapseAnimationState} from '../../animations';
 
 @Component({
   selector: 'app-saved-window-list',
   templateUrl: './saved-window-list.component.html',
-  styleUrls: ['./saved-window-list.component.css']
+  styleUrls: ['./saved-window-list.component.css'],
+  animations: [
+    trigger('collapse-item', [
+      transition(`* => ${CollapseAnimationState.Closing}`, [
+        useAnimation(collapseAnimation, {})
+      ])
+    ])
+  ]
 })
 export class SavedWindowListComponent implements OnInit {
 
@@ -39,6 +48,7 @@ export class SavedWindowListComponent implements OnInit {
       .pipe(this.dragDropService.ignoreWhenDragging())
       .subscribe(windowListState => {
         this.windowListState = windowListState;
+        // todo: changeDetectorRef.detach()
         this.changeDetectorRef.detectChanges();
       });
   }
@@ -53,6 +63,17 @@ export class SavedWindowListComponent implements OnInit {
 
   beginDrag() {
     this.dragDropService.beginDrag();
+  }
+
+  closeWindow(layoutState: WindowLayoutState) {
+    layoutState.status = CollapseAnimationState.Closing;
+    this.changeDetectorRef.detectChanges();
+  }
+
+  completeCloseAnimation(event: AnimationEvent, windowId: any) {
+    if (event.toState === CollapseAnimationState.Closing) {
+      this.savedTabsService.removeWindow(windowId);
+    }
   }
 
   windowDropped(event: CdkDragDrop<any>) {

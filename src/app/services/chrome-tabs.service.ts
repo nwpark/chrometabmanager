@@ -28,6 +28,7 @@ export class ChromeTabsService implements TabsService {
 
   private refreshState() {
     this.getChromeWindowsFromAPI().then(windowList => {
+      // todo: store layout state
       StorageService.getChromeWindowsLayoutState(windowList).then(layoutState => {
         console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
         this.windowListState = new WindowListState(windowList, layoutState);

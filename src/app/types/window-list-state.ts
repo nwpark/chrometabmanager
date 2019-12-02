@@ -145,5 +145,6 @@ export interface WindowLayoutState {
   windowId: any;
   hidden: boolean;
   deleted?: boolean;
+  status?: string;
 }
 

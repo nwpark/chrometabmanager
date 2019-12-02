@@ -30,14 +30,17 @@
     cdkDrag
     class="chrome-window-container"
     *ngFor="let window of windowListState.chromeAPIWindows"
+    [@collapse-item]="windowListState.getWindowLayout(window.id).status"
+    (@collapse-item.done)="completeCloseAnimation($event, window.id)"
     [cdkDragData]="window"
     (cdkDragStarted)="beginDrag()">
     <div cdkDragHandle>
       <app-chrome-window-header
         [chromeAPIWindow]="window"
         [layoutState]="windowListState.getWindowLayout(window.id)"
-        [actionButtons]="actionButtons"
-        [props]="windowProps">
+        [extraActionButtons]="actionButtons"
+        [props]="windowProps"
+        (chromeWindowClose)="closeWindow(windowListState.getWindowLayout(window.id))">
       </app-chrome-window-header>
     </div>
     <app-chrome-window

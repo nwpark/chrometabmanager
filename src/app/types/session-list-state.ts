@@ -140,6 +140,7 @@ export interface RecentlyClosedSession {
   isWindow: boolean;
   closedWindow?: RecentlyClosedWindow;
   closedTabs?: RecentlyClosedTab[];
+  status?: string;
 }
 
 export interface RecentlyClosedWindow {
@@ -150,4 +151,5 @@ export interface RecentlyClosedWindow {
 export interface RecentlyClosedTab {
   timestamp: number;
   chromeAPITab: ChromeAPITabState;
+  status?: string;
 }

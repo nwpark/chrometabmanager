@@ -1,6 +1,6 @@
-import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {WindowLayoutState} from '../../types/window-list-state';
-import {ActionButton} from '../../types/action-bar';
+import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {FormControl} from '@angular/forms';
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
@@ -14,8 +14,11 @@ export class ChromeWindowHeaderComponent implements OnInit {
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
   @Input() layoutState: WindowLayoutState;
-  @Input() actionButtons: ActionButton[];
+  @Input() extraActionButtons: ActionButton[];
   @Input() props: ChromeWindowComponentProps;
+  @Output() chromeWindowClose = new EventEmitter();
+
+  actionButtons: ActionButton[];
 
   @ViewChild('titleInput', {static: false}) titleInput: ElementRef;
   titleFormControl: FormControl;
@@ -24,6 +27,10 @@ export class ChromeWindowHeaderComponent implements OnInit {
   constructor(private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
+    this.actionButtons = [
+      ...this.extraActionButtons,
+      ActionButtonFactory.createCloseButton(() => this.chromeWindowClose.emit())
+    ];
     this.titleFormControl = new FormControl(this.layoutState.title);
   }
 
