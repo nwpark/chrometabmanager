@@ -19,7 +19,7 @@
   <button
     class="chrome-window-action-bar action-button-30"
     mat-icon-button
-    *ngIf="headerDiv.mouseOver"
+    *ngIf="headerDiv.mouseOver && debugModeEnabled()"
     [title]="'debug'"
     (click)="debug()">
     <mat-icon class="action-icon-18">bug_report</mat-icon>

@@ -8,6 +8,7 @@ import {SavedTabsService} from '../../services/saved-tabs.service';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {collapseAnimation, CollapseAnimationState} from '../../animations';
+import {PreferencesService} from '../../services/preferences.service';
 
 @Component({
   selector: 'app-active-window-list',
@@ -33,6 +34,7 @@ export class ActiveWindowListComponent implements OnInit {
   constructor(public chromeTabsService: ChromeTabsService,
               private savedTabsService: SavedTabsService,
               private dragDropService: DragDropService,
+              private preferencesService: PreferencesService,
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
@@ -76,7 +78,9 @@ export class ActiveWindowListComponent implements OnInit {
       if (event.previousContainer === event.container) {
         this.chromeTabsService.moveWindowInList(event.previousIndex, event.currentIndex);
       } else {
-        this.savedTabsService.removeWindow(event.item.data.id);
+        if (this.preferencesService.closeWindowsWhenSaving()) {
+          this.savedTabsService.removeWindow(event.item.data.id);
+        }
         this.chromeTabsService.insertWindow(event.item.data, event.currentIndex);
       }
     } finally {

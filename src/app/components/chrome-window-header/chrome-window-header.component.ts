@@ -4,6 +4,7 @@ import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {FormControl} from '@angular/forms';
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-chrome-window-header',
@@ -36,6 +37,10 @@ export class ChromeWindowHeaderComponent implements OnInit {
 
   debug() {
     console.log(this);
+  }
+
+  debugModeEnabled(): boolean {
+    return !environment.production;
   }
 
   getTitle(): string {

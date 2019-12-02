@@ -1,0 +1,17 @@
+<div
+  [@simpleFadeAnimation]="'fadeIn'"
+  [ngStyle]="{background: 'url(/assets/32139955053_237df2fcb3_3k.jpg) no-repeat center center fixed', backgroundSize: 'cover', height: '100%'}">
+  <mat-grid-list cols="{{cols}}" style="height: 100%" rowHeight="fit" (window:resize)="onResize($event)">
+    <mat-grid-tile *ngIf="cols > 1">
+      <app-saved-window-list class="full-height-column"></app-saved-window-list>
+    </mat-grid-tile>
+
+    <mat-grid-tile>
+      <app-active-window-list class="full-height-column"></app-active-window-list>
+    </mat-grid-tile>
+
+    <mat-grid-tile *ngIf="cols > 2">
+      <app-recently-closed-tab-list class="full-height-column"></app-recently-closed-tab-list>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

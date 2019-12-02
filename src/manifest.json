@@ -23,6 +23,8 @@
 
   "permissions": ["tabs", "storage"],
 
+  "options_page": "index.html?page=options",
+
   "chrome_url_overrides": {
     "newtab": "index.html"
   }

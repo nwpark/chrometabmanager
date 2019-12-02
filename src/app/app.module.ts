@@ -13,6 +13,15 @@ import {ChromeWindowComponent} from './components/chrome-window/chrome-window.co
 import { MouseOverDirective } from './directives/mouse-over.directive';
 import { RecentlyClosedTabListComponent } from './components/recently-closed-tab-list/recently-closed-tab-list.component';
 import { ChromeWindowHeaderComponent } from './components/chrome-window-header/chrome-window-header.component';
+import { OptionsComponent } from './pages/options/options.component';
+import {RouterModule, Routes} from '@angular/router';
+import { NewTabPageComponent } from './pages/new-tab-page/new-tab-page.component';
+
+const appRoutes: Routes = [
+  { path: '', component: NewTabPageComponent },
+  { path: 'index.html', component: NewTabPageComponent },
+  { path: 'options', component: OptionsComponent }
+];
 
 @NgModule({
   declarations: [
@@ -24,14 +33,17 @@ import { ChromeWindowHeaderComponent } from './components/chrome-window-header/c
     ChromeWindowComponent,
     MouseOverDirective,
     RecentlyClosedTabListComponent,
-    ChromeWindowHeaderComponent
+    ChromeWindowHeaderComponent,
+    OptionsComponent,
+    NewTabPageComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     MaterialModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterModule.forRoot(appRoutes)
   ],
   providers: [],
   bootstrap: [AppComponent]
