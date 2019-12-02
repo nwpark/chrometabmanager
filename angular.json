@@ -22,7 +22,8 @@
             "vendorChunk": false,
             "assets": [
               "src/manifest.json",
-              "src/assets"
+              "src/assets",
+              "src/options.html"
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",

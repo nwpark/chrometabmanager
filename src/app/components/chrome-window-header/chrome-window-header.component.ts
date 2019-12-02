@@ -4,7 +4,7 @@ import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {FormControl} from '@angular/forms';
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
-import {environment} from '../../../environments/environment';
+import {PreferencesService} from '../../services/preferences.service';
 
 @Component({
   selector: 'app-chrome-window-header',
@@ -25,7 +25,8 @@ export class ChromeWindowHeaderComponent implements OnInit {
   titleFormControl: FormControl;
   showEditForm = false;
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) { }
+  constructor(private changeDetectorRef: ChangeDetectorRef,
+              private preferencesService: PreferencesService) { }
 
   ngOnInit() {
     this.actionButtons = [
@@ -40,7 +41,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
   }
 
   debugModeEnabled(): boolean {
-    return !environment.production;
+    return this.preferencesService.isDebugModeEnabled();
   }
 
   getTitle(): string {

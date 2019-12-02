@@ -10,18 +10,11 @@ import {DraggableChromeTabComponent} from './components/draggable-chrome-tab/dra
 import {EmptyChromeTabComponent} from './components/empty-chrome-tab/empty-chrome-tab.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ChromeWindowComponent} from './components/chrome-window/chrome-window.component';
-import { MouseOverDirective } from './directives/mouse-over.directive';
-import { RecentlyClosedTabListComponent } from './components/recently-closed-tab-list/recently-closed-tab-list.component';
-import { ChromeWindowHeaderComponent } from './components/chrome-window-header/chrome-window-header.component';
-import { OptionsComponent } from './pages/options/options.component';
-import {RouterModule, Routes} from '@angular/router';
-import { NewTabPageComponent } from './pages/new-tab-page/new-tab-page.component';
-
-const appRoutes: Routes = [
-  { path: '', component: NewTabPageComponent },
-  { path: 'index.html', component: NewTabPageComponent },
-  { path: 'options', component: OptionsComponent }
-];
+import {MouseOverDirective} from './directives/mouse-over.directive';
+import {RecentlyClosedTabListComponent} from './components/recently-closed-tab-list/recently-closed-tab-list.component';
+import {ChromeWindowHeaderComponent} from './components/chrome-window-header/chrome-window-header.component';
+import {OptionsComponent} from './pages/options/options.component';
+import {NewTabPageComponent} from './pages/new-tab-page/new-tab-page.component';
 
 @NgModule({
   declarations: [
@@ -42,8 +35,7 @@ const appRoutes: Routes = [
     BrowserAnimationsModule,
     MaterialModule,
     FormsModule,
-    ReactiveFormsModule,
-    RouterModule.forRoot(appRoutes)
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -3,6 +3,7 @@ import {WindowListLayoutState, WindowListState, WindowListUtils} from '../types/
 import {RecentlyClosedSession, SessionListState} from '../types/session-list-state';
 import {ChromeAPIWindowState} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
+import {Preferences, PreferenceUtils} from '../types/preferences';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ export class StorageService {
   static readonly ACTIVE_WINDOWS_LAYOUT_STATE = 'activeWindowsLayoutStateStorage_41b6b427';
   static readonly RECENTLY_CLOSED_SESSIONS = 'closedSessionsStorage_882c0c64';
   static readonly RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE = 'closedSessionsLayoutStateStorage_b120de96';
+  static readonly PREFERENCES = 'preferencesStorage_166b6914';
 
   constructor() { }
 
@@ -81,6 +83,24 @@ export class StorageService {
       [StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE]: sessionListState.layoutState
     }, () => {
       MessagePassingService.notifyClosedSessionStateListeners();
+    });
+  }
+
+  static getPreferences(): Promise<Preferences> {
+    return new Promise<Preferences>(resolve => {
+      chrome.storage.sync.get({
+        [StorageService.PREFERENCES]: PreferenceUtils.createDefaultPreferences()
+      }, data => {
+        resolve(data[StorageService.PREFERENCES]);
+      });
+    });
+  }
+
+  static setPreferences(preferences: Preferences) {
+    chrome.storage.sync.set({
+      [StorageService.PREFERENCES]: preferences
+    }, () => {
+      MessagePassingService.notifyPreferenceListeners();
     });
   }
 }

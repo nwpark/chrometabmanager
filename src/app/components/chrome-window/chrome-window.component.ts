@@ -4,6 +4,7 @@ import {ChromeWindowComponentProps, ChromeWindowDragDropData} from '../../types/
 import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {DragDropService} from '../../services/drag-drop.service';
+import {PreferencesService} from '../../services/preferences.service';
 
 @Component({
   selector: 'app-chrome-window',
@@ -20,7 +21,8 @@ export class ChromeWindowComponent implements OnInit {
   connectedWindowIds: string[];
 
   constructor(private changeDetectorRef: ChangeDetectorRef,
-              private dragDropService: DragDropService) { }
+              private dragDropService: DragDropService,
+              private preferencesService: PreferencesService) { }
 
   ngOnInit() {
     this.dragDropData = {chromeWindowId: this.chromeAPIWindow.id, ...this.props};
@@ -67,7 +69,10 @@ export class ChromeWindowComponent implements OnInit {
           event.previousIndex,
           event.currentIndex);
       } else {
-        sourceTabList.tabsService.removeTab(sourceTabList.chromeWindowId, event.item.data.id);
+        console.log(this.preferencesService);
+        if (this.preferencesService.getCloseWindowOnSave()) {
+          sourceTabList.tabsService.removeTab(sourceTabList.chromeWindowId, event.item.data.id);
+        }
         targetTabList.tabsService.createTab(targetTabList.chromeWindowId, event.currentIndex, event.item.data);
       }
     } finally {

@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -8,16 +7,20 @@ import {ActivatedRoute, Router} from '@angular/router';
 })
 export class AppComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute,
-              private router: Router) { }
+  pageTitle: string;
 
-  ngOnInit(): void {
-    this.route.queryParamMap.subscribe(queryParamMap => {
-      const page = queryParamMap.get('page');
-      if (page) {
-        this.router.navigate([`/${page}`]);
-      }
-    });
+  constructor() { }
+
+  ngOnInit() {
+    this.pageTitle = document.title;
+  }
+
+  isNewTabPage(): boolean {
+    return this.pageTitle !== 'Options';
+  }
+
+  isOptionsPage(): boolean {
+    return this.pageTitle === 'Options';
   }
 
 }

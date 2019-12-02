@@ -1,6 +1,13 @@
 import {NgModule} from '@angular/core';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {MatButtonModule, MatGridListModule, MatIconModule, MatProgressSpinnerModule} from '@angular/material';
+import {
+  MatButtonModule,
+  MatCardModule,
+  MatGridListModule,
+  MatIconModule, MatListModule,
+  MatProgressSpinnerModule,
+  MatSlideToggleModule
+} from '@angular/material';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 
 @NgModule({
@@ -10,7 +17,10 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
     MatIconModule,
     MatButtonModule,
     ScrollingModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatSlideToggleModule,
+    MatCardModule,
+    MatListModule
   ]
 })
 export class MaterialModule {}

@@ -1,1 +1,34 @@
-<p>options works!</p>
+<div
+  [@simpleFadeAnimation]="'fadeIn'"
+  [ngStyle]="{
+    background: 'url(/assets/32139955053_237df2fcb3_3k.jpg) no-repeat center center fixed',
+    backgroundSize: 'cover',
+    height: 'calc(100% - 80px)',
+    paddingTop:'80px'
+  }">
+  <mat-card style="width: 400px; margin: 0 auto">
+    <mat-card-header>
+      <mat-card-title>Options</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item>
+          <mat-slide-toggle
+            [checked]="preferences.closeWindowOnSave"
+            [color]="'primary'"
+            (change)="setCloseWindowOnSave($event)">
+            Close windows when saving
+          </mat-slide-toggle>
+        </mat-list-item>
+        <mat-list-item>
+          <mat-slide-toggle
+            [checked]="preferences.enableDebugging"
+            [color]="'primary'"
+            (change)="setEnableDebugging($event)">
+            Enable debug mode
+          </mat-slide-toggle>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+</div>
