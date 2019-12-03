@@ -18,7 +18,9 @@
 <div
   cdkDropList
   class="column-scrollable-content"
-  *ngIf="!windowListState.layoutState.hidden"
+  *ngIf="!windowListState.layoutState.hidden || isAnimationStateExpanding()"
+  [@collapse-list]="collapseAnimationState"
+  (@collapse-list.done)="completeCollapseAnimation($event)"
   [id]="windowProps.windowListId"
   [cdkDropListData]="windowProps"
   [cdkDropListConnectedTo]="connectedWindowListIds"

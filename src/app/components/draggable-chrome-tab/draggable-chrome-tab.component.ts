@@ -9,7 +9,7 @@ import {collapseAnimation, CollapseAnimationState} from '../../animations';
   styleUrls: ['./draggable-chrome-tab.component.css'],
   animations: [
     trigger('collapse-item', [
-      transition(`* => ${CollapseAnimationState.Closing}`, [
+      transition(`* => ${CollapseAnimationState.Collapsing}`, [
         useAnimation(collapseAnimation, {})
       ])
     ])
@@ -58,12 +58,12 @@ export class DraggableChromeTabComponent implements OnInit {
   }
 
   closeTab() {
-    this.chromeTab.status = CollapseAnimationState.Closing;
+    this.chromeTab.status = CollapseAnimationState.Collapsing;
     this.changeDetectorRef.detectChanges();
   }
 
   completeCloseAnimation(event: AnimationEvent) {
-    if (event.toState === CollapseAnimationState.Closing) {
+    if (event.toState === CollapseAnimationState.Collapsing) {
       this.draggableChromeTabClose.emit();
     }
   }

@@ -55,9 +55,10 @@
       class="chrome-window-container"
       *ngIf="!session.isWindow"
       [@collapse-item]="session.status">
+<!--      Todo: animation is wrong when 1 tab remaining -->
       <div
         class="chrome-window-body"
-        style="border-style: solid; border-radius: inherit">
+        style="border-style: solid; border-radius: inherit; min-height: 0">
         <app-draggable-chrome-tab
           class="chrome-tab-border"
           *ngFor="let closedTab of session.closedTabs"

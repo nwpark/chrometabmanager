@@ -3,7 +3,6 @@ import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.ser
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
 import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {RecentlyClosedSession, RecentlyClosedTab, SessionListState, SessionListUtils} from '../../types/session-list-state';
-import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {DragDropService, WindowListId} from '../../services/drag-drop.service';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
@@ -15,7 +14,7 @@ import {collapseAnimation, CollapseAnimationState} from '../../animations';
   styleUrls: ['./recently-closed-tab-list.component.css'],
   animations: [
     trigger('collapse-item', [
-      transition(`* => ${CollapseAnimationState.Closing}`, [
+      transition(`* => ${CollapseAnimationState.Collapsing}`, [
         useAnimation(collapseAnimation, {})
       ])
     ])
@@ -24,8 +23,6 @@ import {collapseAnimation, CollapseAnimationState} from '../../animations';
 export class RecentlyClosedTabListComponent implements OnInit {
 
   sessionListState: SessionListState;
-  // todo: this is unused!
-  actionButtons: ActionButton[];
   windowProps: ChromeWindowComponentProps;
 
   constructor(public recentlyClosedTabsService: RecentlyClosedTabsService,
@@ -40,8 +37,6 @@ export class RecentlyClosedTabListComponent implements OnInit {
       tabsService: this.recentlyClosedTabsService,
       windowIsMutable: false
     };
-    this.actionButtons = ActionButtonFactory
-      .createRecentlyClosedWindowActionButtons(this.chromeTabsService, this.recentlyClosedTabsService);
     this.recentlyClosedTabsService.sessionStateUpdated$
       .pipe(this.dragDropService.ignoreWhenDragging())
       .subscribe(sessionListState => {
@@ -60,7 +55,7 @@ export class RecentlyClosedTabListComponent implements OnInit {
   }
 
   toggleDisplay() {
-    this.recentlyClosedTabsService.toggleSessionListDisplay();
+    this.recentlyClosedTabsService.toggleWindowListDisplay();
   }
 
   tabClicked(chromeTab: ChromeAPITabState, event: MouseEvent) {
@@ -69,25 +64,25 @@ export class RecentlyClosedTabListComponent implements OnInit {
 
   closeTab(session: RecentlyClosedSession, tab: RecentlyClosedTab) {
     if (session.closedTabs.length === 1) {
-      session.status = CollapseAnimationState.Closing;
+      session.status = CollapseAnimationState.Collapsing;
     }
-    tab.status = CollapseAnimationState.Closing;
+    tab.status = CollapseAnimationState.Collapsing;
     this.changeDetectorRef.detectChanges();
   }
 
   completeTabCloseAnimation(event: AnimationEvent, tabId: any) {
-    if (event.toState === CollapseAnimationState.Closing) {
+    if (event.toState === CollapseAnimationState.Collapsing) {
       this.recentlyClosedTabsService.removeDetachedTab(tabId);
     }
   }
 
   closeWindow(session: RecentlyClosedSession) {
-    session.status = CollapseAnimationState.Closing;
+    session.status = CollapseAnimationState.Collapsing;
     this.changeDetectorRef.detectChanges();
   }
 
   completeWindowCloseAnimation(event: AnimationEvent, windowId: any) {
-    if (event.toState === CollapseAnimationState.Closing) {
+    if (event.toState === CollapseAnimationState.Collapsing) {
       this.recentlyClosedTabsService.removeWindow(windowId);
     }
   }

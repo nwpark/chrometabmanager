@@ -4,7 +4,7 @@ import {ListActionButton, ListActionButtonFactory} from '../../types/action-bar'
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {PreferencesService} from '../../services/preferences.service';
-import {collapseAnimation, CollapseAnimationState} from '../../animations';
+import {collapseAnimation, CollapseAnimationState, collapseListAnimation, expandListAnimation} from '../../animations';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {ActionBarService} from '../../services/action-bar.service';
@@ -15,8 +15,16 @@ import {ActionBarService} from '../../services/action-bar.service';
   styleUrls: ['./window-list.component.css'],
   animations: [
     trigger('collapse-item', [
-      transition(`* => ${CollapseAnimationState.Closing}`, [
+      transition(`* => ${CollapseAnimationState.Collapsing}`, [
         useAnimation(collapseAnimation, {})
+      ])
+    ]),
+    trigger('collapse-list', [
+      transition(`* => ${CollapseAnimationState.Collapsing}`, [
+        useAnimation(collapseListAnimation, {})
+      ]),
+      transition(`* => ${CollapseAnimationState.Expanding}`, [
+        useAnimation(expandListAnimation, {})
       ])
     ])
   ]
@@ -29,6 +37,7 @@ export class WindowListComponent implements OnInit {
   windowListState: WindowListState;
   connectedWindowListIds = DragDropService.CONNECTED_WINDOW_LIST_IDS;
   actionButtons: ListActionButton[];
+  collapseAnimationState: string;
 
   constructor(private dragDropService: DragDropService,
               private preferencesService: PreferencesService,
@@ -39,7 +48,7 @@ export class WindowListComponent implements OnInit {
     this.windowListState = this.windowProps.tabsService.getWindowListState();
     this.actionButtons = [
       ...this.actionBarService.createWindowListActionButtons(this.windowProps.windowListId),
-      ListActionButtonFactory.createMinimizeButton(() => this.windowProps.tabsService.toggleWindowListDisplay())
+      ListActionButtonFactory.createMinimizeButton(() => this.toggleDisplay())
     ];
     this.windowProps.tabsService.windowStateUpdated$
       .pipe(this.dragDropService.ignoreWhenDragging())
@@ -49,19 +58,38 @@ export class WindowListComponent implements OnInit {
       });
   }
 
-  beginDrag() {
-    this.dragDropService.beginDrag();
+  isAnimationStateExpanding(): boolean {
+    return this.collapseAnimationState === CollapseAnimationState.Expanding;
+  }
+
+  toggleDisplay() {
+    if (this.windowListState.layoutState.hidden) {
+      this.collapseAnimationState = CollapseAnimationState.Expanding;
+    } else {
+      this.collapseAnimationState = CollapseAnimationState.Collapsing;
+    }
+  }
+
+  completeCollapseAnimation(event: AnimationEvent) {
+    if (event.toState === CollapseAnimationState.Collapsing
+      || event.toState === CollapseAnimationState.Expanding) {
+      this.windowProps.tabsService.toggleWindowListDisplay();
+    }
   }
 
   closeWindow(layoutState: WindowLayoutState) {
-    layoutState.status = CollapseAnimationState.Closing;
+    layoutState.status = CollapseAnimationState.Collapsing;
     this.changeDetectorRef.detectChanges();
   }
 
   completeCloseAnimation(event: AnimationEvent, windowId: any) {
-    if (event.toState === CollapseAnimationState.Closing) {
+    if (event.toState === CollapseAnimationState.Collapsing) {
       this.windowProps.tabsService.removeWindow(windowId);
     }
+  }
+
+  beginDrag() {
+    this.dragDropService.beginDrag();
   }
 
   windowDropped(event: CdkDragDrop<ChromeWindowComponentProps>) {

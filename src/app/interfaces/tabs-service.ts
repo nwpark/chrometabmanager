@@ -7,7 +7,7 @@ export interface TabsService {
 
   getWindowListState?(): WindowListState;
 
-  moveWindowInList?(sourceIndex: number, targetIndex: number);
+  moveWindowInList(sourceIndex: number, targetIndex: number);
 
   moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number);
 
@@ -19,7 +19,7 @@ export interface TabsService {
 
   removeWindow(windowId: any);
 
-  toggleWindowListDisplay?();
+  toggleWindowListDisplay();
 
   toggleWindowDisplay(windowId: any);
 

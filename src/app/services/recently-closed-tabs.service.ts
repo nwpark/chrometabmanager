@@ -40,7 +40,7 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   @modifiesState()
-  toggleSessionListDisplay() {
+  toggleWindowListDisplay() {
     this.sessionListState.toggleDisplay();
   }
 
@@ -79,6 +79,8 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   insertWindow(chromeWindow: ChromeAPIWindowState, index: number) { /* do nothing */ }
+
+  moveWindowInList(sourceIndex: number, targetIndex: number) { /* do nothing */ }
 
   moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) { /* do nothing */ }
 
