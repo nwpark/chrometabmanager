@@ -4,14 +4,19 @@ import {buffer, filter, map} from 'rxjs/operators';
 import {SavedTabsService} from './saved-tabs.service';
 import {ChromeTabsService} from './chrome-tabs.service';
 
+// todo: move to chrome-window-component
+export enum WindowListId {
+  Saved = 'saved_window_list',
+  Active = 'active_window_list',
+  RecentlyClosed = 'recently_closed'
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class DragDropService {
 
-  static SAVED_WINDOW_LIST_ID = 'saved_window_list';
-  static ACTIVE_WINDOW_LIST_ID = 'active_window_list';
-  static CONNECTED_WINDOW_LIST_IDS = ['saved_window_list', 'active_window_list'];
+  static CONNECTED_WINDOW_LIST_IDS = [WindowListId.Saved, WindowListId.Active];
 
   private dragStatusUpdated = new Subject<boolean>();
   private dragStatusUpdated$ = this.dragStatusUpdated.asObservable();

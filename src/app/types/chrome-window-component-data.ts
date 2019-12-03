@@ -1,23 +1,15 @@
 import {TabsService} from '../interfaces/tabs-service';
-import {ActionButton} from './action-bar';
-
-export enum WindowCategory {
-  Active,
-  Saved,
-  RecentlyClosed
-}
+import {WindowListId} from '../services/drag-drop.service';
 
 export class ChromeWindowComponentProps {
-  windowListId?: string;
-  actionButtons?: ActionButton[];
-  category: WindowCategory;
+  windowListId: WindowListId;
   tabsService: TabsService;
   windowIsMutable: boolean;
 }
 
 export class ChromeWindowDragDropData {
   chromeWindowId: any;
-  category: WindowCategory;
+  windowListId: WindowListId;
   tabsService: TabsService;
   windowIsMutable: boolean;
 }

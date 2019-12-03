@@ -41,7 +41,6 @@
       <app-chrome-window-header
         [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
         [layoutState]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id)"
-        [extraActionButtons]="actionButtons"
         [props]="windowProps"
         (chromeWindowClose)="closeWindow(session)">
       </app-chrome-window-header>

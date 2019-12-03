@@ -63,7 +63,7 @@ export class ChromeWindowComponent implements OnInit {
         targetTabList.tabsService.moveTabInWindow(targetTabList.chromeWindowId,
           event.previousIndex,
           event.currentIndex);
-      } else if (sourceTabList.category === targetTabList.category) {
+      } else if (sourceTabList.windowListId === targetTabList.windowListId) {
         targetTabList.tabsService.transferTab(sourceTabList.chromeWindowId,
           targetTabList.chromeWindowId,
           event.previousIndex,

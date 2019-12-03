@@ -45,34 +45,6 @@ export class ListActionButtonFactory {
 }
 
 export class ActionButtonFactory {
-  static createActiveWindowActionButtons(
-    savedTabsService: SavedTabsService,
-    chromeTabsService: ChromeTabsService
-  ): ActionButton[] {
-    return [
-      ActionButtonFactory.createSaveButton(chromeWindow => {
-        savedTabsService.insertWindow(chromeWindow, 0);
-      }),
-      ActionButtonFactory.createMinimizeButton(chromeWindow => {
-        chromeTabsService.toggleWindowDisplay(chromeWindow.id);
-      })
-    ];
-  }
-
-  static createSavedWindowActionButtons(
-    savedTabsService: SavedTabsService,
-    chromeTabsService: ChromeTabsService
-  ): ActionButton[] {
-    return [
-      ActionButtonFactory.createOpenButton(chromeWindow => {
-        chromeTabsService.createWindow(chromeWindow);
-      }),
-      ActionButtonFactory.createMinimizeButton(chromeWindow => {
-        savedTabsService.toggleWindowDisplay(chromeWindow.id);
-      })
-    ];
-  }
-
   static createRecentlyClosedWindowActionButtons(
     chromeTabsService: ChromeTabsService,
     recentlyClosedTabsService: RecentlyClosedTabsService

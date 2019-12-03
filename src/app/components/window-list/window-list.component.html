@@ -37,7 +37,6 @@
         <app-chrome-window-header
           [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
           [layoutState]="layoutState"
-          [extraActionButtons]="windowProps.actionButtons"
           [props]="windowProps"
           (chromeWindowClose)="closeWindow(layoutState)">
         </app-chrome-window-header>

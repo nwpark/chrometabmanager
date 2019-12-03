@@ -5,6 +5,7 @@ import {ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {FormControl} from '@angular/forms';
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
 import {PreferencesService} from '../../services/preferences.service';
+import {ActionBarService} from '../../services/action-bar.service';
 
 @Component({
   selector: 'app-chrome-window-header',
@@ -15,7 +16,6 @@ export class ChromeWindowHeaderComponent implements OnInit {
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
   @Input() layoutState: WindowLayoutState;
-  @Input() extraActionButtons: ActionButton[];
   @Input() props: ChromeWindowComponentProps;
   @Output() chromeWindowClose = new EventEmitter();
 
@@ -26,11 +26,12 @@ export class ChromeWindowHeaderComponent implements OnInit {
   showEditForm = false;
 
   constructor(private changeDetectorRef: ChangeDetectorRef,
-              private preferencesService: PreferencesService) { }
+              private preferencesService: PreferencesService,
+              private actionBarService: ActionBarService) { }
 
   ngOnInit() {
     this.actionButtons = [
-      ...this.extraActionButtons,
+      ...this.actionBarService.createWindowActionButtons(this.props.windowListId),
       ActionButtonFactory.createCloseButton(() => this.chromeWindowClose.emit())
     ];
     this.titleFormControl = new FormControl(this.layoutState.title);

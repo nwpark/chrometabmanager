@@ -7,6 +7,7 @@ import {PreferencesService} from '../../services/preferences.service';
 import {collapseAnimation, CollapseAnimationState} from '../../animations';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
+import {ActionBarService} from '../../services/action-bar.service';
 
 @Component({
   selector: 'app-window-list',
@@ -23,7 +24,6 @@ import {CdkDragDrop} from '@angular/cdk/drag-drop';
 export class WindowListComponent implements OnInit {
 
   @Input() title: string;
-  @Input() extraActionButtons: ListActionButton[];
   @Input() windowProps: ChromeWindowComponentProps;
 
   windowListState: WindowListState;
@@ -32,12 +32,13 @@ export class WindowListComponent implements OnInit {
 
   constructor(private dragDropService: DragDropService,
               private preferencesService: PreferencesService,
+              private actionBarService: ActionBarService,
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.windowListState = this.windowProps.tabsService.getWindowListState();
     this.actionButtons = [
-      ...this.extraActionButtons,
+      ...this.actionBarService.createWindowListActionButtons(this.windowProps.windowListId),
       ListActionButtonFactory.createMinimizeButton(() => this.windowProps.tabsService.toggleWindowListDisplay())
     ];
     this.windowProps.tabsService.windowStateUpdated$

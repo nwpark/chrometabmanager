@@ -1,11 +1,11 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
-import {ChromeWindowComponentProps, WindowCategory} from '../../types/chrome-window-component-data';
+import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
 import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {RecentlyClosedSession, RecentlyClosedTab, SessionListState, SessionListUtils} from '../../types/session-list-state';
 import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
-import {DragDropService} from '../../services/drag-drop.service';
+import {DragDropService, WindowListId} from '../../services/drag-drop.service';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {collapseAnimation, CollapseAnimationState} from '../../animations';
 
@@ -24,6 +24,7 @@ import {collapseAnimation, CollapseAnimationState} from '../../animations';
 export class RecentlyClosedTabListComponent implements OnInit {
 
   sessionListState: SessionListState;
+  // todo: this is unused!
   actionButtons: ActionButton[];
   windowProps: ChromeWindowComponentProps;
 
@@ -35,7 +36,7 @@ export class RecentlyClosedTabListComponent implements OnInit {
   ngOnInit() {
     this.sessionListState = this.recentlyClosedTabsService.getSessionListState();
     this.windowProps = {
-      category: WindowCategory.RecentlyClosed,
+      windowListId: WindowListId.RecentlyClosed,
       tabsService: this.recentlyClosedTabsService,
       windowIsMutable: false
     };
