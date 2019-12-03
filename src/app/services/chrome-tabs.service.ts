@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 
 import {WindowLayoutState, WindowListState, WindowListUtils} from '../types/window-list-state';
 import {Subject} from 'rxjs';
-import {modifiesState} from '../decorators/modifies-state';
+import {modifiesState, StateModifierParams} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {StorageService} from './storage.service';
 import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from '../types/chrome-api-types';
@@ -18,6 +18,14 @@ export class ChromeTabsService implements TabsService {
   private windowStateUpdatedSource = new Subject<WindowListState>();
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
+  static getChromeWindowsFromAPI(): Promise<ChromeAPIWindowState[]> {
+    return new Promise<ChromeAPIWindowState[]>(resolve => {
+      chrome.windows.getAll({populate: true}, chromeWindows => {
+        resolve(chromeWindows as ChromeAPIWindowState[]);
+      });
+    });
+  }
+
   constructor() {
     this.windowListState = WindowListUtils.createEmptyWindowListState();
     MessagePassingService.addActiveWindowStateListener(() => {
@@ -27,47 +35,32 @@ export class ChromeTabsService implements TabsService {
   }
 
   private refreshState() {
-    this.getChromeWindowsFromAPI().then(windowList => {
-      // todo: sanity check
-      StorageService.getChromeWindowsLayoutState(windowList).then(layoutState => {
-        console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
-        this.setWindowListState(new WindowListState(windowList, layoutState));
-      });
+    StorageService.getActiveWindowsState().then(windowListState => {
+      console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
+      this.windowListState = windowListState;
+      this.windowStateUpdatedSource.next(this.windowListState);
     });
-  }
-
-  private getChromeWindowsFromAPI(): Promise<ChromeAPIWindowState[]> {
-    return new Promise<ChromeAPIWindowState[]>(resolve => {
-      chrome.windows.getAll({populate: true}, chromeWindows => {
-        resolve(chromeWindows as ChromeAPIWindowState[]);
-      });
-    });
-  }
-
-  @modifiesState()
-  private setWindowListState(windowListState: WindowListState) {
-    this.windowListState = windowListState;
   }
 
   getWindowListState(): WindowListState {
     return this.windowListState;
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
     const tabId = this.windowListState.getTabId(windowId, sourceIndex);
     this.windowListState.moveTabInWindow(windowId, sourceIndex, targetIndex);
     chrome.tabs.move(tabId, {index: targetIndex});
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) {
     const tabId = this.windowListState.getTabId(sourceWindowId, sourceIndex);
     this.windowListState.transferTab(sourceWindowId, targetWindowId, sourceIndex, targetIndex);
     chrome.tabs.move(tabId, {windowId: targetWindowId, index: targetIndex});
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
     const activeTab = WindowStateUtils.convertToActiveTab(chromeTab);
     this.windowListState.insertTab(windowId, tabIndex, activeTab);
@@ -84,24 +77,24 @@ export class ChromeTabsService implements TabsService {
     });
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: false})
   removeTab(windowId: any, tabId: any) {
     this.windowListState.removeTab(windowId, tabId);
     chrome.tabs.remove(tabId);
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: false})
   removeWindow(windowId: any) {
     this.windowListState.markWindowAsDeleted(windowId);
     chrome.windows.remove(windowId);
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   toggleWindowListDisplay() {
     this.windowListState.toggleDisplay();
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   toggleWindowDisplay(windowId: any) {
     this.windowListState.toggleWindowDisplay(windowId);
   }
@@ -111,7 +104,7 @@ export class ChromeTabsService implements TabsService {
     chrome.windows.update(chromeTab.windowId, {focused: true});
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   setWindowTitle(windowId: any, title: string) {
     this.windowListState.setWindowTitle(windowId, title);
   }
@@ -121,7 +114,7 @@ export class ChromeTabsService implements TabsService {
     chrome.windows.create({url: tabsUrls, focused: true});
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   insertWindow(chromeWindow: ChromeAPIWindowState, index: number) {
     const tempWindow = WindowStateUtils.convertToActiveWindow(chromeWindow);
     const tempLayoutState = WindowListUtils.createBasicWindowLayoutState(tempWindow.id);
@@ -136,22 +129,24 @@ export class ChromeTabsService implements TabsService {
     });
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   private replaceTempWindow(tempWindowId: any, chromeWindow: ChromeAPIWindowState,
                             layoutState: WindowLayoutState, index: number) {
     this.windowListState.removeWindow(tempWindowId);
     this.windowListState.insertWindow(chromeWindow, layoutState, index);
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   moveWindowInList(sourceIndex: number, targetIndex: number) {
     this.windowListState.moveWindowInList(sourceIndex, targetIndex);
   }
 
-  onStateModified() {
+  onStateModified(params?: StateModifierParams) {
     console.log(new Date().toTimeString().substring(0, 8), '- updating active windows');
     this.windowStateUpdatedSource.next(this.windowListState);
-    StorageService.setChromeWindowsLayoutState(this.windowListState.layoutState);
+    if (params.storeResult) {
+      StorageService.setChromeWindowsLayoutState(this.windowListState.layoutState);
+    }
   }
 
 }

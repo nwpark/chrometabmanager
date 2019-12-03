@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {WindowListLayoutState, WindowListState, WindowListUtils} from '../types/window-list-state';
 import {RecentlyClosedSession, SessionListState} from '../types/session-list-state';
-import {ChromeAPIWindowState} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
 import {Preferences, PreferenceUtils} from '../types/preferences';
 
@@ -12,6 +11,7 @@ export class StorageService {
 
   static readonly SAVED_WINDOWS = 'savedWindowsStorage_0a565f6f';
   static readonly SAVED_WINDOWS_LAYOUT_STATE = 'savedWindowsLayoutStateStorage_00adb476';
+  static readonly ACTIVE_WINDOWS = 'activeWindowsStorage_2e062a09';
   static readonly ACTIVE_WINDOWS_LAYOUT_STATE = 'activeWindowsLayoutStateStorage_41b6b427';
   static readonly RECENTLY_CLOSED_SESSIONS = 'closedSessionsStorage_882c0c64';
   static readonly RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE = 'closedSessionsLayoutStateStorage_b120de96';
@@ -42,14 +42,37 @@ export class StorageService {
     });
   }
 
-  static getChromeWindowsLayoutState(chromeAPIWindows: ChromeAPIWindowState[]): Promise<WindowListLayoutState> {
+  static getActiveWindowsState(): Promise<WindowListState> {
+    return new Promise<WindowListState>(resolve => {
+      chrome.storage.local.get([StorageService.ACTIVE_WINDOWS, StorageService.ACTIVE_WINDOWS_LAYOUT_STATE], data => {
+        const activeWindows = data[StorageService.ACTIVE_WINDOWS];
+        const layoutState = data[StorageService.ACTIVE_WINDOWS_LAYOUT_STATE];
+        if (activeWindows && layoutState) {
+          resolve(new WindowListState(activeWindows, layoutState));
+        } else {
+          resolve(WindowListUtils.createEmptyWindowListState());
+        }
+      });
+    });
+  }
+
+  static setActiveWindowsState(windowListState: WindowListState) {
+    chrome.storage.local.set({
+      [StorageService.ACTIVE_WINDOWS]: windowListState.chromeAPIWindows,
+      [StorageService.ACTIVE_WINDOWS_LAYOUT_STATE]: windowListState.layoutState
+    }, () => {
+      MessagePassingService.notifyActiveWindowStateListeners();
+    });
+  }
+
+  static getActiveWindowsLayoutState(): Promise<WindowListLayoutState> {
     return new Promise<WindowListLayoutState>(resolve => {
       chrome.storage.local.get(StorageService.ACTIVE_WINDOWS_LAYOUT_STATE, data => {
         const layoutState = data[StorageService.ACTIVE_WINDOWS_LAYOUT_STATE];
         if (layoutState) {
-          resolve(WindowListUtils.cleanupLayoutState(layoutState, chromeAPIWindows));
+          resolve(layoutState);
         } else {
-          resolve(WindowListUtils.createBasicListLayoutState(chromeAPIWindows));
+          resolve(WindowListUtils.createEmptyListLayoutState());
         }
       });
     });

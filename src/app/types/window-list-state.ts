@@ -20,6 +20,11 @@ export class WindowListState {
     return this.layoutState.windowStates.find(windowState => windowState.windowId === windowId);
   }
 
+  getTab(windowId: any, tabId: any): ChromeAPITabState {
+    const chromeWindow = this.getWindow(windowId);
+    return chromeWindow.tabs.find(tab => tab.id === tabId);
+  }
+
   getTabId(windowId: any, tabIndex: number): number {
     return this.getWindow(windowId).tabs[tabIndex].id;
   }
