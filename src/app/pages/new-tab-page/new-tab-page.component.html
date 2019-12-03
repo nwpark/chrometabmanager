@@ -3,11 +3,23 @@
   [ngStyle]="{background: 'url(/assets/32139955053_237df2fcb3_3k.jpg) no-repeat center center fixed', backgroundSize: 'cover', height: '100%'}">
   <mat-grid-list cols="{{cols}}" style="height: 100%" rowHeight="fit" (window:resize)="onResize($event)">
     <mat-grid-tile *ngIf="cols > 1">
-      <app-saved-window-list class="full-height-column"></app-saved-window-list>
+<!--      <app-saved-window-list class="full-height-column"></app-saved-window-list>-->
+      <app-window-list
+        class="full-height-column"
+        [title]="'Saved'"
+        [extraActionButtons]="savedWindowListActionButtons"
+        [windowProps]="savedWindowProps">
+      </app-window-list>
     </mat-grid-tile>
 
     <mat-grid-tile>
-      <app-active-window-list class="full-height-column"></app-active-window-list>
+<!--      <app-active-window-list class="full-height-column"></app-active-window-list>-->
+      <app-window-list
+        class="full-height-column"
+        [title]="'Active'"
+        [extraActionButtons]="activeWindowListActionButtons"
+        [windowProps]="activeWindowProps">
+      </app-window-list>
     </mat-grid-tile>
 
     <mat-grid-tile *ngIf="cols > 2">

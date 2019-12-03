@@ -15,6 +15,7 @@ import {RecentlyClosedTabListComponent} from './components/recently-closed-tab-l
 import {ChromeWindowHeaderComponent} from './components/chrome-window-header/chrome-window-header.component';
 import {OptionsComponent} from './pages/options/options.component';
 import {NewTabPageComponent} from './pages/new-tab-page/new-tab-page.component';
+import { WindowListComponent } from './components/window-list/window-list.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import {NewTabPageComponent} from './pages/new-tab-page/new-tab-page.component';
     RecentlyClosedTabListComponent,
     ChromeWindowHeaderComponent,
     OptionsComponent,
-    NewTabPageComponent
+    NewTabPageComponent,
+    WindowListComponent
   ],
   imports: [
     BrowserModule,

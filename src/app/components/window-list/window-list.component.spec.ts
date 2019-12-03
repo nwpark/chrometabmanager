@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NewTabPageComponent } from './new-tab-page.component';
+import { WindowListComponent } from './window-list.component';
 
-describe('NewTabPageComponent', () => {
-  let component: NewTabPageComponent;
-  let fixture: ComponentFixture<NewTabPageComponent>;
+describe('WindowListComponent', () => {
+  let component: WindowListComponent;
+  let fixture: ComponentFixture<WindowListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NewTabPageComponent ]
+      declarations: [ WindowListComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NewTabPageComponent);
+    fixture = TestBed.createComponent(WindowListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

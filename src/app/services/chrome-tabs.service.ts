@@ -124,6 +124,7 @@ export class ChromeTabsService implements TabsService {
     chrome.windows.create({url: tabsUrls, focused: false}, window => {
       const newWindow = window as ChromeAPIWindowState;
       const layoutState = WindowListUtils.createBasicWindowLayoutState(newWindow.id);
+      // todo: this layout state gets deleted and final index is wrong
       this.replaceTempWindow(tempWindow.id, newWindow, layoutState, index);
       chrome.windows.update(newWindow.id, { focused: false });
     });

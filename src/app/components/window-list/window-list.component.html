@@ -1,0 +1,52 @@
+<div class="column-header">
+  <span style="float: right">
+    <ng-container *ngFor="let button of actionButtons">
+      <button
+        mat-icon-button
+        [title]="windowListState.layoutState.hidden ? button.titleWhenHidden : button.title"
+        (click)="button.callback()">
+        <mat-icon class="action-icon-24" *ngIf="!windowListState.layoutState.hidden">{{button.icon}}</mat-icon>
+        <mat-icon class="action-icon-24" *ngIf="windowListState.layoutState.hidden">{{button.iconWhenHidden || button.icon}}</mat-icon>
+      </button>
+    </ng-container>
+  </span>
+  <span class="column-title-text">
+    {{title}}
+  </span>
+</div>
+
+<div
+  cdkDropList
+  class="column-scrollable-content"
+  *ngIf="!windowListState.layoutState.hidden"
+  [id]="windowProps.windowListId"
+  [cdkDropListData]="windowProps"
+  [cdkDropListConnectedTo]="connectedWindowListIds"
+  (cdkDropListDropped)="windowDropped($event)">
+  <div
+    cdkDrag
+    *ngFor="let layoutState of windowListState.layoutState.windowStates"
+    [@collapse-item]="layoutState.status"
+    (@collapse-item.done)="completeCloseAnimation($event, layoutState.windowId)"
+    [cdkDragData]="windowListState.getWindow(layoutState.windowId)"
+    (cdkDragStarted)="beginDrag()">
+    <div
+      class="chrome-window-container"
+      *ngIf="windowListState.getWindow(layoutState.windowId).type === 'normal' && !layoutState.deleted">
+      <div cdkDragHandle>
+        <app-chrome-window-header
+          [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
+          [layoutState]="layoutState"
+          [extraActionButtons]="windowProps.actionButtons"
+          [props]="windowProps"
+          (chromeWindowClose)="closeWindow(layoutState)">
+        </app-chrome-window-header>
+      </div>
+      <app-chrome-window
+        [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
+        [layoutState]="layoutState"
+        [props]="windowProps">
+      </app-chrome-window>
+    </div>
+  </div>
+</div>

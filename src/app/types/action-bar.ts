@@ -12,6 +12,38 @@ export interface ActionButton {
   callback: (chromeWindow: ChromeAPIWindowState) => void;
 }
 
+export interface ListActionButton {
+  title: string;
+  titleWhenHidden?: string;
+  icon: string;
+  iconWhenHidden?: string;
+  requiresMouseover: boolean;
+  callback: () => void;
+}
+
+export class ListActionButtonFactory {
+
+  static createNewWindowButton(callback: () => void): ListActionButton {
+    return {
+      title: 'Create new window',
+      icon: 'add',
+      requiresMouseover: false,
+      callback
+    };
+  }
+
+  static createMinimizeButton(callback: () => void): ListActionButton {
+    return {
+      title: 'Collapse',
+      titleWhenHidden: 'Expand',
+      icon: 'arrow_drop_down',
+      iconWhenHidden: 'arrow_right',
+      requiresMouseover: false,
+      callback
+    };
+  }
+}
+
 export class ActionButtonFactory {
   static createActiveWindowActionButtons(
     savedTabsService: SavedTabsService,

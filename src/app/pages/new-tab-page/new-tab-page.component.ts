@@ -1,5 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
+import {ChromeWindowComponentProps, WindowCategory} from '../../types/chrome-window-component-data';
+import {ActionButton, ActionButtonFactory, ListActionButton, ListActionButtonFactory} from '../../types/action-bar';
+import {ChromeTabsService} from '../../services/chrome-tabs.service';
+import {SavedTabsService} from '../../services/saved-tabs.service';
+import {DragDropService} from '../../services/drag-drop.service';
 
 @Component({
   selector: 'app-new-tab-page',
@@ -23,13 +28,38 @@ export class NewTabPageComponent implements OnInit {
     {windowWidth: 0, cols: 1}
   ];
 
-  title = 'tabmanager';
   cols: number;
 
-  constructor() { }
+  activeWindowProps: ChromeWindowComponentProps;
+  activeWindowListActionButtons: ListActionButton[];
+  savedWindowProps: ChromeWindowComponentProps;
+  savedWindowListActionButtons: ListActionButton[];
+
+  constructor(private chromeTabsService: ChromeTabsService,
+              private savedTabsService: SavedTabsService) { }
 
   ngOnInit(): void {
     this.cols = this.getCols(window.innerWidth);
+    this.activeWindowProps = {
+      windowListId: DragDropService.ACTIVE_WINDOW_LIST_ID,
+      actionButtons: ActionButtonFactory
+        .createActiveWindowActionButtons(this.savedTabsService, this.chromeTabsService),
+      category: WindowCategory.Active,
+      tabsService: this.chromeTabsService,
+      windowIsMutable: true
+    };
+    this.savedWindowProps = {
+      windowListId: DragDropService.SAVED_WINDOW_LIST_ID,
+      actionButtons: ActionButtonFactory
+        .createSavedWindowActionButtons(this.savedTabsService, this.chromeTabsService),
+      category: WindowCategory.Saved,
+      tabsService: this.savedTabsService,
+      windowIsMutable: true
+    };
+    this.savedWindowListActionButtons = [
+      ListActionButtonFactory.createNewWindowButton(() => this.savedTabsService.createNewWindow()),
+    ];
+    this.activeWindowListActionButtons = [];
   }
 
   onResize(event) {

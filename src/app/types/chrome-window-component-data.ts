@@ -1,4 +1,5 @@
 import {TabsService} from '../interfaces/tabs-service';
+import {ActionButton} from './action-bar';
 
 export enum WindowCategory {
   Active,
@@ -7,6 +8,8 @@ export enum WindowCategory {
 }
 
 export class ChromeWindowComponentProps {
+  windowListId?: string;
+  actionButtons?: ActionButton[];
   category: WindowCategory;
   tabsService: TabsService;
   windowIsMutable: boolean;
