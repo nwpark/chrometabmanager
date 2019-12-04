@@ -1,14 +1,22 @@
-import {animate, animation, style} from '@angular/animations';
+import {animate, animation, style, transition, trigger, useAnimation} from '@angular/animations';
 
 export enum CollapseAnimationState {
-  Collapsing = 'closing',
-  Expanding = 'opening'
+  Closing = 'closing',
+  Collapsing = 'collapsing',
+  Expanding = 'expanding',
+  Complete = 'complete'
 }
 
-export const collapseAnimation = animation([
+export const collapseWindowAnimation = animation([
   style({ transform: 'scale(1, 1)', transformOrigin: 'top', height: '*', overflow: 'hidden', position: 'relative' }),
   animate('200ms cubic-bezier(0,0,0.2,1)',
     style({ transform: 'scale(1, 0)', height: '0px', marginBottom: '0', overflow: 'hidden', position: 'relative' }))
+]);
+
+export const expandWindowAnimation = animation([
+  style({ transform: 'scale(1, 0)', transformOrigin: 'top', height: '0px', position: 'relative', color: 'white' }),
+  animate('200ms cubic-bezier(0,0,0.2,1)',
+    style({ transform: 'scale(1, 1)', height: '*', color: 'black' }))
 ]);
 
 // todo: cleanup styling

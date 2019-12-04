@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
-import {collapseAnimation, CollapseAnimationState} from '../../animations';
+import {collapseWindowAnimation, CollapseAnimationState} from '../../animations';
 
 @Component({
   selector: 'app-draggable-chrome-tab',
@@ -10,7 +10,7 @@ import {collapseAnimation, CollapseAnimationState} from '../../animations';
   animations: [
     trigger('collapse-item', [
       transition(`* => ${CollapseAnimationState.Collapsing}`, [
-        useAnimation(collapseAnimation, {})
+        useAnimation(collapseWindowAnimation, {})
       ])
     ])
   ]

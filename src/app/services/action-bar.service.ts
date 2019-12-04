@@ -42,9 +42,6 @@ export class ActionBarService {
     return [
       ActionButtonFactory.createSaveButton(chromeWindow => {
         this.savedTabsService.insertWindow(chromeWindow, 0);
-      }),
-      ActionButtonFactory.createMinimizeButton(chromeWindow => {
-        this.chromeTabsService.toggleWindowDisplay(chromeWindow.id);
       })
     ];
   }
@@ -53,9 +50,6 @@ export class ActionBarService {
     return [
       ActionButtonFactory.createOpenButton(chromeWindow => {
         this.chromeTabsService.createWindow(chromeWindow);
-      }),
-      ActionButtonFactory.createMinimizeButton(chromeWindow => {
-        this.savedTabsService.toggleWindowDisplay(chromeWindow.id);
       })
     ];
   }
@@ -64,9 +58,6 @@ export class ActionBarService {
     return [
       ActionButtonFactory.createOpenButton(chromeWindow => {
         this.chromeTabsService.createWindow(chromeWindow);
-      }),
-      ActionButtonFactory.createMinimizeButton(chromeWindow => {
-        this.recentlyClosedTabsService.toggleWindowDisplay(chromeWindow.id);
       })
     ];
   }

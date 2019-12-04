@@ -18,6 +18,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
   @Input() layoutState: WindowLayoutState;
   @Input() props: ChromeWindowComponentProps;
   @Output() chromeWindowClose = new EventEmitter();
+  @Output() chromeWindowToggleDisplay = new EventEmitter();
 
   actionButtons: ActionButton[];
 
@@ -32,6 +33,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
   ngOnInit() {
     this.actionButtons = [
       ...this.actionBarService.createWindowActionButtons(this.props.windowListId),
+      ActionButtonFactory.createMinimizeButton(() => this.chromeWindowToggleDisplay.emit()),
       ActionButtonFactory.createCloseButton(() => this.chromeWindowClose.emit())
     ];
     this.titleFormControl = new FormControl(this.layoutState.title);

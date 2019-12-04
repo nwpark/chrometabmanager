@@ -24,37 +24,38 @@
 
 <div
   class="column-scrollable-content"
-  *ngIf="!sessionListState.layoutState.hidden">
-<!--  <h2 style="text-align: center">Today</h2>-->
-<!--  <div style="width: 400px; height: 30px; line-height: 30px; text-align: center; margin-bottom: 20px;-->
-<!--              background-color: #EBE9EB80; font-weight: bold; font-size: large;-->
-<!--              border: 1px solid dimgrey; border-radius: 4px">-->
-<!--    Today-->
-<!--  </div>-->
-
+  *ngIf="!sessionListState.layoutState.hidden || isAnimationStateExpanding()"
+  [@collapse-list]="collapseAnimationState"
+  (@collapse-list.done)="completeToggleDisplayAnimation($event)">
   <div *ngFor="let session of sessionListState.recentlyClosedSessions">
     <div
       class="chrome-window-container"
       *ngIf="session.isWindow"
-      [@collapse-item]="session.status"
-      (@collapse-item.done)="completeWindowCloseAnimation($event, session.closedWindow.chromeAPIWindow.id)">
+      [@close-window]="session.status"
+      (@close-window.done)="completeCloseWindow($event, session)">
       <app-chrome-window-header
         [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
         [layoutState]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id)"
         [props]="windowProps"
-        (chromeWindowClose)="closeWindow(session)">
+        (chromeWindowClose)="closeWindow(session)"
+        (chromeWindowToggleDisplay)="toggleWindowDisplay(sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id))">
       </app-chrome-window-header>
-      <app-chrome-window
-        [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
-        [layoutState]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id)"
-        [props]="windowProps">
-      </app-chrome-window>
+      <div
+        *ngIf="!sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id).hidden || isWindowExpanding(sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id))"
+        [@collapse-window]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id).status"
+        (@collapse-window.done)="completeToggleWindowDisplay($event, sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id))">
+        <app-chrome-window
+          [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
+          [layoutState]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id)"
+          [props]="windowProps">
+        </app-chrome-window>
+      </div>
     </div>
 
     <div
       class="chrome-window-container"
       *ngIf="!session.isWindow"
-      [@collapse-item]="session.status">
+      [@collapse-window]="session.status">
 <!--      Todo: animation is wrong when 1 tab remaining -->
       <div
         class="chrome-window-body"
@@ -62,8 +63,8 @@
         <app-draggable-chrome-tab
           class="chrome-tab-border"
           *ngFor="let closedTab of session.closedTabs"
-          [@collapse-item]="closedTab.status"
-          (@collapse-item.done)="completeTabCloseAnimation($event, closedTab.chromeAPITab.id)"
+          [@collapse-window]="closedTab.status"
+          (@collapse-window.done)="completeTabCloseAnimation($event, closedTab.chromeAPITab.id)"
           [chromeTab]="closedTab.chromeAPITab"
           [timestamp]="closedTab.timestamp"
           (draggableChromeTabClose)="closeTab(session, closedTab)"

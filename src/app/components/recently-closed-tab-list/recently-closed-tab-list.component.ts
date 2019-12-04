@@ -6,16 +6,39 @@ import {RecentlyClosedSession, RecentlyClosedTab, SessionListState, SessionListU
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {DragDropService, WindowListId} from '../../services/drag-drop.service';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
-import {collapseAnimation, CollapseAnimationState} from '../../animations';
+import {
+  collapseWindowAnimation,
+  CollapseAnimationState,
+  expandWindowAnimation,
+  collapseListAnimation,
+  expandListAnimation
+} from '../../animations';
+import {WindowLayoutState} from '../../types/window-list-state';
 
 @Component({
   selector: 'app-recently-closed-tab-list',
   templateUrl: './recently-closed-tab-list.component.html',
   styleUrls: ['./recently-closed-tab-list.component.css'],
   animations: [
-    trigger('collapse-item', [
+    trigger('close-window', [
       transition(`* => ${CollapseAnimationState.Collapsing}`, [
-        useAnimation(collapseAnimation, {})
+        useAnimation(collapseWindowAnimation, {})
+      ])
+    ]),
+    trigger('collapse-window', [
+      transition(`* => ${CollapseAnimationState.Collapsing}`, [
+        useAnimation(collapseWindowAnimation, {})
+      ]),
+      transition(`* => ${CollapseAnimationState.Expanding}`, [
+        useAnimation(expandWindowAnimation, {})
+      ])
+    ]),
+    trigger('collapse-list', [
+      transition(`* => ${CollapseAnimationState.Collapsing}`, [
+        useAnimation(collapseListAnimation, {})
+      ]),
+      transition(`* => ${CollapseAnimationState.Expanding}`, [
+        useAnimation(expandListAnimation, {})
       ])
     ])
   ]
@@ -24,6 +47,7 @@ export class RecentlyClosedTabListComponent implements OnInit {
 
   sessionListState: SessionListState;
   windowProps: ChromeWindowComponentProps;
+  collapseAnimationState = CollapseAnimationState.Complete;
 
   constructor(public recentlyClosedTabsService: RecentlyClosedTabsService,
               private chromeTabsService: ChromeTabsService,
@@ -54,12 +78,33 @@ export class RecentlyClosedTabListComponent implements OnInit {
     return 'Recently Closed';
   }
 
-  toggleDisplay() {
-    this.recentlyClosedTabsService.toggleWindowListDisplay();
-  }
-
   tabClicked(chromeTab: ChromeAPITabState, event: MouseEvent) {
     this.recentlyClosedTabsService.setTabActive(chromeTab, event.ctrlKey);
+  }
+
+  isAnimationStateExpanding(): boolean {
+    return this.collapseAnimationState === CollapseAnimationState.Expanding;
+  }
+
+  isWindowExpanding(layoutState: WindowLayoutState): boolean {
+    return layoutState.status === CollapseAnimationState.Expanding;
+  }
+
+  toggleDisplay() {
+    if (this.sessionListState.layoutState.hidden) {
+      this.collapseAnimationState = CollapseAnimationState.Expanding;
+    } else {
+      this.collapseAnimationState = CollapseAnimationState.Collapsing;
+    }
+    this.changeDetectorRef.detectChanges();
+  }
+
+  completeToggleDisplayAnimation(event: AnimationEvent) {
+    if (event.toState === CollapseAnimationState.Collapsing
+      || event.toState === CollapseAnimationState.Expanding) {
+      this.collapseAnimationState = CollapseAnimationState.Complete;
+      this.windowProps.tabsService.toggleWindowListDisplay();
+    }
   }
 
   closeTab(session: RecentlyClosedSession, tab: RecentlyClosedTab) {
@@ -76,15 +121,33 @@ export class RecentlyClosedTabListComponent implements OnInit {
     }
   }
 
+  toggleWindowDisplay(layoutState: WindowLayoutState) {
+    if (layoutState.hidden) {
+      layoutState.status = CollapseAnimationState.Expanding;
+    } else {
+      layoutState.status = CollapseAnimationState.Collapsing;
+    }
+    this.changeDetectorRef.detectChanges();
+  }
+
+  completeToggleWindowDisplay(event: AnimationEvent, layoutState: WindowLayoutState) {
+    if (event.toState === CollapseAnimationState.Collapsing
+      || event.toState === CollapseAnimationState.Expanding) {
+      layoutState.status = CollapseAnimationState.Complete;
+      this.windowProps.tabsService.toggleWindowDisplay(layoutState.windowId);
+    }
+  }
+
   closeWindow(session: RecentlyClosedSession) {
     session.status = CollapseAnimationState.Collapsing;
     this.changeDetectorRef.detectChanges();
   }
 
-  completeWindowCloseAnimation(event: AnimationEvent, windowId: any) {
+  completeCloseWindow(event: AnimationEvent, session: RecentlyClosedSession) {
     if (event.toState === CollapseAnimationState.Collapsing) {
-      this.recentlyClosedTabsService.removeWindow(windowId);
+      this.recentlyClosedTabsService.removeWindow(session.closedWindow.chromeAPIWindow.id);
     }
+    session.status = CollapseAnimationState.Complete;
   }
 
   clear() {

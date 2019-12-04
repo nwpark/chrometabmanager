@@ -4,7 +4,13 @@ import {ListActionButton, ListActionButtonFactory} from '../../types/action-bar'
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {PreferencesService} from '../../services/preferences.service';
-import {collapseAnimation, CollapseAnimationState, collapseListAnimation, expandListAnimation} from '../../animations';
+import {
+  CollapseAnimationState,
+  collapseListAnimation,
+  collapseWindowAnimation,
+  expandListAnimation,
+  expandWindowAnimation
+} from '../../animations';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {ActionBarService} from '../../services/action-bar.service';
@@ -14,9 +20,17 @@ import {ActionBarService} from '../../services/action-bar.service';
   templateUrl: './window-list.component.html',
   styleUrls: ['./window-list.component.css'],
   animations: [
-    trigger('collapse-item', [
+    trigger('close-window', [
+      transition(`* => ${CollapseAnimationState.Closing}`, [
+        useAnimation(collapseWindowAnimation, {})
+      ])
+    ]),
+    trigger('collapse-window', [
       transition(`* => ${CollapseAnimationState.Collapsing}`, [
-        useAnimation(collapseAnimation, {})
+        useAnimation(collapseWindowAnimation, {})
+      ]),
+      transition(`* => ${CollapseAnimationState.Expanding}`, [
+        useAnimation(expandWindowAnimation, {})
       ])
     ]),
     trigger('collapse-list', [
@@ -37,7 +51,7 @@ export class WindowListComponent implements OnInit {
   windowListState: WindowListState;
   connectedWindowListIds = DragDropService.CONNECTED_WINDOW_LIST_IDS;
   actionButtons: ListActionButton[];
-  collapseAnimationState: string;
+  collapseAnimationState = CollapseAnimationState.Complete;
 
   constructor(private dragDropService: DragDropService,
               private preferencesService: PreferencesService,
@@ -62,29 +76,53 @@ export class WindowListComponent implements OnInit {
     return this.collapseAnimationState === CollapseAnimationState.Expanding;
   }
 
+  isWindowExpanding(layoutState: WindowLayoutState): boolean {
+    return layoutState.status === CollapseAnimationState.Expanding;
+  }
+
   toggleDisplay() {
     if (this.windowListState.layoutState.hidden) {
       this.collapseAnimationState = CollapseAnimationState.Expanding;
     } else {
       this.collapseAnimationState = CollapseAnimationState.Collapsing;
     }
+    this.changeDetectorRef.detectChanges();
   }
 
-  completeCollapseAnimation(event: AnimationEvent) {
+  completeToggleDisplayAnimation(event: AnimationEvent) {
     if (event.toState === CollapseAnimationState.Collapsing
       || event.toState === CollapseAnimationState.Expanding) {
+      this.collapseAnimationState = CollapseAnimationState.Complete;
       this.windowProps.tabsService.toggleWindowListDisplay();
     }
   }
 
-  closeWindow(layoutState: WindowLayoutState) {
-    layoutState.status = CollapseAnimationState.Collapsing;
+  toggleWindowDisplay(layoutState: WindowLayoutState) {
+    if (layoutState.hidden) {
+      layoutState.status = CollapseAnimationState.Expanding;
+    } else {
+      layoutState.status = CollapseAnimationState.Collapsing;
+    }
     this.changeDetectorRef.detectChanges();
   }
 
-  completeCloseAnimation(event: AnimationEvent, windowId: any) {
-    if (event.toState === CollapseAnimationState.Collapsing) {
-      this.windowProps.tabsService.removeWindow(windowId);
+  completeToggleWindowDisplay(event: AnimationEvent, layoutState: WindowLayoutState) {
+    if (event.toState === CollapseAnimationState.Collapsing
+      || event.toState === CollapseAnimationState.Expanding) {
+      layoutState.status = CollapseAnimationState.Complete;
+      this.windowProps.tabsService.toggleWindowDisplay(layoutState.windowId);
+    }
+  }
+
+  closeWindow(layoutState: WindowLayoutState) {
+    layoutState.status = CollapseAnimationState.Closing;
+    this.changeDetectorRef.detectChanges();
+  }
+
+  completeCloseWindow(event: AnimationEvent, layoutState: WindowLayoutState) {
+    if (event.toState === CollapseAnimationState.Closing) {
+      layoutState.status = CollapseAnimationState.Complete;
+      this.windowProps.tabsService.removeWindow(layoutState.windowId);
     }
   }
 
