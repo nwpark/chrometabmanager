@@ -1,10 +1,13 @@
 import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from './chrome-api-types';
 import {WindowLayoutState, WindowListLayoutState, WindowListUtils} from './window-list-state';
+import {CollapseAnimationState} from '../animations';
 
 export class SessionListState {
 
   recentlyClosedSessions: RecentlyClosedSession[];
   layoutState: WindowListLayoutState;
+  animationState = CollapseAnimationState.Complete;
+  animationStates: CollapseAnimationState[];
 
   static empty(): SessionListState {
     return new this([], {hidden: true, windowStates: []});
@@ -14,6 +17,7 @@ export class SessionListState {
               layoutState: WindowListLayoutState) {
     this.recentlyClosedSessions = recentlyClosedSessions;
     this.layoutState = layoutState;
+    this.animationStates = recentlyClosedSessions.map(() => CollapseAnimationState.Complete);
   }
 
   getWindow(windowId: any): ChromeAPIWindowState {
@@ -35,28 +39,23 @@ export class SessionListState {
     }
   }
 
-  removeDetachedTab(tabId: any) {
-    this.recentlyClosedSessions
-      .filter(session => !session.isWindow)
-      .forEach(session => {
-        session.closedTabs = session.closedTabs
-          .filter(closedTab => closedTab.chromeAPITab.id !== tabId);
-      });
-    this.removeEmptySessions();
-  }
-
-  private removeEmptySessions() {
-    this.recentlyClosedSessions = this.recentlyClosedSessions.filter(session => {
-      return (session.isWindow && session.closedWindow.chromeAPIWindow.tabs.length > 0)
-        || (!session.isWindow && session.closedTabs.length > 0);
-    });
+  removeDetachedTab(sessionIndex: number, tabIndex: number) {
+    const session = this.recentlyClosedSessions[sessionIndex];
+    session.closedTabs.splice(tabIndex, 1);
+    if (session.closedTabs.length === 0) {
+      this.recentlyClosedSessions.splice(sessionIndex, 1);
+      this.layoutState.windowStates.splice(sessionIndex, 1);
+      this.animationStates.splice(sessionIndex, 1);
+    }
   }
 
   removeWindow(windowId: any) {
-    this.recentlyClosedSessions = this.recentlyClosedSessions
-      .filter(session => !session.isWindow || session.closedWindow.chromeAPIWindow.id !== windowId);
-    this.layoutState.windowStates = this.layoutState.windowStates
-      .filter(windowState => windowState.windowId !== windowId);
+    // todo: convert all to index
+    const index = this.recentlyClosedSessions
+      .findIndex(session => session.isWindow && session.closedWindow.chromeAPIWindow.id === windowId);
+    this.recentlyClosedSessions.splice(index, 1);
+    this.layoutState.windowStates.splice(index, 1);
+    this.animationStates.splice(index, 1);
   }
 
   toggleDisplay() {
@@ -68,18 +67,17 @@ export class SessionListState {
     windowLayout.hidden = !windowLayout.hidden;
   }
 
-  unshiftSession(closedSession: RecentlyClosedSession) {
+  unshiftSession(closedSession: RecentlyClosedSession, windowLayoutState: WindowLayoutState) {
     this.recentlyClosedSessions.unshift(closedSession);
-  }
-
-  unshiftWindowLayoutState(windowLayoutState: WindowLayoutState) {
     this.layoutState.windowStates.unshift(windowLayoutState);
+    this.animationStates.unshift(CollapseAnimationState.Complete);
   }
 
   unshiftClosedTab(closedTab: RecentlyClosedTab) {
     if (this.recentlyClosedSessions.length === 0 || this.recentlyClosedSessions[0].isWindow) {
       const closedSession = SessionListUtils.createSessionFromClosedTab(closedTab);
-      this.unshiftSession(closedSession);
+      const dummyLayoutState = {} as WindowLayoutState;
+      this.unshiftSession(closedSession, dummyLayoutState);
     } else {
       this.recentlyClosedSessions[0].closedTabs.unshift(closedTab);
     }
@@ -96,6 +94,7 @@ export class SessionListState {
   private pop() {
     const tail = this.recentlyClosedSessions[this.recentlyClosedSessions.length - 1];
     if (tail.isWindow || tail.closedTabs.length <= 1) {
+      // todo: check layout states are deleted
       this.recentlyClosedSessions.pop();
     } else {
       tail.closedTabs.pop();
@@ -140,7 +139,6 @@ export interface RecentlyClosedSession {
   isWindow: boolean;
   closedWindow?: RecentlyClosedWindow;
   closedTabs?: RecentlyClosedTab[];
-  status?: string;
 }
 
 export interface RecentlyClosedWindow {
@@ -151,5 +149,4 @@ export interface RecentlyClosedWindow {
 export interface RecentlyClosedTab {
   timestamp: number;
   chromeAPITab: ChromeAPITabState;
-  status?: string;
 }

@@ -10,7 +10,7 @@ export enum CollapseAnimationState {
 export const collapseWindowAnimation = animation([
   style({ transform: 'scale(1, 1)', transformOrigin: 'top', height: '*', overflow: 'hidden', position: 'relative' }),
   animate('200ms cubic-bezier(0,0,0.2,1)',
-    style({ transform: 'scale(1, 0)', height: '0px', marginBottom: '0', overflow: 'hidden', position: 'relative' }))
+    style({ transform: 'scale(1, 0)', height: '0px', marginBottom: '0', overflow: 'hidden', position: 'relative', color: 'white' }))
 ]);
 
 export const expandWindowAnimation = animation([

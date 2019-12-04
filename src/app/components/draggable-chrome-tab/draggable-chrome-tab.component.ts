@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
-import {collapseWindowAnimation, CollapseAnimationState} from '../../animations';
+import {CollapseAnimationState, collapseWindowAnimation} from '../../animations';
 
 @Component({
   selector: 'app-draggable-chrome-tab',
@@ -21,8 +21,10 @@ export class DraggableChromeTabComponent implements OnInit {
 
   @Input() chromeTab: ChromeAPITabState;
   @Input() timestamp: number;
-  @Output() draggableChromeTabClose = new EventEmitter();
+  @Output() draggableChromeTabClose = new EventEmitter<CollapseAnimationState>();
   @Output() draggableChromeTabClick = new EventEmitter<MouseEvent>();
+
+  animationState = CollapseAnimationState.Complete;
 
   constructor(private changeDetectorRef: ChangeDetectorRef) { }
 
@@ -58,13 +60,14 @@ export class DraggableChromeTabComponent implements OnInit {
   }
 
   closeTab() {
-    this.chromeTab.status = CollapseAnimationState.Collapsing;
+    this.animationState = CollapseAnimationState.Collapsing;
+    this.draggableChromeTabClose.emit(CollapseAnimationState.Closing);
     this.changeDetectorRef.detectChanges();
   }
 
   completeCloseAnimation(event: AnimationEvent) {
     if (event.toState === CollapseAnimationState.Collapsing) {
-      this.draggableChromeTabClose.emit();
+      this.draggableChromeTabClose.emit(CollapseAnimationState.Complete);
     }
   }
 }

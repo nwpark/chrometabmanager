@@ -4,6 +4,13 @@
   <span style="float: right">
     <button
       mat-icon-button
+      title="debug"
+      *ngIf="headerDiv.mouseOver && debugModeEnabled()"
+      (click)="debug()">
+      <mat-icon class="action-icon-24">bug_report</mat-icon>
+    </button>
+    <button
+      mat-icon-button
       title="Clear"
       *ngIf="!sessionListState.layoutState.hidden || headerDiv.mouseOver"
       (click)="clear()">
@@ -24,29 +31,29 @@
 
 <div
   class="column-scrollable-content"
-  *ngIf="!sessionListState.layoutState.hidden || isAnimationStateExpanding()"
-  [@collapse-list]="collapseAnimationState"
+  *ngIf="!sessionListState.layoutState.hidden || isWindowListAnimating()"
+  [@collapse-list]="sessionListState.animationState"
   (@collapse-list.done)="completeToggleDisplayAnimation($event)">
-  <div *ngFor="let session of sessionListState.recentlyClosedSessions">
+  <div *ngFor="let session of sessionListState.recentlyClosedSessions; index as sessionIndex">
     <div
       class="chrome-window-container"
       *ngIf="session.isWindow"
-      [@close-window]="session.status"
-      (@close-window.done)="completeCloseWindow($event, session)">
+      [@close-window]="animationStates[sessionIndex]"
+      (@close-window.done)="completeCloseWindow($event, sessionIndex)">
       <app-chrome-window-header
         [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
-        [layoutState]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id)"
+        [layoutState]="layoutStates[sessionIndex]"
         [props]="windowProps"
-        (chromeWindowClose)="closeWindow(session)"
-        (chromeWindowToggleDisplay)="toggleWindowDisplay(sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id))">
+        (chromeWindowClose)="closeWindow(sessionIndex)"
+        (chromeWindowToggleDisplay)="toggleWindowDisplay(sessionIndex)">
       </app-chrome-window-header>
       <div
-        *ngIf="!sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id).hidden || isWindowExpanding(sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id))"
-        [@collapse-window]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id).status"
-        (@collapse-window.done)="completeToggleWindowDisplay($event, sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id))">
+        *ngIf="!layoutStates[sessionIndex].hidden || isWindowAnimating(sessionIndex)"
+        [@collapse-window]="animationStates[sessionIndex]"
+        (@collapse-window.done)="completeToggleWindowDisplay($event, sessionIndex)">
         <app-chrome-window
           [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
-          [layoutState]="sessionListState.getWindowLayout(session.closedWindow.chromeAPIWindow.id)"
+          [layoutState]="layoutStates[sessionIndex]"
           [props]="windowProps">
         </app-chrome-window>
       </div>
@@ -55,22 +62,20 @@
     <div
       class="chrome-window-container"
       *ngIf="!session.isWindow"
-      [@collapse-window]="session.status">
-<!--      Todo: animation is wrong when 1 tab remaining -->
+      [@close-window]="animationStates[sessionIndex]">
       <div
         class="chrome-window-body"
         style="border-style: solid; border-radius: inherit; min-height: 0">
         <app-draggable-chrome-tab
           class="chrome-tab-border"
-          *ngFor="let closedTab of session.closedTabs"
-          [@collapse-window]="closedTab.status"
-          (@collapse-window.done)="completeTabCloseAnimation($event, closedTab.chromeAPITab.id)"
+          *ngFor="let closedTab of session.closedTabs; index as tabIndex"
           [chromeTab]="closedTab.chromeAPITab"
           [timestamp]="closedTab.timestamp"
-          (draggableChromeTabClose)="closeTab(session, closedTab)"
+          (draggableChromeTabClose)="closeTab($event, sessionIndex, tabIndex)"
           (draggableChromeTabClick)="tabClicked(closedTab.chromeAPITab, $event)">
         </app-draggable-chrome-tab>
       </div>
     </div>
+
   </div>
 </div>

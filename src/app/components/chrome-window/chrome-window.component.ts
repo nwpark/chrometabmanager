@@ -5,6 +5,7 @@ import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {DragDropService} from '../../services/drag-drop.service';
 import {PreferencesService} from '../../services/preferences.service';
+import {CollapseAnimationState} from '../../animations';
 
 @Component({
   selector: 'app-chrome-window',
@@ -36,8 +37,10 @@ export class ChromeWindowComponent implements OnInit {
     this.props.tabsService.setTabActive(chromeTab, event.ctrlKey);
   }
 
-  closeTab(tabId: any) {
-    this.props.tabsService.removeTab(this.chromeAPIWindow.id, tabId);
+  closeTab(state: CollapseAnimationState, tabId: any) {
+    if (state === CollapseAnimationState.Complete) {
+      this.props.tabsService.removeTab(this.chromeAPIWindow.id, tabId);
+    }
   }
 
   dropTargetIsMutable(drag: CdkDrag, drop: CdkDropList<ChromeWindowDragDropData>): boolean {

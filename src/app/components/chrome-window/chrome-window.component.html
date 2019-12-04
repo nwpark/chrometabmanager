@@ -14,7 +14,7 @@
     [cdkDragDisabled]="!isDragEnabled(tab)"
     [chromeTab]="tab"
     (cdkDragStarted)="beginDrag()"
-    (draggableChromeTabClose)="closeTab(tab.id)"
+    (draggableChromeTabClose)="closeTab($event, tab.id)"
     (draggableChromeTabClick)="tabClicked(tab, $event)">
   </app-draggable-chrome-tab>
 
