@@ -1,13 +1,13 @@
 import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from './chrome-api-types';
 import {WindowLayoutState, WindowListLayoutState, WindowListUtils} from './window-list-state';
-import {CollapseAnimationState} from '../animations';
+import {AnimationState} from '../animations';
 
 export class SessionListState {
 
   recentlyClosedSessions: RecentlyClosedSession[];
   layoutState: WindowListLayoutState;
-  animationState = CollapseAnimationState.Complete;
-  animationStates: CollapseAnimationState[];
+  animationState = AnimationState.Complete;
+  animationStates: AnimationState[];
 
   static empty(): SessionListState {
     return new this([], {hidden: true, windowStates: []});
@@ -17,7 +17,7 @@ export class SessionListState {
               layoutState: WindowListLayoutState) {
     this.recentlyClosedSessions = recentlyClosedSessions;
     this.layoutState = layoutState;
-    this.animationStates = recentlyClosedSessions.map(() => CollapseAnimationState.Complete);
+    this.animationStates = recentlyClosedSessions.map(() => AnimationState.Complete);
   }
 
   getWindow(windowId: any): ChromeAPIWindowState {
@@ -70,7 +70,7 @@ export class SessionListState {
   unshiftSession(closedSession: RecentlyClosedSession, windowLayoutState: WindowLayoutState) {
     this.recentlyClosedSessions.unshift(closedSession);
     this.layoutState.windowStates.unshift(windowLayoutState);
-    this.animationStates.unshift(CollapseAnimationState.Complete);
+    this.animationStates.unshift(AnimationState.Complete);
   }
 
   unshiftClosedTab(closedTab: RecentlyClosedTab) {

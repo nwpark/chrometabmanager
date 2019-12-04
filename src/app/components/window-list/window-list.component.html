@@ -1,5 +1,12 @@
 <div class="column-header">
   <span style="float: right">
+    <button
+      mat-icon-button
+      title="debug"
+      *ngIf="debugModeEnabled()"
+      (click)="debug()">
+      <mat-icon class="action-icon-24">bug_report</mat-icon>
+    </button>
     <ng-container *ngFor="let button of actionButtons">
       <button
         mat-icon-button
@@ -18,8 +25,8 @@
 <div
   cdkDropList
   class="column-scrollable-content"
-  *ngIf="!windowListState.layoutState.hidden || isAnimationStateExpanding()"
-  [@collapse-list]="collapseAnimationState"
+  *ngIf="!windowListState.layoutState.hidden || isWindowListAnimating()"
+  [@collapse-list]="animationState"
   (@collapse-list.done)="completeToggleDisplayAnimation($event)"
   [id]="windowProps.windowListId"
   [cdkDropListData]="windowProps"
@@ -27,9 +34,9 @@
   (cdkDropListDropped)="windowDropped($event)">
   <div
     cdkDrag
-    *ngFor="let layoutState of windowListState.layoutState.windowStates"
-    [@close-window]="layoutState.status"
-    (@close-window.done)="completeCloseWindow($event, layoutState)"
+    *ngFor="let layoutState of windowListState.layoutState.windowStates; index as windowIndex"
+    [@close-window]="windowAnimationStates[windowIndex]"
+    (@close-window.done)="completeCloseWindow($event, windowIndex)"
     [cdkDragData]="windowListState.getWindow(layoutState.windowId)"
     (cdkDragStarted)="beginDrag()">
     <div
@@ -40,14 +47,14 @@
           [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
           [layoutState]="layoutState"
           [props]="windowProps"
-          (chromeWindowClose)="closeWindow(layoutState)"
-          (chromeWindowToggleDisplay)="toggleWindowDisplay(layoutState)">
+          (chromeWindowClose)="closeWindow(windowIndex)"
+          (chromeWindowToggleDisplay)="toggleWindowDisplay(windowIndex)">
         </app-chrome-window-header>
       </div>
       <div
-        *ngIf="!layoutState.hidden || isWindowExpanding(layoutState)"
-        [@collapse-window]="layoutState.status"
-        (@collapse-window.done)="completeToggleWindowDisplay($event, layoutState)">
+        *ngIf="!layoutState.hidden || isWindowAnimating(windowIndex)"
+        [@collapse-window]="windowAnimationStates[windowIndex]"
+        (@collapse-window.done)="completeToggleWindowDisplay($event, windowIndex)">
         <app-chrome-window
           [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
           [layoutState]="layoutState"

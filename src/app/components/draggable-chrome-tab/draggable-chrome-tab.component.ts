@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
-import {CollapseAnimationState, collapseWindowAnimation} from '../../animations';
+import {AnimationState, collapseWindowAnimation} from '../../animations';
 
 @Component({
   selector: 'app-draggable-chrome-tab',
@@ -9,7 +9,7 @@ import {CollapseAnimationState, collapseWindowAnimation} from '../../animations'
   styleUrls: ['./draggable-chrome-tab.component.css'],
   animations: [
     trigger('collapse-item', [
-      transition(`* => ${CollapseAnimationState.Collapsing}`, [
+      transition(`* => ${AnimationState.Collapsing}`, [
         useAnimation(collapseWindowAnimation, {})
       ])
     ])
@@ -21,10 +21,10 @@ export class DraggableChromeTabComponent implements OnInit {
 
   @Input() chromeTab: ChromeAPITabState;
   @Input() timestamp: number;
-  @Output() draggableChromeTabClose = new EventEmitter<CollapseAnimationState>();
+  @Output() draggableChromeTabClose = new EventEmitter<AnimationState>();
   @Output() draggableChromeTabClick = new EventEmitter<MouseEvent>();
 
-  animationState = CollapseAnimationState.Complete;
+  animationState = AnimationState.Complete;
 
   constructor(private changeDetectorRef: ChangeDetectorRef) { }
 
@@ -60,14 +60,14 @@ export class DraggableChromeTabComponent implements OnInit {
   }
 
   closeTab() {
-    this.animationState = CollapseAnimationState.Collapsing;
-    this.draggableChromeTabClose.emit(CollapseAnimationState.Closing);
+    this.animationState = AnimationState.Collapsing;
+    this.draggableChromeTabClose.emit(AnimationState.Closing);
     this.changeDetectorRef.detectChanges();
   }
 
   completeCloseAnimation(event: AnimationEvent) {
-    if (event.toState === CollapseAnimationState.Collapsing) {
-      this.draggableChromeTabClose.emit(CollapseAnimationState.Complete);
+    if (event.toState === AnimationState.Collapsing) {
+      this.draggableChromeTabClose.emit(AnimationState.Complete);
     }
   }
 }

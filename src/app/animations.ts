@@ -1,6 +1,6 @@
 import {animate, animation, style, transition, trigger, useAnimation} from '@angular/animations';
 
-export enum CollapseAnimationState {
+export enum AnimationState {
   Closing = 'closing',
   Collapsing = 'collapsing',
   Expanding = 'expanding',

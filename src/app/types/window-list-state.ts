@@ -51,7 +51,6 @@ export class WindowListState {
   }
 
   moveWindowInList(sourceIndex: number, targetIndex: number) {
-    moveItemInArray(this.chromeAPIWindows, sourceIndex, targetIndex);
     moveItemInArray(this.layoutState.windowStates, sourceIndex, targetIndex);
   }
 
@@ -71,10 +70,6 @@ export class WindowListState {
 
   insertWindow(window: ChromeAPIWindowState, layoutState: WindowLayoutState, index: number) {
     this.chromeAPIWindows.splice(index, 0, window);
-    this.insertWindowLayoutState(layoutState, index);
-  }
-
-  insertWindowLayoutState(layoutState: WindowLayoutState, index: number) {
     this.layoutState.windowStates.splice(index, 0, layoutState);
   }
 
@@ -149,7 +144,7 @@ export interface WindowLayoutState {
   title: string;
   windowId: any;
   hidden: boolean;
+  // todo: dont put this field in storage
   deleted?: boolean;
-  status?: string;
 }
 
