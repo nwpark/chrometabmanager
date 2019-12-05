@@ -14,6 +14,7 @@ import {ChromeWindowHeaderComponent} from './components/chrome-window-header/chr
 import {OptionsComponent} from './pages/options/options.component';
 import {NewTabPageComponent} from './pages/new-tab-page/new-tab-page.component';
 import { WindowListComponent } from './components/window-list/window-list.component';
+import { ChromeWindowContainerComponent } from './components/chrome-window-container/chrome-window-container.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { WindowListComponent } from './components/window-list/window-list.compon
     ChromeWindowHeaderComponent,
     OptionsComponent,
     NewTabPageComponent,
-    WindowListComponent
+    WindowListComponent,
+    ChromeWindowContainerComponent
   ],
   imports: [
     BrowserModule,

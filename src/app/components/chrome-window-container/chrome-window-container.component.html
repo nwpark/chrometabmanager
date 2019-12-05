@@ -1,0 +1,27 @@
+<div
+  [@close-window]="animationState"
+  (@close-window.done)="completeCloseWindow($event)">
+  <div
+    class="chrome-window-container"
+    *ngIf="chromeWindow.type === 'normal' && !layoutState.deleted">
+    <div cdkDragHandle>
+      <app-chrome-window-header
+        [chromeAPIWindow]="chromeWindow"
+        [layoutState]="layoutState"
+        [props]="windowProps"
+        (chromeWindowClose)="closeWindow()"
+        (chromeWindowToggleDisplay)="toggleWindowDisplay(layoutState)">
+      </app-chrome-window-header>
+    </div>
+    <div
+      *ngIf="!layoutState.hidden || isWindowAnimating()"
+      [@collapse-window]="animationState"
+      (@collapse-window.done)="completeToggleWindowDisplay($event)">
+      <app-chrome-window
+        [chromeAPIWindow]="chromeWindow"
+        [layoutState]="layoutState"
+        [props]="windowProps">
+      </app-chrome-window>
+    </div>
+  </div>
+</div>
