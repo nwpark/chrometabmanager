@@ -34,26 +34,26 @@
   *ngIf="!sessionListState.layoutState.hidden || isWindowListAnimating()"
   [@collapse-list]="animationState"
   (@collapse-list.done)="completeToggleDisplayAnimation($event)">
-  <div *ngFor="let session of sessionListState.recentlyClosedSessions; index as sessionIndex">
+  <div *ngFor="let layoutState of sessionListState.layoutState.windowStates; index as sessionIndex">
     <div
       class="chrome-window-container"
-      *ngIf="session.isWindow"
-      [@close-window]="sessionAnimationStates[layoutStates[sessionIndex].windowId]"
-      (@close-window.done)="completeCloseWindow($event, layoutStates[sessionIndex].windowId)">
+      *ngIf="sessions[sessionIndex].isWindow"
+      [@close-window]="sessionAnimationStates[layoutState.windowId]"
+      (@close-window.done)="completeCloseWindow($event, layoutState)">
       <app-chrome-window-header
-        [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
-        [layoutState]="layoutStates[sessionIndex]"
+        [chromeAPIWindow]="sessions[sessionIndex].closedWindow.chromeAPIWindow"
+        [layoutState]="layoutState"
         [props]="windowProps"
-        (chromeWindowClose)="closeWindow(layoutStates[sessionIndex].windowId)"
-        (chromeWindowToggleDisplay)="toggleWindowDisplay(layoutStates[sessionIndex])">
+        (chromeWindowClose)="closeWindow(layoutState)"
+        (chromeWindowToggleDisplay)="toggleWindowDisplay(layoutState)">
       </app-chrome-window-header>
       <div
-        *ngIf="!layoutStates[sessionIndex].hidden || isWindowAnimating(layoutStates[sessionIndex].windowId)"
-        [@collapse-window]="sessionAnimationStates[layoutStates[sessionIndex].windowId]"
-        (@collapse-window.done)="completeToggleWindowDisplay($event, layoutStates[sessionIndex].windowId)">
+        *ngIf="!layoutState.hidden || isWindowAnimating(layoutState)"
+        [@collapse-window]="sessionAnimationStates[layoutState.windowId]"
+        (@collapse-window.done)="completeToggleWindowDisplay($event, layoutState)">
         <app-chrome-window
-          [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
-          [layoutState]="layoutStates[sessionIndex]"
+          [chromeAPIWindow]="sessions[sessionIndex].closedWindow.chromeAPIWindow"
+          [layoutState]="layoutState"
           [props]="windowProps">
         </app-chrome-window>
       </div>
@@ -61,14 +61,14 @@
 
     <div
       class="chrome-window-container"
-      *ngIf="!session.isWindow"
-      [@close-window]="sessionAnimationStates[layoutStates[sessionIndex].windowId]">
+      *ngIf="!sessions[sessionIndex].isWindow"
+      [@close-window]="sessionAnimationStates[layoutState.windowId]">
       <div
         class="chrome-window-body"
         style="border-style: solid; border-radius: inherit; min-height: 0">
         <app-draggable-chrome-tab
           class="chrome-tab-border"
-          *ngFor="let closedTab of session.closedTabs; index as tabIndex"
+          *ngFor="let closedTab of sessions[sessionIndex].closedTabs; index as tabIndex"
           [chromeTab]="closedTab.chromeAPITab"
           [timestamp]="closedTab.timestamp"
           (draggableChromeTabClose)="closeTab($event, sessionIndex, tabIndex)"

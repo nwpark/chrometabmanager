@@ -103,9 +103,9 @@ export class RecentlyClosedTabListComponent implements OnInit {
     return this.animationState !== AnimationState.Complete;
   }
 
-  isWindowAnimating(windowId: any): boolean {
-    return this.sessionAnimationStates[windowId] === AnimationState.Expanding
-      || this.sessionAnimationStates[windowId] === AnimationState.Collapsing;
+  isWindowAnimating(layoutState: WindowLayoutState): boolean {
+    return this.sessionAnimationStates[layoutState.windowId] === AnimationState.Expanding
+      || this.sessionAnimationStates[layoutState.windowId] === AnimationState.Collapsing;
   }
 
   toggleDisplay() {
@@ -140,22 +140,22 @@ export class RecentlyClosedTabListComponent implements OnInit {
     this.windowProps.tabsService.toggleWindowDisplay(layoutState.windowId);
   }
 
-  completeToggleWindowDisplay(event: AnimationEvent, windowId: any) {
+  completeToggleWindowDisplay(event: AnimationEvent, layoutState: WindowLayoutState) {
     if (event.toState === AnimationState.Collapsing
           || event.toState === AnimationState.Expanding) {
-      this.sessionAnimationStates[windowId] = AnimationState.Complete;
+      this.sessionAnimationStates[layoutState.windowId] = AnimationState.Complete;
     }
   }
 
-  closeWindow(windowId: any) {
-    this.sessionAnimationStates[windowId] = AnimationState.Closing;
+  closeWindow(layoutState: WindowLayoutState) {
+    this.sessionAnimationStates[layoutState.windowId] = AnimationState.Closing;
     this.changeDetectorRef.detectChanges();
   }
 
-  completeCloseWindow(event: AnimationEvent, windowId: any) {
+  completeCloseWindow(event: AnimationEvent, layoutState: WindowLayoutState) {
     if (event.toState === AnimationState.Closing) {
-      this.sessionAnimationStates[windowId] = AnimationState.Complete;
-      this.recentlyClosedTabsService.removeWindow(windowId);
+      this.sessionAnimationStates[layoutState.windowId] = AnimationState.Complete;
+      this.recentlyClosedTabsService.removeWindow(layoutState.windowId);
     }
   }
 
