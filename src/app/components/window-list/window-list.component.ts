@@ -75,17 +75,13 @@ export class WindowListComponent implements OnInit {
     return this.preferencesService.isDebugModeEnabled();
   }
 
-  get layoutStates(): WindowLayoutState[] {
-    return this.windowListState.layoutState.windowStates;
-  }
-
   isWindowListAnimating(): boolean {
     return this.animationState !== AnimationState.Complete;
   }
 
-  isWindowAnimating(windowIndex: number): boolean {
-    return this.windowAnimationStates[windowIndex] === AnimationState.Expanding
-      || this.windowAnimationStates[windowIndex] === AnimationState.Collapsing;
+  isWindowAnimating(layoutState: WindowLayoutState): boolean {
+    return this.windowAnimationStates[layoutState.windowId] === AnimationState.Expanding
+      || this.windowAnimationStates[layoutState.windowId] === AnimationState.Collapsing;
   }
 
   toggleDisplay() {
@@ -102,30 +98,30 @@ export class WindowListComponent implements OnInit {
     }
   }
 
-  toggleWindowDisplay(windowIndex: number) {
-    this.windowAnimationStates[windowIndex] = this.layoutStates[windowIndex].hidden
+  toggleWindowDisplay(layoutState: WindowLayoutState) {
+    this.windowAnimationStates[layoutState.windowId] = layoutState.hidden
       ? AnimationState.Expanding
       : AnimationState.Collapsing;
     this.changeDetectorRef.detectChanges();
   }
 
-  completeToggleWindowDisplay(event: AnimationEvent, windowIndex: number) {
+  completeToggleWindowDisplay(event: AnimationEvent, layoutState: WindowLayoutState) {
     if (event.toState === AnimationState.Collapsing
       || event.toState === AnimationState.Expanding) {
-      this.windowAnimationStates[windowIndex] = AnimationState.Complete;
-      this.windowProps.tabsService.toggleWindowDisplay(this.layoutStates[windowIndex].windowId);
+      this.windowAnimationStates[layoutState.windowId] = AnimationState.Complete;
+      this.windowProps.tabsService.toggleWindowDisplay(layoutState.windowId);
     }
   }
 
-  closeWindow(windowIndex: number) {
-    this.windowAnimationStates[windowIndex] = AnimationState.Closing;
+  closeWindow(layoutState: WindowLayoutState) {
+    this.windowAnimationStates[layoutState.windowId] = AnimationState.Closing;
     this.changeDetectorRef.detectChanges();
   }
 
-  completeCloseWindow(event: AnimationEvent, windowIndex: number) {
+  completeCloseWindow(event: AnimationEvent, layoutState: WindowLayoutState) {
     if (event.toState === AnimationState.Closing) {
-      this.windowAnimationStates[windowIndex] = AnimationState.Complete;
-      this.windowProps.tabsService.removeWindow(this.layoutStates[windowIndex].windowId);
+      this.windowAnimationStates[layoutState.windowId] = AnimationState.Complete;
+      this.windowProps.tabsService.removeWindow(layoutState.windowId);
     }
   }
 
