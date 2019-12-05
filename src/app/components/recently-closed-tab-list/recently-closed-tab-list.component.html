@@ -1,6 +1,7 @@
-<div appMouseOver
-     #headerDiv=app-mouse-over
-     class="column-header">
+<div
+  appMouseOver
+  #headerDiv=app-mouse-over
+  class="column-header">
   <span style="float: right">
     <button
       mat-icon-button
@@ -18,7 +19,7 @@
     </button>
     <button
       mat-icon-button
-      [title]="sessionListState.layoutState.hidden ? 'Show recently closed tabs' : 'Minimize recently closed tabs'"
+      [title]="sessionListState.layoutState.hidden ? 'Expand' : 'Collapse'"
       (click)="toggleDisplay()">
       <mat-icon class="action-icon-24" *ngIf="!sessionListState.layoutState.hidden">arrow_drop_down</mat-icon>
       <mat-icon class="action-icon-24" *ngIf="sessionListState.layoutState.hidden">arrow_right</mat-icon>

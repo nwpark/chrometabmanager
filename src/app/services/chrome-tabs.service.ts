@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {WindowLayoutState, WindowListState, WindowListUtils} from '../types/window-list-state';
+import {WindowListState, WindowListUtils} from '../types/window-list-state';
 import {Subject} from 'rxjs';
 import {modifiesState, StateModifierParams} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
@@ -114,27 +114,12 @@ export class ChromeTabsService implements TabsService {
     chrome.windows.create({url: tabsUrls, focused: true});
   }
 
-  @modifiesState({storeResult: true})
+  @modifiesState({storeResult: false})
   insertWindow(chromeWindow: ChromeAPIWindowState, index: number) {
     const tempWindow = WindowStateUtils.convertToActiveWindow(chromeWindow);
     const tempLayoutState = WindowListUtils.createBasicWindowLayoutState(tempWindow.id);
     this.windowListState.insertWindow(tempWindow, tempLayoutState, index);
-
-    const tabsUrls = chromeWindow.tabs.map(tab => tab.url);
-    chrome.windows.create({url: tabsUrls, focused: false}, window => {
-      const newWindow = window as ChromeAPIWindowState;
-      const layoutState = WindowListUtils.createBasicWindowLayoutState(newWindow.id);
-      // todo: this layout state gets deleted and final index is wrong
-      this.replaceTempWindow(tempWindow.id, newWindow, layoutState, index);
-      chrome.windows.update(newWindow.id, { focused: false });
-    });
-  }
-
-  @modifiesState({storeResult: true})
-  private replaceTempWindow(tempWindowId: any, chromeWindow: ChromeAPIWindowState,
-                            layoutState: WindowLayoutState, index: number) {
-    this.windowListState.removeWindow(tempWindowId);
-    this.windowListState.insertWindow(chromeWindow, layoutState, index);
+    MessagePassingService.requestInsertChromeWindow(tempWindow, index);
   }
 
   @modifiesState({storeResult: true})

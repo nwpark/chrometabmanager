@@ -1,9 +1,12 @@
-<div class="column-header">
+<div
+  appMouseOver
+  #headerDiv=app-mouse-over
+  class="column-header">
   <span style="float: right">
     <button
       mat-icon-button
       title="debug"
-      *ngIf="debugModeEnabled()"
+      *ngIf="headerDiv.mouseOver && debugModeEnabled()"
       (click)="debug()">
       <mat-icon class="action-icon-24">bug_report</mat-icon>
     </button>

@@ -1,37 +1,48 @@
 import {ChromeAPIWindowState} from '../app/types/chrome-api-types';
 import {StorageService} from '../app/services/storage.service';
 import {WindowListLayoutState, WindowListState, WindowListUtils} from '../app/types/window-list-state';
-import {MessagePassingService} from '../app/services/message-passing.service';
+import {InsertWindowMessageData, MessagePassingService} from '../app/services/message-passing.service';
 import {ChromeTabsService} from '../app/services/chrome-tabs.service';
+import Mutex from 'async-mutex/lib/Mutex';
 
 export class ActiveWindowStateManager {
 
-  windowListState: WindowListState;
+  private windowListState: WindowListState;
+  private mutex: Mutex;
 
   constructor() {
     this.windowListState = WindowListUtils.createEmptyWindowListState();
-    MessagePassingService.addActiveWindowStateListener(() => {
-      this.refreshLayoutState();
+    this.mutex = new Mutex();
+    MessagePassingService.onInsertChromeWindowRequest((request: InsertWindowMessageData) => {
+      this.insertWindow(request.chromeWindow, request.index);
     });
     this.updateActiveWindowState();
   }
 
-  private refreshLayoutState() {
-    StorageService.getActiveWindowsLayoutState().then(layoutState => {
-      this.windowListState.layoutState = layoutState;
+  updateActiveWindowState() {
+    this.mutex.acquire().then(releaseLock => {
+      Promise.all([
+        ChromeTabsService.getChromeWindowsFromAPI(),
+        StorageService.getActiveWindowsLayoutState()
+      ]).then(res => {
+        const activeWindows: ChromeAPIWindowState[] = res[0];
+        const layoutState: WindowListLayoutState = res[1];
+        WindowListUtils.cleanupLayoutState(layoutState, activeWindows);
+        this.windowListState = new WindowListState(activeWindows, layoutState);
+        StorageService.setActiveWindowsState(this.windowListState, releaseLock);
+      });
     });
   }
 
-  updateActiveWindowState() {
-    Promise.all([
-      ChromeTabsService.getChromeWindowsFromAPI(),
-      StorageService.getActiveWindowsLayoutState()
-    ]).then(res => {
-      const activeWindows: ChromeAPIWindowState[] = res[0];
-      const layoutState: WindowListLayoutState = res[1];
-      WindowListUtils.cleanupLayoutState(layoutState, activeWindows);
-      this.windowListState = new WindowListState(activeWindows, layoutState);
-      StorageService.setActiveWindowsState(this.windowListState);
+  private insertWindow(chromeWindow: ChromeAPIWindowState, index) {
+    this.mutex.acquire().then(releaseLock => {
+      const tabsUrls = chromeWindow.tabs.map(tab => tab.url);
+      chrome.windows.create({url: tabsUrls, focused: false}, window => {
+        const newWindow = window as ChromeAPIWindowState;
+        const layoutState = WindowListUtils.createBasicWindowLayoutState(newWindow.id);
+        this.windowListState.insertWindow(newWindow, layoutState, index);
+        StorageService.setActiveWindowsState(this.windowListState, releaseLock);
+      });
     });
   }
 

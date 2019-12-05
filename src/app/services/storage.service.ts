@@ -56,12 +56,13 @@ export class StorageService {
     });
   }
 
-  static setActiveWindowsState(windowListState: WindowListState) {
+  static setActiveWindowsState(windowListState: WindowListState, callback?: () => void) {
     chrome.storage.local.set({
       [StorageService.ACTIVE_WINDOWS]: windowListState.chromeAPIWindows,
       [StorageService.ACTIVE_WINDOWS_LAYOUT_STATE]: windowListState.layoutState
     }, () => {
       MessagePassingService.notifyActiveWindowStateListeners();
+      callback();
     });
   }
 
