@@ -35,9 +35,9 @@ import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animat
 })
 export class ChromeWindowContainerComponent {
 
-  @Input() chromeWindow: ChromeAPIWindowState;
+  @Input() chromeAPIWindow: ChromeAPIWindowState;
   @Input() layoutState: WindowLayoutState;
-  @Input() windowProps: ChromeWindowComponentProps;
+  @Input() props: ChromeWindowComponentProps;
 
   animationState = AnimationState.Complete;
 
@@ -56,7 +56,7 @@ export class ChromeWindowContainerComponent {
   toggleWindowDisplay(layoutState: WindowLayoutState) {
     const animationState = getAnimationForToggleDisplay(layoutState.hidden);
     this.setAnimationState(animationState);
-    this.windowProps.tabsService.toggleWindowDisplay(layoutState.windowId);
+    this.props.tabsService.toggleWindowDisplay(layoutState.windowId);
   }
 
   completeToggleWindowDisplay(event: AnimationEvent) {
@@ -72,7 +72,7 @@ export class ChromeWindowContainerComponent {
   completeCloseWindow(event: AnimationEvent) {
     if (event.toState === AnimationState.Closing) {
       this.setAnimationState(AnimationState.Complete);
-      this.windowProps.tabsService.removeWindow(this.chromeWindow.id);
+      this.props.tabsService.removeWindow(this.chromeAPIWindow.id);
     }
   }
 }

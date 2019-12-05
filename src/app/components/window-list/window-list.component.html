@@ -39,9 +39,9 @@
       [cdkDragData]="windowListState.getWindow(layoutState.windowId)"
       (cdkDragStarted)="beginDrag()">
       <app-chrome-window-container
-        [chromeWindow]="windowListState.getWindow(layoutState.windowId)"
+        [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
         [layoutState]="layoutState"
-        [windowProps]="windowProps">
+        [props]="windowProps">
       </app-chrome-window-container>
     </div>
   </div>
