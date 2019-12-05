@@ -4,6 +4,7 @@ import {async} from 'rxjs/internal/scheduler/async';
 import {ThrottleConfig} from 'rxjs/src/internal/operators/throttle';
 import {ClosedSessionStateManager} from './closed-session-state-manager';
 import {ActiveWindowStateManager} from './active-window-state-manager';
+import {SessionListState} from '../app/types/session-list-state';
 
 const chromeWindowUpdateEvents = [
   chrome.tabs.onCreated,
@@ -54,4 +55,10 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
     closedSessionStateManager.storeClosedTab(chromeTab);
   }
   activeWindowStateManager.updateActiveWindowState();
+});
+
+chrome.runtime.onInstalled.addListener(details => {
+  if (details.previousVersion === '0.3.8') {
+    closedSessionStateManager.setSessionListState(SessionListState.empty());
+  }
 });

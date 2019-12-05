@@ -94,7 +94,7 @@ export class StorageService {
         if (recentlyClosedSessions && layoutState) {
           resolve(new SessionListState(recentlyClosedSessions, layoutState));
         } else {
-          resolve(new SessionListState([], WindowListUtils.createEmptyListLayoutState()));
+          resolve(SessionListState.empty());
         }
       });
     });

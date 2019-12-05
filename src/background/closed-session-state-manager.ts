@@ -11,6 +11,7 @@ export class ClosedSessionStateManager {
   private sessionListState: SessionListState;
 
   constructor() {
+    this.sessionListState = SessionListState.empty();
     MessagePassingService.addClosedSessionStateListener(() => {
       this.refreshState();
     });
@@ -21,6 +22,11 @@ export class ClosedSessionStateManager {
     StorageService.getRecentlyClosedSessionsState().then(sessionListState => {
       this.sessionListState = sessionListState;
     });
+  }
+
+  @modifiesState()
+  setSessionListState(sessionListState: SessionListState) {
+    this.sessionListState = sessionListState;
   }
 
   @modifiesState()
