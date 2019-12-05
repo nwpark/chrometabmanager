@@ -22,44 +22,45 @@
   </span>
 </div>
 
-<div
-  cdkDropList
-  class="column-scrollable-content"
-  *ngIf="!windowListState.layoutState.hidden || isWindowListAnimating()"
-  [@collapse-list]="animationState"
-  (@collapse-list.done)="completeToggleDisplayAnimation($event)"
-  [id]="windowProps.windowListId"
-  [cdkDropListData]="windowProps"
-  [cdkDropListConnectedTo]="connectedWindowListIds"
-  (cdkDropListDropped)="windowDropped($event)">
+<div class="column-scrollable-content">
   <div
-    cdkDrag
-    *ngFor="let layoutState of windowListState.layoutState.windowStates"
-    [@close-window]="windowAnimationStates[layoutState.windowId]"
-    (@close-window.done)="completeCloseWindow($event, layoutState)"
-    [cdkDragData]="windowListState.getWindow(layoutState.windowId)"
-    (cdkDragStarted)="beginDrag()">
+    cdkDropList
+    *ngIf="!windowListState.layoutState.hidden || isWindowListAnimating()"
+    [@collapse-list]="animationState"
+    (@collapse-list.done)="completeToggleDisplayAnimation($event)"
+    [id]="windowProps.windowListId"
+    [cdkDropListData]="windowProps"
+    [cdkDropListConnectedTo]="connectedWindowListIds"
+    (cdkDropListDropped)="windowDropped($event)">
     <div
-      class="chrome-window-container"
-      *ngIf="windowListState.getWindow(layoutState.windowId).type === 'normal' && !layoutState.deleted">
-      <div cdkDragHandle>
-        <app-chrome-window-header
-          [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
-          [layoutState]="layoutState"
-          [props]="windowProps"
-          (chromeWindowClose)="closeWindow(layoutState)"
-          (chromeWindowToggleDisplay)="toggleWindowDisplay(layoutState)">
-        </app-chrome-window-header>
-      </div>
+      cdkDrag
+      *ngFor="let layoutState of windowListState.layoutState.windowStates"
+      [@close-window]="windowAnimationStates[layoutState.windowId]"
+      (@close-window.done)="completeCloseWindow($event, layoutState)"
+      [cdkDragData]="windowListState.getWindow(layoutState.windowId)"
+      (cdkDragStarted)="beginDrag()">
       <div
-        *ngIf="!layoutState.hidden || isWindowAnimating(layoutState)"
-        [@collapse-window]="windowAnimationStates[layoutState.windowId]"
-        (@collapse-window.done)="completeToggleWindowDisplay($event, layoutState)">
-        <app-chrome-window
-          [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
-          [layoutState]="layoutState"
-          [props]="windowProps">
-        </app-chrome-window>
+        class="chrome-window-container"
+        *ngIf="windowListState.getWindow(layoutState.windowId).type === 'normal' && !layoutState.deleted">
+        <div cdkDragHandle>
+          <app-chrome-window-header
+            [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
+            [layoutState]="layoutState"
+            [props]="windowProps"
+            (chromeWindowClose)="closeWindow(layoutState)"
+            (chromeWindowToggleDisplay)="toggleWindowDisplay(layoutState)">
+          </app-chrome-window-header>
+        </div>
+        <div
+          *ngIf="!layoutState.hidden || isWindowAnimating(layoutState)"
+          [@collapse-window]="windowAnimationStates[layoutState.windowId]"
+          (@collapse-window.done)="completeToggleWindowDisplay($event, layoutState)">
+          <app-chrome-window
+            [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
+            [layoutState]="layoutState"
+            [props]="windowProps">
+          </app-chrome-window>
+        </div>
       </div>
     </div>
   </div>

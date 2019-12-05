@@ -4,7 +4,15 @@ import {ListActionButton, ListActionButtonFactory} from '../../types/action-bar'
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {PreferencesService} from '../../services/preferences.service';
-import {AnimationState, collapseListAnimation, collapseWindowAnimation, expandListAnimation, expandWindowAnimation} from '../../animations';
+import {
+  AnimationState,
+  closeWindowAnimation,
+  collapseListAnimation,
+  collapseWindowAnimation,
+  expandListAnimation,
+  expandWindowAnimation,
+  getAnimationForToggleDisplay, isToggleDisplayState
+} from '../../animations';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {ActionBarService} from '../../services/action-bar.service';
@@ -16,7 +24,7 @@ import {ActionBarService} from '../../services/action-bar.service';
   animations: [
     trigger('close-window', [
       transition(`* => ${AnimationState.Closing}`, [
-        useAnimation(collapseWindowAnimation, {})
+        useAnimation(closeWindowAnimation, {})
       ])
     ]),
     trigger('collapse-window', [
@@ -67,60 +75,55 @@ export class WindowListComponent implements OnInit {
       });
   }
 
-  debug() {
-    console.log(this);
-  }
-
-  debugModeEnabled(): boolean {
-    return this.preferencesService.isDebugModeEnabled();
-  }
-
   isWindowListAnimating(): boolean {
-    return this.animationState !== AnimationState.Complete;
+    return isToggleDisplayState(this.animationState);
   }
 
   isWindowAnimating(layoutState: WindowLayoutState): boolean {
-    return this.windowAnimationStates[layoutState.windowId] === AnimationState.Expanding
-      || this.windowAnimationStates[layoutState.windowId] === AnimationState.Collapsing;
+    return isToggleDisplayState(this.windowAnimationStates[layoutState.windowId]);
+  }
+
+  private setAnimationState(animationState: AnimationState) {
+    this.animationState = animationState;
+    this.changeDetectorRef.detectChanges();
+  }
+
+  private setWindowAnimationState(windowId: any, animationState: AnimationState) {
+    this.windowAnimationStates[windowId] = animationState;
+    this.changeDetectorRef.detectChanges();
   }
 
   toggleDisplay() {
-    this.animationState = this.windowListState.layoutState.hidden
-      ? AnimationState.Expanding
-      : AnimationState.Collapsing;
+    const animationState = getAnimationForToggleDisplay(this.windowListState.layoutState.hidden);
+    this.setAnimationState(animationState);
     this.windowProps.tabsService.toggleWindowListDisplay();
   }
 
   completeToggleDisplayAnimation(event: AnimationEvent) {
-    if (event.toState === AnimationState.Collapsing
-      || event.toState === AnimationState.Expanding) {
-      this.animationState = AnimationState.Complete;
+    if (isToggleDisplayState(event.toState)) {
+      this.setAnimationState(AnimationState.Complete);
     }
   }
 
   toggleWindowDisplay(layoutState: WindowLayoutState) {
-    this.windowAnimationStates[layoutState.windowId] = layoutState.hidden
-      ? AnimationState.Expanding
-      : AnimationState.Collapsing;
-    this.changeDetectorRef.detectChanges();
+    const animationState = getAnimationForToggleDisplay(layoutState.hidden);
+    this.setWindowAnimationState(layoutState.windowId, animationState);
+    this.windowProps.tabsService.toggleWindowDisplay(layoutState.windowId);
   }
 
   completeToggleWindowDisplay(event: AnimationEvent, layoutState: WindowLayoutState) {
-    if (event.toState === AnimationState.Collapsing
-      || event.toState === AnimationState.Expanding) {
-      this.windowAnimationStates[layoutState.windowId] = AnimationState.Complete;
-      this.windowProps.tabsService.toggleWindowDisplay(layoutState.windowId);
+    if (isToggleDisplayState(event.toState)) {
+      this.setWindowAnimationState(layoutState.windowId, AnimationState.Complete);
     }
   }
 
   closeWindow(layoutState: WindowLayoutState) {
-    this.windowAnimationStates[layoutState.windowId] = AnimationState.Closing;
-    this.changeDetectorRef.detectChanges();
+    this.setWindowAnimationState(layoutState.windowId, AnimationState.Closing);
   }
 
   completeCloseWindow(event: AnimationEvent, layoutState: WindowLayoutState) {
     if (event.toState === AnimationState.Closing) {
-      this.windowAnimationStates[layoutState.windowId] = AnimationState.Complete;
+      this.setWindowAnimationState(layoutState.windowId, AnimationState.Complete);
       this.windowProps.tabsService.removeWindow(layoutState.windowId);
     }
   }
@@ -145,5 +148,13 @@ export class WindowListComponent implements OnInit {
     } finally {
       this.dragDropService.endDrag();
     }
+  }
+
+  debug() {
+    console.log(this);
+  }
+
+  debugModeEnabled(): boolean {
+    return this.preferencesService.isDebugModeEnabled();
   }
 }
