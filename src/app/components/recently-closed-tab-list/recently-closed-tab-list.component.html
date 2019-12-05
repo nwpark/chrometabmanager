@@ -29,53 +29,54 @@
   </span>
 </div>
 
-<div
-  class="column-scrollable-content"
-  *ngIf="!sessionListState.layoutState.hidden || isWindowListAnimating()"
-  [@collapse-list]="animationState"
-  (@collapse-list.done)="completeToggleDisplayAnimation($event)">
-  <div *ngFor="let layoutState of sessionListState.layoutState.windowStates; index as sessionIndex">
-    <div
-      class="chrome-window-container"
-      *ngIf="sessions[sessionIndex].isWindow"
-      [@close-window]="sessionAnimationStates[layoutState.windowId]"
-      (@close-window.done)="completeCloseWindow($event, layoutState)">
-      <app-chrome-window-header
-        [chromeAPIWindow]="sessions[sessionIndex].closedWindow.chromeAPIWindow"
-        [layoutState]="layoutState"
-        [props]="windowProps"
-        (chromeWindowClose)="closeWindow(layoutState)"
-        (chromeWindowToggleDisplay)="toggleWindowDisplay(layoutState)">
-      </app-chrome-window-header>
+<div class="column-scrollable-content">
+  <div
+    *ngIf="!sessionListState.layoutState.hidden || isWindowListAnimating()"
+    [@collapse-list]="animationState"
+    (@collapse-list.done)="completeToggleDisplayAnimation($event)">
+    <div *ngFor="let layoutState of sessionListState.layoutState.windowStates; index as sessionIndex">
       <div
-        *ngIf="!layoutState.hidden || isWindowAnimating(layoutState)"
-        [@collapse-window]="sessionAnimationStates[layoutState.windowId]"
-        (@collapse-window.done)="completeToggleWindowDisplay($event, layoutState)">
-        <app-chrome-window
+        class="chrome-window-container"
+        *ngIf="sessions[sessionIndex].isWindow"
+        [@close-window]="sessionAnimationStates[layoutState.windowId]"
+        (@close-window.done)="completeCloseWindow($event, layoutState)">
+        <app-chrome-window-header
           [chromeAPIWindow]="sessions[sessionIndex].closedWindow.chromeAPIWindow"
           [layoutState]="layoutState"
-          [props]="windowProps">
-        </app-chrome-window>
+          [props]="windowProps"
+          (chromeWindowClose)="closeWindow(layoutState)"
+          (chromeWindowToggleDisplay)="toggleWindowDisplay(layoutState)">
+        </app-chrome-window-header>
+        <div
+          *ngIf="!layoutState.hidden || isWindowAnimating(layoutState)"
+          [@collapse-window]="sessionAnimationStates[layoutState.windowId]"
+          (@collapse-window.done)="completeToggleWindowDisplay($event, layoutState)">
+          <app-chrome-window
+            [chromeAPIWindow]="sessions[sessionIndex].closedWindow.chromeAPIWindow"
+            [layoutState]="layoutState"
+            [props]="windowProps">
+          </app-chrome-window>
+        </div>
       </div>
-    </div>
 
-    <div
-      class="chrome-window-container"
-      *ngIf="!sessions[sessionIndex].isWindow"
-      [@close-window]="sessionAnimationStates[layoutState.windowId]">
       <div
-        class="chrome-window-body"
-        style="border-style: solid; border-radius: inherit; min-height: 0">
-        <app-draggable-chrome-tab
-          class="chrome-tab-border"
-          *ngFor="let closedTab of sessions[sessionIndex].closedTabs; index as tabIndex"
-          [chromeTab]="closedTab.chromeAPITab"
-          [timestamp]="closedTab.timestamp"
-          (draggableChromeTabClose)="closeTab($event, sessionIndex, tabIndex)"
-          (draggableChromeTabClick)="tabClicked(closedTab.chromeAPITab, $event)">
-        </app-draggable-chrome-tab>
+        class="chrome-window-container"
+        *ngIf="!sessions[sessionIndex].isWindow"
+        [@close-window]="sessionAnimationStates[layoutState.windowId]">
+        <div
+          class="chrome-window-body"
+          style="border-style: solid; border-radius: inherit; min-height: 0">
+          <app-draggable-chrome-tab
+            class="chrome-tab-border"
+            *ngFor="let closedTab of sessions[sessionIndex].closedTabs; index as tabIndex"
+            [chromeTab]="closedTab.chromeAPITab"
+            [timestamp]="closedTab.timestamp"
+            (draggableChromeTabClose)="closeTab($event, sessionIndex, tabIndex)"
+            (draggableChromeTabClick)="tabClicked(closedTab.chromeAPITab, $event)">
+          </app-draggable-chrome-tab>
+        </div>
       </div>
-    </div>
 
+    </div>
   </div>
 </div>

@@ -21,6 +21,12 @@ export const closeWindowAnimation = animation([
     style({ transform: 'scale(1, 0)', height: '0px', marginBottom: '0', color: 'white' }))
 ]);
 
+export const closeTabAnimation = animation([
+  style({ transformOrigin: 'top', height: '*', overflow: 'hidden' }),
+  animate('150ms cubic-bezier(0,0,0.2,1)',
+    style({ transform: 'scale(1, 0)', height: '0px', color: 'white' }))
+]);
+
 export const collapseWindowAnimation = animation([
   style({ height: '*' }),
   animate('300ms cubic-bezier(0,0,0.2,1)',

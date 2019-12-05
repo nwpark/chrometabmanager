@@ -2,8 +2,8 @@
   appMouseOver
   #tabContainer=app-mouse-over
   class="chrome-tab"
-  [@collapse-item]="animationState"
-  (@collapse-item.done)="completeCloseAnimation($event)">
+  [@close-tab]="animationState"
+  (@close-tab.done)="completeCloseAnimation($event)">
   <button
     mat-icon-button
     class="action-button-30"
