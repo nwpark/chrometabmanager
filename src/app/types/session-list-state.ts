@@ -1,13 +1,11 @@
-import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from './chrome-api-types';
-import {WindowLayoutState, WindowListLayoutState, WindowListUtils} from './window-list-state';
-import {AnimationState} from '../animations';
+import {ChromeAPITabState, ChromeAPIWindowState} from './chrome-api-types';
+import {WindowLayoutState, WindowListLayoutState} from './window-list-state';
+import {v4 as uuid} from 'uuid';
 
 export class SessionListState {
 
   recentlyClosedSessions: RecentlyClosedSession[];
   layoutState: WindowListLayoutState;
-  animationState = AnimationState.Complete;
-  animationStates: AnimationState[];
 
   static empty(): SessionListState {
     return new this([], {hidden: true, windowStates: []});
@@ -17,7 +15,6 @@ export class SessionListState {
               layoutState: WindowListLayoutState) {
     this.recentlyClosedSessions = recentlyClosedSessions;
     this.layoutState = layoutState;
-    this.animationStates = recentlyClosedSessions.map(() => AnimationState.Complete);
   }
 
   getWindow(windowId: any): ChromeAPIWindowState {
@@ -45,7 +42,6 @@ export class SessionListState {
     if (session.closedTabs.length === 0) {
       this.recentlyClosedSessions.splice(sessionIndex, 1);
       this.layoutState.windowStates.splice(sessionIndex, 1);
-      this.animationStates.splice(sessionIndex, 1);
     }
   }
 
@@ -55,7 +51,6 @@ export class SessionListState {
       .findIndex(session => session.isWindow && session.closedWindow.chromeAPIWindow.id === windowId);
     this.recentlyClosedSessions.splice(index, 1);
     this.layoutState.windowStates.splice(index, 1);
-    this.animationStates.splice(index, 1);
   }
 
   toggleDisplay() {
@@ -70,14 +65,13 @@ export class SessionListState {
   unshiftSession(closedSession: RecentlyClosedSession, windowLayoutState: WindowLayoutState) {
     this.recentlyClosedSessions.unshift(closedSession);
     this.layoutState.windowStates.unshift(windowLayoutState);
-    this.animationStates.unshift(AnimationState.Complete);
   }
 
   unshiftClosedTab(closedTab: RecentlyClosedTab) {
     if (this.recentlyClosedSessions.length === 0 || this.recentlyClosedSessions[0].isWindow) {
       const closedSession = SessionListUtils.createSessionFromClosedTab(closedTab);
-      const dummyLayoutState = {} as WindowLayoutState;
-      this.unshiftSession(closedSession, dummyLayoutState);
+      const layoutState = SessionListUtils.createLayoutStateForDetachedSession();
+      this.unshiftSession(closedSession, layoutState);
     } else {
       this.recentlyClosedSessions[0].closedTabs.unshift(closedTab);
     }
@@ -96,6 +90,7 @@ export class SessionListState {
     if (tail.isWindow || tail.closedTabs.length <= 1) {
       // todo: check layout states are deleted
       this.recentlyClosedSessions.pop();
+      this.layoutState.windowStates.pop();
     } else {
       tail.closedTabs.pop();
     }
@@ -132,6 +127,10 @@ export class SessionListUtils {
 
   static createBasicWindowLayoutState(windowId: number): WindowLayoutState {
     return {windowId, title: `${new Date().toTimeString().substring(0, 5)}`, hidden: true};
+  }
+
+  static createLayoutStateForDetachedSession(): WindowLayoutState {
+    return {windowId: uuid()} as WindowLayoutState;
   }
 }
 

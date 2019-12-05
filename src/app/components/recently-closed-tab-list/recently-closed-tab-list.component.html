@@ -32,25 +32,25 @@
 <div
   class="column-scrollable-content"
   *ngIf="!sessionListState.layoutState.hidden || isWindowListAnimating()"
-  [@collapse-list]="sessionListState.animationState"
+  [@collapse-list]="animationState"
   (@collapse-list.done)="completeToggleDisplayAnimation($event)">
   <div *ngFor="let session of sessionListState.recentlyClosedSessions; index as sessionIndex">
     <div
       class="chrome-window-container"
       *ngIf="session.isWindow"
-      [@close-window]="animationStates[sessionIndex]"
-      (@close-window.done)="completeCloseWindow($event, sessionIndex)">
+      [@close-window]="sessionAnimationStates[layoutStates[sessionIndex].windowId]"
+      (@close-window.done)="completeCloseWindow($event, layoutStates[sessionIndex].windowId)">
       <app-chrome-window-header
         [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
         [layoutState]="layoutStates[sessionIndex]"
         [props]="windowProps"
-        (chromeWindowClose)="closeWindow(sessionIndex)"
-        (chromeWindowToggleDisplay)="toggleWindowDisplay(sessionIndex)">
+        (chromeWindowClose)="closeWindow(layoutStates[sessionIndex].windowId)"
+        (chromeWindowToggleDisplay)="toggleWindowDisplay(layoutStates[sessionIndex])">
       </app-chrome-window-header>
       <div
-        *ngIf="!layoutStates[sessionIndex].hidden || isWindowAnimating(sessionIndex)"
-        [@collapse-window]="animationStates[sessionIndex]"
-        (@collapse-window.done)="completeToggleWindowDisplay($event, sessionIndex)">
+        *ngIf="!layoutStates[sessionIndex].hidden || isWindowAnimating(layoutStates[sessionIndex].windowId)"
+        [@collapse-window]="sessionAnimationStates[layoutStates[sessionIndex].windowId]"
+        (@collapse-window.done)="completeToggleWindowDisplay($event, layoutStates[sessionIndex].windowId)">
         <app-chrome-window
           [chromeAPIWindow]="session.closedWindow.chromeAPIWindow"
           [layoutState]="layoutStates[sessionIndex]"
@@ -62,7 +62,7 @@
     <div
       class="chrome-window-container"
       *ngIf="!session.isWindow"
-      [@close-window]="animationStates[sessionIndex]">
+      [@close-window]="sessionAnimationStates[layoutStates[sessionIndex].windowId]">
       <div
         class="chrome-window-body"
         style="border-style: solid; border-radius: inherit; min-height: 0">
