@@ -56,7 +56,7 @@ export class ChromeWindowContainerComponent {
   toggleWindowDisplay(layoutState: SessionLayoutState) {
     const animationState = getAnimationForToggleDisplay(layoutState.hidden);
     this.setAnimationState(animationState);
-    this.props.tabsService.toggleWindowDisplay(layoutState.windowId);
+    this.props.tabsService.toggleWindowDisplay(layoutState.sessionId);
   }
 
   completeToggleWindowDisplay(event: AnimationEvent) {

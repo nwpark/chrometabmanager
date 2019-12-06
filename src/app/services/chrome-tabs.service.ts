@@ -27,7 +27,7 @@ export class ChromeTabsService implements TabsService {
   }
 
   constructor() {
-    this.windowListState = WindowListUtils.createEmptyWindowListState();
+    this.windowListState = WindowListState.empty();
     MessagePassingService.addActiveWindowStateListener(() => {
       this.refreshState();
     });

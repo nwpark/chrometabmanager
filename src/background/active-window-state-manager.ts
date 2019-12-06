@@ -11,7 +11,7 @@ export class ActiveWindowStateManager {
   private mutex: Mutex;
 
   constructor() {
-    this.windowListState = WindowListUtils.createEmptyWindowListState();
+    this.windowListState = WindowListState.empty();
     this.mutex = new Mutex();
     MessagePassingService.onInsertChromeWindowRequest((request: InsertWindowMessageData) => {
       this.insertWindow(request.chromeWindow, request.index);

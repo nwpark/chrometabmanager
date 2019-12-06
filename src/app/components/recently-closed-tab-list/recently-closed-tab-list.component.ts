@@ -62,11 +62,11 @@ export class RecentlyClosedTabListComponent implements OnInit {
   }
 
   get sessions(): ChromeAPISession[] {
-    return this.sessionListState.recentlyClosedSessions;
+    return this.sessionListState.chromeSessions;
   }
 
   get title(): string {
-    if (this.sessionListState.recentlyClosedSessions.length > 0
+    if (this.sessionListState.chromeSessions.length > 0
           && this.sessionListState.layoutState.hidden) {
       const tabCount = SessionListUtils.getTabCount(this.sessionListState);
       return `Recently Closed (${tabCount})`;

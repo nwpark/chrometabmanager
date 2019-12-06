@@ -28,7 +28,7 @@ export class StorageService {
         if (savedWindows && layoutState) {
           resolve(new WindowListState(savedWindows, layoutState));
         } else {
-          resolve(WindowListUtils.createEmptyWindowListState());
+          resolve(WindowListState.empty());
         }
       });
     });
@@ -51,7 +51,7 @@ export class StorageService {
         if (activeWindows && layoutState) {
           resolve(new WindowListState(activeWindows, layoutState));
         } else {
-          resolve(WindowListUtils.createEmptyWindowListState());
+          resolve(WindowListState.empty());
         }
       });
     });
@@ -98,7 +98,7 @@ export class StorageService {
 
   static setRecentlyClosedSessionsState(sessionListState: SessionListState) {
     chrome.storage.local.set({
-      [StorageService.RECENTLY_CLOSED_SESSIONS]: sessionListState.recentlyClosedSessions,
+      [StorageService.RECENTLY_CLOSED_SESSIONS]: sessionListState.chromeSessions,
       [StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE]: sessionListState.layoutState
     }, () => {
       MessagePassingService.notifyClosedSessionStateListeners();

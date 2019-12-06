@@ -39,10 +39,10 @@
     <div
       cdkDrag
       *ngFor="let layoutState of windowListState.layoutState.sessionStates"
-      [cdkDragData]="windowListState.getWindow(layoutState.windowId)"
+      [cdkDragData]="windowListState.getWindow(layoutState.sessionId)"
       (cdkDragStarted)="beginDrag()">
       <app-chrome-window-container
-        [chromeAPIWindow]="windowListState.getWindow(layoutState.windowId)"
+        [chromeAPIWindow]="windowListState.getWindow(layoutState.sessionId)"
         [layoutState]="layoutState"
         [props]="windowProps">
       </app-chrome-window-container>

@@ -74,7 +74,7 @@ export class RecentlyClosedTabsService implements TabsService {
 
   @modifiesState()
   clear() {
-    this.sessionListState.recentlyClosedSessions = [];
+    this.sessionListState.chromeSessions = [];
     this.sessionListState.layoutState.sessionStates = [];
   }
 

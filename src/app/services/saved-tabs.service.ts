@@ -20,7 +20,7 @@ export class SavedTabsService implements TabsService {
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
   constructor(private chromeTabsService: ChromeTabsService) {
-    this.windowListState = WindowListUtils.createEmptyWindowListState();
+    this.windowListState = WindowListState.empty();
     MessagePassingService.addSavedWindowStateListener(() => {
       this.refreshState();
     });
