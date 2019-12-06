@@ -14,7 +14,6 @@ import {
   isToggleDisplayState
 } from '../../animations';
 import {PreferencesService} from '../../services/preferences.service';
-import {WindowLayoutState} from '../../types/window-list-state';
 
 @Component({
   selector: 'app-recently-closed-tab-list',
@@ -41,7 +40,6 @@ export class RecentlyClosedTabListComponent implements OnInit {
   sessionListState: SessionListState;
   windowProps: ChromeWindowComponentProps;
   animationState = AnimationState.Complete;
-  sessionAnimationStates = {};
 
   constructor(public recentlyClosedTabsService: RecentlyClosedTabsService,
               private dragDropService: DragDropService,
@@ -61,10 +59,6 @@ export class RecentlyClosedTabListComponent implements OnInit {
         this.sessionListState = sessionListState;
         this.changeDetectorRef.detectChanges();
       });
-  }
-
-  get layoutStates(): WindowLayoutState[] {
-    return this.sessionListState.layoutState.windowStates;
   }
 
   get sessions(): RecentlyClosedSession[] {
@@ -93,11 +87,6 @@ export class RecentlyClosedTabListComponent implements OnInit {
     this.changeDetectorRef.detectChanges();
   }
 
-  private setSessionAnimationState(sessionId: any, animationState: AnimationState) {
-    this.sessionAnimationStates[sessionId] = animationState;
-    this.changeDetectorRef.detectChanges();
-  }
-
   toggleDisplay() {
     const animationState = getAnimationForToggleDisplay(this.sessionListState.layoutState.hidden);
     this.setAnimationState(animationState);
@@ -110,13 +99,9 @@ export class RecentlyClosedTabListComponent implements OnInit {
     }
   }
 
-  closeTab(state: AnimationState, sessionIndex: number, tabIndex: number) {
-    const sessionId = this.layoutStates[sessionIndex].windowId;
-    if (state === AnimationState.Closing && this.sessions[sessionIndex].tabs.length === 1) {
-      this.setSessionAnimationState(sessionId, AnimationState.Closing);
-    } else if (state === AnimationState.Complete) {
-      this.setSessionAnimationState(sessionId, AnimationState.Complete);
-      this.recentlyClosedTabsService.removeDetachedTab(sessionIndex, tabIndex);
+  closeTab(state: AnimationState, tabId: any) {
+    if (state === AnimationState.Complete) {
+      this.recentlyClosedTabsService.removeDetachedTab(tabId);
     }
   }
 
@@ -124,11 +109,6 @@ export class RecentlyClosedTabListComponent implements OnInit {
     this.recentlyClosedTabsService.clear();
   }
 
-  debug() {
-    console.log(this);
-  }
-
-  debugModeEnabled(): boolean {
-    return this.preferencesService.isDebugModeEnabled();
-  }
+  debug() { console.log(this); }
+  debugModeEnabled(): boolean { return this.preferencesService.isDebugModeEnabled(); }
 }

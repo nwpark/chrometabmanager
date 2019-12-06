@@ -36,13 +36,11 @@ export class SessionListState {
     }
   }
 
-  removeDetachedTab(sessionIndex: number, tabIndex: number) {
-    const session = this.recentlyClosedSessions[sessionIndex];
-    session.tabs.splice(tabIndex, 1);
-    if (session.tabs.length === 0) {
-      this.recentlyClosedSessions.splice(sessionIndex, 1);
-      this.layoutState.windowStates.splice(sessionIndex, 1);
-    }
+  removeDetachedTab(tabId: any) {
+    const index = this.recentlyClosedSessions
+      .findIndex(session => !session.isWindow && session.tab.chromeAPITab.id === tabId);
+    this.recentlyClosedSessions.splice(index, 1);
+    this.layoutState.windowStates.splice(index, 1);
   }
 
   removeWindow(windowId: any) {
@@ -67,77 +65,43 @@ export class SessionListState {
     this.layoutState.windowStates.unshift(windowLayoutState);
   }
 
-  unshiftClosedTab(closedTab: RecentlyClosedTab) {
-    if (this.recentlyClosedSessions.length === 0 || this.recentlyClosedSessions[0].isWindow) {
-      const closedSession = SessionListUtils.createSessionFromClosedTab(closedTab);
-      const layoutState = SessionListUtils.createLayoutStateForDetachedSession();
-      this.unshiftSession(closedSession, layoutState);
-    } else {
-      this.recentlyClosedSessions[0].tabs.unshift(closedTab);
-    }
-  }
-
   removeExpiredSessions(maxTabCount: number) {
-    let size = this.size();
-    while (size > maxTabCount) {
-      this.pop();
-      size--;
-    }
-  }
-
-  private pop() {
-    const tail = this.recentlyClosedSessions[this.recentlyClosedSessions.length - 1];
-    if (tail.isWindow || tail.tabs.length <= 1) {
-      // todo: check layout states are deleted
+    // todo: needs testing
+    while (this.recentlyClosedSessions.length > maxTabCount) {
       this.recentlyClosedSessions.pop();
       this.layoutState.windowStates.pop();
-    } else {
-      tail.tabs.pop();
     }
-  }
-
-  private size(): number {
-    return this.recentlyClosedSessions.reduce((acc, session) => {
-      return acc + (session.isWindow ? 1 : session.tabs.length);
-    }, 0);
   }
 }
 
 export class SessionListUtils {
   static getTabCount(sessionListState: SessionListState): number {
     return sessionListState.recentlyClosedSessions
-      .map(session => session.isWindow
-        ? session.window.chromeAPIWindow.tabs.length
-        : session.tabs.length)
-      .reduce((a, b) => a + b, 0);
+      .reduce((acc, session) => {
+        const tabCount = session.isWindow ? session.window.chromeAPIWindow.tabs.length : 1;
+        return acc + tabCount;
+      }, 0);
   }
 
   static createClosedSessionFromWindow(chromeWindow: ChromeAPIWindowState): RecentlyClosedSession {
-    const closedWindow = {timestamp: Date.now(), chromeAPIWindow: chromeWindow} as RecentlyClosedWindow;
+    const closedWindow: RecentlyClosedWindow = {timestamp: Date.now(), chromeAPIWindow: chromeWindow};
     return {isWindow: true, window: closedWindow};
   }
 
-  static createSessionFromClosedTab(closedTab: RecentlyClosedTab): RecentlyClosedSession {
-    return {isWindow: false, tabs: [closedTab]};
-  }
-
-  static createClosedTab(chromeTab: ChromeAPITabState): RecentlyClosedTab {
-    return {timestamp: Date.now(), chromeAPITab: chromeTab};
+  static createClosedSessionFromTab(chromeTab: ChromeAPITabState): RecentlyClosedSession {
+    const closedTab: RecentlyClosedTab = {timestamp: Date.now(), chromeAPITab: chromeTab};
+    return {isWindow: false, tab: closedTab};
   }
 
   static createBasicWindowLayoutState(windowId: number): WindowLayoutState {
     return {windowId, title: `${new Date().toTimeString().substring(0, 5)}`, hidden: true};
-  }
-
-  static createLayoutStateForDetachedSession(): WindowLayoutState {
-    return {windowId: uuid()} as WindowLayoutState;
   }
 }
 
 export interface RecentlyClosedSession {
   isWindow: boolean;
   window?: RecentlyClosedWindow;
-  tabs?: RecentlyClosedTab[];
+  tab?: RecentlyClosedTab;
 }
 
 export interface RecentlyClosedWindow {
