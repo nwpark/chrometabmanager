@@ -37,22 +37,21 @@
     (@collapse-list.done)="completeToggleDisplayAnimation($event)">
     <div *ngFor="let layoutState of sessionListState.layoutState.windowStates; index as sessionIndex; first as isFirst; last as isLast">
       <app-chrome-window-container
-        *ngIf="sessions[sessionIndex].isWindow"
-        [chromeAPIWindow]="sessions[sessionIndex].window.chromeAPIWindow"
+        *ngIf="sessions[sessionIndex].window"
+        [chromeAPIWindow]="sessions[sessionIndex].window"
         [layoutState]="layoutState"
         [props]="windowProps">
       </app-chrome-window-container>
 
       <app-detached-chrome-tab
-        *ngIf="!sessions[sessionIndex].isWindow"
-        [chromeTab]="sessions[sessionIndex].tab.chromeAPITab"
-        [isFirstChild]="isFirst || sessions[sessionIndex-1].isWindow"
-        [isLastChild]="isLast || sessions[sessionIndex+1].isWindow"
-        [timestamp]="sessions[sessionIndex].tab.timestamp"
-        (draggableChromeTabClose)="closeTab($event, sessions[sessionIndex].tab.chromeAPITab.id)"
-        (draggableChromeTabClick)="tabClicked(sessions[sessionIndex].tab.chromeAPITab, $event)">
+        *ngIf="sessions[sessionIndex].tab"
+        [chromeTab]="sessions[sessionIndex].tab"
+        [isFirstChild]="isFirst || !sessions[sessionIndex-1].tab"
+        [isLastChild]="isLast || !sessions[sessionIndex+1].tab"
+        [lastModified]="sessions[sessionIndex].lastModified"
+        (draggableChromeTabClose)="closeTab($event, sessions[sessionIndex].tab.id)"
+        (draggableChromeTabClick)="tabClicked(sessions[sessionIndex].tab, $event)">
       </app-detached-chrome-tab>
-
     </div>
   </div>
 </div>

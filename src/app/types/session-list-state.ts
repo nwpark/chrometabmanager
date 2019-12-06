@@ -1,17 +1,16 @@
 import {ChromeAPITabState, ChromeAPIWindowState} from './chrome-api-types';
 import {WindowLayoutState, WindowListLayoutState} from './window-list-state';
-import {v4 as uuid} from 'uuid';
 
 export class SessionListState {
 
-  recentlyClosedSessions: RecentlyClosedSession[];
+  recentlyClosedSessions: ChromeAPISession[];
   layoutState: WindowListLayoutState;
 
   static empty(): SessionListState {
     return new this([], {hidden: true, windowStates: []});
   }
 
-  constructor(recentlyClosedSessions: RecentlyClosedSession[],
+  constructor(recentlyClosedSessions: ChromeAPISession[],
               layoutState: WindowListLayoutState) {
     this.recentlyClosedSessions = recentlyClosedSessions;
     this.layoutState = layoutState;
@@ -19,9 +18,7 @@ export class SessionListState {
 
   getWindow(windowId: any): ChromeAPIWindowState {
     return this.recentlyClosedSessions
-      .filter(session => session.isWindow)
-      .map(session => session.window.chromeAPIWindow)
-      .find(window => window.id === windowId);
+      .find(session => session.window && session.window.id === windowId).window;
   }
 
   getWindowLayout(windowId: any): WindowLayoutState {
@@ -38,7 +35,7 @@ export class SessionListState {
 
   removeDetachedTab(tabId: any) {
     const index = this.recentlyClosedSessions
-      .findIndex(session => !session.isWindow && session.tab.chromeAPITab.id === tabId);
+      .findIndex(session => session.tab && session.tab.id === tabId);
     this.recentlyClosedSessions.splice(index, 1);
     this.layoutState.windowStates.splice(index, 1);
   }
@@ -46,7 +43,7 @@ export class SessionListState {
   removeWindow(windowId: any) {
     // todo: convert all to index
     const index = this.recentlyClosedSessions
-      .findIndex(session => session.isWindow && session.window.chromeAPIWindow.id === windowId);
+      .findIndex(session => session.window && session.window.id === windowId);
     this.recentlyClosedSessions.splice(index, 1);
     this.layoutState.windowStates.splice(index, 1);
   }
@@ -60,7 +57,7 @@ export class SessionListState {
     windowLayout.hidden = !windowLayout.hidden;
   }
 
-  unshiftSession(closedSession: RecentlyClosedSession, windowLayoutState: WindowLayoutState) {
+  unshiftSession(closedSession: ChromeAPISession, windowLayoutState: WindowLayoutState) {
     this.recentlyClosedSessions.unshift(closedSession);
     this.layoutState.windowStates.unshift(windowLayoutState);
   }
@@ -78,19 +75,17 @@ export class SessionListUtils {
   static getTabCount(sessionListState: SessionListState): number {
     return sessionListState.recentlyClosedSessions
       .reduce((acc, session) => {
-        const tabCount = session.isWindow ? session.window.chromeAPIWindow.tabs.length : 1;
+        const tabCount = session.window ? session.window.tabs.length : 1;
         return acc + tabCount;
       }, 0);
   }
 
-  static createClosedSessionFromWindow(chromeWindow: ChromeAPIWindowState): RecentlyClosedSession {
-    const closedWindow: RecentlyClosedWindow = {timestamp: Date.now(), chromeAPIWindow: chromeWindow};
-    return {isWindow: true, window: closedWindow};
+  static createClosedSessionFromWindow(chromeWindow: ChromeAPIWindowState): ChromeAPISession {
+    return {lastModified: Date.now(), window: chromeWindow};
   }
 
-  static createClosedSessionFromTab(chromeTab: ChromeAPITabState): RecentlyClosedSession {
-    const closedTab: RecentlyClosedTab = {timestamp: Date.now(), chromeAPITab: chromeTab};
-    return {isWindow: false, tab: closedTab};
+  static createClosedSessionFromTab(chromeTab: ChromeAPITabState): ChromeAPISession {
+    return {lastModified: Date.now(), tab: chromeTab};
   }
 
   static createBasicWindowLayoutState(windowId: number): WindowLayoutState {
@@ -98,18 +93,8 @@ export class SessionListUtils {
   }
 }
 
-export interface RecentlyClosedSession {
-  isWindow: boolean;
-  window?: RecentlyClosedWindow;
-  tab?: RecentlyClosedTab;
-}
-
-export interface RecentlyClosedWindow {
-  timestamp: number;
-  chromeAPIWindow: ChromeAPIWindowState;
-}
-
-export interface RecentlyClosedTab {
-  timestamp: number;
-  chromeAPITab: ChromeAPITabState;
+export interface ChromeAPISession {
+  lastModified: number;
+  window?: ChromeAPIWindowState;
+  tab?: ChromeAPITabState;
 }

@@ -34,7 +34,7 @@ export class ClosedSessionStateManager {
     if (this.sessionListState !== undefined) {
       const savedWindow = WindowStateUtils.convertToSavedWindow(chromeWindow);
       const closedSession = SessionListUtils.createClosedSessionFromWindow(savedWindow);
-      const windowLayoutState = SessionListUtils.createBasicWindowLayoutState(closedSession.window.chromeAPIWindow.id);
+      const windowLayoutState = SessionListUtils.createBasicWindowLayoutState(closedSession.window.id);
       this.sessionListState.unshiftSession(closedSession, windowLayoutState);
     }
   }
@@ -45,7 +45,7 @@ export class ClosedSessionStateManager {
       const savedTab = WindowStateUtils.convertToSavedTab(chromeTab);
       const closedSession = SessionListUtils.createClosedSessionFromTab(savedTab);
       // todo: layoutState doesnt make sense for tab
-      const layoutState = SessionListUtils.createBasicWindowLayoutState(closedSession.tab.chromeAPITab.id);
+      const layoutState = SessionListUtils.createBasicWindowLayoutState(closedSession.tab.id);
       this.sessionListState.unshiftSession(closedSession, layoutState);
     }
   }

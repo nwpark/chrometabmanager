@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
 import {ChromeAPITabState} from '../../types/chrome-api-types';
-import {RecentlyClosedSession, SessionListState, SessionListUtils} from '../../types/session-list-state';
+import {ChromeAPISession, SessionListState, SessionListUtils} from '../../types/session-list-state';
 import {DragDropService, WindowListId} from '../../services/drag-drop.service';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {
@@ -61,7 +61,7 @@ export class RecentlyClosedTabListComponent implements OnInit {
       });
   }
 
-  get sessions(): RecentlyClosedSession[] {
+  get sessions(): ChromeAPISession[] {
     return this.sessionListState.recentlyClosedSessions;
   }
 

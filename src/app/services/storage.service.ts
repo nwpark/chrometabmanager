@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {WindowListLayoutState, WindowListState, WindowListUtils} from '../types/window-list-state';
-import {RecentlyClosedSession, SessionListState} from '../types/session-list-state';
+import {ChromeAPISession, SessionListState} from '../types/session-list-state';
 import {MessagePassingService} from './message-passing.service';
 import {Preferences, PreferenceUtils} from '../types/preferences';
 
@@ -84,7 +84,7 @@ export class StorageService {
   static getRecentlyClosedSessionsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
       chrome.storage.local.get([StorageService.RECENTLY_CLOSED_SESSIONS, StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE], data => {
-        const recentlyClosedSessions = data[StorageService.RECENTLY_CLOSED_SESSIONS] as RecentlyClosedSession[];
+        const recentlyClosedSessions = data[StorageService.RECENTLY_CLOSED_SESSIONS] as ChromeAPISession[];
         const layoutState = data[StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE] as WindowListLayoutState;
         if (recentlyClosedSessions && layoutState) {
           resolve(new SessionListState(recentlyClosedSessions, layoutState));

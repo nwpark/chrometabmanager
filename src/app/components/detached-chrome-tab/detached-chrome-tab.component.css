@@ -48,7 +48,7 @@
   transform: translateY(5px);
 }
 
-.timestamp {
+.last-modified {
   padding-left: 10px;
   padding-right: 10px;
   display: inline-block;

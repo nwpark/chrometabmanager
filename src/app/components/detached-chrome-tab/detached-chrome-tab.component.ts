@@ -25,7 +25,7 @@ export class DetachedChromeTabComponent implements OnInit {
   @Input() chromeTab: ChromeAPITabState;
   @Input() isFirstChild: boolean;
   @Input() isLastChild: boolean;
-  @Input() timestamp: number;
+  @Input() lastModified: number;
   @Output() draggableChromeTabClose = new EventEmitter<AnimationState>();
   @Output() draggableChromeTabClick = new EventEmitter<MouseEvent>();
 
@@ -60,8 +60,8 @@ export class DetachedChromeTabComponent implements OnInit {
     return this.chromeTab.status === 'loading';
   }
 
-  get timestampString(): string {
-    return new Date(this.timestamp).toTimeString().substring(0, 5);
+  get lastModifiedString(): string {
+    return new Date(this.lastModified).toTimeString().substring(0, 5);
   }
 
   closeTab() {
