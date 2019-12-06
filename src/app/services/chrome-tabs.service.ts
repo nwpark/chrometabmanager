@@ -5,19 +5,21 @@ import {Subject} from 'rxjs';
 import {modifiesState, StateModifierParams} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {StorageService} from './storage.service';
-import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from '../types/chrome-api-types';
+import {ChromeAPITabState, ChromeAPIWindowState, SessionUtils, WindowStateUtils} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
+import {SessionListState} from '../types/session-list-state';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChromeTabsService implements TabsService {
 
-  private windowListState: WindowListState;
+  private windowListState: SessionListState;
 
-  private windowStateUpdatedSource = new Subject<WindowListState>();
+  private windowStateUpdatedSource = new Subject<SessionListState>();
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
+  // todo: move to background script file
   static getChromeWindowsFromAPI(): Promise<ChromeAPIWindowState[]> {
     return new Promise<ChromeAPIWindowState[]>(resolve => {
       chrome.windows.getAll({populate: true}, chromeWindows => {
@@ -27,7 +29,7 @@ export class ChromeTabsService implements TabsService {
   }
 
   constructor() {
-    this.windowListState = WindowListState.empty();
+    this.windowListState = SessionListState.empty();
     MessagePassingService.addActiveWindowStateListener(() => {
       this.refreshState();
     });
@@ -42,7 +44,7 @@ export class ChromeTabsService implements TabsService {
     });
   }
 
-  getWindowListState(): WindowListState {
+  getWindowListState(): SessionListState {
     return this.windowListState;
   }
 
@@ -118,8 +120,9 @@ export class ChromeTabsService implements TabsService {
   @modifiesState({storeResult: false})
   insertWindow(chromeWindow: ChromeAPIWindowState, index: number) {
     const tempWindow = WindowStateUtils.convertToActiveWindow(chromeWindow);
+    const tempSession = SessionUtils.createSessionFromWindow(tempWindow);
     const tempLayoutState = WindowListUtils.createBasicWindowLayoutState(tempWindow.id);
-    this.windowListState.insertSession(tempWindow, tempLayoutState, index);
+    this.windowListState.insertSession(tempSession, tempLayoutState, index);
     MessagePassingService.requestInsertChromeWindow(tempWindow, index);
   }
 

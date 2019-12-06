@@ -43,24 +43,24 @@ export class StorageService {
     });
   }
 
-  static getActiveWindowsState(): Promise<WindowListState> {
-    return new Promise<WindowListState>(resolve => {
+  static getActiveWindowsState(): Promise<SessionListState> {
+    return new Promise<SessionListState>(resolve => {
       chrome.storage.local.get([StorageService.ACTIVE_WINDOWS, StorageService.ACTIVE_WINDOWS_LAYOUT_STATE], data => {
         const activeWindows = data[StorageService.ACTIVE_WINDOWS];
         const layoutState = data[StorageService.ACTIVE_WINDOWS_LAYOUT_STATE];
         if (activeWindows && layoutState) {
-          resolve(new WindowListState(activeWindows, layoutState));
+          resolve(new SessionListState(activeWindows, layoutState));
         } else {
-          resolve(WindowListState.empty());
+          resolve(SessionListState.empty());
         }
       });
     });
   }
 
-  static setActiveWindowsState(windowListState: WindowListState, callback?: () => void) {
+  static setActiveWindowsState(sessionListState: SessionListState, callback?: () => void) {
     chrome.storage.local.set({
-      [StorageService.ACTIVE_WINDOWS]: windowListState.chromeAPIWindows,
-      [StorageService.ACTIVE_WINDOWS_LAYOUT_STATE]: windowListState.layoutState
+      [StorageService.ACTIVE_WINDOWS]: sessionListState.chromeSessions,
+      [StorageService.ACTIVE_WINDOWS_LAYOUT_STATE]: sessionListState.layoutState
     }, () => {
       MessagePassingService.notifyActiveWindowStateListeners();
       if (callback) {

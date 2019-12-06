@@ -28,7 +28,7 @@ export class SessionUtils {
     if (chromeSession.window) {
       return chromeSession.window.id;
     } else if (chromeSession.tab) {
-      return chromeSession.tab;
+      return chromeSession.tab.id;
     }
   }
 

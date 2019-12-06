@@ -54,6 +54,7 @@ export class SessionListState {
   }
 
   removeSession(sessionId: any) {
+    this.chromeSessions.forEach(session => console.log(SessionUtils.getSessionId(session)));
     this.chromeSessions = this.chromeSessions.filter(session => SessionUtils.getSessionId(session) !== sessionId);
     this.layoutState.sessionStates = this.layoutState.sessionStates.filter(layoutState => layoutState.sessionId !== sessionId);
   }
