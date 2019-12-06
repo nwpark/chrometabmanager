@@ -1,0 +1,39 @@
+<div
+  appMouseOver
+  #tabContainer=app-mouse-over
+  [ngClass]="{'chrome-tab': true, 'chrome-tab-firstchild': isFirstChild, 'chrome-tab-lastchild': isLastChild}"
+  [@close-tab]="animationState"
+  (@close-tab.done)="completeCloseAnimation($event)">
+  <button
+    mat-icon-button
+    class="action-button-30"
+    style="float: right"
+    title="Close tab"
+    (click)="closeTab()">
+    <mat-icon class="action-icon-18" *ngIf="tabContainer.mouseOver">close</mat-icon>
+  </button>
+  <div
+    class="chrome-tab-title"
+    (click)="draggableChromeTabClick.emit($event)">
+    <ng-container *ngIf="timestamp">
+      <div class="timestamp">{{timestampString}}</div>
+      <div class="vertical-divider"></div>
+    </ng-container>
+    <img
+      class="favicon-icon"
+      src="{{getFaviconIconUrl()}}"
+      *ngIf="shouldShowFaviconIcon()">
+    <mat-icon
+      class="favicon-icon"
+      *ngIf="isNewTab()">
+      tab
+    </mat-icon>
+    <div
+      class="favicon-icon"
+      *ngIf="isLoading()">
+      <mat-spinner [diameter]="16"></mat-spinner>
+    </div>
+
+    {{title}}
+  </div>
+</div>

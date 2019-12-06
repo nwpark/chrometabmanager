@@ -20,7 +20,7 @@ export class SessionListState {
   getWindow(windowId: any): ChromeAPIWindowState {
     return this.recentlyClosedSessions
       .filter(session => session.isWindow)
-      .map(session => session.closedWindow.chromeAPIWindow)
+      .map(session => session.window.chromeAPIWindow)
       .find(window => window.id === windowId);
   }
 
@@ -38,8 +38,8 @@ export class SessionListState {
 
   removeDetachedTab(sessionIndex: number, tabIndex: number) {
     const session = this.recentlyClosedSessions[sessionIndex];
-    session.closedTabs.splice(tabIndex, 1);
-    if (session.closedTabs.length === 0) {
+    session.tabs.splice(tabIndex, 1);
+    if (session.tabs.length === 0) {
       this.recentlyClosedSessions.splice(sessionIndex, 1);
       this.layoutState.windowStates.splice(sessionIndex, 1);
     }
@@ -48,7 +48,7 @@ export class SessionListState {
   removeWindow(windowId: any) {
     // todo: convert all to index
     const index = this.recentlyClosedSessions
-      .findIndex(session => session.isWindow && session.closedWindow.chromeAPIWindow.id === windowId);
+      .findIndex(session => session.isWindow && session.window.chromeAPIWindow.id === windowId);
     this.recentlyClosedSessions.splice(index, 1);
     this.layoutState.windowStates.splice(index, 1);
   }
@@ -73,7 +73,7 @@ export class SessionListState {
       const layoutState = SessionListUtils.createLayoutStateForDetachedSession();
       this.unshiftSession(closedSession, layoutState);
     } else {
-      this.recentlyClosedSessions[0].closedTabs.unshift(closedTab);
+      this.recentlyClosedSessions[0].tabs.unshift(closedTab);
     }
   }
 
@@ -87,18 +87,18 @@ export class SessionListState {
 
   private pop() {
     const tail = this.recentlyClosedSessions[this.recentlyClosedSessions.length - 1];
-    if (tail.isWindow || tail.closedTabs.length <= 1) {
+    if (tail.isWindow || tail.tabs.length <= 1) {
       // todo: check layout states are deleted
       this.recentlyClosedSessions.pop();
       this.layoutState.windowStates.pop();
     } else {
-      tail.closedTabs.pop();
+      tail.tabs.pop();
     }
   }
 
   private size(): number {
     return this.recentlyClosedSessions.reduce((acc, session) => {
-      return acc + (session.isWindow ? 1 : session.closedTabs.length);
+      return acc + (session.isWindow ? 1 : session.tabs.length);
     }, 0);
   }
 }
@@ -107,18 +107,18 @@ export class SessionListUtils {
   static getTabCount(sessionListState: SessionListState): number {
     return sessionListState.recentlyClosedSessions
       .map(session => session.isWindow
-        ? session.closedWindow.chromeAPIWindow.tabs.length
-        : session.closedTabs.length)
+        ? session.window.chromeAPIWindow.tabs.length
+        : session.tabs.length)
       .reduce((a, b) => a + b, 0);
   }
 
   static createClosedSessionFromWindow(chromeWindow: ChromeAPIWindowState): RecentlyClosedSession {
     const closedWindow = {timestamp: Date.now(), chromeAPIWindow: chromeWindow} as RecentlyClosedWindow;
-    return {isWindow: true, closedWindow};
+    return {isWindow: true, window: closedWindow};
   }
 
   static createSessionFromClosedTab(closedTab: RecentlyClosedTab): RecentlyClosedSession {
-    return {isWindow: false, closedTabs: [closedTab]};
+    return {isWindow: false, tabs: [closedTab]};
   }
 
   static createClosedTab(chromeTab: ChromeAPITabState): RecentlyClosedTab {
@@ -136,8 +136,8 @@ export class SessionListUtils {
 
 export interface RecentlyClosedSession {
   isWindow: boolean;
-  closedWindow?: RecentlyClosedWindow;
-  closedTabs?: RecentlyClosedTab[];
+  window?: RecentlyClosedWindow;
+  tabs?: RecentlyClosedTab[];
 }
 
 export interface RecentlyClosedWindow {

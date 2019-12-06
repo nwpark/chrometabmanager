@@ -112,7 +112,7 @@ export class RecentlyClosedTabListComponent implements OnInit {
 
   closeTab(state: AnimationState, sessionIndex: number, tabIndex: number) {
     const sessionId = this.layoutStates[sessionIndex].windowId;
-    if (state === AnimationState.Closing && this.sessions[sessionIndex].closedTabs.length === 1) {
+    if (state === AnimationState.Closing && this.sessions[sessionIndex].tabs.length === 1) {
       this.setSessionAnimationState(sessionId, AnimationState.Closing);
     } else if (state === AnimationState.Complete) {
       this.setSessionAnimationState(sessionId, AnimationState.Complete);

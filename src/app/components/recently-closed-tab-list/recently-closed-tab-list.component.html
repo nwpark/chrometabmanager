@@ -38,28 +38,39 @@
     <div *ngFor="let layoutState of sessionListState.layoutState.windowStates; index as sessionIndex">
       <app-chrome-window-container
         *ngIf="sessions[sessionIndex].isWindow"
-        [chromeAPIWindow]="sessions[sessionIndex].closedWindow.chromeAPIWindow"
+        [chromeAPIWindow]="sessions[sessionIndex].window.chromeAPIWindow"
         [layoutState]="layoutState"
         [props]="windowProps">
       </app-chrome-window-container>
 
-      <div
-        class="chrome-window-container"
-        *ngIf="!sessions[sessionIndex].isWindow"
-        [@close-window]="sessionAnimationStates[layoutState.windowId]">
-        <div
-          class="chrome-window-body"
-          style="border-style: solid; border-radius: inherit; min-height: 0">
-          <app-draggable-chrome-tab
-            class="chrome-tab-border"
-            *ngFor="let closedTab of sessions[sessionIndex].closedTabs; index as tabIndex"
-            [chromeTab]="closedTab.chromeAPITab"
-            [timestamp]="closedTab.timestamp"
-            (draggableChromeTabClose)="closeTab($event, sessionIndex, tabIndex)"
-            (draggableChromeTabClick)="tabClicked(closedTab.chromeAPITab, $event)">
-          </app-draggable-chrome-tab>
-        </div>
-      </div>
+<!--      <div-->
+<!--        class="chrome-window-container"-->
+<!--        *ngIf="!sessions[sessionIndex].isWindow"-->
+<!--        [@close-window]="sessionAnimationStates[layoutState.windowId]">-->
+<!--        <div-->
+<!--          class="chrome-window-body"-->
+<!--          style="border-style: solid; border-radius: inherit; min-height: 0">-->
+<!--          <app-draggable-chrome-tab-->
+<!--            class="chrome-tab-border"-->
+<!--            *ngFor="let closedTab of sessions[sessionIndex].closedTabs; index as tabIndex"-->
+<!--            [chromeTab]="closedTab.chromeAPITab"-->
+<!--            [timestamp]="closedTab.timestamp"-->
+<!--            (draggableChromeTabClose)="closeTab($event, sessionIndex, tabIndex)"-->
+<!--            (draggableChromeTabClick)="tabClicked(closedTab.chromeAPITab, $event)">-->
+<!--          </app-draggable-chrome-tab>-->
+<!--        </div>-->
+<!--      </div>-->
+      <ng-container *ngIf="!sessions[sessionIndex].isWindow">
+        <app-detached-chrome-tab
+          *ngFor="let closedTab of sessions[sessionIndex].tabs; index as tabIndex; first as isFirst; last as isLast"
+          [chromeTab]="closedTab.chromeAPITab"
+          [isFirstChild]="isFirst"
+          [isLastChild]="isLast"
+          [timestamp]="closedTab.timestamp"
+          (draggableChromeTabClose)="closeTab($event, sessionIndex, tabIndex)"
+          (draggableChromeTabClick)="tabClicked(closedTab.chromeAPITab, $event)">
+        </app-detached-chrome-tab>
+      </ng-container>
 
     </div>
   </div>
