@@ -1,5 +1,11 @@
 import {v4 as uuid} from 'uuid';
 
+export interface ChromeAPISession {
+  lastModified: number;
+  window?: ChromeAPIWindowState;
+  tab?: ChromeAPITabState;
+}
+
 export interface ChromeAPIWindowState {
   id: any;
   type: string;

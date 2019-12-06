@@ -38,7 +38,7 @@
     (@collapse-list.done)="completeToggleDisplayAnimation($event)">
     <div
       cdkDrag
-      *ngFor="let layoutState of windowListState.layoutState.windowStates"
+      *ngFor="let layoutState of windowListState.layoutState.sessionStates"
       [cdkDragData]="windowListState.getWindow(layoutState.windowId)"
       (cdkDragStarted)="beginDrag()">
       <app-chrome-window-container

@@ -1,6 +1,6 @@
 import {ChromeAPIWindowState} from '../app/types/chrome-api-types';
 import {StorageService} from '../app/services/storage.service';
-import {WindowListLayoutState, WindowListState, WindowListUtils} from '../app/types/window-list-state';
+import {SessionListLayoutState, WindowListState, WindowListUtils} from '../app/types/window-list-state';
 import {InsertWindowMessageData, MessagePassingService} from '../app/services/message-passing.service';
 import {ChromeTabsService} from '../app/services/chrome-tabs.service';
 import Mutex from 'async-mutex/lib/Mutex';
@@ -26,7 +26,7 @@ export class ActiveWindowStateManager {
         StorageService.getActiveWindowsLayoutState()
       ]).then(res => {
         const activeWindows: ChromeAPIWindowState[] = res[0];
-        const layoutState: WindowListLayoutState = res[1];
+        const layoutState: SessionListLayoutState = res[1];
         WindowListUtils.cleanupLayoutState(layoutState, activeWindows);
         this.windowListState = new WindowListState(activeWindows, layoutState);
         StorageService.setActiveWindowsState(this.windowListState, releaseLock);

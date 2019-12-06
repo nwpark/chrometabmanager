@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
-import {WindowLayoutState, WindowListState} from '../../types/window-list-state';
+import {SessionLayoutState, WindowListState} from '../../types/window-list-state';
 import {ListActionButton, ListActionButtonFactory} from '../../types/action-bar';
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';

@@ -3,7 +3,7 @@ import {ChromeTabsService} from './chrome-tabs.service';
 import {SavedTabsService} from './saved-tabs.service';
 import {ActionButton, ActionButtonFactory, ListActionButton, ListActionButtonFactory} from '../types/action-bar';
 import {RecentlyClosedTabsService} from './recently-closed-tabs.service';
-import {WindowListId} from './drag-drop.service';
+import {WindowListId} from '../types/chrome-window-component-data';
 
 @Injectable({
   providedIn: 'root'

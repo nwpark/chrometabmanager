@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
-import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
+import {ChromeWindowComponentProps, WindowListId} from '../../types/chrome-window-component-data';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {SavedTabsService} from '../../services/saved-tabs.service';
-import {WindowListId} from '../../services/drag-drop.service';
 
 @Component({
   selector: 'app-new-tab-page',

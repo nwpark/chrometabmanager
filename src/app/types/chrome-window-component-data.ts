@@ -1,5 +1,10 @@
 import {TabsService} from '../interfaces/tabs-service';
-import {WindowListId} from '../services/drag-drop.service';
+
+export enum WindowListId {
+  Saved = 'saved_window_list',
+  Active = 'active_window_list',
+  RecentlyClosed = 'recently_closed'
+}
 
 export class ChromeWindowComponentProps {
   windowListId: WindowListId;

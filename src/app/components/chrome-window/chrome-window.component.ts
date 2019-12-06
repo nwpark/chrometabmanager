@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
-import {WindowLayoutState} from '../../types/window-list-state';
+import {SessionLayoutState} from '../../types/window-list-state';
 import {ChromeWindowComponentProps, ChromeWindowDragDropData} from '../../types/chrome-window-component-data';
 import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
@@ -15,7 +15,7 @@ import {AnimationState} from '../../animations';
 export class ChromeWindowComponent implements OnInit {
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
-  @Input() layoutState: WindowLayoutState;
+  @Input() layoutState: SessionLayoutState;
   @Input() props: ChromeWindowComponentProps;
 
   dragDropData: ChromeWindowDragDropData;

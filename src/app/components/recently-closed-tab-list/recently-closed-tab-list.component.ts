@@ -1,9 +1,9 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
-import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
-import {ChromeAPITabState} from '../../types/chrome-api-types';
-import {ChromeAPISession, SessionListState, SessionListUtils} from '../../types/session-list-state';
-import {DragDropService, WindowListId} from '../../services/drag-drop.service';
+import {ChromeWindowComponentProps, WindowListId} from '../../types/chrome-window-component-data';
+import {ChromeAPISession, ChromeAPITabState} from '../../types/chrome-api-types';
+import {SessionListState, SessionListUtils} from '../../types/session-list-state';
+import {DragDropService} from '../../services/drag-drop.service';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {
   AnimationState,

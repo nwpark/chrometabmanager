@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {WindowLayoutState} from '../../types/window-list-state';
+import {SessionLayoutState} from '../../types/window-list-state';
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {
@@ -36,7 +36,7 @@ import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animat
 export class ChromeWindowContainerComponent {
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
-  @Input() layoutState: WindowLayoutState;
+  @Input() layoutState: SessionLayoutState;
   @Input() props: ChromeWindowComponentProps;
 
   animationState = AnimationState.Complete;
@@ -53,7 +53,7 @@ export class ChromeWindowContainerComponent {
     this.changeDetectorRef.detectChanges();
   }
 
-  toggleWindowDisplay(layoutState: WindowLayoutState) {
+  toggleWindowDisplay(layoutState: SessionLayoutState) {
     const animationState = getAnimationForToggleDisplay(layoutState.hidden);
     this.setAnimationState(animationState);
     this.props.tabsService.toggleWindowDisplay(layoutState.windowId);

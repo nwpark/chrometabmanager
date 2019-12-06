@@ -1,15 +1,9 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {merge, MonoTypeOperatorFunction, Observable, Subject} from 'rxjs';
 import {buffer, filter, map} from 'rxjs/operators';
 import {SavedTabsService} from './saved-tabs.service';
 import {ChromeTabsService} from './chrome-tabs.service';
-
-// todo: move to chrome-window-component
-export enum WindowListId {
-  Saved = 'saved_window_list',
-  Active = 'active_window_list',
-  RecentlyClosed = 'recently_closed'
-}
+import {WindowListId} from '../types/chrome-window-component-data';
 
 @Injectable({
   providedIn: 'root'
