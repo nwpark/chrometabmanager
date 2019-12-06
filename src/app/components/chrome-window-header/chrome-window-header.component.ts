@@ -61,7 +61,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
   }
 
   submitTitleForm() {
-    this.props.tabsService.setWindowTitle(this.chromeAPIWindow.id, this.titleFormControl.value);
+    this.props.tabsService.setSessionTitle(this.chromeAPIWindow.id, this.titleFormControl.value);
     this.showEditForm = false;
   }
 

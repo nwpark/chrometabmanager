@@ -26,18 +26,18 @@ export class DragDropService {
   constructor(private savedTabsService: SavedTabsService,
               private chromeTabsService: ChromeTabsService) {
     this.refreshWindowIds();
-    this.savedTabsService.windowStateUpdated$
+    this.savedTabsService.sessionStateUpdated$
       .pipe(this.ignoreWhenDragging())
       .subscribe(() => this.refreshWindowIds());
-    this.chromeTabsService.windowStateUpdated$
+    this.chromeTabsService.sessionStateUpdated$
       .pipe(this.ignoreWhenDragging())
       .subscribe(() => this.refreshWindowIds());
   }
 
   private refreshWindowIds() {
-    const savedWindowIds = this.savedTabsService.getWindowListState().chromeSessions
+    const savedWindowIds = this.savedTabsService.getSessionListState().chromeSessions
       .map(session => SessionUtils.getSessionId(session).toString());
-    const activeWindowIds = this.chromeTabsService.getWindowListState().chromeSessions
+    const activeWindowIds = this.chromeTabsService.getSessionListState().chromeSessions
       .map(session => SessionUtils.getSessionId(session).toString());
     this.connectedWindowIds = [...savedWindowIds, ...activeWindowIds];
     this.connectedWindowIdsUpdated.next(this.connectedWindowIds);

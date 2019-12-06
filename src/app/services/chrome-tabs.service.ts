@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {WindowListState, WindowListUtils} from '../types/window-list-state';
+import {WindowListUtils} from '../types/window-list-state';
 import {Subject} from 'rxjs';
 import {modifiesState, StateModifierParams} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
@@ -14,22 +14,13 @@ import {SessionListState} from '../types/session-list-state';
 })
 export class ChromeTabsService implements TabsService {
 
-  private windowListState: SessionListState;
+  private sessionListState: SessionListState;
 
-  private windowStateUpdatedSource = new Subject<SessionListState>();
-  public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
-
-  // todo: move to background script file
-  static getChromeWindowsFromAPI(): Promise<ChromeAPIWindowState[]> {
-    return new Promise<ChromeAPIWindowState[]>(resolve => {
-      chrome.windows.getAll({populate: true}, chromeWindows => {
-        resolve(chromeWindows as ChromeAPIWindowState[]);
-      });
-    });
-  }
+  private sessionStateUpdated = new Subject<SessionListState>();
+  public sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
 
   constructor() {
-    this.windowListState = SessionListState.empty();
+    this.sessionListState = SessionListState.empty();
     MessagePassingService.addActiveWindowStateListener(() => {
       this.refreshState();
     });
@@ -39,33 +30,33 @@ export class ChromeTabsService implements TabsService {
   private refreshState() {
     StorageService.getActiveWindowsState().then(windowListState => {
       console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
-      this.windowListState = windowListState;
-      this.windowStateUpdatedSource.next(this.windowListState);
+      this.sessionListState = windowListState;
+      this.sessionStateUpdated.next(this.sessionListState);
     });
   }
 
-  getWindowListState(): SessionListState {
-    return this.windowListState;
+  getSessionListState(): SessionListState {
+    return this.sessionListState;
   }
 
   @modifiesState({storeResult: false})
   moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
-    const tabId = this.windowListState.getTabIdFromWindow(windowId, sourceIndex);
-    this.windowListState.moveTabInWindow(windowId, sourceIndex, targetIndex);
+    const tabId = this.sessionListState.getTabIdFromWindow(windowId, sourceIndex);
+    this.sessionListState.moveTabInWindow(windowId, sourceIndex, targetIndex);
     chrome.tabs.move(tabId, {index: targetIndex});
   }
 
   @modifiesState({storeResult: false})
   transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) {
-    const tabId = this.windowListState.getTabIdFromWindow(sourceWindowId, sourceIndex);
-    this.windowListState.transferTab(sourceWindowId, targetWindowId, sourceIndex, targetIndex);
+    const tabId = this.sessionListState.getTabIdFromWindow(sourceWindowId, sourceIndex);
+    this.sessionListState.transferTab(sourceWindowId, targetWindowId, sourceIndex, targetIndex);
     chrome.tabs.move(tabId, {windowId: targetWindowId, index: targetIndex});
   }
 
   @modifiesState({storeResult: false})
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
     const activeTab = WindowStateUtils.convertToActiveTab(chromeTab);
-    this.windowListState.insertTabInWindow(windowId, tabIndex, activeTab);
+    this.sessionListState.insertTabInWindow(windowId, tabIndex, activeTab);
     chrome.tabs.create({windowId, index: tabIndex, url: chromeTab.url, active: false});
   }
 
@@ -81,25 +72,25 @@ export class ChromeTabsService implements TabsService {
 
   @modifiesState({storeResult: false})
   removeTab(windowId: any, tabId: any) {
-    this.windowListState.removeTabFromWindow(windowId, tabId);
+    this.sessionListState.removeTabFromWindow(windowId, tabId);
     chrome.tabs.remove(tabId);
   }
 
   @modifiesState({storeResult: false})
-  removeWindow(windowId: any) {
+  removeSession(sessionId: any) {
     // todo: move deleted field to component to prevent glitching
-    this.windowListState.markWindowAsDeleted(windowId);
-    chrome.windows.remove(windowId);
+    this.sessionListState.markWindowAsDeleted(sessionId);
+    chrome.windows.remove(sessionId);
   }
 
   @modifiesState({storeResult: true})
-  toggleWindowListDisplay() {
-    this.windowListState.toggleDisplay();
+  toggleSessionListDisplay() {
+    this.sessionListState.toggleDisplay();
   }
 
   @modifiesState({storeResult: true})
-  toggleWindowDisplay(windowId: any) {
-    this.windowListState.toggleSessionDisplay(windowId);
+  toggleSessionDisplay(sessionId: any) {
+    this.sessionListState.toggleSessionDisplay(sessionId);
   }
 
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean) {
@@ -108,8 +99,8 @@ export class ChromeTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: true})
-  setWindowTitle(windowId: any, title: string) {
-    this.windowListState.setSessionTitle(windowId, title);
+  setSessionTitle(sessionId: any, title: string) {
+    this.sessionListState.setSessionTitle(sessionId, title);
   }
 
   createWindow(chromeWindow: ChromeAPIWindowState) {
@@ -122,20 +113,20 @@ export class ChromeTabsService implements TabsService {
     const tempWindow = WindowStateUtils.convertToActiveWindow(chromeWindow);
     const tempSession = SessionUtils.createSessionFromWindow(tempWindow);
     const tempLayoutState = WindowListUtils.createBasicWindowLayoutState(tempWindow.id);
-    this.windowListState.insertSession(tempSession, tempLayoutState, index);
+    this.sessionListState.insertSession(tempSession, tempLayoutState, index);
     MessagePassingService.requestInsertChromeWindow(tempWindow, index);
   }
 
   @modifiesState({storeResult: true})
   moveWindowInList(sourceIndex: number, targetIndex: number) {
-    this.windowListState.moveSessionInList(sourceIndex, targetIndex);
+    this.sessionListState.moveSessionInList(sourceIndex, targetIndex);
   }
 
   onStateModified(params?: StateModifierParams) {
     console.log(new Date().toTimeString().substring(0, 8), '- updating active windows');
-    this.windowStateUpdatedSource.next(this.windowListState);
+    this.sessionStateUpdated.next(this.sessionListState);
     if (params.storeResult) {
-      StorageService.setActiveWindowsState(this.windowListState);
+      StorageService.setActiveWindowsState(this.sessionListState);
     }
   }
 

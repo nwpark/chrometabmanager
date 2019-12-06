@@ -54,7 +54,7 @@ export class ActionButtonFactory {
         chromeTabsService.createWindow(chromeWindow);
       }),
       ActionButtonFactory.createMinimizeButton(chromeWindow => {
-        recentlyClosedTabsService.toggleWindowDisplay(chromeWindow.id);
+        recentlyClosedTabsService.toggleSessionDisplay(chromeWindow.id);
       })
     ];
   }

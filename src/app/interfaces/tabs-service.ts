@@ -1,14 +1,11 @@
 import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
-import {WindowListState} from '../types/window-list-state';
 import {SessionListState} from '../types/session-list-state';
-
-type ListState = WindowListState | SessionListState;
 
 export interface TabsService {
 
-  windowStateUpdated$?;
+  sessionStateUpdated$;
 
-  getWindowListState?(): ListState;
+  getSessionListState(): SessionListState;
 
   moveWindowInList(sourceIndex: number, targetIndex: number);
 
@@ -20,16 +17,15 @@ export interface TabsService {
 
   removeTab(windowId: any, tabId: any);
 
-  removeWindow(windowId: any);
+  removeSession(sessionId: any);
 
-  toggleWindowListDisplay();
+  toggleSessionListDisplay();
 
-  toggleWindowDisplay(windowId: any);
+  toggleSessionDisplay(sessionId: any);
 
-  setWindowTitle(windowId: any, title: string);
+  setSessionTitle(windowId: any, title: string);
 
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean);
 
   insertWindow(chromeWindow: ChromeAPIWindowState, index: number);
-
 }

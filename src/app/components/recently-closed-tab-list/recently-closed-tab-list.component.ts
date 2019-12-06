@@ -90,7 +90,7 @@ export class RecentlyClosedTabListComponent implements OnInit {
   toggleDisplay() {
     const animationState = getAnimationForToggleDisplay(this.sessionListState.layoutState.hidden);
     this.setAnimationState(animationState);
-    this.windowProps.tabsService.toggleWindowListDisplay();
+    this.windowProps.tabsService.toggleSessionListDisplay();
   }
 
   completeToggleDisplayAnimation(event: AnimationEvent) {
@@ -101,7 +101,7 @@ export class RecentlyClosedTabListComponent implements OnInit {
 
   closeTab(state: AnimationState, tabId: any) {
     if (state === AnimationState.Complete) {
-      this.recentlyClosedTabsService.removeWindow(tabId);
+      this.recentlyClosedTabsService.removeSession(tabId);
     }
   }
 

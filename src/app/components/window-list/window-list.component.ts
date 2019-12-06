@@ -1,5 +1,4 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
-import {SessionLayoutState, WindowListState} from '../../types/window-list-state';
 import {ListActionButton, ListActionButtonFactory} from '../../types/action-bar';
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
@@ -48,12 +47,12 @@ export class WindowListComponent implements OnInit {
 
   ngOnInit() {
     // todo: remove 'as SessionListState'
-    this.windowListState = this.windowProps.tabsService.getWindowListState() as SessionListState;
+    this.windowListState = this.windowProps.tabsService.getSessionListState() as SessionListState;
     this.actionButtons = [
       ...this.actionBarService.createWindowListActionButtons(this.windowProps.windowListId),
       ListActionButtonFactory.createMinimizeButton(() => this.toggleDisplay())
     ];
-    this.windowProps.tabsService.windowStateUpdated$
+    this.windowProps.tabsService.sessionStateUpdated$
       .pipe(this.dragDropService.ignoreWhenDragging())
       .subscribe(windowListState => {
         this.windowListState = windowListState;
@@ -73,7 +72,7 @@ export class WindowListComponent implements OnInit {
   toggleDisplay() {
     const animationState = getAnimationForToggleDisplay(this.windowListState.layoutState.hidden);
     this.setAnimationState(animationState);
-    this.windowProps.tabsService.toggleWindowListDisplay();
+    this.windowProps.tabsService.toggleSessionListDisplay();
   }
 
   completeToggleDisplayAnimation(event: AnimationEvent) {
@@ -95,7 +94,7 @@ export class WindowListComponent implements OnInit {
         targetTabList.tabsService.moveWindowInList(event.previousIndex, event.currentIndex);
       } else {
         if (this.preferencesService.shouldCloseWindowOnSave()) {
-          sourceTabList.tabsService.removeWindow(event.item.data.id);
+          sourceTabList.tabsService.removeSession(event.item.data.id);
         }
         targetTabList.tabsService.insertWindow(event.item.data, event.currentIndex);
       }
