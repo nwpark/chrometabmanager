@@ -23,6 +23,16 @@ export interface ChromeAPITabState {
   [others: string]: any; // Ignore unused API fields
 }
 
+export class SessionUtils {
+  static getSessionId(chromeSession: ChromeAPISession): any {
+    if (chromeSession.window) {
+      return chromeSession.window.id;
+    } else if (chromeSession.tab) {
+      return chromeSession.tab;
+    }
+  }
+}
+
 export class WindowStateUtils {
   static convertToSavedWindow(chromeWindow: ChromeAPIWindowState): ChromeAPIWindowState {
     const {type} = chromeWindow;

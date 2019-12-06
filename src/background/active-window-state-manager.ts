@@ -40,7 +40,7 @@ export class ActiveWindowStateManager {
       chrome.windows.create({url: tabsUrls, focused: false}, window => {
         const newWindow = window as ChromeAPIWindowState;
         const layoutState = WindowListUtils.createBasicWindowLayoutState(newWindow.id);
-        this.windowListState.insertWindow(newWindow, layoutState, index);
+        this.windowListState.insertSession(newWindow, layoutState, index);
         StorageService.setActiveWindowsState(this.windowListState, releaseLock);
       });
     });
@@ -51,6 +51,6 @@ export class ActiveWindowStateManager {
   }
 
   getTab(windowId: any, tabId: any) {
-    return this.windowListState.getTab(windowId, tabId);
+    return this.windowListState.getTabFromWindow(windowId, tabId);
   }
 }

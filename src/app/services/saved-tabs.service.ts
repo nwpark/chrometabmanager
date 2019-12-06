@@ -43,7 +43,7 @@ export class SavedTabsService implements TabsService {
   createNewWindow() {
     const newWindow: ChromeAPIWindowState = {id: uuid(), tabs: [], type: 'normal'};
     const newWindowLayout = WindowListUtils.createBasicWindowLayoutState(newWindow.id);
-    this.windowListState.unshiftWindow(newWindow, newWindowLayout);
+    this.windowListState.unshiftSession(newWindow, newWindowLayout);
     this.windowListState.setHidden(false);
   }
 
@@ -60,17 +60,17 @@ export class SavedTabsService implements TabsService {
   @modifiesState()
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
     const savedTab = WindowStateUtils.convertToSavedTab(chromeTab);
-    this.windowListState.insertTab(windowId, tabIndex, savedTab);
+    this.windowListState.insertTabInWindow(windowId, tabIndex, savedTab);
   }
 
   @modifiesState()
   removeTab(windowId: any, tabId: any) {
-    this.windowListState.removeTab(windowId, tabId);
+    this.windowListState.removeTabFromWindow(windowId, tabId);
   }
 
   @modifiesState()
   removeWindow(windowId: any) {
-    this.windowListState.removeWindow(windowId);
+    this.windowListState.removeSession(windowId);
   }
 
   @modifiesState()
@@ -80,12 +80,12 @@ export class SavedTabsService implements TabsService {
 
   @modifiesState()
   toggleWindowDisplay(windowId: any) {
-    this.windowListState.toggleWindowDisplay(windowId);
+    this.windowListState.toggleSessionDisplay(windowId);
   }
 
   @modifiesState()
   setWindowTitle(windowId: any, title: string) {
-    this.windowListState.setWindowTitle(windowId, title);
+    this.windowListState.setSessionTitle(windowId, title);
   }
 
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean) {
@@ -100,12 +100,12 @@ export class SavedTabsService implements TabsService {
   insertWindow(chromeWindow: ChromeAPIWindowState, index: number) {
     const savedWindow = WindowStateUtils.convertToSavedWindow(chromeWindow);
     const layoutState = WindowListUtils.createBasicWindowLayoutState(savedWindow.id);
-    this.windowListState.insertWindow(savedWindow, layoutState, index);
+    this.windowListState.insertSession(savedWindow, layoutState, index);
   }
 
   @modifiesState()
   moveWindowInList(sourceIndex: number, targetIndex: number) {
-    this.windowListState.moveWindowInList(sourceIndex, targetIndex);
+    this.windowListState.moveSessionInList(sourceIndex, targetIndex);
   }
 
   // Called by @modifiesState decorator

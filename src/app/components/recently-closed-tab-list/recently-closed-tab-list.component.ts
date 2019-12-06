@@ -101,7 +101,7 @@ export class RecentlyClosedTabListComponent implements OnInit {
 
   closeTab(state: AnimationState, tabId: any) {
     if (state === AnimationState.Complete) {
-      this.recentlyClosedTabsService.removeDetachedTab(tabId);
+      this.recentlyClosedTabsService.removeWindow(tabId);
     }
   }
 

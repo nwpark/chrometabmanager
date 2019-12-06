@@ -48,14 +48,14 @@ export class ChromeTabsService implements TabsService {
 
   @modifiesState({storeResult: false})
   moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
-    const tabId = this.windowListState.getTabId(windowId, sourceIndex);
+    const tabId = this.windowListState.getTabIdFromWindow(windowId, sourceIndex);
     this.windowListState.moveTabInWindow(windowId, sourceIndex, targetIndex);
     chrome.tabs.move(tabId, {index: targetIndex});
   }
 
   @modifiesState({storeResult: false})
   transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) {
-    const tabId = this.windowListState.getTabId(sourceWindowId, sourceIndex);
+    const tabId = this.windowListState.getTabIdFromWindow(sourceWindowId, sourceIndex);
     this.windowListState.transferTab(sourceWindowId, targetWindowId, sourceIndex, targetIndex);
     chrome.tabs.move(tabId, {windowId: targetWindowId, index: targetIndex});
   }
@@ -63,7 +63,7 @@ export class ChromeTabsService implements TabsService {
   @modifiesState({storeResult: false})
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
     const activeTab = WindowStateUtils.convertToActiveTab(chromeTab);
-    this.windowListState.insertTab(windowId, tabIndex, activeTab);
+    this.windowListState.insertTabInWindow(windowId, tabIndex, activeTab);
     chrome.tabs.create({windowId, index: tabIndex, url: chromeTab.url, active: false});
   }
 
@@ -79,7 +79,7 @@ export class ChromeTabsService implements TabsService {
 
   @modifiesState({storeResult: false})
   removeTab(windowId: any, tabId: any) {
-    this.windowListState.removeTab(windowId, tabId);
+    this.windowListState.removeTabFromWindow(windowId, tabId);
     chrome.tabs.remove(tabId);
   }
 
@@ -97,7 +97,7 @@ export class ChromeTabsService implements TabsService {
 
   @modifiesState({storeResult: true})
   toggleWindowDisplay(windowId: any) {
-    this.windowListState.toggleWindowDisplay(windowId);
+    this.windowListState.toggleSessionDisplay(windowId);
   }
 
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean) {
@@ -107,7 +107,7 @@ export class ChromeTabsService implements TabsService {
 
   @modifiesState({storeResult: true})
   setWindowTitle(windowId: any, title: string) {
-    this.windowListState.setWindowTitle(windowId, title);
+    this.windowListState.setSessionTitle(windowId, title);
   }
 
   createWindow(chromeWindow: ChromeAPIWindowState) {
@@ -119,13 +119,13 @@ export class ChromeTabsService implements TabsService {
   insertWindow(chromeWindow: ChromeAPIWindowState, index: number) {
     const tempWindow = WindowStateUtils.convertToActiveWindow(chromeWindow);
     const tempLayoutState = WindowListUtils.createBasicWindowLayoutState(tempWindow.id);
-    this.windowListState.insertWindow(tempWindow, tempLayoutState, index);
+    this.windowListState.insertSession(tempWindow, tempLayoutState, index);
     MessagePassingService.requestInsertChromeWindow(tempWindow, index);
   }
 
   @modifiesState({storeResult: true})
   moveWindowInList(sourceIndex: number, targetIndex: number) {
-    this.windowListState.moveWindowInList(sourceIndex, targetIndex);
+    this.windowListState.moveSessionInList(sourceIndex, targetIndex);
   }
 
   onStateModified(params?: StateModifierParams) {

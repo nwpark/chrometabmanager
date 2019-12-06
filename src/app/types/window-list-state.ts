@@ -20,27 +20,33 @@ export class WindowListState {
     return this.chromeAPIWindows.find(window => window.id === windowId);
   }
 
-  getWindowLayout(windowId: any): SessionLayoutState {
-    return this.layoutState.sessionStates.find(windowState => windowState.sessionId === windowId);
+  getSessionLayout(sessionId: any): SessionLayoutState {
+    return this.layoutState.sessionStates.find(layoutState => layoutState.sessionId === sessionId);
   }
 
-  getTab(windowId: any, tabId: any): ChromeAPITabState {
-    const chromeWindow = this.getWindow(windowId);
-    return chromeWindow.tabs.find(tab => tab.id === tabId);
+  getTabFromWindow(windowId: any, tabId: any): ChromeAPITabState {
+    return this.getWindow(windowId).tabs.find(tab => tab.id === tabId);
   }
 
-  getTabId(windowId: any, tabIndex: number): number {
+  getTabIdFromWindow(windowId: any, tabIndex: number): number {
     return this.getWindow(windowId).tabs[tabIndex].id;
   }
 
-  insertTab(windowId: any, index: number, chromeTab: ChromeAPITabState) {
-    const chromeWindow = this.getWindow(windowId);
-    chromeWindow.tabs.splice(index, 0, chromeTab);
+  insertTabInWindow(windowId: any, index: number, chromeTab: ChromeAPITabState) {
+    this.getWindow(windowId).tabs.splice(index, 0, chromeTab);
   }
 
-  removeTab(windowId: any, tabId: any) {
+  removeTabFromWindow(windowId: any, tabId: any) {
     const chromeWindow = this.getWindow(windowId);
     chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);
+    if (chromeWindow.tabs.length === 0) {
+      this.removeSession(windowId);
+    }
+  }
+
+  removeSession(windowId: any) {
+    this.chromeAPIWindows = this.chromeAPIWindows.filter(window => window.id !== windowId);
+    this.layoutState.sessionStates = this.layoutState.sessionStates.filter(windowState => windowState.sessionId !== windowId);
   }
 
   moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
@@ -54,25 +60,20 @@ export class WindowListState {
     transferArrayItem(previousWindow.tabs, targetWindow.tabs, sourceIndex, targetIndex);
   }
 
-  moveWindowInList(sourceIndex: number, targetIndex: number) {
+  moveSessionInList(sourceIndex: number, targetIndex: number) {
     moveItemInArray(this.layoutState.sessionStates, sourceIndex, targetIndex);
   }
 
-  unshiftWindow(window: ChromeAPIWindowState, windowLayoutState: SessionLayoutState) {
+  unshiftSession(window: ChromeAPIWindowState, windowLayoutState: SessionLayoutState) {
     this.chromeAPIWindows.unshift(window);
     this.layoutState.sessionStates.unshift(windowLayoutState);
   }
 
-  removeWindow(windowId: any) {
-    this.chromeAPIWindows = this.chromeAPIWindows.filter(window => window.id !== windowId);
-    this.layoutState.sessionStates = this.layoutState.sessionStates.filter(windowState => windowState.sessionId !== windowId);
-  }
-
   markWindowAsDeleted(windowId: any) {
-    this.getWindowLayout(windowId).deleted = true;
+    this.getSessionLayout(windowId).deleted = true;
   }
 
-  insertWindow(window: ChromeAPIWindowState, layoutState: SessionLayoutState, index: number) {
+  insertSession(window: ChromeAPIWindowState, layoutState: SessionLayoutState, index: number) {
     this.chromeAPIWindows.splice(index, 0, window);
     this.layoutState.sessionStates.splice(index, 0, layoutState);
   }
@@ -81,17 +82,17 @@ export class WindowListState {
     this.layoutState.hidden = !this.layoutState.hidden;
   }
 
-  toggleWindowDisplay(windowId: any) {
-    const windowLayout = this.getWindowLayout(windowId);
-    windowLayout.hidden = !windowLayout.hidden;
-  }
-
   setHidden(hidden: boolean) {
     this.layoutState.hidden = hidden;
   }
 
-  setWindowTitle(windowId: any, title: string) {
-    const windowLayout = this.getWindowLayout(windowId);
+  toggleSessionDisplay(windowId: any) {
+    const windowLayout = this.getSessionLayout(windowId);
+    windowLayout.hidden = !windowLayout.hidden;
+  }
+
+  setSessionTitle(windowId: any, title: string) {
+    const windowLayout = this.getSessionLayout(windowId);
     windowLayout.title = title;
   }
 }

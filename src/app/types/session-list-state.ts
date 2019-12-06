@@ -1,5 +1,6 @@
-import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from './chrome-api-types';
+import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState, SessionUtils} from './chrome-api-types';
 import {SessionLayoutState, SessionListLayoutState} from './window-list-state';
+import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 export class SessionListState {
 
@@ -12,54 +13,96 @@ export class SessionListState {
 
   constructor(chromeSessions: ChromeAPISession[],
               layoutState: SessionListLayoutState) {
+    // todo: create lookup table from id to sessions
     this.chromeSessions = chromeSessions;
     this.layoutState = layoutState;
   }
 
-  getWindow(windowId: any): ChromeAPIWindowState {
+  private getWindows(): ChromeAPIWindowState[] {
     return this.chromeSessions
-      .find(session => session.window && session.window.id === windowId).window;
+      .filter(session => session.window)
+      .map(session => session.window);
   }
 
-  getWindowLayout(windowId: any): SessionLayoutState {
-    return this.layoutState.sessionStates.find(windowState => windowState.sessionId === windowId);
+  getWindow(windowId: any): ChromeAPIWindowState {
+    return this.getWindows().find(window => window.id === windowId);
   }
 
-  removeTab(windowId: any, tabId: any) {
+  getSessionLayout(sessionId: any): SessionLayoutState {
+    return this.layoutState.sessionStates.find(layoutState => layoutState.sessionId === sessionId);
+  }
+
+  getTabFromWindow(windowId: any, tabId: any): ChromeAPITabState {
+    return this.getWindow(windowId).tabs.find(tab => tab.id === tabId);
+  }
+
+  getTabIdFromWindow(windowId: any, tabIndex: number): number {
+    return this.getWindow(windowId).tabs[tabIndex].id;
+  }
+
+  insertTabInWindow(windowId: any, index: number, chromeTab: ChromeAPITabState) {
+    this.getWindow(windowId).tabs.splice(index, 0, chromeTab);
+  }
+
+  removeTabFromWindow(windowId: any, tabId: any) {
     const chromeWindow = this.getWindow(windowId);
     chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);
+    // todo: look into what this is doing with animation, perhaps do this check in the component
     if (chromeWindow.tabs.length === 0) {
-      this.removeWindow(windowId);
+      this.removeSession(windowId);
     }
   }
 
-  removeDetachedTab(tabId: any) {
-    const index = this.chromeSessions
-      .findIndex(session => session.tab && session.tab.id === tabId);
-    this.chromeSessions.splice(index, 1);
-    this.layoutState.sessionStates.splice(index, 1);
+  removeSession(sessionId: any) {
+    this.chromeSessions = this.chromeSessions.filter(session => SessionUtils.getSessionId(session) !== sessionId);
+    this.layoutState.sessionStates = this.layoutState.sessionStates.filter(layoutState => layoutState.sessionId !== sessionId);
   }
 
-  removeWindow(windowId: any) {
-    // todo: convert all to index
-    const index = this.chromeSessions
-      .findIndex(session => session.window && session.window.id === windowId);
-    this.chromeSessions.splice(index, 1);
-    this.layoutState.sessionStates.splice(index, 1);
+  moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
+    const targetWindow = this.getWindow(windowId);
+    moveItemInArray(targetWindow.tabs, sourceIndex, targetIndex);
+  }
+
+  transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) {
+    const previousWindow = this.getWindow(sourceWindowId);
+    const targetWindow = this.getWindow(targetWindowId);
+    transferArrayItem(previousWindow.tabs, targetWindow.tabs, sourceIndex, targetIndex);
+  }
+
+  moveSessionInList(sourceIndex: number, targetIndex: number) {
+    moveItemInArray(this.layoutState.sessionStates, sourceIndex, targetIndex);
+  }
+
+  unshiftSession(session: ChromeAPISession, windowLayoutState: SessionLayoutState) {
+    this.chromeSessions.unshift(session);
+    this.layoutState.sessionStates.unshift(windowLayoutState);
+  }
+
+  markWindowAsDeleted(windowId: any) {
+    this.getSessionLayout(windowId).deleted = true;
+  }
+
+  insertSession(session: ChromeAPISession, layoutState: SessionLayoutState, index: number) {
+    this.chromeSessions.splice(index, 0, session);
+    this.layoutState.sessionStates.splice(index, 0, layoutState);
   }
 
   toggleDisplay() {
     this.layoutState.hidden = !this.layoutState.hidden;
   }
 
-  toggleWindowDisplay(windowId: any) {
-    const windowLayout = this.getWindowLayout(windowId);
-    windowLayout.hidden = !windowLayout.hidden;
+  setHidden(hidden: boolean) {
+    this.layoutState.hidden = hidden;
   }
 
-  unshiftSession(closedSession: ChromeAPISession, windowLayoutState: SessionLayoutState) {
-    this.chromeSessions.unshift(closedSession);
-    this.layoutState.sessionStates.unshift(windowLayoutState);
+  toggleSessionDisplay(sessionId: any) {
+    const layoutState = this.getSessionLayout(sessionId);
+    layoutState.hidden = !layoutState.hidden;
+  }
+
+  setSessionTitle(sessionId: any, title: string) {
+    const layoutState = this.getSessionLayout(sessionId);
+    layoutState.title = title;
   }
 
   removeExpiredSessions(maxTabCount: number) {
