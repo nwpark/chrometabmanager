@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {SessionListLayoutState, WindowListState, WindowListUtils} from '../types/window-list-state';
-import {SessionListState} from '../types/session-list-state';
+import {SessionListLayoutState, SessionListState, SessionListUtils} from '../types/session-list-state';
 import {MessagePassingService} from './message-passing.service';
 import {Preferences, PreferenceUtils} from '../types/preferences';
 import {ChromeAPISession} from '../types/chrome-api-types';
@@ -76,7 +75,7 @@ export class StorageService {
         if (layoutState) {
           resolve(layoutState);
         } else {
-          resolve(WindowListUtils.createEmptyListLayoutState());
+          resolve(SessionListUtils.createEmptyListLayoutState());
         }
       });
     });

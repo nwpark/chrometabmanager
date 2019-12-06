@@ -1,5 +1,4 @@
 import {ChangeDetectorRef, Component, Input} from '@angular/core';
-import {SessionLayoutState} from '../../types/window-list-state';
 import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {
@@ -12,6 +11,7 @@ import {
 } from '../../animations';
 import {ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
+import {SessionLayoutState} from '../../types/session-list-state';
 
 @Component({
   selector: 'app-chrome-window-container',

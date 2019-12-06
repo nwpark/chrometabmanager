@@ -1,11 +1,11 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
-import {SessionLayoutState} from '../../types/window-list-state';
 import {ChromeWindowComponentProps, ChromeWindowDragDropData} from '../../types/chrome-window-component-data';
 import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {DragDropService} from '../../services/drag-drop.service';
 import {PreferencesService} from '../../services/preferences.service';
 import {AnimationState} from '../../animations';
+import {SessionLayoutState} from '../../types/session-list-state';
 
 @Component({
   selector: 'app-chrome-window',

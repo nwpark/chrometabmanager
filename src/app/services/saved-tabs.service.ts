@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {WindowListUtils} from '../types/window-list-state';
 import {Subject} from 'rxjs';
 import {v4 as uuid} from 'uuid';
 import {modifiesState} from '../decorators/modifies-state';
@@ -44,7 +43,7 @@ export class SavedTabsService implements TabsService {
   createNewWindow() {
     const newWindow: ChromeAPIWindowState = {id: uuid(), tabs: [], type: 'normal'};
     const newSession: ChromeAPISession = SessionListUtils.createClosedSessionFromWindow(newWindow);
-    const newWindowLayout = WindowListUtils.createBasicWindowLayoutState(newWindow.id);
+    const newWindowLayout = SessionListUtils.createBasicWindowLayoutState(newWindow.id);
     this.sessionListState.unshiftSession(newSession, newWindowLayout);
     this.sessionListState.setHidden(false);
   }
@@ -102,7 +101,7 @@ export class SavedTabsService implements TabsService {
   insertWindow(chromeWindow: ChromeAPIWindowState, index: number) {
     const savedWindow = WindowStateUtils.convertToSavedWindow(chromeWindow);
     const savedSession = SessionUtils.createSessionFromWindow(savedWindow);
-    const layoutState = WindowListUtils.createBasicWindowLayoutState(savedWindow.id);
+    const layoutState = SessionListUtils.createBasicWindowLayoutState(savedWindow.id);
     this.sessionListState.insertSession(savedSession, layoutState, index);
   }
 

@@ -1,13 +1,12 @@
 import {ChromeAPIWindowState, SessionUtils} from '../app/types/chrome-api-types';
 import {StorageService} from '../app/services/storage.service';
-import {SessionListLayoutState, WindowListState, WindowListUtils} from '../app/types/window-list-state';
 import {InsertWindowMessageData, MessagePassingService} from '../app/services/message-passing.service';
 import Mutex from 'async-mutex/lib/Mutex';
-import {SessionListState} from '../app/types/session-list-state';
+import {SessionListLayoutState, SessionListState, SessionListUtils} from '../app/types/session-list-state';
 
 export class ActiveWindowStateManager {
 
-  private windowListState: WindowListState;
+  private sessionListState: SessionListState;
   private mutex: Mutex;
 
   static getChromeWindowsFromAPI(): Promise<ChromeAPIWindowState[]> {
@@ -19,7 +18,7 @@ export class ActiveWindowStateManager {
   }
 
   constructor() {
-    this.windowListState = WindowListState.empty();
+    this.sessionListState = SessionListState.empty();
     this.mutex = new Mutex();
     MessagePassingService.onInsertChromeWindowRequest((request: InsertWindowMessageData) => {
       this.insertWindow(request.chromeWindow, request.index);
@@ -35,9 +34,12 @@ export class ActiveWindowStateManager {
       ]).then(res => {
         const activeWindows: ChromeAPIWindowState[] = res[0];
         const layoutState: SessionListLayoutState = res[1];
-        WindowListUtils.cleanupLayoutState(layoutState, activeWindows);
-        this.windowListState = new WindowListState(activeWindows, layoutState);
-        StorageService.setActiveWindowsState(this.convertToSessionListState(this.windowListState), releaseLock);
+        const activeSessions = activeWindows.map((chromeWindow: ChromeAPIWindowState) =>
+          SessionUtils.createSessionFromWindow(chromeWindow)
+        );
+        SessionListUtils.cleanupLayoutState(layoutState, activeSessions);
+        this.sessionListState = new SessionListState(activeSessions, layoutState);
+        StorageService.setActiveWindowsState(this.sessionListState, releaseLock);
       });
     });
   }
@@ -46,24 +48,19 @@ export class ActiveWindowStateManager {
     this.mutex.acquire().then(releaseLock => {
       const tabsUrls = chromeWindow.tabs.map(tab => tab.url);
       chrome.windows.create({url: tabsUrls, focused: false}, window => {
-        const newWindow = window as ChromeAPIWindowState;
-        const layoutState = WindowListUtils.createBasicWindowLayoutState(newWindow.id);
-        this.windowListState.insertSession(newWindow, layoutState, index);
-        StorageService.setActiveWindowsState(this.convertToSessionListState(this.windowListState), releaseLock);
+        const session = SessionUtils.createSessionFromWindow(window as ChromeAPIWindowState);
+        const layoutState = SessionListUtils.createBasicWindowLayoutState(window.id);
+        this.sessionListState.insertSession(session, layoutState, index);
+        StorageService.setActiveWindowsState(this.sessionListState, releaseLock);
       });
     });
   }
 
-  private convertToSessionListState(windowListState: WindowListState): SessionListState {
-    const sessions = windowListState.chromeAPIWindows.map(window => SessionUtils.createSessionFromWindow(window));
-    return new SessionListState(sessions, windowListState.layoutState);
-  }
-
   getWindow(windowId: any) {
-    return this.windowListState.getWindow(windowId);
+    return this.sessionListState.getWindow(windowId);
   }
 
   getTab(windowId: any, tabId: any) {
-    return this.windowListState.getTabFromWindow(windowId, tabId);
+    return this.sessionListState.getTabFromWindow(windowId, tabId);
   }
 }

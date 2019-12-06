@@ -1,5 +1,4 @@
 import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState, SessionUtils} from './chrome-api-types';
-import {SessionLayoutState, SessionListLayoutState} from './window-list-state';
 import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 export class SessionListState {
@@ -125,7 +124,7 @@ export class SessionListUtils {
   }
 
   static createEmptyListLayoutState(): SessionListLayoutState {
-    return {hidden: true, sessionStates: []};
+    return {hidden: false, sessionStates: []};
   }
 
   static createClosedSessionFromWindow(chromeWindow: ChromeAPIWindowState): ChromeAPISession {
@@ -136,11 +135,52 @@ export class SessionListUtils {
     return {lastModified: Date.now(), tab: chromeTab};
   }
 
-  static createBasicWindowLayoutState(windowId: any): SessionLayoutState {
+  static createClosedWindowLayoutState(windowId: any): SessionLayoutState {
     return {sessionId: windowId, title: `${new Date().toTimeString().substring(0, 5)}`, hidden: true};
   }
 
   static createBasicTabLayoutState(tabId: any): SessionLayoutState {
     return {sessionId: tabId};
   }
+
+  static createBasicWindowLayoutState(windowId: number): SessionLayoutState {
+    return {sessionId: windowId, title: 'Window', hidden: false};
+  }
+
+  static cleanupLayoutState(layoutState: SessionListLayoutState,
+                            sessions: ChromeAPISession[]): SessionListLayoutState {
+    SessionListUtils.fillMissingLayoutStates(layoutState, sessions);
+    SessionListUtils.removeRedundantLayoutStates(layoutState, sessions);
+    return layoutState;
+  }
+
+  static fillMissingLayoutStates(layoutState: SessionListLayoutState,
+                                 sessions: ChromeAPISession[]) {
+    sessions.forEach(session => {
+      const sessionId = SessionUtils.getSessionId(session);
+      if (!layoutState.sessionStates.some(sessionState => sessionState.sessionId === sessionId)) {
+        layoutState.sessionStates.push(SessionListUtils.createBasicWindowLayoutState(sessionId));
+      }
+    });
+  }
+
+  static removeRedundantLayoutStates(layoutState: SessionListLayoutState,
+                                     sessions: ChromeAPISession[]) {
+    layoutState.sessionStates = layoutState.sessionStates.filter(sessionState =>
+      sessions.some(session => SessionUtils.getSessionId(session) === sessionState.sessionId)
+    );
+  }
+}
+
+export interface SessionListLayoutState {
+  hidden: boolean;
+  sessionStates: SessionLayoutState[];
+}
+
+export interface SessionLayoutState {
+  title?: string;
+  sessionId: any;
+  hidden?: boolean;
+  // todo: dont put this field in storage
+  deleted?: boolean;
 }

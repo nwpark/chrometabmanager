@@ -1,13 +1,11 @@
 import {Injectable} from '@angular/core';
-
-import {WindowListUtils} from '../types/window-list-state';
 import {Subject} from 'rxjs';
 import {modifiesState, StateModifierParams} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {StorageService} from './storage.service';
 import {ChromeAPITabState, ChromeAPIWindowState, SessionUtils, WindowStateUtils} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
-import {SessionListState} from '../types/session-list-state';
+import {SessionListState, SessionListUtils} from '../types/session-list-state';
 
 @Injectable({
   providedIn: 'root'
@@ -112,7 +110,7 @@ export class ChromeTabsService implements TabsService {
   insertWindow(chromeWindow: ChromeAPIWindowState, index: number) {
     const tempWindow = WindowStateUtils.convertToActiveWindow(chromeWindow);
     const tempSession = SessionUtils.createSessionFromWindow(tempWindow);
-    const tempLayoutState = WindowListUtils.createBasicWindowLayoutState(tempWindow.id);
+    const tempLayoutState = SessionListUtils.createBasicWindowLayoutState(tempWindow.id);
     this.sessionListState.insertSession(tempSession, tempLayoutState, index);
     MessagePassingService.requestInsertChromeWindow(tempWindow, index);
   }
