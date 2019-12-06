@@ -62,7 +62,9 @@ export class StorageService {
       [StorageService.ACTIVE_WINDOWS_LAYOUT_STATE]: windowListState.layoutState
     }, () => {
       MessagePassingService.notifyActiveWindowStateListeners();
-      callback();
+      if (callback) {
+        callback();
+      }
     });
   }
 
@@ -76,14 +78,6 @@ export class StorageService {
           resolve(WindowListUtils.createEmptyListLayoutState());
         }
       });
-    });
-  }
-
-  static setChromeWindowsLayoutState(windowListLayoutState: WindowListLayoutState) {
-    chrome.storage.local.set({
-      [StorageService.ACTIVE_WINDOWS_LAYOUT_STATE]: windowListLayoutState
-    }, () => {
-      MessagePassingService.notifyActiveWindowStateListeners();
     });
   }
 

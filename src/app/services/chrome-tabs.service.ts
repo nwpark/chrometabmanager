@@ -46,21 +46,21 @@ export class ChromeTabsService implements TabsService {
     return this.windowListState;
   }
 
-  @modifiesState({storeResult: true})
+  @modifiesState({storeResult: false})
   moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
     const tabId = this.windowListState.getTabId(windowId, sourceIndex);
     this.windowListState.moveTabInWindow(windowId, sourceIndex, targetIndex);
     chrome.tabs.move(tabId, {index: targetIndex});
   }
 
-  @modifiesState({storeResult: true})
+  @modifiesState({storeResult: false})
   transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) {
     const tabId = this.windowListState.getTabId(sourceWindowId, sourceIndex);
     this.windowListState.transferTab(sourceWindowId, targetWindowId, sourceIndex, targetIndex);
     chrome.tabs.move(tabId, {windowId: targetWindowId, index: targetIndex});
   }
 
-  @modifiesState({storeResult: true})
+  @modifiesState({storeResult: false})
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
     const activeTab = WindowStateUtils.convertToActiveTab(chromeTab);
     this.windowListState.insertTab(windowId, tabIndex, activeTab);
@@ -85,6 +85,7 @@ export class ChromeTabsService implements TabsService {
 
   @modifiesState({storeResult: false})
   removeWindow(windowId: any) {
+    // todo: move deleted field to component to prevent glitching
     this.windowListState.markWindowAsDeleted(windowId);
     chrome.windows.remove(windowId);
   }
@@ -131,7 +132,7 @@ export class ChromeTabsService implements TabsService {
     console.log(new Date().toTimeString().substring(0, 8), '- updating active windows');
     this.windowStateUpdatedSource.next(this.windowListState);
     if (params.storeResult) {
-      StorageService.setChromeWindowsLayoutState(this.windowListState.layoutState);
+      StorageService.setActiveWindowsState(this.windowListState);
     }
   }
 
