@@ -1,11 +1,14 @@
 import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {WindowListState} from '../types/window-list-state';
+import {SessionListState} from '../types/session-list-state';
+
+type ListState = WindowListState | SessionListState;
 
 export interface TabsService {
 
   windowStateUpdated$?;
 
-  getWindowListState?(): WindowListState;
+  getWindowListState?(): ListState;
 
   moveWindowInList(sourceIndex: number, targetIndex: number);
 

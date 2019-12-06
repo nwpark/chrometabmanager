@@ -4,6 +4,7 @@ import {buffer, filter, map} from 'rxjs/operators';
 import {SavedTabsService} from './saved-tabs.service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {WindowListId} from '../types/chrome-window-component-data';
+import {SessionUtils} from '../types/chrome-api-types';
 
 @Injectable({
   providedIn: 'root'
@@ -34,8 +35,8 @@ export class DragDropService {
   }
 
   private refreshWindowIds() {
-    const savedWindowIds = this.savedTabsService.getWindowListState().chromeAPIWindows
-      .map(chromeWindow => chromeWindow.id.toString());
+    const savedWindowIds = this.savedTabsService.getWindowListState().chromeSessions
+      .map(session => SessionUtils.getSessionId(session).toString());
     const activeWindowIds = this.chromeTabsService.getWindowListState().chromeAPIWindows
       .map(chromeWindow => chromeWindow.id.toString());
     this.connectedWindowIds = [...savedWindowIds, ...activeWindowIds];

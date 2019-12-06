@@ -6,21 +6,22 @@ import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {StorageService} from './storage.service';
-import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from '../types/chrome-api-types';
+import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState, SessionUtils, WindowStateUtils} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
+import {SessionListState, SessionListUtils} from '../types/session-list-state';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SavedTabsService implements TabsService {
 
-  private windowListState: WindowListState;
+  private windowListState: SessionListState;
 
-  private windowStateUpdatedSource = new Subject<WindowListState>();
+  private windowStateUpdatedSource = new Subject<SessionListState>();
   public windowStateUpdated$ = this.windowStateUpdatedSource.asObservable();
 
   constructor(private chromeTabsService: ChromeTabsService) {
-    this.windowListState = WindowListState.empty();
+    this.windowListState = SessionListState.empty();
     MessagePassingService.addSavedWindowStateListener(() => {
       this.refreshState();
     });
@@ -35,15 +36,16 @@ export class SavedTabsService implements TabsService {
     });
   }
 
-  getWindowListState(): WindowListState {
+  getWindowListState(): SessionListState {
     return this.windowListState;
   }
 
   @modifiesState()
   createNewWindow() {
     const newWindow: ChromeAPIWindowState = {id: uuid(), tabs: [], type: 'normal'};
+    const newSession: ChromeAPISession = SessionListUtils.createClosedSessionFromWindow(newWindow);
     const newWindowLayout = WindowListUtils.createBasicWindowLayoutState(newWindow.id);
-    this.windowListState.unshiftSession(newWindow, newWindowLayout);
+    this.windowListState.unshiftSession(newSession, newWindowLayout);
     this.windowListState.setHidden(false);
   }
 
@@ -99,8 +101,9 @@ export class SavedTabsService implements TabsService {
   @modifiesState()
   insertWindow(chromeWindow: ChromeAPIWindowState, index: number) {
     const savedWindow = WindowStateUtils.convertToSavedWindow(chromeWindow);
+    const savedSession = SessionUtils.createSessionFromWindow(savedWindow);
     const layoutState = WindowListUtils.createBasicWindowLayoutState(savedWindow.id);
-    this.windowListState.insertSession(savedWindow, layoutState, index);
+    this.windowListState.insertSession(savedSession, layoutState, index);
   }
 
   @modifiesState()

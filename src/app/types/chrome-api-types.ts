@@ -1,7 +1,7 @@
 import {v4 as uuid} from 'uuid';
 
 export interface ChromeAPISession {
-  lastModified: number;
+  lastModified?: number;
   window?: ChromeAPIWindowState;
   tab?: ChromeAPITabState;
 }
@@ -30,6 +30,10 @@ export class SessionUtils {
     } else if (chromeSession.tab) {
       return chromeSession.tab;
     }
+  }
+
+  static createSessionFromWindow(chromeWindow: ChromeAPIWindowState): ChromeAPISession {
+    return {window: chromeWindow};
   }
 }
 

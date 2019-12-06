@@ -14,6 +14,7 @@ import {
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {ActionBarService} from '../../services/action-bar.service';
+import {SessionListState} from '../../types/session-list-state';
 
 @Component({
   selector: 'app-window-list',
@@ -35,7 +36,7 @@ export class WindowListComponent implements OnInit {
   @Input() title: string;
   @Input() windowProps: ChromeWindowComponentProps;
 
-  windowListState: WindowListState;
+  windowListState: SessionListState;
   connectedWindowListIds = DragDropService.CONNECTED_WINDOW_LIST_IDS;
   actionButtons: ListActionButton[];
   animationState = AnimationState.Complete;
@@ -46,7 +47,8 @@ export class WindowListComponent implements OnInit {
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
-    this.windowListState = this.windowProps.tabsService.getWindowListState();
+    // todo: remove 'as SessionListState'
+    this.windowListState = this.windowProps.tabsService.getWindowListState() as SessionListState;
     this.actionButtons = [
       ...this.actionBarService.createWindowListActionButtons(this.windowProps.windowListId),
       ListActionButtonFactory.createMinimizeButton(() => this.toggleDisplay())
