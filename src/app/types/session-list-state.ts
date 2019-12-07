@@ -3,14 +3,14 @@ import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 export class SessionListState {
 
-  chromeSessions: {[sessionId: string]: ChromeAPISession};
+  chromeSessions: SessionMap;
   layoutState: SessionListLayoutState;
 
   static empty(): SessionListState {
     return new this({}, SessionListUtils.createEmptyListLayoutState());
   }
 
-  constructor(chromeSessions: {[sessionId: string]: ChromeAPISession},
+  constructor(chromeSessions: SessionMap,
               layoutState: SessionListLayoutState) {
     this.chromeSessions = chromeSessions;
     this.layoutState = layoutState;
@@ -25,7 +25,8 @@ export class SessionListState {
   }
 
   getSessionAtIndex(index: number): ChromeAPISession {
-    return this.getSession(this.layoutState.sessionStates[index].sessionId);
+    const sessionId = this.layoutState.sessionStates[index].sessionId;
+    return this.chromeSessions[sessionId];
   }
 
   getSessionLayout(sessionId: any): SessionLayoutState {
@@ -119,14 +120,6 @@ export class SessionListState {
 }
 
 export class SessionListUtils {
-  static getTabCount(sessionListState: SessionListState): number {
-    return Object.values(sessionListState.chromeSessions)
-      .reduce((acc, session) => {
-        const tabCount = session.window ? session.window.tabs.length : 1;
-        return acc + tabCount;
-      }, 0);
-  }
-
   static createEmptyListLayoutState(): SessionListLayoutState {
     return {hidden: false, sessionStates: []};
   }
@@ -151,29 +144,40 @@ export class SessionListUtils {
     return {sessionId: windowId, title: 'Window', hidden: false};
   }
 
+  static createSessionMapFromWindowList(chromeWindows: ChromeAPIWindowState[]): SessionMap {
+    const sessionMap: SessionMap = {};
+    chromeWindows.forEach(chromeWindow => {
+      sessionMap[chromeWindow.id] = SessionUtils.createSessionFromWindow(chromeWindow);
+    });
+    return sessionMap;
+  }
+
   static cleanupLayoutState(layoutState: SessionListLayoutState,
-                            sessions: ChromeAPISession[]): SessionListLayoutState {
-    SessionListUtils.fillMissingLayoutStates(layoutState, sessions);
-    SessionListUtils.removeRedundantLayoutStates(layoutState, sessions);
+                            chromeWindows: ChromeAPIWindowState[]): SessionListLayoutState {
+    SessionListUtils.fillMissingLayoutStates(layoutState, chromeWindows);
+    SessionListUtils.removeRedundantLayoutStates(layoutState, chromeWindows);
     return layoutState;
   }
 
   static fillMissingLayoutStates(layoutState: SessionListLayoutState,
-                                 sessions: ChromeAPISession[]) {
-    sessions.forEach(session => {
-      const sessionId = SessionUtils.getSessionId(session);
-      if (!layoutState.sessionStates.some(sessionState => sessionState.sessionId === sessionId)) {
-        layoutState.sessionStates.push(SessionListUtils.createBasicWindowLayoutState(sessionId));
+                                 chromeWindows: ChromeAPIWindowState[]) {
+    chromeWindows.forEach(chromeWindow => {
+      if (!layoutState.sessionStates.some(sessionState => sessionState.sessionId === chromeWindow.id)) {
+        layoutState.sessionStates.push(SessionListUtils.createBasicWindowLayoutState(chromeWindow.id));
       }
     });
   }
 
   static removeRedundantLayoutStates(layoutState: SessionListLayoutState,
-                                     sessions: ChromeAPISession[]) {
+                                     chromeWindows: ChromeAPIWindowState[]) {
     layoutState.sessionStates = layoutState.sessionStates.filter(sessionState =>
-      sessions.some(session => SessionUtils.getSessionId(session) === sessionState.sessionId)
+      chromeWindows.some(chromeWindow => chromeWindow.id === sessionState.sessionId)
     );
   }
+}
+
+export interface SessionMap {
+  [sessionId: string]: ChromeAPISession;
 }
 
 export interface SessionListLayoutState {

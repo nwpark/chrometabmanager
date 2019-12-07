@@ -13,7 +13,8 @@ import {
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {ActionBarService} from '../../services/action-bar.service';
-import {SessionListState, SessionListUtils} from '../../types/session-list-state';
+import {SessionLayoutState, SessionListState} from '../../types/session-list-state';
+import {ChromeAPISession} from '../../types/chrome-api-types';
 
 @Component({
   selector: 'app-window-list',
@@ -57,6 +58,10 @@ export class WindowListComponent implements OnInit {
         this.sessionListState = sessionListState;
         this.changeDetectorRef.detectChanges();
       });
+  }
+
+  getSession(layoutState: SessionLayoutState): ChromeAPISession {
+    return this.sessionListState.getSession(layoutState.sessionId);
   }
 
   getTitle(): string {

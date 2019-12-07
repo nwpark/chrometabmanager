@@ -32,16 +32,10 @@ export class ActiveWindowStateManager {
         ActiveWindowStateManager.getChromeWindowsFromAPI(),
         StorageService.getActiveWindowsLayoutState()
       ]).then(res => {
-        const activeWindows: ChromeAPIWindowState[] = res[0];
-        const layoutState: SessionListLayoutState = res[1];
-        const activeSessions = activeWindows.map((chromeWindow: ChromeAPIWindowState) =>
-          SessionUtils.createSessionFromWindow(chromeWindow)
-        );
-        SessionListUtils.cleanupLayoutState(layoutState, activeSessions);
-        // todo: cleanup
-        const activeSessionMap = {};
-        activeSessions.forEach(session => activeSessionMap[SessionUtils.getSessionId(session)] = session);
-        this.sessionListState = new SessionListState(activeSessionMap, layoutState);
+        const chromeWindows: ChromeAPIWindowState[] = res[0];
+        const layoutState = SessionListUtils.cleanupLayoutState(res[1], chromeWindows);
+        const sessionMap = SessionListUtils.createSessionMapFromWindowList(chromeWindows);
+        this.sessionListState = new SessionListState(sessionMap, layoutState);
         StorageService.setActiveWindowsState(this.sessionListState, releaseLock);
       });
     });

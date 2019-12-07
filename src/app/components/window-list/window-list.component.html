@@ -38,20 +38,20 @@
     (@collapse-list.done)="completeToggleDisplayAnimation($event)">
     <ng-container *ngFor="let layoutState of this.sessionListState.layoutState.sessionStates; index as index; first as isFirst; last as isLast">
       <div
-        *ngIf="sessionListState.getSession(layoutState.sessionId).window"
+        *ngIf="getSession(layoutState).window"
         cdkDrag
-        [cdkDragData]="sessionListState.getWindow(layoutState.sessionId)"
+        [cdkDragData]="getSession(layoutState).window"
         (cdkDragStarted)="beginDrag()">
         <app-chrome-window-container
-          [chromeAPIWindow]="sessionListState.getWindow(layoutState.sessionId)"
+          [chromeAPIWindow]="getSession(layoutState).window"
           [layoutState]="layoutState"
           [props]="windowProps">
         </app-chrome-window-container>
       </div>
 
       <app-detached-chrome-tab
-        *ngIf="sessionListState.getSession(layoutState.sessionId).tab"
-        [session]="sessionListState.getSession(layoutState.sessionId)"
+        *ngIf="getSession(layoutState).tab"
+        [session]="getSession(layoutState)"
         [props]="windowProps"
         [isFirstChild]="isFirst || !sessionListState.getSessionAtIndex(index-1).tab"
         [isLastChild]="isLast || !sessionListState.getSessionAtIndex(index+1).tab">
