@@ -7,15 +7,15 @@ export enum WindowListId {
 }
 
 // todo: rename class and fields (convert to interface)
-export class ChromeWindowComponentProps {
+export interface SessionComponentProps {
   windowListId: WindowListId;
   tabsService: TabsService;
-  windowIsMutable: boolean;
+  isMutable: boolean;
 }
 
-export class ChromeWindowDragDropData {
+export interface ChromeWindowDragDropData {
   chromeWindowId: any;
   windowListId: WindowListId;
   tabsService: TabsService;
-  windowIsMutable: boolean;
+  isMutable: boolean;
 }

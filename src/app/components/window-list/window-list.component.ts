@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {ListActionButton, ListActionButtonFactory} from '../../types/action-bar';
-import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
+import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {PreferencesService} from '../../services/preferences.service';
 import {
@@ -34,7 +34,7 @@ import {ChromeAPISession} from '../../types/chrome-api-types';
 export class WindowListComponent implements OnInit {
 
   @Input() title: string;
-  @Input() windowProps: ChromeWindowComponentProps;
+  @Input() props: SessionComponentProps;
 
   sessionListState: SessionListState;
   connectedWindowListIds = DragDropService.CONNECTED_WINDOW_LIST_IDS;
@@ -47,12 +47,12 @@ export class WindowListComponent implements OnInit {
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
-    this.sessionListState = this.windowProps.tabsService.getSessionListState();
+    this.sessionListState = this.props.tabsService.getSessionListState();
     this.actionButtons = [
-      ...this.actionBarService.createWindowListActionButtons(this.windowProps.windowListId),
+      ...this.actionBarService.createWindowListActionButtons(this.props.windowListId),
       ListActionButtonFactory.createMinimizeButton(() => this.toggleDisplay())
     ];
-    this.windowProps.tabsService.sessionStateUpdated$
+    this.props.tabsService.sessionStateUpdated$
       .pipe(this.dragDropService.ignoreWhenDragging())
       .subscribe(sessionListState => {
         this.sessionListState = sessionListState;
@@ -84,7 +84,7 @@ export class WindowListComponent implements OnInit {
   toggleDisplay() {
     const animationState = getAnimationForToggleDisplay(this.sessionListState.layoutState.hidden);
     this.setAnimationState(animationState);
-    this.windowProps.tabsService.toggleSessionListDisplay();
+    this.props.tabsService.toggleSessionListDisplay();
   }
 
   completeToggleDisplayAnimation(event: AnimationEvent) {
@@ -97,10 +97,10 @@ export class WindowListComponent implements OnInit {
     this.dragDropService.beginDrag();
   }
 
-  windowDropped(event: CdkDragDrop<ChromeWindowComponentProps>) {
+  windowDropped(event: CdkDragDrop<SessionComponentProps>) {
     try {
-      const targetTabList: ChromeWindowComponentProps = event.container.data;
-      const sourceTabList: ChromeWindowComponentProps = event.previousContainer.data;
+      const targetTabList: SessionComponentProps = event.container.data;
+      const sourceTabList: SessionComponentProps = event.previousContainer.data;
 
       if (event.previousContainer === event.container) {
         targetTabList.tabsService.moveWindowInList(event.previousIndex, event.currentIndex);

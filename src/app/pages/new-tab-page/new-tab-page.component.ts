@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
-import {ChromeWindowComponentProps, WindowListId} from '../../types/chrome-window-component-data';
+import {SessionComponentProps, WindowListId} from '../../types/chrome-window-component-data';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {SavedTabsService} from '../../services/saved-tabs.service';
 import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
@@ -29,9 +29,9 @@ export class NewTabPageComponent implements OnInit {
 
   cols: number;
 
-  activeWindowProps: ChromeWindowComponentProps;
-  savedWindowProps: ChromeWindowComponentProps;
-  recentlyClosedProps: ChromeWindowComponentProps;
+  activeSessionProps: SessionComponentProps;
+  savedSessionProps: SessionComponentProps;
+  recentlyClosedSessionProps: SessionComponentProps;
 
   constructor(private chromeTabsService: ChromeTabsService,
               private savedTabsService: SavedTabsService,
@@ -39,20 +39,20 @@ export class NewTabPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.cols = this.getCols(window.innerWidth);
-    this.activeWindowProps = {
+    this.activeSessionProps = {
       windowListId: WindowListId.Active,
       tabsService: this.chromeTabsService,
-      windowIsMutable: true
+      isMutable: true
     };
-    this.savedWindowProps = {
+    this.savedSessionProps = {
       windowListId: WindowListId.Saved,
       tabsService: this.savedTabsService,
-      windowIsMutable: true
+      isMutable: true
     };
-    this.recentlyClosedProps = {
+    this.recentlyClosedSessionProps = {
       windowListId: WindowListId.RecentlyClosed,
       tabsService: this.recentlyClosedTabsService,
-      windowIsMutable: false
+      isMutable: false
     };
   }
 

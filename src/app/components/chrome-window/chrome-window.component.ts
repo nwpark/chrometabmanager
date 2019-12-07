@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
-import {ChromeWindowComponentProps, ChromeWindowDragDropData} from '../../types/chrome-window-component-data';
+import {SessionComponentProps, ChromeWindowDragDropData} from '../../types/chrome-window-component-data';
 import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {DragDropService} from '../../services/drag-drop.service';
@@ -16,7 +16,7 @@ export class ChromeWindowComponent implements OnInit {
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
   @Input() layoutState: SessionLayoutState;
-  @Input() props: ChromeWindowComponentProps;
+  @Input() props: SessionComponentProps;
 
   dragDropData: ChromeWindowDragDropData;
   connectedWindowIds: string[];
@@ -44,11 +44,11 @@ export class ChromeWindowComponent implements OnInit {
   }
 
   dropTargetIsMutable(drag: CdkDrag, drop: CdkDropList<ChromeWindowDragDropData>): boolean {
-    return drop.data.windowIsMutable;
+    return drop.data.isMutable;
   }
 
   isDragEnabled(chromeTab: ChromeAPITabState) {
-    return this.props.windowIsMutable
+    return this.props.isMutable
       && !this.dragDropService.isDragging()
       && chromeTab.id !== undefined;
   }

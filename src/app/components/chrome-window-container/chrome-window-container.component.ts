@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, Input} from '@angular/core';
-import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
+import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {
   AnimationState,
@@ -37,7 +37,7 @@ export class ChromeWindowContainerComponent {
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
   @Input() layoutState: SessionLayoutState;
-  @Input() props: ChromeWindowComponentProps;
+  @Input() props: SessionComponentProps;
 
   animationState = AnimationState.Complete;
 

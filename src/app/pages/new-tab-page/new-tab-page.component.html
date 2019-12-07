@@ -6,7 +6,7 @@
       <app-window-list
         class="full-height-column"
         [title]="'Saved'"
-        [windowProps]="savedWindowProps">
+        [props]="savedSessionProps">
       </app-window-list>
     </mat-grid-tile>
 
@@ -14,7 +14,7 @@
       <app-window-list
         class="full-height-column"
         [title]="'Active'"
-        [windowProps]="activeWindowProps">
+        [props]="activeSessionProps">
       </app-window-list>
     </mat-grid-tile>
 
@@ -22,7 +22,7 @@
       <app-window-list
         class="full-height-column"
         [title]="'Recently Closed'"
-        [windowProps]="recentlyClosedProps">
+        [props]="recentlyClosedSessionProps">
       </app-window-list>
     </mat-grid-tile>
   </mat-grid-list>

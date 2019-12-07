@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, O
 import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {FormControl} from '@angular/forms';
-import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
+import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {PreferencesService} from '../../services/preferences.service';
 import {ActionBarService} from '../../services/action-bar.service';
 import {SessionLayoutState} from '../../types/session-list-state';
@@ -16,7 +16,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
   @Input() layoutState: SessionLayoutState;
-  @Input() props: ChromeWindowComponentProps;
+  @Input() props: SessionComponentProps;
   @Output() chromeWindowClose = new EventEmitter();
   @Output() chromeWindowToggleDisplay = new EventEmitter();
 

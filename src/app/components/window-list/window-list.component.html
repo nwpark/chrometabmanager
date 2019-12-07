@@ -28,9 +28,10 @@
 <div
   class="column-scrollable-content"
   cdkDropList
-  [id]="windowProps.windowListId"
-  [cdkDropListData]="windowProps"
+  [id]="props.windowListId"
+  [cdkDropListData]="props"
   [cdkDropListConnectedTo]="connectedWindowListIds"
+  [cdkDropListDisabled]="!props.isMutable"
   (cdkDropListDropped)="windowDropped($event)">
   <div
     *ngIf="!sessionListState.layoutState.hidden || isComponentAnimating()"
@@ -45,14 +46,14 @@
         <app-chrome-window-container
           [chromeAPIWindow]="getSession(layoutState).window"
           [layoutState]="layoutState"
-          [props]="windowProps">
+          [props]="props">
         </app-chrome-window-container>
       </div>
 
       <app-detached-chrome-tab
         *ngIf="getSession(layoutState).tab"
         [session]="getSession(layoutState)"
-        [props]="windowProps"
+        [props]="props"
         [isFirstChild]="isFirst || !sessionListState.getSessionAtIndex(index-1).tab"
         [isLastChild]="isLast || !sessionListState.getSessionAtIndex(index+1).tab">
       </app-detached-chrome-tab>

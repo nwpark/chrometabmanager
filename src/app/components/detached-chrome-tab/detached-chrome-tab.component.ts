@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from 
 import {ChromeAPISession, ChromeAPITabState} from '../../types/chrome-api-types';
 import {AnimationState, closeTabAnimation, closeWindowAnimation} from '../../animations';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
-import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
+import {SessionComponentProps} from '../../types/chrome-window-component-data';
 
 @Component({
   selector: 'app-detached-chrome-tab',
@@ -24,7 +24,7 @@ export class DetachedChromeTabComponent implements OnInit {
   static readonly NEW_TAB_URL = 'chrome://newtab/';
 
   @Input() session: ChromeAPISession;
-  @Input() props: ChromeWindowComponentProps;
+  @Input() props: SessionComponentProps;
   @Input() isFirstChild: boolean;
   @Input() isLastChild: boolean;
 
