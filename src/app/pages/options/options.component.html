@@ -6,26 +6,72 @@
     height: 'calc(100% - 80px)',
     paddingTop:'80px'
   }">
-  <mat-card style="width: 400px; margin: 0 auto">
+  <mat-card style="width: 400px; margin: 0 auto 20px auto">
     <mat-card-header>
-      <mat-card-title>Options</mat-card-title>
+      <mat-card-title>Preferences</mat-card-title>
     </mat-card-header>
+    <mat-divider [inset]="true"></mat-divider>
     <mat-card-content>
       <mat-list>
         <mat-list-item>
           <mat-slide-toggle
             [checked]="preferences.closeWindowOnSave"
             [color]="'primary'"
+            [labelPosition]="'before'"
             (change)="setCloseWindowOnSave($event)">
-            Close windows when saving
+            <div style="width: 360px">Close windows/tabs when dropped</div>
           </mat-slide-toggle>
         </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+  <mat-card style="width: 400px; margin: 0 auto 20px auto">
+    <mat-card-header>
+      <mat-card-title>Sync Options</mat-card-title>
+    </mat-card-header>
+    <mat-divider [inset]="true"></mat-divider>
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item>
+          <mat-slide-toggle
+            style=""
+            [checked]="preferences.syncSavedWindows"
+            [color]="'primary'"
+            [labelPosition]="'before'"
+            (change)="setSyncSavedWindows($event)">
+            <div style="width: 360px">
+              <div style="">Enable sync</div>
+              <div style="font-size: 14px; color: grey">Synchronize saved windows between devices</div>
+            </div>
+          </mat-slide-toggle>
+        </mat-list-item>
+      </mat-list>
+      <mat-list *ngIf="preferences.syncSavedWindows">
+        <ng-container>
+          <mat-divider [inset]="true"></mat-divider>
+          <mat-list-item>
+            <div mat-line style="font-size: 14px; color: grey; margin-bottom: 5px">Bytes in use: 12,560 out of 102,400</div>
+            <mat-progress-bar mat-line mode="determinate" value="40"></mat-progress-bar>
+          </mat-list-item>
+          <h3 mat-subheader>Warning: Chrome sync has a maximum storage quota of 102,400 bytes</h3>
+        </ng-container>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+  <mat-card style="width: 400px; margin: 0 auto 20px auto">
+    <mat-card-header>
+      <mat-card-title>Developer Options</mat-card-title>
+    </mat-card-header>
+    <mat-divider [inset]="true"></mat-divider>
+    <mat-card-content>
+      <mat-list>
         <mat-list-item>
           <mat-slide-toggle
             [checked]="preferences.enableDebugging"
             [color]="'primary'"
+            [labelPosition]="'before'"
             (change)="setEnableDebugging($event)">
-            Enable debug mode
+            <div style="width: 360px">Enable debug mode</div>
           </mat-slide-toggle>
         </mat-list-item>
       </mat-list>

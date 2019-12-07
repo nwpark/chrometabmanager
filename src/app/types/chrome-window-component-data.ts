@@ -6,7 +6,6 @@ export enum WindowListId {
   RecentlyClosed = 'recently_closed_list'
 }
 
-// todo: rename class and fields (convert to interface)
 export interface SessionComponentProps {
   windowListId: WindowListId;
   tabsService: TabsService;

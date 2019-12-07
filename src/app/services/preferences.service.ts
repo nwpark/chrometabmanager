@@ -43,6 +43,10 @@ export class PreferencesService {
     return this.preferences.enableDebugging;
   }
 
+  shouldSyncSavedWindows(): boolean {
+    return this.preferences.syncSavedWindows;
+  }
+
   @modifiesState()
   setCloseWindowOnSave(closeWindowOnSave: boolean) {
     this.preferences.closeWindowOnSave = closeWindowOnSave;
@@ -51,6 +55,11 @@ export class PreferencesService {
   @modifiesState()
   setEnableDebugging(enableDebugging: boolean) {
     this.preferences.enableDebugging = enableDebugging;
+  }
+
+  @modifiesState()
+  setSyncSavedWindows(syncSavedWindows: boolean) {
+    this.preferences.syncSavedWindows = syncSavedWindows;
   }
 
   onStateModified() {

@@ -41,4 +41,7 @@ export class OptionsComponent implements OnInit {
     this.preferencesService.setEnableDebugging(event.checked);
   }
 
+  setSyncSavedWindows(event: MatSlideToggleChange) {
+    this.preferencesService.setSyncSavedWindows(event.checked);
+  }
 }
