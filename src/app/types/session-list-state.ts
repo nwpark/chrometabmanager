@@ -27,6 +27,14 @@ export class SessionListState {
     return this.getWindows().find(window => window.id === windowId);
   }
 
+  getSession(sessionId: any): ChromeAPISession {
+    return this.chromeSessions.find(session => SessionUtils.getSessionId(session) === sessionId);
+  }
+
+  getSessionAtIndex(index: number): ChromeAPISession {
+    return this.getSession(this.layoutState.sessionStates[index].sessionId);
+  }
+
   getSessionLayout(sessionId: any): SessionLayoutState {
     return this.layoutState.sessionStates.find(layoutState => layoutState.sessionId === sessionId);
   }
@@ -46,14 +54,13 @@ export class SessionListState {
   removeTabFromWindow(windowId: any, tabId: any) {
     const chromeWindow = this.getWindow(windowId);
     chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);
-    // todo: look into what this is doing with animation, perhaps do this check in the component
+    // todo: look into what this is doing with animation, perhaps do this check in the component (close window instead of tab)
     if (chromeWindow.tabs.length === 0) {
       this.removeSession(windowId);
     }
   }
 
   removeSession(sessionId: any) {
-    this.chromeSessions.forEach(session => console.log(SessionUtils.getSessionId(session)));
     this.chromeSessions = this.chromeSessions.filter(session => SessionUtils.getSessionId(session) !== sessionId);
     this.layoutState.sessionStates = this.layoutState.sessionStates.filter(layoutState => layoutState.sessionId !== sessionId);
   }

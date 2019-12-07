@@ -1,7 +1,8 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ChromeAPITabState} from '../../types/chrome-api-types';
+import {ChromeAPISession, ChromeAPITabState} from '../../types/chrome-api-types';
 import {AnimationState, closeTabAnimation, closeWindowAnimation} from '../../animations';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
+import {ChromeWindowComponentProps} from '../../types/chrome-window-component-data';
 
 @Component({
   selector: 'app-detached-chrome-tab',
@@ -22,12 +23,10 @@ export class DetachedChromeTabComponent implements OnInit {
 
   static readonly NEW_TAB_URL = 'chrome://newtab/';
 
-  @Input() chromeTab: ChromeAPITabState;
+  @Input() session: ChromeAPISession;
+  @Input() props: ChromeWindowComponentProps;
   @Input() isFirstChild: boolean;
   @Input() isLastChild: boolean;
-  @Input() lastModified: number;
-  @Output() draggableChromeTabClose = new EventEmitter<AnimationState>();
-  @Output() draggableChromeTabClick = new EventEmitter<MouseEvent>();
 
   animationState = AnimationState.Complete;
 
@@ -36,16 +35,16 @@ export class DetachedChromeTabComponent implements OnInit {
   ngOnInit() { }
 
   get title() {
-    return this.chromeTab.title.length > 0
-      ? this.chromeTab.title
-      : this.chromeTab.url;
+    return this.session.tab.title.length > 0
+      ? this.session.tab.title
+      : this.session.tab.url;
   }
 
   getFaviconIconUrl(): string {
-    if (!this.chromeTab.favIconUrl) {
+    if (!this.session.tab.favIconUrl) {
       return 'assets/chrome-favicon.png';
     }
-    return this.chromeTab.favIconUrl;
+    return this.session.tab.favIconUrl;
   }
 
   shouldShowFaviconIcon(): boolean {
@@ -53,28 +52,31 @@ export class DetachedChromeTabComponent implements OnInit {
   }
 
   isNewTab(): boolean {
-    return !this.isLoading() && this.chromeTab.url === DetachedChromeTabComponent.NEW_TAB_URL;
+    return !this.isLoading() && this.session.tab.url === DetachedChromeTabComponent.NEW_TAB_URL;
   }
 
   isLoading(): boolean {
-    return this.chromeTab.status === 'loading';
+    return this.session.tab.status === 'loading';
   }
 
   get lastModifiedString(): string {
-    return new Date(this.lastModified).toTimeString().substring(0, 5);
+    return new Date(this.session.lastModified).toTimeString().substring(0, 5);
+  }
+
+  setTabActive(event: MouseEvent) {
+    this.props.tabsService.setTabActive(this.session.tab, event.ctrlKey);
   }
 
   closeTab() {
     this.animationState = this.isFirstChild && this.isLastChild
       ? AnimationState.Closing : AnimationState.Collapsing;
-    this.draggableChromeTabClose.emit(AnimationState.Closing);
+    // todo: setAnimationState method
     this.changeDetectorRef.detectChanges();
   }
 
   completeCloseAnimation(event: AnimationEvent) {
     if (event.toState === AnimationState.Closing || event.toState === AnimationState.Collapsing) {
-      this.draggableChromeTabClose.emit(AnimationState.Complete);
+      this.props.tabsService.removeSession(this.session.tab.id);
     }
   }
-
 }

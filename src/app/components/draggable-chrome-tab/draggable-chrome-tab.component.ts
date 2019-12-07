@@ -21,6 +21,7 @@ export class DraggableChromeTabComponent implements OnInit {
 
   @Input() chromeTab: ChromeAPITabState;
   @Input() lastModified: number;
+  // todo: look into necessity of these
   @Output() draggableChromeTabClose = new EventEmitter<AnimationState>();
   @Output() draggableChromeTabClick = new EventEmitter<MouseEvent>();
 

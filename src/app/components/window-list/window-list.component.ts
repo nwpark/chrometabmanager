@@ -13,7 +13,7 @@ import {
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {ActionBarService} from '../../services/action-bar.service';
-import {SessionListState} from '../../types/session-list-state';
+import {SessionListState, SessionListUtils} from '../../types/session-list-state';
 
 @Component({
   selector: 'app-window-list',
@@ -35,7 +35,7 @@ export class WindowListComponent implements OnInit {
   @Input() title: string;
   @Input() windowProps: ChromeWindowComponentProps;
 
-  windowListState: SessionListState;
+  sessionListState: SessionListState;
   connectedWindowListIds = DragDropService.CONNECTED_WINDOW_LIST_IDS;
   actionButtons: ListActionButton[];
   animationState = AnimationState.Complete;
@@ -46,21 +46,28 @@ export class WindowListComponent implements OnInit {
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
-    // todo: remove 'as SessionListState'
-    this.windowListState = this.windowProps.tabsService.getSessionListState() as SessionListState;
+    this.sessionListState = this.windowProps.tabsService.getSessionListState();
     this.actionButtons = [
       ...this.actionBarService.createWindowListActionButtons(this.windowProps.windowListId),
       ListActionButtonFactory.createMinimizeButton(() => this.toggleDisplay())
     ];
     this.windowProps.tabsService.sessionStateUpdated$
       .pipe(this.dragDropService.ignoreWhenDragging())
-      .subscribe(windowListState => {
-        this.windowListState = windowListState;
+      .subscribe(sessionListState => {
+        this.sessionListState = sessionListState;
         this.changeDetectorRef.detectChanges();
       });
   }
 
-  isWindowListAnimating(): boolean {
+  getTitle(): string {
+    const tabCount = SessionListUtils.getTabCount(this.sessionListState);
+    if (tabCount > 0 && this.sessionListState.layoutState.hidden) {
+      return `${this.title} (${tabCount})`;
+    }
+    return this.title;
+  }
+
+  isComponentAnimating(): boolean {
     return isToggleDisplayState(this.animationState);
   }
 
@@ -70,7 +77,7 @@ export class WindowListComponent implements OnInit {
   }
 
   toggleDisplay() {
-    const animationState = getAnimationForToggleDisplay(this.windowListState.layoutState.hidden);
+    const animationState = getAnimationForToggleDisplay(this.sessionListState.layoutState.hidden);
     this.setAnimationState(animationState);
     this.windowProps.tabsService.toggleSessionListDisplay();
   }

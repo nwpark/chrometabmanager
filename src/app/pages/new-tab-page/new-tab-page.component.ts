@@ -3,6 +3,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 import {ChromeWindowComponentProps, WindowListId} from '../../types/chrome-window-component-data';
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {SavedTabsService} from '../../services/saved-tabs.service';
+import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
 
 @Component({
   selector: 'app-new-tab-page',
@@ -30,9 +31,11 @@ export class NewTabPageComponent implements OnInit {
 
   activeWindowProps: ChromeWindowComponentProps;
   savedWindowProps: ChromeWindowComponentProps;
+  recentlyClosedProps: ChromeWindowComponentProps;
 
   constructor(private chromeTabsService: ChromeTabsService,
-              private savedTabsService: SavedTabsService) { }
+              private savedTabsService: SavedTabsService,
+              private recentlyClosedTabsService: RecentlyClosedTabsService) { }
 
   ngOnInit(): void {
     this.cols = this.getCols(window.innerWidth);
@@ -45,6 +48,11 @@ export class NewTabPageComponent implements OnInit {
       windowListId: WindowListId.Saved,
       tabsService: this.savedTabsService,
       windowIsMutable: true
+    };
+    this.recentlyClosedProps = {
+      windowListId: WindowListId.RecentlyClosed,
+      tabsService: this.recentlyClosedTabsService,
+      windowIsMutable: false
     };
   }
 

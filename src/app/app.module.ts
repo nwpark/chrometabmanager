@@ -9,7 +9,6 @@ import {EmptyChromeTabComponent} from './components/empty-chrome-tab/empty-chrom
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ChromeWindowComponent} from './components/chrome-window/chrome-window.component';
 import {MouseOverDirective} from './directives/mouse-over.directive';
-import {RecentlyClosedTabListComponent} from './components/recently-closed-tab-list/recently-closed-tab-list.component';
 import {ChromeWindowHeaderComponent} from './components/chrome-window-header/chrome-window-header.component';
 import {OptionsComponent} from './pages/options/options.component';
 import {NewTabPageComponent} from './pages/new-tab-page/new-tab-page.component';
@@ -24,7 +23,6 @@ import { DetachedChromeTabComponent } from './components/detached-chrome-tab/det
     EmptyChromeTabComponent,
     ChromeWindowComponent,
     MouseOverDirective,
-    RecentlyClosedTabListComponent,
     ChromeWindowHeaderComponent,
     OptionsComponent,
     NewTabPageComponent,

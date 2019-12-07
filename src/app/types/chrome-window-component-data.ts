@@ -6,6 +6,7 @@ export enum WindowListId {
   RecentlyClosed = 'recently_closed'
 }
 
+// todo: rename class and fields (convert to interface)
 export class ChromeWindowComponentProps {
   windowListId: WindowListId;
   tabsService: TabsService;

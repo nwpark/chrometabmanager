@@ -42,22 +42,18 @@ export class ListActionButtonFactory {
       callback
     };
   }
+
+  static createClearButton(callback: () => void): ListActionButton {
+    return {
+      title: 'Clear',
+      icon: 'clear',
+      requiresMouseover: true,
+      callback
+    };
+  }
 }
 
 export class ActionButtonFactory {
-  static createRecentlyClosedWindowActionButtons(
-    chromeTabsService: ChromeTabsService,
-    recentlyClosedTabsService: RecentlyClosedTabsService
-  ): ActionButton[] {
-    return [
-      ActionButtonFactory.createOpenButton(chromeWindow => {
-        chromeTabsService.createWindow(chromeWindow);
-      }),
-      ActionButtonFactory.createMinimizeButton(chromeWindow => {
-        recentlyClosedTabsService.toggleSessionDisplay(chromeWindow.id);
-      })
-    ];
-  }
 
   static createCloseButton(callback: (chromeWindow: ChromeAPIWindowState) => void): ActionButton {
     return {

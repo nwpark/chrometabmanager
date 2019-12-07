@@ -27,6 +27,7 @@ export class ActionBarService {
     switch (windowCategory) {
       case WindowListId.Active: return [];
       case WindowListId.Saved: return this.createSavedWindowListActionButtons();
+      case WindowListId.RecentlyClosed: return this.createRecentlyClosedListActionButtons();
     }
   }
 
@@ -34,6 +35,14 @@ export class ActionBarService {
     return [
       ListActionButtonFactory.createNewWindowButton(() => {
         this.savedTabsService.createNewWindow();
+      })
+    ];
+  }
+
+  private createRecentlyClosedListActionButtons(): ListActionButton[] {
+    return [
+      ListActionButtonFactory.createClearButton(() => {
+        this.recentlyClosedTabsService.clear();
       })
     ];
   }

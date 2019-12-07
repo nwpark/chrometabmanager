@@ -13,15 +13,15 @@
     <ng-container *ngFor="let button of actionButtons">
       <button
         mat-icon-button
-        [title]="windowListState.layoutState.hidden ? button.titleWhenHidden : button.title"
+        [title]="sessionListState.layoutState.hidden ? button.titleWhenHidden : button.title"
         (click)="button.callback()">
-        <mat-icon class="action-icon-24" *ngIf="!windowListState.layoutState.hidden">{{button.icon}}</mat-icon>
-        <mat-icon class="action-icon-24" *ngIf="windowListState.layoutState.hidden">{{button.iconWhenHidden || button.icon}}</mat-icon>
+        <mat-icon class="action-icon-24" *ngIf="!sessionListState.layoutState.hidden">{{button.icon}}</mat-icon>
+        <mat-icon class="action-icon-24" *ngIf="sessionListState.layoutState.hidden">{{button.iconWhenHidden || button.icon}}</mat-icon>
       </button>
     </ng-container>
   </span>
   <span class="column-title-text">
-    {{title}}
+    {{getTitle()}}
   </span>
 </div>
 
@@ -33,19 +33,29 @@
   [cdkDropListConnectedTo]="connectedWindowListIds"
   (cdkDropListDropped)="windowDropped($event)">
   <div
-    *ngIf="!windowListState.layoutState.hidden || isWindowListAnimating()"
+    *ngIf="!sessionListState.layoutState.hidden || isComponentAnimating()"
     [@collapse-list]="animationState"
     (@collapse-list.done)="completeToggleDisplayAnimation($event)">
-    <div
-      cdkDrag
-      *ngFor="let layoutState of windowListState.layoutState.sessionStates"
-      [cdkDragData]="windowListState.getWindow(layoutState.sessionId)"
-      (cdkDragStarted)="beginDrag()">
-      <app-chrome-window-container
-        [chromeAPIWindow]="windowListState.getWindow(layoutState.sessionId)"
-        [layoutState]="layoutState"
-        [props]="windowProps">
-      </app-chrome-window-container>
-    </div>
+    <ng-container *ngFor="let layoutState of this.sessionListState.layoutState.sessionStates; index as index; first as isFirst; last as isLast">
+      <div
+        *ngIf="sessionListState.getSession(layoutState.sessionId).window"
+        cdkDrag
+        [cdkDragData]="sessionListState.getWindow(layoutState.sessionId)"
+        (cdkDragStarted)="beginDrag()">
+        <app-chrome-window-container
+          [chromeAPIWindow]="sessionListState.getWindow(layoutState.sessionId)"
+          [layoutState]="layoutState"
+          [props]="windowProps">
+        </app-chrome-window-container>
+      </div>
+
+      <app-detached-chrome-tab
+        *ngIf="sessionListState.getSession(layoutState.sessionId).tab"
+        [session]="sessionListState.getSession(layoutState.sessionId)"
+        [props]="windowProps"
+        [isFirstChild]="isFirst || !sessionListState.getSessionAtIndex(index-1).tab"
+        [isLastChild]="isLast || !sessionListState.getSessionAtIndex(index+1).tab">
+      </app-detached-chrome-tab>
+    </ng-container>
   </div>
 </div>
