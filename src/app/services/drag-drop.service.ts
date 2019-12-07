@@ -35,10 +35,10 @@ export class DragDropService {
   }
 
   private refreshWindowIds() {
-    const savedWindowIds = this.savedTabsService.getSessionListState().chromeSessions
-      .map(session => SessionUtils.getSessionId(session).toString());
-    const activeWindowIds = this.chromeTabsService.getSessionListState().chromeSessions
-      .map(session => SessionUtils.getSessionId(session).toString());
+    const savedWindowIds = Object.keys(this.savedTabsService.getSessionListState().chromeSessions)
+      .map(sessionId => sessionId.toString());
+    const activeWindowIds = Object.keys(this.chromeTabsService.getSessionListState().chromeSessions)
+      .map(sessionId => sessionId.toString());
     this.connectedWindowIds = [...savedWindowIds, ...activeWindowIds];
     this.connectedWindowIdsUpdated.next(this.connectedWindowIds);
   }

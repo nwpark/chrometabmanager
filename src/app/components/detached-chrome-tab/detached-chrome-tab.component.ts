@@ -34,6 +34,11 @@ export class DetachedChromeTabComponent implements OnInit {
 
   ngOnInit() { }
 
+  private setAnimationState(animationState: AnimationState) {
+    this.animationState = animationState;
+    this.changeDetectorRef.detectChanges();
+  }
+
   get title() {
     return this.session.tab.title.length > 0
       ? this.session.tab.title
@@ -68,14 +73,14 @@ export class DetachedChromeTabComponent implements OnInit {
   }
 
   closeTab() {
-    this.animationState = this.isFirstChild && this.isLastChild
+    const animationState = this.isFirstChild && this.isLastChild
       ? AnimationState.Closing : AnimationState.Collapsing;
-    // todo: setAnimationState method
-    this.changeDetectorRef.detectChanges();
+    this.setAnimationState(animationState);
   }
 
   completeCloseAnimation(event: AnimationEvent) {
     if (event.toState === AnimationState.Closing || event.toState === AnimationState.Collapsing) {
+      this.setAnimationState(AnimationState.Complete);
       this.props.tabsService.removeSession(this.session.tab.id);
     }
   }

@@ -31,6 +31,11 @@ export class DraggableChromeTabComponent implements OnInit {
 
   ngOnInit() { }
 
+  private setAnimationState(animationState: AnimationState) {
+    this.animationState = animationState;
+    this.changeDetectorRef.detectChanges();
+  }
+
   get title() {
     return this.chromeTab.title.length > 0
       ? this.chromeTab.title
@@ -61,13 +66,13 @@ export class DraggableChromeTabComponent implements OnInit {
   }
 
   closeTab() {
-    this.animationState = AnimationState.Closing;
+    this.setAnimationState(AnimationState.Closing);
     this.draggableChromeTabClose.emit(AnimationState.Closing);
-    this.changeDetectorRef.detectChanges();
   }
 
   completeCloseAnimation(event: AnimationEvent) {
     if (event.toState === AnimationState.Closing) {
+      this.setAnimationState(AnimationState.Complete);
       this.draggableChromeTabClose.emit(AnimationState.Complete);
     }
   }

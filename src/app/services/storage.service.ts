@@ -84,8 +84,8 @@ export class StorageService {
   static getRecentlyClosedSessionsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
       chrome.storage.local.get([StorageService.RECENTLY_CLOSED_SESSIONS, StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE], data => {
-        const recentlyClosedSessions = data[StorageService.RECENTLY_CLOSED_SESSIONS] as ChromeAPISession[];
-        const layoutState = data[StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE] as SessionListLayoutState;
+        const recentlyClosedSessions = data[StorageService.RECENTLY_CLOSED_SESSIONS];
+        const layoutState = data[StorageService.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE];
         if (recentlyClosedSessions && layoutState) {
           resolve(new SessionListState(recentlyClosedSessions, layoutState));
         } else {

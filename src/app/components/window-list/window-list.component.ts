@@ -60,7 +60,7 @@ export class WindowListComponent implements OnInit {
   }
 
   getTitle(): string {
-    const tabCount = SessionListUtils.getTabCount(this.sessionListState);
+    const tabCount = this.sessionListState.size();
     if (tabCount > 0 && this.sessionListState.layoutState.hidden) {
       return `${this.title} (${tabCount})`;
     }

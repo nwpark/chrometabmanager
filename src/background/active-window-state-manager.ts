@@ -38,7 +38,10 @@ export class ActiveWindowStateManager {
           SessionUtils.createSessionFromWindow(chromeWindow)
         );
         SessionListUtils.cleanupLayoutState(layoutState, activeSessions);
-        this.sessionListState = new SessionListState(activeSessions, layoutState);
+        // todo: cleanup
+        const activeSessionMap = {};
+        activeSessions.forEach(session => activeSessionMap[SessionUtils.getSessionId(session)] = session);
+        this.sessionListState = new SessionListState(activeSessionMap, layoutState);
         StorageService.setActiveWindowsState(this.sessionListState, releaseLock);
       });
     });

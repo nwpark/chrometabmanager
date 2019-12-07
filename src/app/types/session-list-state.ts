@@ -3,32 +3,25 @@ import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 export class SessionListState {
 
-  chromeSessions: ChromeAPISession[];
+  chromeSessions: {[sessionId: string]: ChromeAPISession};
   layoutState: SessionListLayoutState;
 
   static empty(): SessionListState {
-    return new this([], SessionListUtils.createEmptyListLayoutState());
+    return new this({}, SessionListUtils.createEmptyListLayoutState());
   }
 
-  constructor(chromeSessions: ChromeAPISession[],
+  constructor(chromeSessions: {[sessionId: string]: ChromeAPISession},
               layoutState: SessionListLayoutState) {
-    // todo: create lookup table from id to sessions
     this.chromeSessions = chromeSessions;
     this.layoutState = layoutState;
   }
 
-  private getWindows(): ChromeAPIWindowState[] {
-    return this.chromeSessions
-      .filter(session => session.window)
-      .map(session => session.window);
-  }
-
   getWindow(windowId: any): ChromeAPIWindowState {
-    return this.getWindows().find(window => window.id === windowId);
+    return this.chromeSessions[windowId].window;
   }
 
   getSession(sessionId: any): ChromeAPISession {
-    return this.chromeSessions.find(session => SessionUtils.getSessionId(session) === sessionId);
+    return this.chromeSessions[sessionId];
   }
 
   getSessionAtIndex(index: number): ChromeAPISession {
@@ -61,7 +54,7 @@ export class SessionListState {
   }
 
   removeSession(sessionId: any) {
-    this.chromeSessions = this.chromeSessions.filter(session => SessionUtils.getSessionId(session) !== sessionId);
+    delete this.chromeSessions[sessionId];
     this.layoutState.sessionStates = this.layoutState.sessionStates.filter(layoutState => layoutState.sessionId !== sessionId);
   }
 
@@ -81,7 +74,7 @@ export class SessionListState {
   }
 
   unshiftSession(session: ChromeAPISession, windowLayoutState: SessionLayoutState) {
-    this.chromeSessions.unshift(session);
+    this.chromeSessions[SessionUtils.getSessionId(session)] = session;
     this.layoutState.sessionStates.unshift(windowLayoutState);
   }
 
@@ -90,7 +83,7 @@ export class SessionListState {
   }
 
   insertSession(session: ChromeAPISession, layoutState: SessionLayoutState, index: number) {
-    this.chromeSessions.splice(index, 0, session);
+    this.chromeSessions[SessionUtils.getSessionId(session)] = session;
     this.layoutState.sessionStates.splice(index, 0, layoutState);
   }
 
@@ -114,16 +107,20 @@ export class SessionListState {
 
   removeExpiredSessions(maxTabCount: number) {
     // todo: needs testing
-    while (this.chromeSessions.length > maxTabCount) {
-      this.chromeSessions.pop();
-      this.layoutState.sessionStates.pop();
+    while (this.layoutState.sessionStates.length > maxTabCount) {
+      const layoutState = this.layoutState.sessionStates.pop();
+      delete this.chromeSessions[layoutState.sessionId];
     }
+  }
+
+  size(): number {
+    return this.layoutState.sessionStates.length;
   }
 }
 
 export class SessionListUtils {
   static getTabCount(sessionListState: SessionListState): number {
-    return sessionListState.chromeSessions
+    return Object.values(sessionListState.chromeSessions)
       .reduce((acc, session) => {
         const tabCount = session.window ? session.window.tabs.length : 1;
         return acc + tabCount;
@@ -188,6 +185,5 @@ export interface SessionLayoutState {
   title?: string;
   sessionId: any;
   hidden?: boolean;
-  // todo: dont put this field in storage
   deleted?: boolean;
 }

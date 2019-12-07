@@ -74,9 +74,8 @@ export class ChromeTabsService implements TabsService {
     chrome.tabs.remove(tabId);
   }
 
-  @modifiesState({storeResult: false})
+  @modifiesState({storeResult: true})
   removeSession(sessionId: any) {
-    // todo: move deleted field to component to prevent glitching
     this.sessionListState.markWindowAsDeleted(sessionId);
     chrome.windows.remove(sessionId);
   }
