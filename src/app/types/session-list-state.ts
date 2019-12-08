@@ -107,7 +107,6 @@ export class SessionListState {
   }
 
   removeExpiredSessions(maxTabCount: number) {
-    // todo: needs testing
     while (this.layoutState.sessionStates.length > maxTabCount) {
       const layoutState = this.layoutState.sessionStates.pop();
       delete this.chromeSessions[layoutState.sessionId];

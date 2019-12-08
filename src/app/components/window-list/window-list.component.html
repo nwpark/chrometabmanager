@@ -13,6 +13,7 @@
     <ng-container *ngFor="let button of actionButtons">
       <button
         mat-icon-button
+        *ngIf="!button.requiresMouseover || headerDiv.mouseOver"
         [title]="sessionListState.layoutState.hidden ? button.titleWhenHidden : button.title"
         (click)="button.callback()">
         <mat-icon class="action-icon-24" *ngIf="!sessionListState.layoutState.hidden">{{button.icon}}</mat-icon>

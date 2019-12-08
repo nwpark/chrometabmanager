@@ -20,8 +20,8 @@
             [labelPosition]="'before'"
             (change)="setCloseWindowOnSave($event)">
             <div style="width: 460px">
-              <div style="">Close windows on drag</div>
-              <div style="font-size: 14px; color: grey">Close original window/tab after dragging to a different region</div>
+              <div style="">Close windows on drop</div>
+              <div style="font-size: 14px; color: grey">Close the original window/tab after dragging to a different region</div>
             </div>
           </mat-slide-toggle>
         </mat-list-item>
@@ -58,12 +58,14 @@
             </div>
             <mat-progress-bar mat-line mode="determinate" value="{{getBytesInUsePercentage()}}"></mat-progress-bar>
           </mat-list-item>
-          <h3 mat-subheader>Warning: Chrome sync storage has a maximum quota of {{syncQuotaBytes | number}} bytes</h3>
-          <mat-list-item>
-            <button mat-stroked-button color="warn" style="width: 100%" (click)="copyLocalDataToSync()">
-              Copy local data to sync storage (~{{localSavedSessionsBytesInUse | number}} bytes)
-            </button>
-          </mat-list-item>
+          <h3 mat-subheader style="height: 30px; color: red">
+            Warning: Chrome sync storage has a maximum quota of {{syncQuotaBytes | number}} bytes
+          </h3>
+<!--          <mat-list-item>-->
+<!--            <button mat-stroked-button color="warn" style="width: 100%" (click)="copyLocalDataToSync()">-->
+<!--              Copy local data to sync storage (~{{localSavedSessionsBytesInUse | number}} bytes)-->
+<!--            </button>-->
+<!--          </mat-list-item>-->
         </ng-container>
       </mat-list>
     </mat-card-content>

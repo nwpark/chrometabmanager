@@ -46,6 +46,7 @@ export class ListActionButtonFactory {
   static createClearButton(callback: () => void): ListActionButton {
     return {
       title: 'Clear',
+      titleWhenHidden: 'Clear',
       icon: 'clear',
       requiresMouseover: true,
       callback

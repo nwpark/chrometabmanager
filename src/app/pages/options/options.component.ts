@@ -60,6 +60,11 @@ export class OptionsComponent implements OnInit {
 
   setSyncSavedWindows(event: MatSlideToggleChange) {
     this.preferencesService.setSyncSavedWindows(event.checked);
+    if (event.checked) {
+      this.copyLocalDataToSync();
+    } else {
+      this.copySyncDataToLocal();
+    }
   }
 
   copyLocalDataToSync() {
@@ -76,6 +81,12 @@ export class OptionsComponent implements OnInit {
         }
       });
       ChromeStorageUtils.setSavedWindowsStateSync(savedSessionsSync);
+    });
+  }
+
+  copySyncDataToLocal() {
+    ChromeStorageUtils.getSavedWindowsStateSync().then(sessionListState => {
+      ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
     });
   }
 }

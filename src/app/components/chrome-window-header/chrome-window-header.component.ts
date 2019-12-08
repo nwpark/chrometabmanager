@@ -39,14 +39,6 @@ export class ChromeWindowHeaderComponent implements OnInit {
     this.titleFormControl = new FormControl(this.layoutState.title);
   }
 
-  debug() {
-    console.log(this);
-  }
-
-  debugModeEnabled(): boolean {
-    return this.preferencesService.isDebugModeEnabled();
-  }
-
   getTitle(): string {
     return this.layoutState.hidden
       ? `${this.layoutState.title} (${this.chromeAPIWindow.tabs.length} tabs)`
@@ -70,4 +62,6 @@ export class ChromeWindowHeaderComponent implements OnInit {
     this.showEditForm = false;
   }
 
+  debug() { console.log(this); }
+  debugModeEnabled(): boolean { return this.preferencesService.isDebugModeEnabled(); }
 }
