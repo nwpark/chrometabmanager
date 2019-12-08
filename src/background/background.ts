@@ -4,7 +4,11 @@ import {async} from 'rxjs/internal/scheduler/async';
 import {ThrottleConfig} from 'rxjs/src/internal/operators/throttle';
 import {ClosedSessionStateManager} from './closed-session-state-manager';
 import {ActiveWindowStateManager} from './active-window-state-manager';
-import {SessionListState} from '../app/types/session-list-state';
+import {SessionListState, SessionListUtils} from '../app/types/session-list-state';
+import {ChromeStorageUtils} from '../app/classes/chrome-storage-utils';
+import {SessionUtils} from '../app/types/chrome-api-types';
+
+addOnInstalledListener();
 
 const chromeWindowUpdateEvents = [
   chrome.tabs.onCreated,
@@ -57,8 +61,25 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
   activeWindowStateManager.updateActiveWindowState();
 });
 
-chrome.runtime.onInstalled.addListener(details => {
-  if (details.previousVersion === '0.3.8') {
-    closedSessionStateManager.setSessionListState(SessionListState.empty());
-  }
-});
+function addOnInstalledListener() {
+  chrome.runtime.onInstalled.addListener(details => {
+    if (details.previousVersion !== '0.3.9') {
+      return;
+    }
+    chrome.storage.local.get([
+      ChromeStorageUtils.SAVED_WINDOWS,
+      ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE
+    ], data => {
+      const savedWindows = data[ChromeStorageUtils.SAVED_WINDOWS];
+      const sessionListState = SessionListState.empty();
+      savedWindows.forEach(chromeWindow => {
+        const session = SessionUtils.createSessionFromWindow(chromeWindow);
+        const layoutState = SessionListUtils.createBasicWindowLayoutState(chromeWindow.id);
+        sessionListState.unshiftSession(session, layoutState);
+      });
+      chrome.storage.local.clear();
+      ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
+      chrome.runtime.reload();
+    });
+  });
+}

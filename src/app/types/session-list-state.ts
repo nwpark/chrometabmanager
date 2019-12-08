@@ -144,6 +144,14 @@ export class SessionListUtils {
     return {sessionId: windowId, title: 'Window', hidden: false};
   }
 
+  static filterSessionMap(sessionMap: SessionMap, layoutState: SessionListLayoutState): SessionMap {
+    const filteredSessionMap: SessionMap = {};
+    layoutState.sessionStates
+      .map(sessionState => sessionState.sessionId)
+      .forEach(sessionId => filteredSessionMap[sessionId] = sessionMap[sessionId]);
+    return filteredSessionMap;
+  }
+
   static createSessionMapFromWindowList(chromeWindows: ChromeAPIWindowState[]): SessionMap {
     const sessionMap: SessionMap = {};
     chromeWindows.forEach(chromeWindow => {

@@ -14,7 +14,10 @@ export class ChromeStorageUtils {
 
   static getSavedWindowsStateLocal(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
-      chrome.storage.local.get([ChromeStorageUtils.SAVED_WINDOWS, ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE], data => {
+      chrome.storage.local.get([
+        ChromeStorageUtils.SAVED_WINDOWS,
+        ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE
+      ], data => {
         const savedWindows = data[ChromeStorageUtils.SAVED_WINDOWS];
         const layoutState = data[ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE];
         if (savedWindows && layoutState) {
@@ -31,11 +34,7 @@ export class ChromeStorageUtils {
       chrome.storage.sync.get(data => {
         const layoutState: SessionListLayoutState = data[ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE];
         if (layoutState) {
-          // todo: move to utils
-          const savedSessions = {};
-          layoutState.sessionStates
-            .map(sessionState => sessionState.sessionId)
-            .forEach(sessionId => savedSessions[sessionId] = data[sessionId]);
+          const savedSessions = SessionListUtils.filterSessionMap(data, layoutState);
           resolve(new SessionListState(savedSessions, layoutState));
         } else {
           resolve(SessionListState.empty());
@@ -70,7 +69,10 @@ export class ChromeStorageUtils {
 
   static getActiveWindowsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
-      chrome.storage.local.get([ChromeStorageUtils.ACTIVE_WINDOWS, ChromeStorageUtils.ACTIVE_WINDOWS_LAYOUT_STATE], data => {
+      chrome.storage.local.get([
+        ChromeStorageUtils.ACTIVE_WINDOWS,
+        ChromeStorageUtils.ACTIVE_WINDOWS_LAYOUT_STATE
+      ], data => {
         const activeWindows = data[ChromeStorageUtils.ACTIVE_WINDOWS];
         const layoutState = data[ChromeStorageUtils.ACTIVE_WINDOWS_LAYOUT_STATE];
         if (activeWindows && layoutState) {
@@ -109,7 +111,10 @@ export class ChromeStorageUtils {
 
   static getRecentlyClosedSessionsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
-      chrome.storage.local.get([ChromeStorageUtils.RECENTLY_CLOSED_SESSIONS, ChromeStorageUtils.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE], data => {
+      chrome.storage.local.get([
+        ChromeStorageUtils.RECENTLY_CLOSED_SESSIONS,
+        ChromeStorageUtils.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE
+      ], data => {
         const recentlyClosedSessions = data[ChromeStorageUtils.RECENTLY_CLOSED_SESSIONS];
         const layoutState = data[ChromeStorageUtils.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE];
         if (recentlyClosedSessions && layoutState) {
@@ -159,6 +164,17 @@ export class ChromeStorageUtils {
       if (areaName === 'sync') {
         callback();
       }
+    });
+  }
+
+  static getLocalSavedSessionsBytesInUse(): Promise<number> {
+    return new Promise<number>(resolve => {
+      chrome.storage.local.getBytesInUse([
+        ChromeStorageUtils.SAVED_WINDOWS,
+        ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE
+      ], bytesInUse => {
+        resolve(bytesInUse);
+      });
     });
   }
 }
