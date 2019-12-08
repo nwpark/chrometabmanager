@@ -1,8 +1,8 @@
 import {ChromeAPIWindowState, SessionUtils} from '../app/types/chrome-api-types';
-import {StorageService} from '../app/services/storage.service';
 import {InsertWindowMessageData, MessagePassingService} from '../app/services/message-passing.service';
 import Mutex from 'async-mutex/lib/Mutex';
-import {SessionListLayoutState, SessionListState, SessionListUtils} from '../app/types/session-list-state';
+import {SessionListState, SessionListUtils} from '../app/types/session-list-state';
+import {ChromeStorageUtils} from '../app/classes/chrome-storage-utils';
 
 export class ActiveWindowStateManager {
 
@@ -30,13 +30,13 @@ export class ActiveWindowStateManager {
     this.mutex.acquire().then(releaseLock => {
       Promise.all([
         ActiveWindowStateManager.getChromeWindowsFromAPI(),
-        StorageService.getActiveWindowsLayoutState()
+        ChromeStorageUtils.getActiveWindowsLayoutState()
       ]).then(res => {
         const chromeWindows: ChromeAPIWindowState[] = res[0];
         const layoutState = SessionListUtils.cleanupLayoutState(res[1], chromeWindows);
         const sessionMap = SessionListUtils.createSessionMapFromWindowList(chromeWindows);
         this.sessionListState = new SessionListState(sessionMap, layoutState);
-        StorageService.setActiveWindowsState(this.sessionListState, releaseLock);
+        ChromeStorageUtils.setActiveWindowsState(this.sessionListState, releaseLock);
       });
     });
   }
@@ -48,7 +48,7 @@ export class ActiveWindowStateManager {
         const session = SessionUtils.createSessionFromWindow(window as ChromeAPIWindowState);
         const layoutState = SessionListUtils.createBasicWindowLayoutState(window.id);
         this.sessionListState.insertSession(session, layoutState, index);
-        StorageService.setActiveWindowsState(this.sessionListState, releaseLock);
+        ChromeStorageUtils.setActiveWindowsState(this.sessionListState, releaseLock);
       });
     });
   }

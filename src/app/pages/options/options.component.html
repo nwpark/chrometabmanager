@@ -15,7 +15,7 @@
       <mat-list>
         <mat-list-item>
           <mat-slide-toggle
-            [checked]="preferences.closeWindowOnSave"
+            [checked]="preferences?.closeWindowOnSave"
             [color]="'primary'"
             [labelPosition]="'before'"
             (change)="setCloseWindowOnSave($event)">
@@ -35,7 +35,7 @@
         <mat-list-item>
           <mat-slide-toggle
             style=""
-            [checked]="preferences.syncSavedWindows"
+            [checked]="preferences?.syncSavedWindows"
             [color]="'primary'"
             [labelPosition]="'before'"
             (change)="setSyncSavedWindows($event)">
@@ -46,14 +46,16 @@
           </mat-slide-toggle>
         </mat-list-item>
       </mat-list>
-      <mat-list *ngIf="preferences.syncSavedWindows">
+      <mat-list *ngIf="preferences?.syncSavedWindows">
         <ng-container>
           <mat-divider [inset]="true"></mat-divider>
           <mat-list-item>
-            <div mat-line style="font-size: 14px; color: grey; margin-bottom: 5px">Bytes in use: 12,560 out of 102,400</div>
-            <mat-progress-bar mat-line mode="determinate" value="40"></mat-progress-bar>
+            <div mat-line style="font-size: 14px; color: grey; margin-bottom: 5px">
+              Bytes in use: {{syncBytesInUse | number}} out of {{syncQuotaBytes | number}} ({{getBytesInUsePercentage()}}%)
+            </div>
+            <mat-progress-bar mat-line mode="determinate" value="{{getBytesInUsePercentage()}}"></mat-progress-bar>
           </mat-list-item>
-          <h3 mat-subheader>Warning: Chrome sync has a maximum storage quota of 102,400 bytes</h3>
+          <h3 mat-subheader>Warning: Chrome sync storage has a maximum quota of {{syncQuotaBytes | number}} bytes</h3>
         </ng-container>
       </mat-list>
     </mat-card-content>
@@ -67,7 +69,7 @@
       <mat-list>
         <mat-list-item>
           <mat-slide-toggle
-            [checked]="preferences.enableDebugging"
+            [checked]="preferences?.enableDebugging"
             [color]="'primary'"
             [labelPosition]="'before'"
             (change)="setEnableDebugging($event)">

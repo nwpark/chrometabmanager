@@ -1,22 +1,22 @@
 import {Injectable} from '@angular/core';
-import {StorageService} from './storage.service';
 import {Preferences, PreferenceUtils} from '../types/preferences';
 import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {MessagePassingService} from './message-passing.service';
+import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
+import {take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PreferencesService {
 
-  preferences: Preferences;
+  private preferences: Preferences;
 
   preferencesUpdated = new Subject<Preferences>();
   preferencesUpdated$ = this.preferencesUpdated.asObservable();
 
   constructor() {
-    this.preferences = PreferenceUtils.createDefaultPreferences();
     MessagePassingService.addPreferencesListener(() => {
       this.refreshState();
     });
@@ -24,15 +24,18 @@ export class PreferencesService {
   }
 
   private refreshState() {
-    StorageService.getPreferences().then(preferences => {
+    ChromeStorageUtils.getPreferences().then(preferences => {
       console.log(new Date().toTimeString().substring(0, 8), '- refreshing preferences');
       this.preferences = preferences;
       this.preferencesUpdated.next(this.preferences);
     });
   }
 
-  getPreferences() {
-    return this.preferences;
+  getPreferences(): Promise<Preferences> {
+    if (this.preferences) {
+      return Promise.resolve(this.preferences);
+    }
+    return this.preferencesUpdated$.pipe(take(1)).toPromise();
   }
 
   shouldCloseWindowOnSave(): boolean {
@@ -41,10 +44,6 @@ export class PreferencesService {
 
   isDebugModeEnabled(): boolean {
     return this.preferences.enableDebugging;
-  }
-
-  shouldSyncSavedWindows(): boolean {
-    return this.preferences.syncSavedWindows;
   }
 
   @modifiesState()
@@ -65,6 +64,6 @@ export class PreferencesService {
   onStateModified() {
     console.log(new Date().toTimeString().substring(0, 8), '- updating preferences');
     this.preferencesUpdated.next(this.preferences);
-    StorageService.setPreferences(this.preferences);
+    ChromeStorageUtils.setPreferences(this.preferences);
   }
 }

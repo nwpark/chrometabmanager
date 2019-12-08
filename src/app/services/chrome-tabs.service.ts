@@ -2,10 +2,10 @@ import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
 import {modifiesState, StateModifierParams} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
-import {StorageService} from './storage.service';
 import {ChromeAPITabState, ChromeAPIWindowState, SessionUtils, WindowStateUtils} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
 import {SessionListState, SessionListUtils} from '../types/session-list-state';
+import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +26,7 @@ export class ChromeTabsService implements TabsService {
   }
 
   private refreshState() {
-    StorageService.getActiveWindowsState().then(windowListState => {
+    ChromeStorageUtils.getActiveWindowsState().then(windowListState => {
       console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
       this.sessionListState = windowListState;
       this.sessionStateUpdated.next(this.sessionListState);
@@ -123,7 +123,7 @@ export class ChromeTabsService implements TabsService {
     console.log(new Date().toTimeString().substring(0, 8), '- updating active windows');
     this.sessionStateUpdated.next(this.sessionListState);
     if (params.storeResult) {
-      StorageService.setActiveWindowsState(this.sessionListState);
+      ChromeStorageUtils.setActiveWindowsState(this.sessionListState);
     }
   }
 

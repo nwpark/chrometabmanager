@@ -1,8 +1,8 @@
 import {ChromeAPITabState, ChromeAPIWindowState, WindowStateUtils} from '../app/types/chrome-api-types';
 import {SessionListState, SessionListUtils} from '../app/types/session-list-state';
-import {StorageService} from '../app/services/storage.service';
 import {MessagePassingService} from '../app/services/message-passing.service';
 import {modifiesState} from '../app/decorators/modifies-state';
+import {ChromeStorageUtils} from '../app/classes/chrome-storage-utils';
 
 export class ClosedSessionStateManager {
 
@@ -19,7 +19,7 @@ export class ClosedSessionStateManager {
   }
 
   refreshState() {
-    StorageService.getRecentlyClosedSessionsState().then(sessionListState => {
+    ChromeStorageUtils.getRecentlyClosedSessionsState().then(sessionListState => {
       this.sessionListState = sessionListState;
     });
   }
@@ -51,6 +51,6 @@ export class ClosedSessionStateManager {
 
   private onStateModified() {
     this.sessionListState.removeExpiredSessions(ClosedSessionStateManager.MAX_CLOSED_TABS);
-    StorageService.setRecentlyClosedSessionsState(this.sessionListState);
+    ChromeStorageUtils.setRecentlyClosedSessionsState(this.sessionListState);
   }
 }

@@ -7,6 +7,7 @@ import {ChromeTabsService} from './chrome-tabs.service';
 import {SessionListState} from '../types/session-list-state';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
+import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,7 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   private refreshState() {
-    StorageService.getRecentlyClosedSessionsState().then(sessionListState => {
+    ChromeStorageUtils.getRecentlyClosedSessionsState().then(sessionListState => {
       console.log(new Date().toTimeString().substring(0, 8), '- refreshing recently closed windows');
       this.sessionListState = sessionListState;
       this.sessionStateUpdatedSource.next(this.sessionListState);
@@ -88,6 +89,6 @@ export class RecentlyClosedTabsService implements TabsService {
   onStateModified() {
     console.log(new Date().toTimeString().substring(0, 8), '- updating recently closed windows');
     this.sessionStateUpdatedSource.next(this.sessionListState);
-    StorageService.setRecentlyClosedSessionsState(this.sessionListState);
+    ChromeStorageUtils.setRecentlyClosedSessionsState(this.sessionListState);
   }
 }

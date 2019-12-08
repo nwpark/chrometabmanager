@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {MessagePassingService} from './services/message-passing.service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,9 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.pageTitle = document.title;
+    MessagePassingService.addPreferencesListener(() => {
+      window.location.reload();
+    });
   }
 
   isNewTabPage(): boolean {

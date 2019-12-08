@@ -19,7 +19,8 @@ export class SavedTabsService implements TabsService {
   private sessionStateUpdated = new Subject<SessionListState>();
   public sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
 
-  constructor(private chromeTabsService: ChromeTabsService) {
+  constructor(private chromeTabsService: ChromeTabsService,
+              private storageService: StorageService) {
     this.sessionListState = SessionListState.empty();
     MessagePassingService.addSavedWindowStateListener(() => {
       this.refreshState();
@@ -28,7 +29,7 @@ export class SavedTabsService implements TabsService {
   }
 
   private refreshState() {
-    StorageService.getSavedWindowsState().then(windowListState => {
+    this.storageService.getSavedWindowsState().then(windowListState => {
       console.log(new Date().toTimeString().substring(0, 8), '- refreshing saved windows');
       this.sessionListState = windowListState;
       this.sessionStateUpdated.next(this.sessionListState);
@@ -114,6 +115,6 @@ export class SavedTabsService implements TabsService {
   onStateModified() {
     console.log(new Date().toTimeString().substring(0, 8), '- updating saved windows');
     this.sessionStateUpdated.next(this.sessionListState);
-    StorageService.setSavedWindowsState(this.sessionListState);
+    this.storageService.setSavedWindowsState(this.sessionListState);
   }
 }
