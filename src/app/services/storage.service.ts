@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
-import {SessionListState} from '../types/session-list-state';
+import {SessionListState, SessionListUtils} from '../types/session-list-state';
 import {PreferencesService} from './preferences.service';
 import {Preferences} from '../types/preferences';
 import {SyncStorageService} from './sync-storage.service';
-import {MessagePassingService} from './message-passing.service';
 import {LocalStorageService} from './local-storage.service';
 
 @Injectable({
@@ -43,6 +42,22 @@ export class StorageService {
       } else {
         this.localStorageService.addSavedSessionsChangedListener(callback);
       }
+    });
+  }
+
+  copyLocalDataToSync() {
+    Promise.all([
+      this.syncStorageService.getSavedWindowsState(),
+      this.localStorageService.getSavedWindowsState()
+    ]).then(res => {
+      const sessionListState = SessionListUtils.mergeSessionLists(res[0], res[1]);
+      this.syncStorageService.setSavedWindowsState(sessionListState);
+    });
+  }
+
+  copySyncDataToLocal() {
+    this.syncStorageService.getSavedWindowsState().then(sessionListState => {
+      this.localStorageService.setSavedWindowsState(sessionListState);
     });
   }
 }

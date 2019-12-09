@@ -143,6 +143,16 @@ export class SessionListUtils {
     return {sessionId: windowId, title: 'Window', hidden: false};
   }
 
+  static mergeSessionLists(primary: SessionListState, secondary: SessionListState): SessionListState {
+    secondary.layoutState.sessionStates.forEach(layoutState => {
+      if (!primary.chromeSessions[layoutState.sessionId]) {
+        const session = secondary.chromeSessions[layoutState.sessionId];
+        primary.unshiftSession(session, layoutState);
+      }
+    });
+    return primary;
+  }
+
   static filterSessionMap(sessionMap: SessionMap, layoutState: SessionListLayoutState): SessionMap {
     const filteredSessionMap: SessionMap = {};
     layoutState.sessionStates

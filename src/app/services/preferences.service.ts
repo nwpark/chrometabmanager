@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Preferences} from '../types/preferences';
 import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
-import {MessagePassingService} from './message-passing.service';
 import {take} from 'rxjs/operators';
 import {SyncStorageService} from './sync-storage.service';
 
@@ -17,7 +16,7 @@ export class PreferencesService {
   preferencesUpdated$ = this.preferencesUpdated.asObservable();
 
   constructor(private syncStorageService: SyncStorageService) {
-    MessagePassingService.addPreferencesListener(() => {
+    this.syncStorageService.addPreferencesChangedListener(() => {
       this.refreshState();
     });
     this.refreshState();

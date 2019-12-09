@@ -7,9 +7,7 @@ import {ChromeAPIWindowState} from '../types/chrome-api-types';
 export class MessagePassingService {
 
   static readonly ACTIVE_WINDOWS_UPDATED = 'activeWindowsUpdated_71f38bbe';
-  static readonly SAVED_WINDOWS_UPDATED = 'savedWindowsUpdated_0656e252';
   static readonly CLOSED_SESSIONS_UPDATED = 'closedSessionsUpdated_7d763bba';
-  static readonly PREFERENCES_UPDATED = 'preferencesUpdated_a25466c6';
   static readonly INSERT_WINDOW_REQUEST = 'insertWindowRequest_de10f744';
 
   constructor() {}
@@ -20,10 +18,6 @@ export class MessagePassingService {
 
   static addClosedSessionStateListener(callback: () => void) {
     MessagePassingService.addEventListener(MessagePassingService.CLOSED_SESSIONS_UPDATED, callback);
-  }
-
-  static addPreferencesListener(callback: () => void) {
-    MessagePassingService.addEventListener(MessagePassingService.PREFERENCES_UPDATED, callback);
   }
 
   private static addEventListener(eventId: string, callback: () => void) {
@@ -55,10 +49,6 @@ export class MessagePassingService {
 
   static notifyClosedSessionStateListeners() {
     chrome.runtime.sendMessage(MessagePassingService.CLOSED_SESSIONS_UPDATED);
-  }
-
-  static notifyPreferenceListeners() {
-    chrome.runtime.sendMessage(MessagePassingService.PREFERENCES_UPDATED);
   }
 }
 

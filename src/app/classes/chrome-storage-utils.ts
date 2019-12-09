@@ -79,15 +79,4 @@ export class ChromeStorageUtils {
       MessagePassingService.notifyClosedSessionStateListeners();
     });
   }
-
-  static getLocalSavedSessionsBytesInUse(): Promise<number> {
-    return new Promise<number>(resolve => {
-      chrome.storage.local.getBytesInUse([
-        ChromeStorageUtils.SAVED_WINDOWS,
-        ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE
-      ], bytesInUse => {
-        resolve(bytesInUse);
-      });
-    });
-  }
 }

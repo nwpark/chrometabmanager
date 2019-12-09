@@ -1,7 +1,6 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {SessionListLayoutState, SessionListState, SessionListUtils} from '../types/session-list-state';
 import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
-import {MessagePassingService} from './message-passing.service';
 import {v4 as uuid} from 'uuid';
 import {Subject} from 'rxjs';
 import {Preferences, PreferenceUtils} from '../types/preferences';
@@ -58,8 +57,6 @@ export class SyncStorageService {
     chrome.storage.sync.set({
       [ChromeStorageUtils.LAST_MODIFIED_BY]: this.instanceId,
       [ChromeStorageUtils.PREFERENCES]: preferences
-    }, () => {
-      MessagePassingService.notifyPreferenceListeners();
     });
   }
 
@@ -76,6 +73,10 @@ export class SyncStorageService {
         chrome.storage.sync.remove(removedSessionIds);
       });
     });
+  }
+
+  addPreferencesChangedListener(callback: () => void) {
+    this.addExternalOnChangedListener(ChromeStorageUtils.PREFERENCES, callback);
   }
 
   addSavedSessionsChangedListener(callback: () => void) {

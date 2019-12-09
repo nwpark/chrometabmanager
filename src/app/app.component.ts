@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {MessagePassingService} from './services/message-passing.service';
+import {SyncStorageService} from './services/sync-storage.service';
 
 @Component({
   selector: 'app-root',
@@ -10,11 +10,11 @@ export class AppComponent implements OnInit {
 
   pageTitle: string;
 
-  constructor() { }
+  constructor(private syncStorageService: SyncStorageService) { }
 
   ngOnInit() {
     this.pageTitle = document.title;
-    MessagePassingService.addPreferencesListener(() => {
+    this.syncStorageService.addPreferencesChangedListener(() => {
       window.location.reload();
     });
   }
