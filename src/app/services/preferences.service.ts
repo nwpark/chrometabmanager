@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
-import {Preferences, PreferenceUtils} from '../types/preferences';
+import {Preferences} from '../types/preferences';
 import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {MessagePassingService} from './message-passing.service';
-import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
 import {take} from 'rxjs/operators';
+import {SyncStorageService} from './sync-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ export class PreferencesService {
   preferencesUpdated = new Subject<Preferences>();
   preferencesUpdated$ = this.preferencesUpdated.asObservable();
 
-  constructor() {
+  constructor(private syncStorageService: SyncStorageService) {
     MessagePassingService.addPreferencesListener(() => {
       this.refreshState();
     });
@@ -24,7 +24,7 @@ export class PreferencesService {
   }
 
   private refreshState() {
-    ChromeStorageUtils.getPreferences().then(preferences => {
+    this.syncStorageService.getPreferences().then(preferences => {
       console.log(new Date().toTimeString().substring(0, 8), '- refreshing preferences');
       this.preferences = preferences;
       this.preferencesUpdated.next(this.preferences);
@@ -64,6 +64,6 @@ export class PreferencesService {
   onStateModified() {
     console.log(new Date().toTimeString().substring(0, 8), '- updating preferences');
     this.preferencesUpdated.next(this.preferences);
-    ChromeStorageUtils.setPreferences(this.preferences);
+    this.syncStorageService.setPreferences(this.preferences);
   }
 }

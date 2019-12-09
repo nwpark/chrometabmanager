@@ -1,6 +1,5 @@
 import {SessionListLayoutState, SessionListState, SessionListUtils} from '../types/session-list-state';
 import {MessagePassingService} from '../services/message-passing.service';
-import {Preferences, PreferenceUtils} from '../types/preferences';
 
 export class ChromeStorageUtils {
 
@@ -30,41 +29,12 @@ export class ChromeStorageUtils {
     });
   }
 
-  static getSavedWindowsStateSync(): Promise<SessionListState> {
-    return new Promise<SessionListState>(resolve => {
-      chrome.storage.sync.get(data => {
-        const layoutState: SessionListLayoutState = data[ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE];
-        if (layoutState) {
-          const savedSessions = SessionListUtils.filterSessionMap(data, layoutState);
-          resolve(new SessionListState(savedSessions, layoutState));
-        } else {
-          resolve(SessionListState.empty());
-        }
-      });
-    });
-  }
-
   static setSavedWindowsStateLocal(sessionListState: SessionListState) {
     chrome.storage.local.set({
       [ChromeStorageUtils.SAVED_WINDOWS]: sessionListState.chromeSessions,
       [ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE]: sessionListState.layoutState
     }, () => {
       MessagePassingService.notifySavedWindowStateListeners();
-    });
-  }
-
-  static setSavedWindowsStateSync(sessionListState: SessionListState) {
-    ChromeStorageUtils.getSavedWindowsStateSync().then(oldSessionListState => {
-      const removedSessionIds = oldSessionListState.layoutState.sessionStates
-        .map(layoutState => layoutState.sessionId)
-        .filter(sessionId => !sessionListState.chromeSessions[sessionId]);
-      chrome.storage.sync.set({
-        ...sessionListState.chromeSessions,
-        [ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE]: sessionListState.layoutState
-      }, () => {
-        chrome.storage.sync.remove(removedSessionIds);
-        MessagePassingService.notifySavedWindowStateListeners();
-      });
     });
   }
 
@@ -133,38 +103,6 @@ export class ChromeStorageUtils {
       [ChromeStorageUtils.RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE]: sessionListState.layoutState
     }, () => {
       MessagePassingService.notifyClosedSessionStateListeners();
-    });
-  }
-
-  static getPreferences(): Promise<Preferences> {
-    return new Promise<Preferences>(resolve => {
-      chrome.storage.sync.get({
-        [ChromeStorageUtils.PREFERENCES]: PreferenceUtils.createDefaultPreferences()
-      }, data => {
-        resolve(data[ChromeStorageUtils.PREFERENCES]);
-      });
-    });
-  }
-
-  static setPreferences(preferences: Preferences) {
-    chrome.storage.sync.set({
-      [ChromeStorageUtils.PREFERENCES]: preferences
-    }, () => {
-      MessagePassingService.notifyPreferenceListeners();
-    });
-  }
-
-  static getSyncBytesInUse(): Promise<number> {
-    return new Promise<number>(resolve => {
-      chrome.storage.sync.getBytesInUse(bytesInUse => resolve(bytesInUse));
-    });
-  }
-
-  static addSyncStorageOnChangedListener(callback: () => void) {
-    chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (areaName === 'sync') {
-        callback();
-      }
     });
   }
 

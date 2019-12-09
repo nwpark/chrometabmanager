@@ -4,9 +4,9 @@ import {Preferences} from '../../types/preferences';
 import {MatSlideToggleChange} from '@angular/material';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {ChromeStorageUtils} from '../../classes/chrome-storage-utils';
-import {StorageService} from '../../services/storage.service';
 import {SessionListState} from '../../types/session-list-state';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {SyncStorageService} from '../../services/sync-storage.service';
 
 @Component({
   selector: 'app-options',
@@ -31,7 +31,7 @@ export class OptionsComponent implements OnInit {
   downloadJsonHref: Promise<SafeUrl>;
 
   constructor(private preferencesService: PreferencesService,
-              private storageService: StorageService,
+              private syncStorageService: SyncStorageService,
               private changeDetectorRef: ChangeDetectorRef,
               private domSanitizer: DomSanitizer) { }
 
@@ -40,7 +40,7 @@ export class OptionsComponent implements OnInit {
       this.preferences = preferences;
       this.changeDetectorRef.detectChanges();
     });
-    this.storageService.syncBytesInUse$.subscribe(syncBytesInUse => {
+    this.syncStorageService.bytesInUse$.subscribe(syncBytesInUse => {
       this.syncBytesInUse = syncBytesInUse;
       this.changeDetectorRef.detectChanges();
     });
@@ -74,7 +74,7 @@ export class OptionsComponent implements OnInit {
   copyLocalDataToSync() {
     Promise.all([
       ChromeStorageUtils.getSavedWindowsStateLocal(),
-      ChromeStorageUtils.getSavedWindowsStateSync()
+      this.syncStorageService.getSavedWindowsStateSync()
     ]).then(res => {
       const savedSessionsLocal: SessionListState = res[0];
       const savedSessionsSync: SessionListState = res[1];
@@ -84,12 +84,12 @@ export class OptionsComponent implements OnInit {
           savedSessionsSync.unshiftSession(savedSession, layoutState);
         }
       });
-      this.storageService.setSavedWindowsStateSync(savedSessionsSync);
+      this.syncStorageService.setSavedWindowsState(savedSessionsSync);
     });
   }
 
   copySyncDataToLocal() {
-    ChromeStorageUtils.getSavedWindowsStateSync().then(sessionListState => {
+    this.syncStorageService.getSavedWindowsStateSync().then(sessionListState => {
       ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
     });
   }
