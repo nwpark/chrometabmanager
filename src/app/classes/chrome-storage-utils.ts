@@ -12,32 +12,6 @@ export class ChromeStorageUtils {
   static readonly PREFERENCES = 'preferencesStorage_166b6914';
   static readonly LAST_MODIFIED_BY = 'lastModifiedBy_1266a87e';
 
-  static getSavedWindowsStateLocal(): Promise<SessionListState> {
-    return new Promise<SessionListState>(resolve => {
-      chrome.storage.local.get([
-        ChromeStorageUtils.SAVED_WINDOWS,
-        ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE
-      ], data => {
-        const savedWindows = data[ChromeStorageUtils.SAVED_WINDOWS];
-        const layoutState = data[ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE];
-        if (savedWindows && layoutState) {
-          resolve(new SessionListState(savedWindows, layoutState));
-        } else {
-          resolve(SessionListState.empty());
-        }
-      });
-    });
-  }
-
-  static setSavedWindowsStateLocal(sessionListState: SessionListState) {
-    chrome.storage.local.set({
-      [ChromeStorageUtils.SAVED_WINDOWS]: sessionListState.chromeSessions,
-      [ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE]: sessionListState.layoutState
-    }, () => {
-      MessagePassingService.notifySavedWindowStateListeners();
-    });
-  }
-
   static getActiveWindowsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
       chrome.storage.local.get([

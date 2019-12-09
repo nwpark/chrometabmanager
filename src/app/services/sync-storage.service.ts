@@ -40,7 +40,7 @@ export class SyncStorageService {
     });
   }
 
-  getSavedWindowsStateSync(): Promise<SessionListState> {
+  getSavedWindowsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
       chrome.storage.sync.get(data => {
         const layoutState: SessionListLayoutState = data[ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE];
@@ -64,7 +64,7 @@ export class SyncStorageService {
   }
 
   setSavedWindowsState(sessionListState: SessionListState) {
-    this.getSavedWindowsStateSync().then(oldSessionListState => {
+    this.getSavedWindowsState().then(oldSessionListState => {
       const removedSessionIds = oldSessionListState.layoutState.sessionStates
         .map(layoutState => layoutState.sessionId)
         .filter(sessionId => !sessionListState.chromeSessions[sessionId]);

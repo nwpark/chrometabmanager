@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {SessionListState} from '../types/session-list-state';
 import {PreferencesService} from './preferences.service';
-import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
 import {Preferences} from '../types/preferences';
 import {SyncStorageService} from './sync-storage.service';
 import {MessagePassingService} from './message-passing.service';
+import {LocalStorageService} from './local-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,13 +12,14 @@ import {MessagePassingService} from './message-passing.service';
 export class StorageService {
 
   constructor(private preferencesService: PreferencesService,
-              private syncStorageService: SyncStorageService) { }
+              private syncStorageService: SyncStorageService,
+              private localStorageService: LocalStorageService) { }
 
   getSavedWindowsState(): Promise<SessionListState> {
     return Promise.all([
       this.preferencesService.getPreferences(),
-      this.syncStorageService.getSavedWindowsStateSync(),
-      ChromeStorageUtils.getSavedWindowsStateLocal()
+      this.syncStorageService.getSavedWindowsState(),
+      this.localStorageService.getSavedWindowsState()
     ]).then(res => {
       const preferences: Preferences = res[0];
       return preferences.syncSavedWindows ? res[1] : res[2];
@@ -30,7 +31,7 @@ export class StorageService {
       if (preferences.syncSavedWindows) {
         this.syncStorageService.setSavedWindowsState(sessionListState);
       } else {
-        ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
+        this.localStorageService.setSavedWindowsState(sessionListState);
       }
     });
   }

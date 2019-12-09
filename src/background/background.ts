@@ -64,21 +64,6 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
 function addOnInstalledListener() {
   chrome.runtime.onInstalled.addListener(details => {
     if (details.previousVersion === '0.3.9') {
-      chrome.storage.local.get([
-        ChromeStorageUtils.SAVED_WINDOWS,
-        ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE
-      ], data => {
-        const savedWindows = data[ChromeStorageUtils.SAVED_WINDOWS];
-        const sessionListState = SessionListState.empty();
-        savedWindows.forEach(chromeWindow => {
-          const session = SessionUtils.createSessionFromWindow(chromeWindow);
-          const layoutState = SessionListUtils.createBasicWindowLayoutState(chromeWindow.id);
-          sessionListState.unshiftSession(session, layoutState);
-        });
-        chrome.storage.local.clear();
-        ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
-        chrome.runtime.reload();
-      });
     }
   });
 }

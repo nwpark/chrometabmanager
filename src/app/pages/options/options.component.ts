@@ -7,6 +7,7 @@ import {ChromeStorageUtils} from '../../classes/chrome-storage-utils';
 import {SessionListState} from '../../types/session-list-state';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {SyncStorageService} from '../../services/sync-storage.service';
+import {LocalStorageService} from '../../services/local-storage.service';
 
 @Component({
   selector: 'app-options',
@@ -32,6 +33,7 @@ export class OptionsComponent implements OnInit {
 
   constructor(private preferencesService: PreferencesService,
               private syncStorageService: SyncStorageService,
+              private localStorageService: LocalStorageService,
               private changeDetectorRef: ChangeDetectorRef,
               private domSanitizer: DomSanitizer) { }
 
@@ -73,8 +75,8 @@ export class OptionsComponent implements OnInit {
 
   copyLocalDataToSync() {
     Promise.all([
-      ChromeStorageUtils.getSavedWindowsStateLocal(),
-      this.syncStorageService.getSavedWindowsStateSync()
+      this.localStorageService.getSavedWindowsState(),
+      this.syncStorageService.getSavedWindowsState()
     ]).then(res => {
       const savedSessionsLocal: SessionListState = res[0];
       const savedSessionsSync: SessionListState = res[1];
@@ -89,8 +91,8 @@ export class OptionsComponent implements OnInit {
   }
 
   copySyncDataToLocal() {
-    this.syncStorageService.getSavedWindowsStateSync().then(sessionListState => {
-      ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
+    this.syncStorageService.getSavedWindowsState().then(sessionListState => {
+      this.localStorageService.setSavedWindowsState(sessionListState);
     });
   }
 
