@@ -6,6 +6,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 import {ChromeStorageUtils} from '../../classes/chrome-storage-utils';
 import {StorageService} from '../../services/storage.service';
 import {SessionListState} from '../../types/session-list-state';
+import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-options',
@@ -27,10 +28,12 @@ export class OptionsComponent implements OnInit {
   syncBytesInUse: number;
   syncQuotaBytes = chrome.storage.sync.QUOTA_BYTES;
   localSavedSessionsBytesInUse: number;
+  downloadJsonHref: Promise<SafeUrl>;
 
   constructor(private preferencesService: PreferencesService,
               private storageService: StorageService,
-              private changeDetectorRef: ChangeDetectorRef) { }
+              private changeDetectorRef: ChangeDetectorRef,
+              private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.preferencesService.preferencesUpdated$.subscribe(preferences => {
@@ -44,6 +47,7 @@ export class OptionsComponent implements OnInit {
     ChromeStorageUtils.getLocalSavedSessionsBytesInUse().then(bytesInUse => {
       this.localSavedSessionsBytesInUse = bytesInUse;
     });
+    this.downloadJsonHref = this.generateDownloadJsonUri();
   }
 
   getBytesInUsePercentage(): number {
@@ -80,13 +84,27 @@ export class OptionsComponent implements OnInit {
           savedSessionsSync.unshiftSession(savedSession, layoutState);
         }
       });
-      ChromeStorageUtils.setSavedWindowsStateSync(savedSessionsSync);
+      this.storageService.setSavedWindowsStateSync(savedSessionsSync);
     });
   }
 
   copySyncDataToLocal() {
     ChromeStorageUtils.getSavedWindowsStateSync().then(sessionListState => {
       ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
+    });
+  }
+
+  reset() {
+    chrome.storage.local.clear();
+    chrome.storage.sync.clear();
+    chrome.runtime.reload();
+  }
+
+  generateDownloadJsonUri(): Promise<SafeUrl> {
+    return new Promise<SafeUrl>(resolve => {
+      chrome.storage.local.get(res => {
+        resolve(this.domSanitizer.bypassSecurityTrustUrl('data:text/json;charset=UTF-8,' + encodeURIComponent(JSON.stringify(res))));
+      });
     });
   }
 }

@@ -1,6 +1,6 @@
 <div
   class="chrome-window-container"
-  *ngIf="chromeAPIWindow.type === 'normal' && !layoutState.deleted"
+  *ngIf="(!chromeAPIWindow.type || chromeAPIWindow.type === 'normal') && !layoutState.deleted"
   [@close-window]="animationState"
   (@close-window.done)="completeCloseWindow($event)">
   <div cdkDragHandle>

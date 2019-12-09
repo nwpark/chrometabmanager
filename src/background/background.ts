@@ -79,24 +79,6 @@ function addOnInstalledListener() {
         ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
         chrome.runtime.reload();
       });
-    } else if (details.previousVersion === '0.4.0') {
-      chrome.storage.local.get([
-        ChromeStorageUtils.SAVED_WINDOWS,
-        ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE
-      ], data => {
-        const savedWindows: SessionMap = data[ChromeStorageUtils.SAVED_WINDOWS];
-        const layoutState: SessionListLayoutState = data[ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE];
-        layoutState.sessionStates.forEach(sessionState => {
-          savedWindows[sessionState.sessionId].lastModified = undefined;
-          savedWindows[sessionState.sessionId].window.type = 'normal';
-        });
-        chrome.storage.local.clear();
-        chrome.storage.local.set({
-          [ChromeStorageUtils.SAVED_WINDOWS]: savedWindows,
-          [ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE]: layoutState
-        });
-        chrome.runtime.reload();
-      });
     }
   });
 }

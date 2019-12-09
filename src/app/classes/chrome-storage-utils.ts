@@ -11,6 +11,7 @@ export class ChromeStorageUtils {
   static readonly RECENTLY_CLOSED_SESSIONS = 'closedSessionsStorage_882c0c64';
   static readonly RECENTLY_CLOSED_SESSIONS_LAYOUT_STATE = 'closedSessionsLayoutStateStorage_b120de96';
   static readonly PREFERENCES = 'preferencesStorage_166b6914';
+  static readonly LAST_MODIFIED_BY = 'lastModifiedBy_1266a87e';
 
   static getSavedWindowsStateLocal(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
@@ -57,11 +58,11 @@ export class ChromeStorageUtils {
       const removedSessionIds = oldSessionListState.layoutState.sessionStates
         .map(layoutState => layoutState.sessionId)
         .filter(sessionId => !sessionListState.chromeSessions[sessionId]);
-      chrome.storage.sync.remove(removedSessionIds);
       chrome.storage.sync.set({
         ...sessionListState.chromeSessions,
         [ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE]: sessionListState.layoutState
       }, () => {
+        chrome.storage.sync.remove(removedSessionIds);
         MessagePassingService.notifySavedWindowStateListeners();
       });
     });

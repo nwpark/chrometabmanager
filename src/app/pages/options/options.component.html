@@ -89,4 +89,37 @@
       </mat-list>
     </mat-card-content>
   </mat-card>
+  <mat-card style="width: 500px; margin: 0 auto 20px auto">
+    <mat-card-header>
+      <mat-card-title>Download your data</mat-card-title>
+    </mat-card-header>
+    <mat-divider [inset]="true"></mat-divider>
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item>
+          <a title="Download Tab Data" [href]="downloadJsonHref | async" download="TabManagerData.txt">
+            <button mat-raised-button color="primary" style="width: 100%">Download</button>
+          </a>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+  <mat-card style="width: 500px; margin: 0 auto 20px auto">
+    <mat-card-header>
+      <mat-card-title>Reset</mat-card-title>
+    </mat-card-header>
+    <mat-divider [inset]="true"></mat-divider>
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item>
+          <button mat-raised-button color="warn" style="" (click)="reset()">Reset</button>
+        </mat-list-item>
+        <mat-list-item>
+          <h3 mat-subheader style="padding-left: 0; padding-right: 0">
+            Warning: Resetting the extension will wipe the storage and all of your data will be lost.
+          </h3>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
 </div>

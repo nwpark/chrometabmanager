@@ -5,6 +5,7 @@ import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
 import {Preferences} from '../types/preferences';
 import {Subject} from 'rxjs';
 import {v4 as uuid} from 'uuid';
+import {MessagePassingService} from './message-passing.service';
 
 @Injectable({
   providedIn: 'root'
@@ -43,10 +44,27 @@ export class StorageService {
   setSavedWindowsState(sessionListState: SessionListState) {
     this.preferencesService.getPreferences().then(preferences => {
       if (preferences.syncSavedWindows) {
-        ChromeStorageUtils.setSavedWindowsStateSync(sessionListState);
+        // ChromeStorageUtils.setSavedWindowsStateSync(sessionListState);
+        this.setSavedWindowsStateSync(sessionListState);
       } else {
         ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
       }
+    });
+  }
+
+  setSavedWindowsStateSync(sessionListState: SessionListState) {
+    ChromeStorageUtils.getSavedWindowsStateSync().then(oldSessionListState => {
+      const removedSessionIds = oldSessionListState.layoutState.sessionStates
+        .map(layoutState => layoutState.sessionId)
+        .filter(sessionId => !sessionListState.chromeSessions[sessionId]);
+      chrome.storage.sync.set({
+        [ChromeStorageUtils.LAST_MODIFIED_BY]: this.instanceId,
+        ...sessionListState.chromeSessions,
+        [ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE]: sessionListState.layoutState
+      }, () => {
+        chrome.storage.sync.remove(removedSessionIds);
+        MessagePassingService.notifySavedWindowStateListeners();
+      });
     });
   }
 
