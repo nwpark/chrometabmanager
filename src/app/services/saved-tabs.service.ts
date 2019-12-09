@@ -43,7 +43,7 @@ export class SavedTabsService implements TabsService {
   @modifiesState()
   createNewWindow() {
     const newWindow: ChromeAPIWindowState = {id: uuid(), tabs: [], type: 'normal'};
-    const newSession: ChromeAPISession = SessionListUtils.createClosedSessionFromWindow(newWindow);
+    const newSession: ChromeAPISession = SessionUtils.createSessionFromWindow(newWindow);
     const newWindowLayout = SessionListUtils.createBasicWindowLayoutState(newWindow.id);
     this.sessionListState.unshiftSession(newSession, newWindowLayout);
     this.sessionListState.setHidden(false);

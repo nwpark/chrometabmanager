@@ -4,7 +4,7 @@ import {async} from 'rxjs/internal/scheduler/async';
 import {ThrottleConfig} from 'rxjs/src/internal/operators/throttle';
 import {ClosedSessionStateManager} from './closed-session-state-manager';
 import {ActiveWindowStateManager} from './active-window-state-manager';
-import {SessionListState, SessionListUtils} from '../app/types/session-list-state';
+import {SessionListLayoutState, SessionListState, SessionListUtils, SessionMap} from '../app/types/session-list-state';
 import {ChromeStorageUtils} from '../app/classes/chrome-storage-utils';
 import {SessionUtils} from '../app/types/chrome-api-types';
 
@@ -63,23 +63,40 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
 
 function addOnInstalledListener() {
   chrome.runtime.onInstalled.addListener(details => {
-    if (details.previousVersion !== '0.3.9') {
-      return;
-    }
-    chrome.storage.local.get([
-      ChromeStorageUtils.SAVED_WINDOWS,
-      ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE
-    ], data => {
-      const savedWindows = data[ChromeStorageUtils.SAVED_WINDOWS];
-      const sessionListState = SessionListState.empty();
-      savedWindows.forEach(chromeWindow => {
-        const session = SessionUtils.createSessionFromWindow(chromeWindow);
-        const layoutState = SessionListUtils.createBasicWindowLayoutState(chromeWindow.id);
-        sessionListState.unshiftSession(session, layoutState);
+    if (details.previousVersion === '0.3.9') {
+      chrome.storage.local.get([
+        ChromeStorageUtils.SAVED_WINDOWS,
+        ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE
+      ], data => {
+        const savedWindows = data[ChromeStorageUtils.SAVED_WINDOWS];
+        const sessionListState = SessionListState.empty();
+        savedWindows.forEach(chromeWindow => {
+          const session = SessionUtils.createSessionFromWindow(chromeWindow);
+          const layoutState = SessionListUtils.createBasicWindowLayoutState(chromeWindow.id);
+          sessionListState.unshiftSession(session, layoutState);
+        });
+        chrome.storage.local.clear();
+        ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
+        chrome.runtime.reload();
       });
-      chrome.storage.local.clear();
-      ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
-      chrome.runtime.reload();
-    });
+    } else if (details.previousVersion === '0.4.0') {
+      chrome.storage.local.get([
+        ChromeStorageUtils.SAVED_WINDOWS,
+        ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE
+      ], data => {
+        const savedWindows: SessionMap = data[ChromeStorageUtils.SAVED_WINDOWS];
+        const layoutState: SessionListLayoutState = data[ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE];
+        layoutState.sessionStates.forEach(sessionState => {
+          savedWindows[sessionState.sessionId].lastModified = undefined;
+          savedWindows[sessionState.sessionId].window.type = 'normal';
+        });
+        chrome.storage.local.clear();
+        chrome.storage.local.set({
+          [ChromeStorageUtils.SAVED_WINDOWS]: savedWindows,
+          [ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE]: layoutState
+        });
+        chrome.runtime.reload();
+      });
+    }
   });
 }

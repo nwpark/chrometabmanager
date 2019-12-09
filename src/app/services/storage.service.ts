@@ -4,16 +4,19 @@ import {PreferencesService} from './preferences.service';
 import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
 import {Preferences} from '../types/preferences';
 import {Subject} from 'rxjs';
+import {v4 as uuid} from 'uuid';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
 
+  readonly instanceId: string;
   syncBytesInUse = new Subject<number>();
   syncBytesInUse$ = this.syncBytesInUse.asObservable();
 
   constructor(private preferencesService: PreferencesService) {
+    this.instanceId = uuid();
     ChromeStorageUtils.addSyncStorageOnChangedListener(() => {
       this.refreshState();
     });
@@ -43,6 +46,14 @@ export class StorageService {
         ChromeStorageUtils.setSavedWindowsStateSync(sessionListState);
       } else {
         ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
+      }
+    });
+  }
+
+  removeSavedSessionFromSync(sessionId: any) {
+    this.preferencesService.getPreferences().then(preferences => {
+      if (preferences.syncSavedWindows) {
+        chrome.storage.sync.remove(sessionId);
       }
     });
   }
