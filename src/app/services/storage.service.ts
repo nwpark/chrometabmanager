@@ -41,7 +41,7 @@ export class StorageService {
       if (preferences.syncSavedWindows) {
         this.syncStorageService.addSavedSessionsChangedListener(callback);
       } else {
-        MessagePassingService.addSavedWindowStateListener(callback);
+        this.localStorageService.addSavedSessionsChangedListener(callback);
       }
     });
   }

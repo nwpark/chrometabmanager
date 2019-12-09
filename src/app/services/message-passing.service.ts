@@ -18,10 +18,6 @@ export class MessagePassingService {
     MessagePassingService.addEventListener(MessagePassingService.ACTIVE_WINDOWS_UPDATED, callback);
   }
 
-  static addSavedWindowStateListener(callback: () => void) {
-    MessagePassingService.addEventListener(MessagePassingService.SAVED_WINDOWS_UPDATED, callback);
-  }
-
   static addClosedSessionStateListener(callback: () => void) {
     MessagePassingService.addEventListener(MessagePassingService.CLOSED_SESSIONS_UPDATED, callback);
   }
@@ -55,10 +51,6 @@ export class MessagePassingService {
 
   static notifyActiveWindowStateListeners() {
     chrome.runtime.sendMessage(MessagePassingService.ACTIVE_WINDOWS_UPDATED);
-  }
-
-  static notifySavedWindowStateListeners() {
-    chrome.runtime.sendMessage(MessagePassingService.SAVED_WINDOWS_UPDATED);
   }
 
   static notifyClosedSessionStateListeners() {

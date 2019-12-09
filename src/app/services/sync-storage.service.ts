@@ -74,16 +74,7 @@ export class SyncStorageService {
         [ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE]: sessionListState.layoutState
       }, () => {
         chrome.storage.sync.remove(removedSessionIds);
-        MessagePassingService.notifySavedWindowStateListeners();
       });
-    });
-  }
-
-  addOnChangedListener(callback: () => void) {
-    chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (areaName === 'sync') {
-        callback();
-      }
     });
   }
 
@@ -99,6 +90,14 @@ export class SyncStorageService {
             callback();
           }
         });
+      }
+    });
+  }
+
+  private addOnChangedListener(callback: () => void) {
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName === 'sync') {
+        callback();
       }
     });
   }

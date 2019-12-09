@@ -1,14 +1,18 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {SessionListState} from '../types/session-list-state';
 import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
-import {MessagePassingService} from './message-passing.service';
+import {v4 as uuid} from 'uuid';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocalStorageService {
 
-  constructor() { }
+  readonly instanceId: string;
+
+  constructor() {
+    this.instanceId = uuid();
+  }
 
   getSavedWindowsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
@@ -29,10 +33,25 @@ export class LocalStorageService {
 
   setSavedWindowsState(sessionListState: SessionListState) {
     chrome.storage.local.set({
+      [ChromeStorageUtils.LAST_MODIFIED_BY]: this.instanceId,
       [ChromeStorageUtils.SAVED_WINDOWS]: sessionListState.chromeSessions,
       [ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE]: sessionListState.layoutState
-    }, () => {
-      MessagePassingService.notifySavedWindowStateListeners();
+    });
+  }
+
+  addSavedSessionsChangedListener(callback: () => void) {
+    this.addExternalOnChangedListener(ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE, callback);
+  }
+
+  private addExternalOnChangedListener(key: string, callback: () => void) {
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName === 'local' && changes[key]) {
+        chrome.storage.local.get(ChromeStorageUtils.LAST_MODIFIED_BY, data => {
+          if (data[ChromeStorageUtils.LAST_MODIFIED_BY] !== this.instanceId) {
+            callback();
+          }
+        });
+      }
     });
   }
 }
