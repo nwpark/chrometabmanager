@@ -4,6 +4,7 @@ import {PreferencesService} from './preferences.service';
 import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
 import {Preferences} from '../types/preferences';
 import {SyncStorageService} from './sync-storage.service';
+import {MessagePassingService} from './message-passing.service';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,16 @@ export class StorageService {
         this.syncStorageService.setSavedWindowsState(sessionListState);
       } else {
         ChromeStorageUtils.setSavedWindowsStateLocal(sessionListState);
+      }
+    });
+  }
+
+  addSavedSessionsChangedListener(callback: () => void) {
+    this.preferencesService.getPreferences().then(preferences => {
+      if (preferences.syncSavedWindows) {
+        this.syncStorageService.addSavedSessionsChangedListener(callback);
+      } else {
+        MessagePassingService.addSavedWindowStateListener(callback);
       }
     });
   }

@@ -22,7 +22,7 @@ export class SavedTabsService implements TabsService {
   constructor(private chromeTabsService: ChromeTabsService,
               private storageService: StorageService) {
     this.sessionListState = SessionListState.empty();
-    MessagePassingService.addSavedWindowStateListener(() => {
+    this.storageService.addSavedSessionsChangedListener(() => {
       this.refreshState();
     });
     this.refreshState();

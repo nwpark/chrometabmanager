@@ -40,15 +40,6 @@ export class SyncStorageService {
     });
   }
 
-  setPreferences(preferences: Preferences) {
-    chrome.storage.sync.set({
-      [ChromeStorageUtils.LAST_MODIFIED_BY]: this.instanceId,
-      [ChromeStorageUtils.PREFERENCES]: preferences
-    }, () => {
-      MessagePassingService.notifyPreferenceListeners();
-    });
-  }
-
   getSavedWindowsStateSync(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
       chrome.storage.sync.get(data => {
@@ -60,6 +51,15 @@ export class SyncStorageService {
           resolve(SessionListState.empty());
         }
       });
+    });
+  }
+
+  setPreferences(preferences: Preferences) {
+    chrome.storage.sync.set({
+      [ChromeStorageUtils.LAST_MODIFIED_BY]: this.instanceId,
+      [ChromeStorageUtils.PREFERENCES]: preferences
+    }, () => {
+      MessagePassingService.notifyPreferenceListeners();
     });
   }
 
@@ -83,6 +83,22 @@ export class SyncStorageService {
     chrome.storage.onChanged.addListener((changes, areaName) => {
       if (areaName === 'sync') {
         callback();
+      }
+    });
+  }
+
+  addSavedSessionsChangedListener(callback: () => void) {
+    this.addExternalOnChangedListener(ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE, callback);
+  }
+
+  private addExternalOnChangedListener(key: string, callback: () => void) {
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName === 'sync' && changes[key]) {
+        chrome.storage.sync.get(ChromeStorageUtils.LAST_MODIFIED_BY, data => {
+          if (data[ChromeStorageUtils.LAST_MODIFIED_BY] !== this.instanceId) {
+            callback();
+          }
+        });
       }
     });
   }
