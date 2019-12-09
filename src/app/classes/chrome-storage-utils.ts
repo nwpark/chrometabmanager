@@ -1,5 +1,7 @@
-import {SessionListLayoutState, SessionListState, SessionListUtils} from '../types/session-list-state';
+import {SessionListState} from '../types/session-list-state';
 import {MessagePassingService} from '../services/message-passing.service';
+import {SessionListLayoutState} from '../types/session';
+import {SessionListUtils} from './session-list-utils';
 
 export class ChromeStorageUtils {
 

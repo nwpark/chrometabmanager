@@ -3,7 +3,7 @@ import {ChromeTabsService} from './chrome-tabs.service';
 import {SavedTabsService} from './saved-tabs.service';
 import {ActionButton, ActionButtonFactory, ListActionButton, ListActionButtonFactory} from '../types/action-bar';
 import {RecentlyClosedTabsService} from './recently-closed-tabs.service';
-import {WindowListId} from '../types/chrome-window-component-data';
+import {SessionListId} from '../types/chrome-window-component-data';
 
 @Injectable({
   providedIn: 'root'
@@ -15,19 +15,19 @@ export class ActionBarService {
               private savedTabsService: SavedTabsService,
               private recentlyClosedTabsService: RecentlyClosedTabsService) { }
 
-  createWindowActionButtons(windowCategory: WindowListId): ActionButton[] {
+  createWindowActionButtons(windowCategory: SessionListId): ActionButton[] {
     switch (windowCategory) {
-      case WindowListId.Active: return this.createActiveWindowActionButtons();
-      case WindowListId.Saved: return this.createSavedWindowActionButtons();
-      case WindowListId.RecentlyClosed: return this.createRecentlyClosedWindowActionButtons();
+      case SessionListId.Active: return this.createActiveWindowActionButtons();
+      case SessionListId.Saved: return this.createSavedWindowActionButtons();
+      case SessionListId.RecentlyClosed: return this.createRecentlyClosedWindowActionButtons();
     }
   }
 
-  createWindowListActionButtons(windowCategory: WindowListId): ListActionButton[] {
+  createWindowListActionButtons(windowCategory: SessionListId): ListActionButton[] {
     switch (windowCategory) {
-      case WindowListId.Active: return [];
-      case WindowListId.Saved: return this.createSavedWindowListActionButtons();
-      case WindowListId.RecentlyClosed: return this.createRecentlyClosedListActionButtons();
+      case SessionListId.Active: return [];
+      case SessionListId.Saved: return this.createSavedWindowListActionButtons();
+      case SessionListId.RecentlyClosed: return this.createRecentlyClosedListActionButtons();
     }
   }
 

@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
-import {SessionListState, SessionListUtils} from '../types/session-list-state';
+import {SessionListState} from '../types/session-list-state';
 import {PreferencesService} from './preferences.service';
 import {Preferences} from '../types/preferences';
 import {SyncStorageService} from './sync-storage.service';
 import {LocalStorageService} from './local-storage.service';
+import {SessionListUtils} from '../classes/session-list-utils';
 
 @Injectable({
   providedIn: 'root'

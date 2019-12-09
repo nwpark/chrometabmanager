@@ -5,9 +5,11 @@ import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {StorageService} from './storage.service';
-import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState, SessionUtils, WindowStateUtils} from '../types/chrome-api-types';
+import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
-import {SessionListState, SessionListUtils} from '../types/session-list-state';
+import {SessionListState} from '../types/session-list-state';
+import {SessionListUtils} from '../classes/session-list-utils';
+import {SessionUtils, WindowStateUtils} from '../classes/session-utils';
 
 @Injectable({
   providedIn: 'root'

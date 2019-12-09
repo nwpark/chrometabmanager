@@ -5,7 +5,7 @@ import {FormControl} from '@angular/forms';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {PreferencesService} from '../../services/preferences.service';
 import {ActionBarService} from '../../services/action-bar.service';
-import {SessionLayoutState} from '../../types/session-list-state';
+import {SessionLayoutState} from '../../types/session';
 
 @Component({
   selector: 'app-chrome-window-header',
@@ -32,7 +32,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
 
   ngOnInit() {
     this.actionButtons = [
-      ...this.actionBarService.createWindowActionButtons(this.props.windowListId),
+      ...this.actionBarService.createWindowActionButtons(this.props.sessionListId),
       ActionButtonFactory.createMinimizeButton(() => this.chromeWindowToggleDisplay.emit()),
       ActionButtonFactory.createCloseButton(() => this.chromeWindowClose.emit())
     ];

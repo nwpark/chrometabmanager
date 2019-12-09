@@ -2,10 +2,12 @@ import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
 import {modifiesState, StateModifierParams} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
-import {ChromeAPITabState, ChromeAPIWindowState, SessionUtils, WindowStateUtils} from '../types/chrome-api-types';
+import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
-import {SessionListState, SessionListUtils} from '../types/session-list-state';
+import {SessionListState} from '../types/session-list-state';
 import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
+import {SessionListUtils} from '../classes/session-list-utils';
+import {SessionUtils, WindowStateUtils} from '../classes/session-utils';
 
 @Injectable({
   providedIn: 'root'

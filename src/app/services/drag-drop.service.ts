@@ -3,15 +3,15 @@ import {merge, MonoTypeOperatorFunction, Observable, Subject} from 'rxjs';
 import {buffer, filter, map} from 'rxjs/operators';
 import {SavedTabsService} from './saved-tabs.service';
 import {ChromeTabsService} from './chrome-tabs.service';
-import {WindowListId} from '../types/chrome-window-component-data';
-import {SessionUtils} from '../types/chrome-api-types';
+import {SessionListId} from '../types/chrome-window-component-data';
+import {SessionUtils} from '../classes/session-utils';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DragDropService {
 
-  static CONNECTED_WINDOW_LIST_IDS = [WindowListId.Saved, WindowListId.Active];
+  static CONNECTED_WINDOW_LIST_IDS = [SessionListId.Saved, SessionListId.Active];
 
   private dragStatusUpdated = new Subject<boolean>();
   private dragStatusUpdated$ = this.dragStatusUpdated.asObservable();

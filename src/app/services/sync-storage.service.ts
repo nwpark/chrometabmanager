@@ -1,9 +1,11 @@
 import {Injectable} from '@angular/core';
-import {SessionListLayoutState, SessionListState, SessionListUtils} from '../types/session-list-state';
+import {SessionListState} from '../types/session-list-state';
 import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
 import {v4 as uuid} from 'uuid';
 import {Subject} from 'rxjs';
 import {Preferences, PreferenceUtils} from '../types/preferences';
+import {SessionListLayoutState} from '../types/session';
+import {SessionListUtils} from '../classes/session-list-utils';
 
 @Injectable({
   providedIn: 'root'

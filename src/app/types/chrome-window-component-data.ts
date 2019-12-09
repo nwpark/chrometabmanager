@@ -1,20 +1,20 @@
 import {TabsService} from '../interfaces/tabs-service';
 
-export enum WindowListId {
+export enum SessionListId {
   Saved = 'saved_window_list',
   Active = 'active_window_list',
   RecentlyClosed = 'recently_closed_list'
 }
 
 export interface SessionComponentProps {
-  windowListId: WindowListId;
+  sessionListId: SessionListId;
   tabsService: TabsService;
   isMutable: boolean;
 }
 
 export interface ChromeWindowDragDropData {
   chromeWindowId: any;
-  windowListId: WindowListId;
+  sessionListId: SessionListId;
   tabsService: TabsService;
   isMutable: boolean;
 }

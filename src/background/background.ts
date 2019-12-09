@@ -4,9 +4,11 @@ import {async} from 'rxjs/internal/scheduler/async';
 import {ThrottleConfig} from 'rxjs/src/internal/operators/throttle';
 import {ClosedSessionStateManager} from './closed-session-state-manager';
 import {ActiveWindowStateManager} from './active-window-state-manager';
-import {SessionListLayoutState, SessionListState, SessionListUtils, SessionMap} from '../app/types/session-list-state';
+import {SessionListState} from '../app/types/session-list-state';
 import {ChromeStorageUtils} from '../app/classes/chrome-storage-utils';
-import {SessionUtils} from '../app/types/chrome-api-types';
+import {SessionListLayoutState, SessionMap} from '../app/types/session';
+import {SessionListUtils} from '../app/classes/session-list-utils';
+import {SessionUtils} from '../app/classes/session-utils';
 
 addOnInstalledListener();
 

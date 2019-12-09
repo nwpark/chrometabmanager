@@ -5,7 +5,7 @@ import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-ty
 import {DragDropService} from '../../services/drag-drop.service';
 import {PreferencesService} from '../../services/preferences.service';
 import {AnimationState} from '../../animations';
-import {SessionLayoutState} from '../../types/session-list-state';
+import {SessionLayoutState} from '../../types/session';
 
 @Component({
   selector: 'app-chrome-window',
@@ -66,7 +66,7 @@ export class ChromeWindowComponent implements OnInit {
         targetTabList.tabsService.moveTabInWindow(targetTabList.chromeWindowId,
           event.previousIndex,
           event.currentIndex);
-      } else if (sourceTabList.windowListId === targetTabList.windowListId) {
+      } else if (sourceTabList.sessionListId === targetTabList.sessionListId) {
         targetTabList.tabsService.transferTab(sourceTabList.chromeWindowId,
           targetTabList.chromeWindowId,
           event.previousIndex,

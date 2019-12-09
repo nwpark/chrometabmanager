@@ -13,8 +13,9 @@ import {
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {ActionBarService} from '../../services/action-bar.service';
-import {SessionLayoutState, SessionListState} from '../../types/session-list-state';
+import {SessionListState} from '../../types/session-list-state';
 import {ChromeAPISession} from '../../types/chrome-api-types';
+import {SessionLayoutState} from '../../types/session';
 
 @Component({
   selector: 'app-window-list',
@@ -49,7 +50,7 @@ export class WindowListComponent implements OnInit {
   ngOnInit() {
     this.sessionListState = this.props.tabsService.getSessionListState();
     this.actionButtons = [
-      ...this.actionBarService.createWindowListActionButtons(this.props.windowListId),
+      ...this.actionBarService.createWindowListActionButtons(this.props.sessionListId),
       ListActionButtonFactory.createMinimizeButton(() => this.toggleDisplay())
     ];
     this.props.tabsService.sessionStateUpdated$
