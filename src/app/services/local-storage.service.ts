@@ -1,27 +1,93 @@
 import {Injectable} from '@angular/core';
 import {SessionListState} from '../types/session-list-state';
-import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
-import {v4 as uuid} from 'uuid';
+import {MessagePassingService} from './message-passing.service';
+import {SessionListLayoutState} from '../types/session';
+import {SessionListUtils} from '../classes/session-list-utils';
+import {StorageKeys} from '../types/storage-keys';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocalStorageService {
 
-  readonly instanceId: string;
+  constructor() { }
 
-  constructor() {
-    this.instanceId = uuid();
+  getActiveWindowsState(): Promise<SessionListState> {
+    return new Promise<SessionListState>(resolve => {
+      chrome.storage.local.get([
+        StorageKeys.ActiveWindows,
+        StorageKeys.ActiveWindowsLayoutState
+      ], data => {
+        const activeWindows = data[StorageKeys.ActiveWindows];
+        const layoutState = data[StorageKeys.ActiveWindowsLayoutState];
+        if (activeWindows && layoutState) {
+          resolve(new SessionListState(activeWindows, layoutState));
+        } else {
+          resolve(SessionListState.empty());
+        }
+      });
+    });
+  }
+
+  setActiveWindowsState(sessionListState: SessionListState, callback?: () => void) {
+    chrome.storage.local.set({
+      [StorageKeys.ActiveWindows]: sessionListState.chromeSessions,
+      [StorageKeys.ActiveWindowsLayoutState]: sessionListState.layoutState
+    }, () => {
+      MessagePassingService.notifyActiveWindowStateListeners();
+      if (callback) {
+        callback();
+      }
+    });
+  }
+
+  getActiveWindowsLayoutState(): Promise<SessionListLayoutState> {
+    return new Promise<SessionListLayoutState>(resolve => {
+      chrome.storage.local.get(StorageKeys.ActiveWindowsLayoutState, data => {
+        const layoutState = data[StorageKeys.ActiveWindowsLayoutState];
+        if (layoutState) {
+          resolve(layoutState);
+        } else {
+          resolve(SessionListUtils.createEmptyListLayoutState());
+        }
+      });
+    });
+  }
+
+  getRecentlyClosedSessionsState(): Promise<SessionListState> {
+    return new Promise<SessionListState>(resolve => {
+      chrome.storage.local.get([
+        StorageKeys.RecentlyClosedSessions,
+        StorageKeys.RecentlyClosedSessionsLayoutState
+      ], data => {
+        const recentlyClosedSessions = data[StorageKeys.RecentlyClosedSessions];
+        const layoutState = data[StorageKeys.RecentlyClosedSessionsLayoutState];
+        if (recentlyClosedSessions && layoutState) {
+          resolve(new SessionListState(recentlyClosedSessions, layoutState));
+        } else {
+          resolve(SessionListState.empty());
+        }
+      });
+    });
+  }
+
+  setRecentlyClosedSessionsState(sessionListState: SessionListState) {
+    chrome.storage.local.set({
+      [StorageKeys.RecentlyClosedSessions]: sessionListState.chromeSessions,
+      [StorageKeys.RecentlyClosedSessionsLayoutState]: sessionListState.layoutState
+    }, () => {
+      MessagePassingService.notifyClosedSessionStateListeners();
+    });
   }
 
   getSavedWindowsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
       chrome.storage.local.get([
-        ChromeStorageUtils.SAVED_WINDOWS,
-        ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE
+        StorageKeys.SavedWindows,
+        StorageKeys.SavedWindowsLayoutState
       ], data => {
-        const savedWindows = data[ChromeStorageUtils.SAVED_WINDOWS];
-        const layoutState = data[ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE];
+        const savedWindows = data[StorageKeys.SavedWindows];
+        const layoutState = data[StorageKeys.SavedWindowsLayoutState];
         if (savedWindows && layoutState) {
           resolve(new SessionListState(savedWindows, layoutState));
         } else {
@@ -33,25 +99,14 @@ export class LocalStorageService {
 
   setSavedWindowsState(sessionListState: SessionListState) {
     chrome.storage.local.set({
-      [ChromeStorageUtils.LAST_MODIFIED_BY]: this.instanceId,
-      [ChromeStorageUtils.SAVED_WINDOWS]: sessionListState.chromeSessions,
-      [ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE]: sessionListState.layoutState
+      [StorageKeys.SavedWindows]: sessionListState.chromeSessions,
+      [StorageKeys.SavedWindowsLayoutState]: sessionListState.layoutState
+    }, () => {
+      MessagePassingService.notifySavedWindowStateListeners();
     });
   }
 
   addSavedSessionsChangedListener(callback: () => void) {
-    this.addExternalOnChangedListener(ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE, callback);
-  }
-
-  private addExternalOnChangedListener(key: string, callback: () => void) {
-    chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (areaName === 'local' && changes[key]) {
-        chrome.storage.local.get(ChromeStorageUtils.LAST_MODIFIED_BY, data => {
-          if (data[ChromeStorageUtils.LAST_MODIFIED_BY] !== this.instanceId) {
-            callback();
-          }
-        });
-      }
-    });
+    MessagePassingService.addSavedWindowStateListener(callback);
   }
 }

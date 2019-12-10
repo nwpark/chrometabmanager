@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {SessionListState} from '../types/session-list-state';
-import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
 import {v4 as uuid} from 'uuid';
 import {Subject} from 'rxjs';
 import {Preferences, PreferenceUtils} from '../types/preferences';
 import {SessionListLayoutState} from '../types/session';
 import {SessionListUtils} from '../classes/session-list-utils';
+import {StorageKeys} from '../types/storage-keys';
 
 @Injectable({
   providedIn: 'root'
@@ -34,9 +34,9 @@ export class SyncStorageService {
   getPreferences(): Promise<Preferences> {
     return new Promise<Preferences>(resolve => {
       chrome.storage.sync.get({
-        [ChromeStorageUtils.PREFERENCES]: PreferenceUtils.createDefaultPreferences()
+        [StorageKeys.Preferences]: PreferenceUtils.createDefaultPreferences()
       }, data => {
-        resolve(data[ChromeStorageUtils.PREFERENCES]);
+        resolve(data[StorageKeys.Preferences]);
       });
     });
   }
@@ -44,7 +44,7 @@ export class SyncStorageService {
   getSavedWindowsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
       chrome.storage.sync.get(data => {
-        const layoutState: SessionListLayoutState = data[ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE];
+        const layoutState: SessionListLayoutState = data[StorageKeys.SavedWindowsLayoutState];
         if (layoutState) {
           const savedSessions = SessionListUtils.filterSessionMap(data, layoutState);
           resolve(new SessionListState(savedSessions, layoutState));
@@ -57,8 +57,8 @@ export class SyncStorageService {
 
   setPreferences(preferences: Preferences) {
     chrome.storage.sync.set({
-      [ChromeStorageUtils.LAST_MODIFIED_BY]: this.instanceId,
-      [ChromeStorageUtils.PREFERENCES]: preferences
+      [StorageKeys.LastModifiedBy]: this.instanceId,
+      [StorageKeys.Preferences]: preferences
     });
   }
 
@@ -68,9 +68,9 @@ export class SyncStorageService {
         .map(layoutState => layoutState.sessionId)
         .filter(sessionId => !sessionListState.chromeSessions[sessionId]);
       chrome.storage.sync.set({
-        [ChromeStorageUtils.LAST_MODIFIED_BY]: this.instanceId,
+        [StorageKeys.LastModifiedBy]: this.instanceId,
         ...sessionListState.chromeSessions,
-        [ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE]: sessionListState.layoutState
+        [StorageKeys.SavedWindowsLayoutState]: sessionListState.layoutState
       }, () => {
         chrome.storage.sync.remove(removedSessionIds);
       });
@@ -78,18 +78,18 @@ export class SyncStorageService {
   }
 
   addPreferencesChangedListener(callback: () => void) {
-    this.addExternalOnChangedListener(ChromeStorageUtils.PREFERENCES, callback);
+    this.addExternalOnChangedListener(callback, StorageKeys.Preferences);
   }
 
   addSavedSessionsChangedListener(callback: () => void) {
-    this.addExternalOnChangedListener(ChromeStorageUtils.SAVED_WINDOWS_LAYOUT_STATE, callback);
+    this.addExternalOnChangedListener(callback);
   }
 
-  private addExternalOnChangedListener(key: string, callback: () => void) {
+  addExternalOnChangedListener(callback: () => void, key?: string) {
     chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (areaName === 'sync' && changes[key]) {
-        chrome.storage.sync.get(ChromeStorageUtils.LAST_MODIFIED_BY, data => {
-          if (data[ChromeStorageUtils.LAST_MODIFIED_BY] !== this.instanceId) {
+      if (areaName === 'sync' && (!key || changes[key])) {
+        chrome.storage.sync.get(StorageKeys.LastModifiedBy, data => {
+          if (data[StorageKeys.LastModifiedBy] !== this.instanceId) {
             callback();
           }
         });

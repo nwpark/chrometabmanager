@@ -5,9 +5,9 @@ import {TabsService} from '../interfaces/tabs-service';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
 import {SessionListState} from '../types/session-list-state';
-import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
 import {SessionListUtils} from '../classes/session-list-utils';
 import {SessionUtils, WindowStateUtils} from '../classes/session-utils';
+import {LocalStorageService} from './local-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +19,7 @@ export class ChromeTabsService implements TabsService {
   private sessionStateUpdated = new Subject<SessionListState>();
   public sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
 
-  constructor() {
+  constructor(private localStorageService: LocalStorageService) {
     this.sessionListState = SessionListState.empty();
     MessagePassingService.addActiveWindowStateListener(() => {
       this.refreshState();
@@ -28,7 +28,7 @@ export class ChromeTabsService implements TabsService {
   }
 
   private refreshState() {
-    ChromeStorageUtils.getActiveWindowsState().then(windowListState => {
+    this.localStorageService.getActiveWindowsState().then(windowListState => {
       console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
       this.sessionListState = windowListState;
       this.sessionStateUpdated.next(this.sessionListState);
@@ -125,7 +125,7 @@ export class ChromeTabsService implements TabsService {
     console.log(new Date().toTimeString().substring(0, 8), '- updating active windows');
     this.sessionStateUpdated.next(this.sessionListState);
     if (params.storeResult) {
-      ChromeStorageUtils.setActiveWindowsState(this.sessionListState);
+      this.localStorageService.setActiveWindowsState(this.sessionListState);
     }
   }
 

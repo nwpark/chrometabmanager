@@ -2,13 +2,15 @@ import {ChromeAPITabState, ChromeAPIWindowState} from '../app/types/chrome-api-t
 import {SessionListState} from '../app/types/session-list-state';
 import {MessagePassingService} from '../app/services/message-passing.service';
 import {modifiesState} from '../app/decorators/modifies-state';
-import {ChromeStorageUtils} from '../app/classes/chrome-storage-utils';
 import {SessionListUtils} from '../app/classes/session-list-utils';
 import {WindowStateUtils} from '../app/classes/session-utils';
+import {LocalStorageService} from '../app/services/local-storage.service';
 
 export class ClosedSessionStateManager {
 
   static readonly MAX_CLOSED_TABS = 30;
+
+  private localStorageService: LocalStorageService;
 
   private sessionListState: SessionListState;
 
@@ -21,7 +23,7 @@ export class ClosedSessionStateManager {
   }
 
   refreshState() {
-    ChromeStorageUtils.getRecentlyClosedSessionsState().then(sessionListState => {
+    this.localStorageService.getRecentlyClosedSessionsState().then(sessionListState => {
       this.sessionListState = sessionListState;
     });
   }
@@ -53,6 +55,6 @@ export class ClosedSessionStateManager {
 
   private onStateModified() {
     this.sessionListState.removeExpiredSessions(ClosedSessionStateManager.MAX_CLOSED_TABS);
-    ChromeStorageUtils.setRecentlyClosedSessionsState(this.sessionListState);
+    this.localStorageService.setRecentlyClosedSessionsState(this.sessionListState);
   }
 }

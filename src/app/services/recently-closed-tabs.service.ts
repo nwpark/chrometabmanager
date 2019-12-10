@@ -1,13 +1,12 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
-import {StorageService} from './storage.service';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {SessionListState} from '../types/session-list-state';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
-import {ChromeStorageUtils} from '../classes/chrome-storage-utils';
+import {LocalStorageService} from './local-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +18,7 @@ export class RecentlyClosedTabsService implements TabsService {
   private sessionStateUpdatedSource = new Subject<SessionListState>();
   public sessionStateUpdated$ = this.sessionStateUpdatedSource.asObservable();
 
-  constructor(private storageService: StorageService,
+  constructor(private localStorageService: LocalStorageService,
               private chromeTabsService: ChromeTabsService) {
     this.sessionListState = SessionListState.empty();
     MessagePassingService.addClosedSessionStateListener(() => {
@@ -29,7 +28,7 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   private refreshState() {
-    ChromeStorageUtils.getRecentlyClosedSessionsState().then(sessionListState => {
+    this.localStorageService.getRecentlyClosedSessionsState().then(sessionListState => {
       console.log(new Date().toTimeString().substring(0, 8), '- refreshing recently closed windows');
       this.sessionListState = sessionListState;
       this.sessionStateUpdatedSource.next(this.sessionListState);
@@ -89,6 +88,6 @@ export class RecentlyClosedTabsService implements TabsService {
   onStateModified() {
     console.log(new Date().toTimeString().substring(0, 8), '- updating recently closed windows');
     this.sessionStateUpdatedSource.next(this.sessionListState);
-    ChromeStorageUtils.setRecentlyClosedSessionsState(this.sessionListState);
+    this.localStorageService.setRecentlyClosedSessionsState(this.sessionListState);
   }
 }

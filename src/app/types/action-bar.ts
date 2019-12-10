@@ -1,7 +1,4 @@
 import {ChromeAPIWindowState} from './chrome-api-types';
-import {SavedTabsService} from '../services/saved-tabs.service';
-import {ChromeTabsService} from '../services/chrome-tabs.service';
-import {RecentlyClosedTabsService} from '../services/recently-closed-tabs.service';
 
 export interface ActionButton {
   title: string;

@@ -5,10 +5,10 @@ import {ThrottleConfig} from 'rxjs/src/internal/operators/throttle';
 import {ClosedSessionStateManager} from './closed-session-state-manager';
 import {ActiveWindowStateManager} from './active-window-state-manager';
 import {SessionListState} from '../app/types/session-list-state';
-import {ChromeStorageUtils} from '../app/classes/chrome-storage-utils';
 import {SessionListLayoutState, SessionMap} from '../app/types/session';
 import {SessionListUtils} from '../app/classes/session-list-utils';
 import {SessionUtils} from '../app/classes/session-utils';
+import {StorageKeys} from '../app/types/storage-keys';
 
 addOnInstalledListener();
 
