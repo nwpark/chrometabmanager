@@ -57,7 +57,11 @@ export class StorageService {
   }
 
   copySyncDataToLocal() {
-    this.syncStorageService.getSavedWindowsState().then(sessionListState => {
+    Promise.all([
+      this.localStorageService.getSavedWindowsState(),
+      this.syncStorageService.getSavedWindowsState()
+    ]).then(res => {
+      const sessionListState = SessionListUtils.mergeSessionLists(res[0], res[1]);
       this.localStorageService.setSavedWindowsState(sessionListState);
     });
   }

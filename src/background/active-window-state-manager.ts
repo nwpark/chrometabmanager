@@ -1,11 +1,10 @@
-import {ChromeAPIWindowState} from '../app/types/chrome-api-types';
+import {ChromeAPISession, ChromeAPIWindowState} from '../app/types/chrome-api-types';
 import {InsertWindowMessageData, MessagePassingService} from '../app/services/message-passing.service';
 import Mutex from 'async-mutex/lib/Mutex';
 import {SessionListState} from '../app/types/session-list-state';
 import {SessionListUtils} from '../app/classes/session-list-utils';
 import {SessionUtils} from '../app/classes/session-utils';
 import {LocalStorageService} from '../app/services/local-storage.service';
-import {StorageKeys} from '../app/types/storage-keys';
 
 export class ActiveWindowStateManager {
 
@@ -55,6 +54,14 @@ export class ActiveWindowStateManager {
     return new Promise<ChromeAPIWindowState[]>(resolve => {
       chrome.windows.getAll({populate: true}, chromeWindows => {
         resolve(chromeWindows as ChromeAPIWindowState[]);
+      });
+    });
+  }
+
+  getOtherDeviceSessionsFromAPI(): Promise<ChromeAPISession[]> {
+    return new Promise<ChromeAPISession[]>(resolve => {
+      chrome.sessions.getDevices(devices => {
+        console.log(devices.map(device => device.sessions).reduce((sessions, acc) => acc.concat(sessions), []));
       });
     });
   }
