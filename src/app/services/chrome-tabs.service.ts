@@ -5,9 +5,9 @@ import {TabsService} from '../interfaces/tabs-service';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
 import {SessionListState} from '../types/session-list-state';
-import {SessionListUtils} from '../classes/session-list-utils';
-import {SessionUtils, WindowStateUtils} from '../classes/session-utils';
+import {LayoutStateUtils, SessionUtils, WindowStateUtils} from '../classes/session-utils';
 import {LocalStorageService} from './local-storage.service';
+import {SessionLayoutState} from '../types/session';
 
 @Injectable({
   providedIn: 'root'
@@ -102,18 +102,13 @@ export class ChromeTabsService implements TabsService {
     this.sessionListState.setSessionTitle(sessionId, title);
   }
 
-  createWindow(chromeWindow: ChromeAPIWindowState) {
-    const tabsUrls = chromeWindow.tabs.map(tab => tab.url);
-    chrome.windows.create({url: tabsUrls, focused: true});
-  }
-
   @modifiesState({storeResult: false})
-  insertWindow(chromeWindow: ChromeAPIWindowState, index: number) {
+  insertWindow(chromeWindow: ChromeAPIWindowState, layoutState: SessionLayoutState, index: number) {
     const tempWindow = WindowStateUtils.convertToActiveWindow(chromeWindow);
     const tempSession = SessionUtils.createSessionFromWindow(tempWindow);
-    const tempLayoutState = SessionListUtils.createBasicWindowLayoutState(tempWindow.id);
+    const tempLayoutState = LayoutStateUtils.copyWithNewId(layoutState, tempWindow.id);
     this.sessionListState.insertSession(tempSession, tempLayoutState, index);
-    MessagePassingService.requestInsertChromeWindow(tempWindow, index);
+    MessagePassingService.requestInsertChromeWindow(tempWindow, tempLayoutState, index);
   }
 
   @modifiesState({storeResult: true})

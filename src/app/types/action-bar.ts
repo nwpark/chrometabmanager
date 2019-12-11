@@ -1,4 +1,7 @@
 import {ChromeAPIWindowState} from './chrome-api-types';
+import {SessionLayoutState} from './session';
+
+type ActionButtonCallback = (chromeWindow: ChromeAPIWindowState, layoutState: SessionLayoutState) => void;
 
 export interface ActionButton {
   title: string;
@@ -6,7 +9,7 @@ export interface ActionButton {
   icon: string;
   iconWhenHidden?: string;
   requiresMouseover: boolean;
-  callback: (chromeWindow: ChromeAPIWindowState) => void;
+  callback: ActionButtonCallback;
 }
 
 export interface ListActionButton {
@@ -53,7 +56,7 @@ export class ListActionButtonFactory {
 
 export class ActionButtonFactory {
 
-  static createCloseButton(callback: (chromeWindow: ChromeAPIWindowState) => void): ActionButton {
+  static createCloseButton(callback: ActionButtonCallback): ActionButton {
     return {
       title: 'Close window',
       icon: 'close',
@@ -62,7 +65,7 @@ export class ActionButtonFactory {
     };
   }
 
-  static createMinimizeButton(callback: (chromeWindow: ChromeAPIWindowState) => void): ActionButton {
+  static createMinimizeButton(callback: ActionButtonCallback): ActionButton {
     return {
       title: 'Show window',
       titleWhenHidden: 'Minimize window',
@@ -73,7 +76,7 @@ export class ActionButtonFactory {
     };
   }
 
-  static createOpenButton(callback: (chromeWindow: ChromeAPIWindowState) => void): ActionButton {
+  static createOpenButton(callback: ActionButtonCallback): ActionButton {
     return {
       title: 'Restore window',
       icon: 'open_in_new',
@@ -82,7 +85,7 @@ export class ActionButtonFactory {
     };
   }
 
-  static createSaveButton(callback: (chromeWindow: ChromeAPIWindowState) => void): ActionButton {
+  static createSaveButton(callback: ActionButtonCallback): ActionButton {
     return {
       title: 'Save window',
       icon: 'save_alt',

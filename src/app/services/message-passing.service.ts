@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ChromeAPIWindowState} from '../types/chrome-api-types';
+import {SessionLayoutState} from '../types/session';
 
 @Injectable({
   providedIn: 'root'
@@ -41,8 +42,8 @@ export class MessagePassingService {
     });
   }
 
-  static requestInsertChromeWindow(chromeWindow: ChromeAPIWindowState, index: number) {
-    const message: InsertWindowMessageData = { chromeWindow, index };
+  static requestInsertChromeWindow(chromeWindow: ChromeAPIWindowState, layoutState: SessionLayoutState, index: number) {
+    const message: InsertWindowMessageData = { chromeWindow, layoutState, index };
     chrome.runtime.sendMessage({
       [MessagePassingService.INSERT_WINDOW_REQUEST]: message
     });
@@ -63,5 +64,6 @@ export class MessagePassingService {
 
 export interface InsertWindowMessageData {
   chromeWindow: ChromeAPIWindowState;
+  layoutState: SessionLayoutState;
   index: number;
 }

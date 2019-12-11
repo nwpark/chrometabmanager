@@ -88,8 +88,9 @@ export class SyncStorageService {
   }
 
   addExternalOnChangedListener(callback: () => void, key?: string) {
-    chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (areaName === 'sync' && (!key || changes[key])) {
+    // @ts-ignore
+    chrome.storage.sync.onChanged.addListener(changes => {
+      if (!key || changes[key]) {
         chrome.storage.sync.get(StorageKeys.LastModifiedBy, data => {
           if (data[StorageKeys.LastModifiedBy] !== this.instanceId) {
             callback();
@@ -99,13 +100,9 @@ export class SyncStorageService {
     });
   }
 
-  // todo: chrome.storage.sync.onChanged.addListener
   private addOnChangedListener(callback: () => void) {
-    chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (areaName === 'sync') {
-        callback();
-      }
-    });
+    // @ts-ignore
+    chrome.storage.sync.onChanged.addListener(callback);
   }
 }
 

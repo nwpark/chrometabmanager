@@ -117,6 +117,8 @@ export class SessionListState {
   }
 
   size(): number {
-    return this.layoutState.sessionStates.length;
+    return Object.values(this.chromeSessions)
+      .filter(session => !session.window || session.window.type === 'normal')
+      .length;
   }
 }

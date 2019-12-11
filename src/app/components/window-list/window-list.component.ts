@@ -109,14 +109,17 @@ export class WindowListComponent implements OnDestroy, OnInit {
     try {
       const targetTabList: SessionComponentProps = event.container.data;
       const sourceTabList: SessionComponentProps = event.previousContainer.data;
+      const layoutState: SessionLayoutState = event.item.data;
 
       if (event.previousContainer === event.container) {
         targetTabList.tabsService.moveWindowInList(event.previousIndex, event.currentIndex);
       } else {
+        // todo: include window in item data
+        const window = sourceTabList.tabsService.getSessionListState().getWindow(layoutState.sessionId);
         if (this.preferencesService.shouldCloseWindowOnSave()) {
-          sourceTabList.tabsService.removeSession(event.item.data.id);
+          sourceTabList.tabsService.removeSession(layoutState.sessionId);
         }
-        targetTabList.tabsService.insertWindow(event.item.data, event.currentIndex);
+        targetTabList.tabsService.insertWindow(window, layoutState, event.currentIndex);
       }
     } finally {
       this.dragDropService.endDrag();
@@ -129,5 +132,6 @@ export class WindowListComponent implements OnDestroy, OnInit {
   }
 
   debug() { console.log(this); }
+  // todo: async
   debugModeEnabled(): boolean {  return this.preferencesService.isDebugModeEnabled(); }
 }

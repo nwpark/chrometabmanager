@@ -8,7 +8,8 @@ import {StorageService} from './storage.service';
 import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {SessionListState} from '../types/session-list-state';
 import {SessionListUtils} from '../classes/session-list-utils';
-import {SessionUtils, WindowStateUtils} from '../classes/session-utils';
+import {LayoutStateUtils, SessionUtils, WindowStateUtils} from '../classes/session-utils';
+import {SessionLayoutState} from '../types/session';
 
 @Injectable({
   providedIn: 'root'
@@ -101,10 +102,10 @@ export class SavedTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: true})
-  insertWindow(chromeWindow: ChromeAPIWindowState, index: number) {
+  insertWindow(chromeWindow: ChromeAPIWindowState, layoutState: SessionLayoutState, index: number) {
     const savedWindow = WindowStateUtils.convertToSavedWindow(chromeWindow);
     const savedSession = SessionUtils.createSessionFromWindow(savedWindow);
-    const layoutState = SessionListUtils.createBasicWindowLayoutState(savedWindow.id);
+    layoutState = LayoutStateUtils.copyWithNewId(layoutState, savedWindow.id);
     this.sessionListState.insertSession(savedSession, layoutState, index);
   }
 

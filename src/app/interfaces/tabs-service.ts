@@ -1,5 +1,6 @@
 import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {SessionListState} from '../types/session-list-state';
+import {SessionLayoutState} from '../types/session';
 
 export interface TabsService {
 
@@ -27,5 +28,5 @@ export interface TabsService {
 
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean);
 
-  insertWindow(chromeWindow: ChromeAPIWindowState, index: number);
+  insertWindow(chromeWindow: ChromeAPIWindowState, layoutState: SessionLayoutState, index: number);
 }
