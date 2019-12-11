@@ -18,7 +18,7 @@
     "persistent": false
   },
   "browser_action": {
-    "default_title": "Chrome Tab Manager version 0.4.4"
+    "default_title": "Chrome Tab Manager v0.4.4-alpha"
   },
 
   "permissions": ["tabs", "storage", "sessions"],
