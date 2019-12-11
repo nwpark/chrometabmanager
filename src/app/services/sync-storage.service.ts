@@ -3,9 +3,11 @@ import {SessionListState} from '../types/session-list-state';
 import {v4 as uuid} from 'uuid';
 import {Subject} from 'rxjs';
 import {Preferences, PreferenceUtils} from '../types/preferences';
-import {SessionListLayoutState} from '../types/session';
+import {SessionLayoutState, SessionListLayoutState} from '../types/session';
 import {SessionListUtils} from '../classes/session-list-utils';
 import {StorageKeys} from '../types/storage-keys';
+import {ChromeAPISession} from '../types/chrome-api-types';
+import {SyncStorageUtils} from '../classes/sync-storage-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -46,8 +48,10 @@ export class SyncStorageService {
       chrome.storage.sync.get(data => {
         const layoutState: SessionListLayoutState = data[StorageKeys.SavedWindowsLayoutState];
         if (layoutState) {
-          const savedSessions = SessionListUtils.filterSessionMap(data, layoutState);
-          resolve(new SessionListState(savedSessions, layoutState));
+          const syncStorageSessions = SyncStorageUtils.getSyncStorageSessions(data);
+          SyncStorageUtils.mergeLayoutStates(layoutState, syncStorageSessions);
+          const sessionMap = SyncStorageUtils.createSessionMapFromSyncStorage(syncStorageSessions);
+          resolve(new SessionListState(sessionMap, layoutState));
         } else {
           resolve(SessionListState.empty());
         }
@@ -62,18 +66,16 @@ export class SyncStorageService {
     });
   }
 
-  setSavedWindowsState(sessionListState: SessionListState) {
-    this.getSavedWindowsState().then(oldSessionListState => {
-      const removedSessionIds = oldSessionListState.layoutState.sessionStates
-        .map(layoutState => layoutState.sessionId)
-        .filter(sessionId => !sessionListState.chromeSessions[sessionId]);
-      chrome.storage.sync.set({
-        [StorageKeys.LastModifiedBy]: this.instanceId,
-        ...sessionListState.chromeSessions,
-        [StorageKeys.SavedWindowsLayoutState]: sessionListState.layoutState
-      }, () => {
-        chrome.storage.sync.remove(removedSessionIds);
-      });
+  setSavedWindowsState(sessionListState: SessionListState, removedSessions?: any[]) {
+    const sessionMap = SyncStorageUtils.convertToSyncStorageSessionMap(sessionListState);
+    chrome.storage.sync.set({
+      [StorageKeys.LastModifiedBy]: this.instanceId,
+      ...sessionMap,
+      [StorageKeys.SavedWindowsLayoutState]: sessionListState.layoutState
+    }, () => {
+      if (removedSessions) {
+        chrome.storage.sync.remove(removedSessions);
+      }
     });
   }
 
@@ -104,4 +106,13 @@ export class SyncStorageService {
       }
     });
   }
+}
+
+export interface SyncStorageSession {
+  session: ChromeAPISession;
+  layoutState: SessionLayoutState;
+}
+
+export interface SyncStorageSessionMap {
+  [sessionId: string]: SyncStorageSession;
 }

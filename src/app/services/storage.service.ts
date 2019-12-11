@@ -26,10 +26,10 @@ export class StorageService {
     });
   }
 
-  setSavedWindowsState(sessionListState: SessionListState) {
+  setSavedWindowsState(sessionListState: SessionListState, removedSessions?: any[]) {
     this.preferencesService.getPreferences().then(preferences => {
       if (preferences.syncSavedWindows) {
-        this.syncStorageService.setSavedWindowsState(sessionListState);
+        this.syncStorageService.setSavedWindowsState(sessionListState, removedSessions);
       } else {
         this.localStorageService.setSavedWindowsState(sessionListState);
       }

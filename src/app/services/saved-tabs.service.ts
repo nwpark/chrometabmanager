@@ -1,12 +1,11 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
 import {v4 as uuid} from 'uuid';
-import {modifiesState} from '../decorators/modifies-state';
+import {modifiesState, StateModifierParams} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {StorageService} from './storage.service';
 import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
-import {MessagePassingService} from './message-passing.service';
 import {SessionListState} from '../types/session-list-state';
 import {SessionListUtils} from '../classes/session-list-utils';
 import {SessionUtils, WindowStateUtils} from '../classes/session-utils';
@@ -42,7 +41,7 @@ export class SavedTabsService implements TabsService {
     return this.sessionListState;
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   createNewWindow() {
     const newWindow: ChromeAPIWindowState = {id: uuid(), tabs: [], type: 'normal'};
     const newSession: ChromeAPISession = SessionUtils.createSessionFromWindow(newWindow);
@@ -51,43 +50,44 @@ export class SavedTabsService implements TabsService {
     this.sessionListState.setHidden(false);
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
     this.sessionListState.moveTabInWindow(windowId, sourceIndex, targetIndex);
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) {
     this.sessionListState.transferTab(sourceWindowId, targetWindowId, sourceIndex, targetIndex);
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
     const savedTab = WindowStateUtils.convertToSavedTab(chromeTab);
     this.sessionListState.insertTabInWindow(windowId, tabIndex, savedTab);
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   removeTab(windowId: any, tabId: any) {
     this.sessionListState.removeTabFromWindow(windowId, tabId);
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: false})
   removeSession(sessionId: any) {
     this.sessionListState.removeSession(sessionId);
+    this.storageService.setSavedWindowsState(this.sessionListState, [sessionId]);
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   toggleSessionListDisplay() {
     this.sessionListState.toggleDisplay();
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   toggleSessionDisplay(sessionId: any) {
     this.sessionListState.toggleSessionDisplay(sessionId);
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   setSessionTitle(sessionId: any, title: string) {
     this.sessionListState.setSessionTitle(sessionId, title);
   }
@@ -100,7 +100,7 @@ export class SavedTabsService implements TabsService {
     }
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   insertWindow(chromeWindow: ChromeAPIWindowState, index: number) {
     const savedWindow = WindowStateUtils.convertToSavedWindow(chromeWindow);
     const savedSession = SessionUtils.createSessionFromWindow(savedWindow);
@@ -108,15 +108,17 @@ export class SavedTabsService implements TabsService {
     this.sessionListState.insertSession(savedSession, layoutState, index);
   }
 
-  @modifiesState()
+  @modifiesState({storeResult: true})
   moveWindowInList(sourceIndex: number, targetIndex: number) {
     this.sessionListState.moveSessionInList(sourceIndex, targetIndex);
   }
 
   // Called by @modifiesState decorator
-  onStateModified() {
+  onStateModified(params?: StateModifierParams) {
     console.log(new Date().toTimeString().substring(0, 8), '- updating saved windows');
     this.sessionStateUpdated.next(this.sessionListState);
-    this.storageService.setSavedWindowsState(this.sessionListState);
+    if (params.storeResult) {
+      this.storageService.setSavedWindowsState(this.sessionListState);
+    }
   }
 }
