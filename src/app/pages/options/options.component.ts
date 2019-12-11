@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {PreferencesService} from '../../services/preferences.service';
 import {Preferences} from '../../types/preferences';
 import {MatSlideToggleChange} from '@angular/material';
@@ -6,6 +6,8 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {SyncStorageService} from '../../services/sync-storage.service';
 import {StorageService} from '../../services/storage.service';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-options',
@@ -21,7 +23,9 @@ import {StorageService} from '../../services/storage.service';
     ])
   ]
 })
-export class OptionsComponent implements OnInit {
+export class OptionsComponent implements OnDestroy, OnInit {
+
+  private ngUnsubscribe = new Subject();
 
   preferences: Preferences;
   syncBytesInUse: number;
@@ -35,14 +39,18 @@ export class OptionsComponent implements OnInit {
               private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
-    this.preferencesService.preferencesUpdated$.subscribe(preferences => {
-      this.preferences = preferences;
-      this.changeDetectorRef.detectChanges();
-    });
-    this.syncStorageService.bytesInUse$.subscribe(syncBytesInUse => {
-      this.syncBytesInUse = syncBytesInUse;
-      this.changeDetectorRef.detectChanges();
-    });
+    this.preferencesService.preferencesUpdated$
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(preferences => {
+        this.preferences = preferences;
+        this.changeDetectorRef.detectChanges();
+      });
+    this.syncStorageService.bytesInUse$
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(syncBytesInUse => {
+        this.syncBytesInUse = syncBytesInUse;
+        this.changeDetectorRef.detectChanges();
+      });
     this.downloadJsonHref = this.generateDownloadJsonUri();
   }
 
@@ -87,5 +95,10 @@ export class OptionsComponent implements OnInit {
         resolve(this.domSanitizer.bypassSecurityTrustUrl('data:text/json;charset=UTF-8,' + encodeURIComponent(JSON.stringify(res))));
       });
     });
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 }

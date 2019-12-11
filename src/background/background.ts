@@ -4,11 +4,6 @@ import {async} from 'rxjs/internal/scheduler/async';
 import {ThrottleConfig} from 'rxjs/src/internal/operators/throttle';
 import {ClosedSessionStateManager} from './closed-session-state-manager';
 import {ActiveWindowStateManager} from './active-window-state-manager';
-import {SessionListState} from '../app/types/session-list-state';
-import {SessionListLayoutState, SessionMap} from '../app/types/session';
-import {SessionListUtils} from '../app/classes/session-list-utils';
-import {SessionUtils} from '../app/classes/session-utils';
-import {StorageKeys} from '../app/types/storage-keys';
 
 addOnInstalledListener();
 

@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {SessionComponentProps, ChromeWindowDragDropData} from '../../types/chrome-window-component-data';
 import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
@@ -6,13 +6,17 @@ import {DragDropService} from '../../services/drag-drop.service';
 import {PreferencesService} from '../../services/preferences.service';
 import {AnimationState} from '../../animations';
 import {SessionLayoutState} from '../../types/session';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-chrome-window',
   templateUrl: './chrome-window.component.html',
   styleUrls: ['./chrome-window.component.css']
 })
-export class ChromeWindowComponent implements OnInit {
+export class ChromeWindowComponent implements OnDestroy, OnInit {
+
+  private ngUnsubscribe = new Subject();
 
   @Input() chromeAPIWindow: ChromeAPIWindowState;
   @Input() layoutState: SessionLayoutState;
@@ -29,8 +33,13 @@ export class ChromeWindowComponent implements OnInit {
     this.dragDropData = {chromeWindowId: this.chromeAPIWindow.id, ...this.props};
     this.connectedWindowIds = this.dragDropService.connectedWindowIds;
     this.dragDropService.connectedWindowIdsUpdated$
-      .pipe(this.dragDropService.ignoreWhenDragging())
-      .subscribe(connectedWindowIds => this.connectedWindowIds = connectedWindowIds);
+      .pipe(
+        this.dragDropService.ignoreWhenDragging(),
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe(connectedWindowIds => {
+        this.connectedWindowIds = connectedWindowIds;
+      });
   }
 
   tabClicked(chromeTab: ChromeAPITabState, event: MouseEvent) {
@@ -82,4 +91,8 @@ export class ChromeWindowComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
 }

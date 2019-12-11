@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ListActionButton, ListActionButtonFactory} from '../../types/action-bar';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
@@ -16,6 +16,8 @@ import {ActionBarService} from '../../services/action-bar.service';
 import {SessionListState} from '../../types/session-list-state';
 import {ChromeAPISession} from '../../types/chrome-api-types';
 import {SessionLayoutState} from '../../types/session';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-window-list',
@@ -32,7 +34,9 @@ import {SessionLayoutState} from '../../types/session';
     ])
   ]
 })
-export class WindowListComponent implements OnInit {
+export class WindowListComponent implements OnDestroy, OnInit {
+
+  private ngUnsubscribe = new Subject();
 
   @Input() title: string;
   @Input() props: SessionComponentProps;
@@ -54,7 +58,10 @@ export class WindowListComponent implements OnInit {
       ListActionButtonFactory.createMinimizeButton(() => this.toggleDisplay())
     ];
     this.props.tabsService.sessionStateUpdated$
-      .pipe(this.dragDropService.ignoreWhenDragging())
+      .pipe(
+        this.dragDropService.ignoreWhenDragging(),
+        takeUntil(this.ngUnsubscribe)
+      )
       .subscribe(sessionListState => {
         this.sessionListState = sessionListState;
         this.changeDetectorRef.detectChanges();
@@ -114,6 +121,11 @@ export class WindowListComponent implements OnInit {
     } finally {
       this.dragDropService.endDrag();
     }
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   debug() { console.log(this); }

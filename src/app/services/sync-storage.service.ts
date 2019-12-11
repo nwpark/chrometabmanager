@@ -99,6 +99,7 @@ export class SyncStorageService {
     });
   }
 
+  // todo: chrome.storage.sync.onChanged.addListener
   private addOnChangedListener(callback: () => void) {
     chrome.storage.onChanged.addListener((changes, areaName) => {
       if (areaName === 'sync') {
