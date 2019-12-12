@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {
@@ -12,6 +12,7 @@ import {
 import {ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {SessionLayoutState} from '../../types/session';
+import {SessionState} from '../../types/session-list-state';
 
 @Component({
   selector: 'app-chrome-window-container',
@@ -33,16 +34,22 @@ import {SessionLayoutState} from '../../types/session';
     ])
   ]
 })
-export class ChromeWindowContainerComponent {
+export class ChromeWindowContainerComponent implements OnInit {
 
-  @Input() chromeAPIWindow: ChromeAPIWindowState;
-  @Input() layoutState: SessionLayoutState;
+  @Input() sessionState: SessionState;
   @Input() props: SessionComponentProps;
 
+  chromeAPIWindow: ChromeAPIWindowState;
+  layoutState: SessionLayoutState;
   animationState = AnimationState.Complete;
 
   constructor(private dragDropService: DragDropService,
               private changeDetectorRef: ChangeDetectorRef) { }
+
+  ngOnInit(): void {
+    this.chromeAPIWindow = this.sessionState.session.window;
+    this.layoutState = this.sessionState.layoutState;
+  }
 
   isWindowAnimating(): boolean {
     return isToggleDisplayState(this.animationState);
@@ -53,10 +60,10 @@ export class ChromeWindowContainerComponent {
     this.changeDetectorRef.detectChanges();
   }
 
-  toggleWindowDisplay(layoutState: SessionLayoutState) {
-    const animationState = getAnimationForToggleDisplay(layoutState.hidden);
+  toggleWindowDisplay() {
+    const animationState = getAnimationForToggleDisplay(this.layoutState.hidden);
     this.setAnimationState(animationState);
-    this.props.tabsService.toggleSessionDisplay(layoutState.sessionId);
+    this.props.tabsService.toggleSessionDisplay(this.layoutState.sessionId);
   }
 
   completeToggleWindowDisplay(event: AnimationEvent) {

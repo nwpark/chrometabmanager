@@ -1,8 +1,9 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ChromeAPISession, ChromeAPITabState} from '../../types/chrome-api-types';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {AnimationState, closeTabAnimation, closeWindowAnimation} from '../../animations';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
+import {SessionState} from '../../types/session-list-state';
 
 @Component({
   selector: 'app-detached-chrome-tab',
@@ -23,16 +24,19 @@ export class DetachedChromeTabComponent implements OnInit {
 
   static readonly NEW_TAB_URL = 'chrome://newtab/';
 
-  @Input() session: ChromeAPISession;
+  @Input() sessionState: SessionState;
   @Input() props: SessionComponentProps;
   @Input() isFirstChild: boolean;
   @Input() isLastChild: boolean;
 
+  chromeAPITab: ChromeAPITabState;
   animationState = AnimationState.Complete;
 
   constructor(private changeDetectorRef: ChangeDetectorRef) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.chromeAPITab = this.sessionState.session.tab;
+  }
 
   private setAnimationState(animationState: AnimationState) {
     this.animationState = animationState;
@@ -40,16 +44,16 @@ export class DetachedChromeTabComponent implements OnInit {
   }
 
   get title() {
-    return this.session.tab.title.length > 0
-      ? this.session.tab.title
-      : this.session.tab.url;
+    return this.chromeAPITab.title.length > 0
+      ? this.chromeAPITab.title
+      : this.chromeAPITab.url;
   }
 
   getFaviconIconUrl(): string {
-    if (!this.session.tab.favIconUrl) {
+    if (!this.chromeAPITab.favIconUrl) {
       return 'assets/chrome-favicon.png';
     }
-    return this.session.tab.favIconUrl;
+    return this.chromeAPITab.favIconUrl;
   }
 
   shouldShowFaviconIcon(): boolean {
@@ -57,19 +61,19 @@ export class DetachedChromeTabComponent implements OnInit {
   }
 
   isNewTab(): boolean {
-    return !this.isLoading() && this.session.tab.url === DetachedChromeTabComponent.NEW_TAB_URL;
+    return !this.isLoading() && this.chromeAPITab.url === DetachedChromeTabComponent.NEW_TAB_URL;
   }
 
   isLoading(): boolean {
-    return this.session.tab.status === 'loading';
+    return this.chromeAPITab.status === 'loading';
   }
 
   get lastModifiedString(): string {
-    return new Date(this.session.lastModified).toTimeString().substring(0, 5);
+    return new Date(this.sessionState.session.lastModified).toTimeString().substring(0, 5);
   }
 
   setTabActive(event: MouseEvent) {
-    this.props.tabsService.setTabActive(this.session.tab, event.ctrlKey);
+    this.props.tabsService.setTabActive(this.chromeAPITab, event.ctrlKey);
   }
 
   closeTab() {
@@ -81,7 +85,7 @@ export class DetachedChromeTabComponent implements OnInit {
   completeCloseAnimation(event: AnimationEvent) {
     if (event.toState === AnimationState.Closing || event.toState === AnimationState.Collapsing) {
       this.setAnimationState(AnimationState.Complete);
-      this.props.tabsService.removeSession(this.session.tab.id);
+      this.props.tabsService.removeSession(this.chromeAPITab.id);
     }
   }
 }

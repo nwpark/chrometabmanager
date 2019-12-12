@@ -45,15 +45,14 @@
         [cdkDragData]="sessionState"
         (cdkDragStarted)="beginDrag()">
         <app-chrome-window-container
-          [chromeAPIWindow]="sessionState.session.window"
-          [layoutState]="sessionState.layoutState"
+          [sessionState]="sessionState"
           [props]="props">
         </app-chrome-window-container>
       </div>
 
       <app-detached-chrome-tab
         *ngIf="sessionState.session.tab"
-        [session]="sessionState.session"
+        [sessionState]="sessionState"
         [props]="props"
         [isFirstChild]="isFirst || !sessionListState.getSessionAtIndex(index-1).tab"
         [isLastChild]="isLast || !sessionListState.getSessionAtIndex(index+1).tab">
