@@ -6,6 +6,7 @@ import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {PreferencesService} from '../../services/preferences.service';
 import {ActionBarService} from '../../services/action-bar.service';
 import {SessionLayoutState} from '../../types/session';
+import {SessionState} from '../../types/session-list-state';
 
 @Component({
   selector: 'app-chrome-window-header',
@@ -14,12 +15,13 @@ import {SessionLayoutState} from '../../types/session';
 })
 export class ChromeWindowHeaderComponent implements OnInit {
 
-  @Input() chromeAPIWindow: ChromeAPIWindowState;
-  @Input() layoutState: SessionLayoutState;
+  @Input() sessionState: SessionState;
   @Input() props: SessionComponentProps;
   @Output() chromeWindowClose = new EventEmitter();
   @Output() chromeWindowToggleDisplay = new EventEmitter();
 
+  chromeAPIWindow: ChromeAPIWindowState;
+  layoutState: SessionLayoutState;
   actionButtons: ActionButton[];
 
   @ViewChild('titleInput', {static: false}) titleInput: ElementRef;
@@ -31,6 +33,8 @@ export class ChromeWindowHeaderComponent implements OnInit {
               private actionBarService: ActionBarService) { }
 
   ngOnInit() {
+    this.chromeAPIWindow = this.sessionState.session.window;
+    this.layoutState = this.sessionState.layoutState;
     this.actionButtons = [
       ...this.actionBarService.createWindowActionButtons(this.props.sessionListId),
       ActionButtonFactory.createMinimizeButton(() => this.chromeWindowToggleDisplay.emit()),

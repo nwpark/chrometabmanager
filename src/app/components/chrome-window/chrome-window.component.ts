@@ -8,6 +8,7 @@ import {AnimationState} from '../../animations';
 import {SessionLayoutState} from '../../types/session';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {SessionState} from '../../types/session-list-state';
 
 @Component({
   selector: 'app-chrome-window',
@@ -18,10 +19,11 @@ export class ChromeWindowComponent implements OnDestroy, OnInit {
 
   private ngUnsubscribe = new Subject();
 
-  @Input() chromeAPIWindow: ChromeAPIWindowState;
-  @Input() layoutState: SessionLayoutState;
+  @Input() sessionState: SessionState;
   @Input() props: SessionComponentProps;
 
+  chromeAPIWindow: ChromeAPIWindowState;
+  layoutState: SessionLayoutState;
   dragDropData: ChromeWindowDragDropData;
   connectedWindowIds: string[];
 
@@ -30,6 +32,8 @@ export class ChromeWindowComponent implements OnDestroy, OnInit {
               private preferencesService: PreferencesService) { }
 
   ngOnInit() {
+    this.chromeAPIWindow = this.sessionState.session.window;
+    this.layoutState = this.sessionState.layoutState;
     this.dragDropData = {chromeWindowId: this.chromeAPIWindow.id, ...this.props};
     this.connectedWindowIds = this.dragDropService.connectedWindowIds;
     this.dragDropService.connectedWindowIdsUpdated$

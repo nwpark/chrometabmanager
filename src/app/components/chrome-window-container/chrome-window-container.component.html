@@ -5,8 +5,7 @@
   (@close-window.done)="completeCloseWindow($event)">
   <div cdkDragHandle>
     <app-chrome-window-header
-      [chromeAPIWindow]="chromeAPIWindow"
-      [layoutState]="layoutState"
+      [sessionState]="sessionState"
       [props]="props"
       (chromeWindowClose)="closeWindow()"
       (chromeWindowToggleDisplay)="toggleWindowDisplay()">
@@ -17,8 +16,7 @@
     [@collapse-window]="animationState"
     (@collapse-window.done)="completeToggleWindowDisplay($event)">
     <app-chrome-window
-      [chromeAPIWindow]="chromeAPIWindow"
-      [layoutState]="layoutState"
+      [sessionState]="sessionState"
       [props]="props">
     </app-chrome-window>
   </div>
