@@ -42,7 +42,7 @@
       <div
         *ngIf="sessionState.session.window"
         cdkDrag
-        [cdkDragData]="sessionState.layoutState"
+        [cdkDragData]="sessionState"
         (cdkDragStarted)="beginDrag()">
         <app-chrome-window-container
           [chromeAPIWindow]="sessionState.session.window"

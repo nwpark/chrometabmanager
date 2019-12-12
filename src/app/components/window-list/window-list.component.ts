@@ -13,8 +13,7 @@ import {
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {ActionBarService} from '../../services/action-bar.service';
-import {SessionListState} from '../../types/session-list-state';
-import {SessionLayoutState} from '../../types/session';
+import {SessionListState, SessionState} from '../../types/session-list-state';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -104,17 +103,15 @@ export class WindowListComponent implements OnDestroy, OnInit {
     try {
       const targetTabList: SessionComponentProps = event.container.data;
       const sourceTabList: SessionComponentProps = event.previousContainer.data;
-      const layoutState: SessionLayoutState = event.item.data;
+      const sessionState: SessionState = event.item.data;
 
       if (event.previousContainer === event.container) {
         targetTabList.tabsService.moveWindowInList(event.previousIndex, event.currentIndex);
       } else {
-        // todo: include window in item data
-        const window = sourceTabList.tabsService.getSessionListState().getWindow(layoutState.sessionId);
         if (this.preferencesService.shouldCloseWindowOnSave()) {
-          sourceTabList.tabsService.removeSession(layoutState.sessionId);
+          sourceTabList.tabsService.removeSession(sessionState.layoutState.sessionId);
         }
-        targetTabList.tabsService.insertWindow(window, layoutState, event.currentIndex);
+        targetTabList.tabsService.insertWindow(sessionState.session.window, sessionState.layoutState, event.currentIndex);
       }
     } finally {
       this.dragDropService.endDrag();

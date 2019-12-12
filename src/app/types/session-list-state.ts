@@ -25,10 +25,6 @@ export class SessionListState {
     return this.chromeSessions[windowId].window;
   }
 
-  getSession(sessionId: any): ChromeAPISession {
-    return this.chromeSessions[sessionId];
-  }
-
   getSessionAtIndex(index: number): ChromeAPISession {
     const sessionId = this.layoutState.sessionStates[index].sessionId;
     return this.chromeSessions[sessionId];
