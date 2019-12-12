@@ -14,7 +14,6 @@ import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animat
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {ActionBarService} from '../../services/action-bar.service';
 import {SessionListState} from '../../types/session-list-state';
-import {ChromeAPISession} from '../../types/chrome-api-types';
 import {SessionLayoutState} from '../../types/session';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -66,10 +65,6 @@ export class WindowListComponent implements OnDestroy, OnInit {
         this.sessionListState = sessionListState;
         this.changeDetectorRef.detectChanges();
       });
-  }
-
-  getSession(layoutState: SessionLayoutState): ChromeAPISession {
-    return this.sessionListState.getSession(layoutState.sessionId);
   }
 
   getTitle(): string {

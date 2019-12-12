@@ -6,6 +6,8 @@ import {SessionUtils} from '../classes/session-utils';
 
 export class SessionListState {
 
+  private iteratorCache = {};
+
   chromeSessions: SessionMap;
   layoutState: SessionListLayoutState;
 
@@ -117,8 +119,27 @@ export class SessionListState {
   }
 
   size(): number {
+    // todo: create a [session.window.type === 'normal'] predicate
     return Object.values(this.chromeSessions)
       .filter(session => !session.window || session.window.type === 'normal')
       .length;
   }
+
+  *[Symbol.iterator](): IterableIterator<SessionState> {
+    for (const layoutState of this.layoutState.sessionStates) {
+      if (!this.iteratorCache[layoutState.sessionId]) {
+        this.iteratorCache[layoutState.sessionId] = {
+          session: this.chromeSessions[layoutState.sessionId],
+          layoutState
+        };
+      }
+      yield this.iteratorCache[layoutState.sessionId];
+    }
+  }
+}
+
+// todo: move elsewhere
+export interface SessionState {
+  session: ChromeAPISession;
+  layoutState: SessionLayoutState;
 }
