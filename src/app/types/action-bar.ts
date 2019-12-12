@@ -1,8 +1,6 @@
-import {ChromeAPIWindowState} from './chrome-api-types';
-import {SessionLayoutState} from './session';
+import {SessionState} from './session-list-state';
 
-// todo: use sessionstate
-type ActionButtonCallback = (chromeWindow: ChromeAPIWindowState, layoutState: SessionLayoutState) => void;
+type ActionButtonCallback = (sessionState: SessionState) => void;
 
 export interface ActionButton {
   title: string;

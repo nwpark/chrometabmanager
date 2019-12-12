@@ -49,24 +49,24 @@ export class ActionBarService {
 
   private createActiveWindowActionButtons(): ActionButton[] {
     return [
-      ActionButtonFactory.createSaveButton((chromeWindow, layoutState) => {
-        this.savedTabsService.insertWindow(chromeWindow, layoutState, 0);
+      ActionButtonFactory.createSaveButton(sessionState => {
+        this.savedTabsService.insertWindow(sessionState.session.window, sessionState.layoutState, 0);
       })
     ];
   }
 
   private createSavedWindowActionButtons(): ActionButton[] {
     return [
-      ActionButtonFactory.createOpenButton((chromeWindow, layoutState) => {
-        this.chromeTabsService.insertWindow(chromeWindow, layoutState, 0);
+      ActionButtonFactory.createOpenButton(sessionState => {
+        this.chromeTabsService.insertWindow(sessionState.session.window, sessionState.layoutState, 0);
       })
     ];
   }
 
   private createRecentlyClosedWindowActionButtons(): ActionButton[] {
     return [
-      ActionButtonFactory.createOpenButton((chromeWindow, layoutState) => {
-        this.chromeTabsService.insertWindow(chromeWindow, layoutState, 0);
+      ActionButtonFactory.createOpenButton(sessionState => {
+        this.chromeTabsService.insertWindow(sessionState.session.window, sessionState.layoutState, 0);
       })
     ];
   }
