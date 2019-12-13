@@ -8,12 +8,12 @@ export class SyncStorageUtils {
 
   static convertToSessionStateMap(sessionListState: SessionListState): SessionStateMap {
     const sessionStateMap: SessionStateMap = {};
-    sessionListState.layoutState.sessionStates.forEach(layoutState => {
-      sessionStateMap[layoutState.sessionId] = {
-        session: sessionListState.chromeSessions[layoutState.sessionId],
-        layoutState
+    for (const sessionState of sessionListState) {
+      sessionStateMap[sessionState.layoutState.sessionId] = {
+        session: sessionState.session,
+        layoutState: sessionState.layoutState
       };
-    });
+    }
     return sessionStateMap;
   }
 

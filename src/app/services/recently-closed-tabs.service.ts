@@ -70,8 +70,7 @@ export class RecentlyClosedTabsService implements TabsService {
 
   @modifiesState()
   clear() {
-    this.sessionListState.chromeSessions = {};
-    this.sessionListState.layoutState.sessionStates = [];
+    this.sessionListState.clear();
   }
 
   insertWindow(chromeWindow: ChromeAPIWindowState, layoutState: SessionLayoutState, index: number) { /* do nothing */ }

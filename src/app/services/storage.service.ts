@@ -51,7 +51,8 @@ export class StorageService {
       this.syncStorageService.getSavedWindowsState(),
       this.localStorageService.getSavedWindowsState()
     ]).then(res => {
-      const sessionListState = SessionListUtils.mergeSessionLists(res[0], res[1]);
+      const sessionListState: SessionListState = res[0];
+      sessionListState.addAll(res[1]);
       this.syncStorageService.setSavedWindowsState(sessionListState);
     });
   }
@@ -61,7 +62,8 @@ export class StorageService {
       this.localStorageService.getSavedWindowsState(),
       this.syncStorageService.getSavedWindowsState()
     ]).then(res => {
-      const sessionListState = SessionListUtils.mergeSessionLists(res[0], res[1]);
+      const sessionListState: SessionListState = res[0];
+      sessionListState.addAll(res[1]);
       this.localStorageService.setSavedWindowsState(sessionListState);
     });
   }

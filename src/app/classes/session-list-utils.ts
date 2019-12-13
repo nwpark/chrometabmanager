@@ -1,6 +1,5 @@
 import {SessionLayoutState, SessionListLayoutState, SessionMap} from '../types/session';
 import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
-import {SessionListState} from '../types/session-list-state';
 import {SessionUtils} from './session-utils';
 
 export class SessionListUtils {
@@ -26,16 +25,6 @@ export class SessionListUtils {
 
   static createBasicWindowLayoutState(windowId: number): SessionLayoutState {
     return {sessionId: windowId, title: 'Window', hidden: false};
-  }
-
-  static mergeSessionLists(primary: SessionListState, secondary: SessionListState): SessionListState {
-    secondary.layoutState.sessionStates.forEach(layoutState => {
-      if (!primary.chromeSessions[layoutState.sessionId]) {
-        const session = secondary.chromeSessions[layoutState.sessionId];
-        primary.unshiftSession(session, layoutState);
-      }
-    });
-    return primary;
   }
 
   static createSessionMapFromWindowList(chromeWindows: ChromeAPIWindowState[]): SessionMap {

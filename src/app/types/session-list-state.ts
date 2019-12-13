@@ -93,6 +93,24 @@ export class SessionListState {
       .length;
   }
 
+  getSessionIds(): string[] {
+    return this.layoutState.sessionStates
+      .map(sessionState => sessionState.sessionId.toString());
+  }
+
+  addAll(other: SessionListState) {
+    for (const sessionState of other) {
+      if (!this.chromeSessions[sessionState.layoutState.sessionId]) {
+        this.unshiftSession(sessionState.session, sessionState.layoutState);
+      }
+    }
+  }
+
+  clear() {
+    this.chromeSessions = {};
+    this.layoutState.sessionStates = [];
+  }
+
   *[Symbol.iterator](): IterableIterator<SessionState> {
     for (const layoutState of this.layoutState.sessionStates) {
       if (!this.iteratorCache[layoutState.sessionId]) {
