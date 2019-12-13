@@ -72,8 +72,8 @@ export class ChromeTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: false})
-  removeTab(windowId: any, tabId: any) {
-    this.sessionListState.removeTabFromWindow(windowId, tabId);
+  removeTab(chromeWindow: ChromeAPIWindowState, tabId: any) {
+    chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);
     chrome.tabs.remove(tabId);
   }
 

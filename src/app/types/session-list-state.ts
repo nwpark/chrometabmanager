@@ -38,21 +38,8 @@ export class SessionListState {
     return this.getWindow(windowId).tabs.find(tab => tab.id === tabId);
   }
 
-  getTabIdFromWindow(windowId: any, tabIndex: number): number {
-    return this.getWindow(windowId).tabs[tabIndex].id;
-  }
-
   insertTabInWindow(windowId: any, index: number, chromeTab: ChromeAPITabState) {
     this.getWindow(windowId).tabs.splice(index, 0, chromeTab);
-  }
-
-  removeTabFromWindow(windowId: any, tabId: any) {
-    const chromeWindow = this.getWindow(windowId);
-    chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);
-    // todo: look into what this is doing with animation, perhaps do this check in the component (close window instead of tab)
-    if (chromeWindow.tabs.length === 0) {
-      this.removeSession(windowId);
-    }
   }
 
   removeSession(sessionId: any) {

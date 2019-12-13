@@ -46,8 +46,8 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   @modifiesState()
-  removeTab(windowId: any, tabId: any) {
-    this.sessionListState.removeTabFromWindow(windowId, tabId);
+  removeTab(chromeWindow: ChromeAPIWindowState, tabId: any) {
+    chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);
   }
 
   @modifiesState()

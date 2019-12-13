@@ -52,7 +52,7 @@ export class ChromeWindowComponent implements OnDestroy, OnInit {
 
   closeTab(state: AnimationState, tabId: any) {
     if (state === AnimationState.Complete) {
-      this.props.tabsService.removeTab(this.chromeAPIWindow.id, tabId);
+      this.props.tabsService.removeTab(this.chromeAPIWindow, tabId);
     }
   }
 
@@ -86,7 +86,7 @@ export class ChromeWindowComponent implements OnDestroy, OnInit {
           event.currentIndex);
       } else {
         if (this.preferencesService.shouldCloseWindowOnSave()) {
-          sourceTabList.tabsService.removeTab(sourceTabList.chromeWindow.id, event.item.data.id);
+          sourceTabList.tabsService.removeTab(sourceTabList.chromeWindow, event.item.data.id);
         }
         targetTabList.tabsService.createTab(targetTabList.chromeWindow.id, event.currentIndex, event.item.data);
       }

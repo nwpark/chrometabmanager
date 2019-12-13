@@ -16,7 +16,7 @@ export interface TabsService {
 
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState);
 
-  removeTab(windowId: any, tabId: any);
+  removeTab(chromeWindow: ChromeAPIWindowState, tabId: any);
 
   removeSession(sessionId: any);
 
