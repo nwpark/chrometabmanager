@@ -80,8 +80,8 @@ export class ChromeWindowComponent implements OnDestroy, OnInit {
           event.previousIndex,
           event.currentIndex);
       } else if (sourceTabList.sessionListId === targetTabList.sessionListId) {
-        targetTabList.tabsService.transferTab(sourceTabList.chromeWindow.id,
-          targetTabList.chromeWindow.id,
+        targetTabList.tabsService.transferTab(sourceTabList.chromeWindow,
+          targetTabList.chromeWindow,
           event.previousIndex,
           event.currentIndex);
       } else {

@@ -10,7 +10,7 @@ import {SessionListState} from '../types/session-list-state';
 import {SessionListUtils} from '../classes/session-list-utils';
 import {LayoutStateUtils, SessionUtils, WindowStateUtils} from '../classes/session-utils';
 import {SessionLayoutState} from '../types/session';
-import {moveItemInArray} from '@angular/cdk/drag-drop';
+import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 @Injectable({
   providedIn: 'root'
@@ -58,8 +58,8 @@ export class SavedTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: true})
-  transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) {
-    this.sessionListState.transferTab(sourceWindowId, targetWindowId, sourceIndex, targetIndex);
+  transferTab(sourceWindow: ChromeAPIWindowState, targetWindow: ChromeAPIWindowState, sourceIndex: number, targetIndex: number) {
+    transferArrayItem(sourceWindow.tabs, targetWindow.tabs, sourceIndex, targetIndex);
   }
 
   @modifiesState({storeResult: true})

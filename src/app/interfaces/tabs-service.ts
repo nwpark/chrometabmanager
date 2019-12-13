@@ -12,7 +12,7 @@ export interface TabsService {
 
   moveTabInWindow(chromeWindow: ChromeAPIWindowState, sourceIndex: number, targetIndex: number);
 
-  transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number);
+  transferTab(sourceWindow: ChromeAPIWindowState, targetWindow: ChromeAPIWindowState, sourceIndex: number, targetIndex: number);
 
   createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState);
 
