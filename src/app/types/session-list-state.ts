@@ -125,9 +125,12 @@ export class SessionListState {
   }
 
   static fromSessionStates(sessionStates: SessionState[], layoutState: SessionListLayoutState): SessionListState {
-    const chromeSessions = SyncStorageUtils.createSessionMap(sessionStates);
+    const sessionMap: SessionMap = {};
+    sessionStates.forEach(sessionState => {
+      sessionMap[SessionUtils.getSessionId(sessionState.session)] = sessionState.session;
+    });
     SyncStorageUtils.mergeLayoutStates(layoutState, sessionStates);
-    return new SessionListState(chromeSessions, layoutState);
+    return new SessionListState(sessionMap, layoutState);
   }
 
   getSessionStates(): SessionState[] {
