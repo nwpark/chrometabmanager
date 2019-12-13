@@ -34,7 +34,7 @@ export class ChromeWindowComponent implements OnDestroy, OnInit {
   ngOnInit() {
     this.chromeAPIWindow = this.sessionState.session.window;
     this.layoutState = this.sessionState.layoutState;
-    this.dragDropData = {chromeWindowId: this.chromeAPIWindow.id, ...this.props};
+    this.dragDropData = {chromeWindow: this.chromeAPIWindow, ...this.props};
     this.connectedWindowIds = this.dragDropService.connectedWindowIds;
     this.dragDropService.connectedWindowIdsUpdated$
       .pipe(
@@ -76,19 +76,19 @@ export class ChromeWindowComponent implements OnDestroy, OnInit {
       const sourceTabList: ChromeWindowDragDropData = event.previousContainer.data;
 
       if (event.previousContainer === event.container) {
-        targetTabList.tabsService.moveTabInWindow(targetTabList.chromeWindowId,
+        targetTabList.tabsService.moveTabInWindow(targetTabList.chromeWindow,
           event.previousIndex,
           event.currentIndex);
       } else if (sourceTabList.sessionListId === targetTabList.sessionListId) {
-        targetTabList.tabsService.transferTab(sourceTabList.chromeWindowId,
-          targetTabList.chromeWindowId,
+        targetTabList.tabsService.transferTab(sourceTabList.chromeWindow.id,
+          targetTabList.chromeWindow.id,
           event.previousIndex,
           event.currentIndex);
       } else {
         if (this.preferencesService.shouldCloseWindowOnSave()) {
-          sourceTabList.tabsService.removeTab(sourceTabList.chromeWindowId, event.item.data.id);
+          sourceTabList.tabsService.removeTab(sourceTabList.chromeWindow.id, event.item.data.id);
         }
-        targetTabList.tabsService.createTab(targetTabList.chromeWindowId, event.currentIndex, event.item.data);
+        targetTabList.tabsService.createTab(targetTabList.chromeWindow.id, event.currentIndex, event.item.data);
       }
     } finally {
       this.dragDropService.endDrag();

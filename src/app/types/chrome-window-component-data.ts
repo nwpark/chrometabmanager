@@ -1,4 +1,5 @@
 import {TabsService} from '../interfaces/tabs-service';
+import {ChromeAPIWindowState} from './chrome-api-types';
 
 export enum SessionListId {
   Saved = 'saved_window_list',
@@ -13,7 +14,7 @@ export interface SessionComponentProps {
 }
 
 export interface ChromeWindowDragDropData {
-  chromeWindowId: any;
+  chromeWindow: ChromeAPIWindowState;
   sessionListId: SessionListId;
   tabsService: TabsService;
   isMutable: boolean;

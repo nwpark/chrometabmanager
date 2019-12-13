@@ -78,7 +78,7 @@ export class RecentlyClosedTabsService implements TabsService {
 
   moveWindowInList(sourceIndex: number, targetIndex: number) { /* do nothing */ }
 
-  moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) { /* do nothing */ }
+  moveTabInWindow(chromeWindow: ChromeAPIWindowState, sourceIndex: number, targetIndex: number) { /* do nothing */ }
 
   transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) { /* do nothing */ }
 

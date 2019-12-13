@@ -60,11 +60,6 @@ export class SessionListState {
     this.layoutState.sessionStates = this.layoutState.sessionStates.filter(layoutState => layoutState.sessionId !== sessionId);
   }
 
-  moveTabInWindow(windowId: any, sourceIndex: number, targetIndex: number) {
-    const targetWindow = this.getWindow(windowId);
-    moveItemInArray(targetWindow.tabs, sourceIndex, targetIndex);
-  }
-
   transferTab(sourceWindowId: any, targetWindowId: any, sourceIndex: number, targetIndex: number) {
     const previousWindow = this.getWindow(sourceWindowId);
     const targetWindow = this.getWindow(targetWindowId);
