@@ -4,7 +4,6 @@ import {PreferencesService} from './preferences.service';
 import {Preferences} from '../types/preferences';
 import {SyncStorageService} from './sync-storage.service';
 import {LocalStorageService} from './local-storage.service';
-import {SessionListUtils} from '../classes/session-list-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -51,9 +50,10 @@ export class StorageService {
       this.syncStorageService.getSavedWindowsState(),
       this.localStorageService.getSavedWindowsState()
     ]).then(res => {
-      const sessionListState: SessionListState = res[0];
-      sessionListState.addAll(res[1]);
-      this.syncStorageService.setSavedWindowsState(sessionListState);
+      const syncSessionListState: SessionListState = res[0];
+      const localSessionListState: SessionListState = res[1];
+      syncSessionListState.addAll(localSessionListState);
+      this.syncStorageService.setSavedWindowsState(syncSessionListState);
     });
   }
 
@@ -62,9 +62,10 @@ export class StorageService {
       this.localStorageService.getSavedWindowsState(),
       this.syncStorageService.getSavedWindowsState()
     ]).then(res => {
-      const sessionListState: SessionListState = res[0];
-      sessionListState.addAll(res[1]);
-      this.localStorageService.setSavedWindowsState(sessionListState);
+      const localSessionListState: SessionListState = res[0];
+      const syncSessionListState: SessionListState = res[1];
+      localSessionListState.addAll(syncSessionListState);
+      this.localStorageService.setSavedWindowsState(localSessionListState);
     });
   }
 }
