@@ -1,43 +1,43 @@
 import {SessionListState} from '../types/session-list-state';
-import {SyncStorageSession, SyncStorageSessionMap} from '../services/sync-storage.service';
 import {SessionListUtils} from './session-list-utils';
-import {ChromeAPISession, ChromeAPIWindowState} from '../types/chrome-api-types';
-import {SessionListLayoutState, SessionMap} from '../types/session';
+import {ChromeAPISession} from '../types/chrome-api-types';
+import {SessionListLayoutState, SessionMap, SessionState, SessionStateMap} from '../types/session';
 import {SessionUtils} from './session-utils';
 
 export class SyncStorageUtils {
 
-  static convertToSyncStorageSessionMap(sessionListState: SessionListState): SyncStorageSessionMap {
-    const sessionMap: SyncStorageSessionMap = {};
+  static convertToSessionStateMap(sessionListState: SessionListState): SessionStateMap {
+    const sessionStateMap: SessionStateMap = {};
     sessionListState.layoutState.sessionStates.forEach(layoutState => {
-      sessionMap[layoutState.sessionId] = {
+      sessionStateMap[layoutState.sessionId] = {
         session: sessionListState.chromeSessions[layoutState.sessionId],
         layoutState
       };
     });
-    return sessionMap;
+    return sessionStateMap;
   }
 
-  static getSyncStorageSessions(data: SyncStorageSessionMap): SyncStorageSession[] {
+  static getSessionStatesFromStorageData(data: SessionStateMap): SessionState[] {
     return Object.entries(data)
+      // todo: create static variable for 36
       .filter(entry => entry[0].length === 36)
       .map(entry => entry[1])
       // todo: this is only for compatibility with old versions.
-      .map((syncSession: SyncStorageSession) => {
-        if (syncSession.layoutState) {
-          return syncSession;
+      .map((sessionState: SessionState) => {
+        if (sessionState.layoutState) {
+          return sessionState;
         } else {
-          const session = syncSession as ChromeAPISession;
+          const session = sessionState as ChromeAPISession;
           return {session, layoutState: SessionListUtils.createBasicWindowLayoutState(session.window.id)};
         }
       });
   }
 
-  static mergeLayoutStates(layoutState: SessionListLayoutState, syncStorageSessions: SyncStorageSession[]) {
+  static mergeLayoutStates(layoutState: SessionListLayoutState, sessionStates: SessionState[]) {
     const sessionIds = layoutState.sessionStates
       .map(sessionState => sessionState.sessionId)
       .reduce((object, sessionId) => (object[sessionId] = true, object), {});
-    syncStorageSessions
+    sessionStates
       .map(syncStorageSession => syncStorageSession.layoutState)
       .forEach(sessionState => {
         if (!sessionIds[sessionState.sessionId]) {
@@ -46,9 +46,9 @@ export class SyncStorageUtils {
       });
   }
 
-  static createSessionMapFromSyncStorage(syncStorageSessions: SyncStorageSession[]): SessionMap {
+  static createSessionMap(sessionStates: SessionState[]): SessionMap {
     const sessionMap: SessionMap = {};
-    syncStorageSessions
+    sessionStates
       .map(syncSession => syncSession.session.window)
       .forEach(chromeWindow => {
         sessionMap[chromeWindow.id] = SessionUtils.createSessionFromWindow(chromeWindow);

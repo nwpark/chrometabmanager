@@ -1,6 +1,6 @@
 import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from './chrome-api-types';
-import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {SessionLayoutState, SessionListLayoutState, SessionMap} from './session';
+import {moveItemInArray} from '@angular/cdk/drag-drop';
+import {SessionLayoutState, SessionListLayoutState, SessionMap, SessionState} from './session';
 import {SessionListUtils} from '../classes/session-list-utils';
 import {SessionUtils} from '../classes/session-utils';
 
@@ -106,8 +106,3 @@ export class SessionListState {
   }
 }
 
-// todo: move elsewhere
-export interface SessionState {
-  session: ChromeAPISession;
-  layoutState: SessionLayoutState;
-}

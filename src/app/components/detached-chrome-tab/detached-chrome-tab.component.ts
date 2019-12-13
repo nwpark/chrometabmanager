@@ -3,7 +3,7 @@ import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {AnimationState, closeTabAnimation, closeWindowAnimation} from '../../animations';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
-import {SessionState} from '../../types/session-list-state';
+import {SessionState} from '../../types/session';
 
 @Component({
   selector: 'app-detached-chrome-tab',

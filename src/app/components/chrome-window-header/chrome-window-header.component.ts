@@ -5,8 +5,7 @@ import {FormControl} from '@angular/forms';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {PreferencesService} from '../../services/preferences.service';
 import {ActionBarService} from '../../services/action-bar.service';
-import {SessionLayoutState} from '../../types/session';
-import {SessionState} from '../../types/session-list-state';
+import {SessionLayoutState, SessionState} from '../../types/session';
 
 @Component({
   selector: 'app-chrome-window-header',

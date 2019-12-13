@@ -3,10 +3,8 @@ import {SessionListState} from '../types/session-list-state';
 import {v4 as uuid} from 'uuid';
 import {Subject} from 'rxjs';
 import {Preferences, PreferenceUtils} from '../types/preferences';
-import {SessionLayoutState, SessionListLayoutState} from '../types/session';
-import {SessionListUtils} from '../classes/session-list-utils';
+import {SessionListLayoutState} from '../types/session';
 import {StorageKeys} from '../types/storage-keys';
-import {ChromeAPISession} from '../types/chrome-api-types';
 import {SyncStorageUtils} from '../classes/sync-storage-utils';
 
 @Injectable({
@@ -48,9 +46,9 @@ export class SyncStorageService {
       chrome.storage.sync.get(data => {
         const layoutState: SessionListLayoutState = data[StorageKeys.SavedWindowsLayoutState];
         if (layoutState) {
-          const syncStorageSessions = SyncStorageUtils.getSyncStorageSessions(data);
-          SyncStorageUtils.mergeLayoutStates(layoutState, syncStorageSessions);
-          const sessionMap = SyncStorageUtils.createSessionMapFromSyncStorage(syncStorageSessions);
+          const sessionStates = SyncStorageUtils.getSessionStatesFromStorageData(data);
+          SyncStorageUtils.mergeLayoutStates(layoutState, sessionStates);
+          const sessionMap = SyncStorageUtils.createSessionMap(sessionStates);
           resolve(new SessionListState(sessionMap, layoutState));
         } else {
           resolve(SessionListState.empty());
@@ -67,7 +65,7 @@ export class SyncStorageService {
   }
 
   setSavedWindowsState(sessionListState: SessionListState, removedSessions?: any[]) {
-    const sessionMap = SyncStorageUtils.convertToSyncStorageSessionMap(sessionListState);
+    const sessionMap = SyncStorageUtils.convertToSessionStateMap(sessionListState);
     chrome.storage.sync.set({
       [StorageKeys.LastModifiedBy]: this.instanceId,
       ...sessionMap,
@@ -106,11 +104,3 @@ export class SyncStorageService {
   }
 }
 
-export interface SyncStorageSession {
-  session: ChromeAPISession;
-  layoutState: SessionLayoutState;
-}
-
-export interface SyncStorageSessionMap {
-  [sessionId: string]: SyncStorageSession;
-}

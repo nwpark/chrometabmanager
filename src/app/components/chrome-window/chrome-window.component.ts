@@ -5,10 +5,9 @@ import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-ty
 import {DragDropService} from '../../services/drag-drop.service';
 import {PreferencesService} from '../../services/preferences.service';
 import {AnimationState} from '../../animations';
-import {SessionLayoutState} from '../../types/session';
+import {SessionLayoutState, SessionState} from '../../types/session';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {SessionState} from '../../types/session-list-state';
 
 @Component({
   selector: 'app-chrome-window',

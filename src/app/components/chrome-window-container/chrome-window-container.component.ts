@@ -11,8 +11,7 @@ import {
 } from '../../animations';
 import {ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
-import {SessionLayoutState} from '../../types/session';
-import {SessionState} from '../../types/session-list-state';
+import {SessionLayoutState, SessionState} from '../../types/session';
 
 @Component({
   selector: 'app-chrome-window-container',

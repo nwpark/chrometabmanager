@@ -13,9 +13,10 @@ import {
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {ActionBarService} from '../../services/action-bar.service';
-import {SessionListState, SessionState} from '../../types/session-list-state';
+import {SessionListState} from '../../types/session-list-state';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {SessionState} from '../../types/session';
 
 @Component({
   selector: 'app-window-list',
