@@ -55,10 +55,10 @@ export class ChromeTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: false})
-  createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
+  createTab(chromeWindow: ChromeAPIWindowState, tabIndex: number, chromeTab: ChromeAPITabState) {
     const activeTab = WindowStateUtils.convertToActiveTab(chromeTab);
-    this.sessionListState.insertTabInWindow(windowId, tabIndex, activeTab);
-    chrome.tabs.create({windowId, index: tabIndex, url: chromeTab.url, active: false});
+    chromeWindow.tabs.splice(tabIndex, 0, activeTab);
+    chrome.tabs.create({windowId: chromeWindow.id, index: tabIndex, url: chromeTab.url, active: false});
   }
 
   openUrlInNewTab(url: string) {

@@ -63,9 +63,9 @@ export class SavedTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: true})
-  createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) {
+  createTab(chromeWindow: ChromeAPIWindowState, tabIndex: number, chromeTab: ChromeAPITabState) {
     const savedTab = WindowStateUtils.convertToSavedTab(chromeTab);
-    this.sessionListState.insertTabInWindow(windowId, tabIndex, savedTab);
+    chromeWindow.tabs.splice(tabIndex, 0, savedTab);
   }
 
   @modifiesState({storeResult: true})

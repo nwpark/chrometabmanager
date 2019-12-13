@@ -88,7 +88,7 @@ export class ChromeWindowComponent implements OnDestroy, OnInit {
         if (this.preferencesService.shouldCloseWindowOnSave()) {
           sourceTabList.tabsService.removeTab(sourceTabList.chromeWindow, event.item.data.id);
         }
-        targetTabList.tabsService.createTab(targetTabList.chromeWindow.id, event.currentIndex, event.item.data);
+        targetTabList.tabsService.createTab(targetTabList.chromeWindow, event.currentIndex, event.item.data);
       }
     } finally {
       this.dragDropService.endDrag();

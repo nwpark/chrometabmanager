@@ -82,7 +82,7 @@ export class RecentlyClosedTabsService implements TabsService {
 
   transferTab(sourceWindow: ChromeAPIWindowState, targetWindow: ChromeAPIWindowState, sourceIndex: number, targetIndex: number) { /* do nothing */ }
 
-  createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState) { /* do nothing */ }
+  createTab(chromeWindow: ChromeAPIWindowState, tabIndex: number, chromeTab: ChromeAPITabState) { /* do nothing */ }
 
   setSessionTitle(windowId: any, title: string) { /* do nothing */ }
 

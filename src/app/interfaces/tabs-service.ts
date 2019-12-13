@@ -14,7 +14,7 @@ export interface TabsService {
 
   transferTab(sourceWindow: ChromeAPIWindowState, targetWindow: ChromeAPIWindowState, sourceIndex: number, targetIndex: number);
 
-  createTab(windowId: any, tabIndex: number, chromeTab: ChromeAPITabState);
+  createTab(chromeWindow: ChromeAPIWindowState, tabIndex: number, chromeTab: ChromeAPITabState);
 
   removeTab(chromeWindow: ChromeAPIWindowState, tabId: any);
 

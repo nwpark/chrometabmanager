@@ -38,10 +38,6 @@ export class SessionListState {
     return this.getWindow(windowId).tabs.find(tab => tab.id === tabId);
   }
 
-  insertTabInWindow(windowId: any, index: number, chromeTab: ChromeAPITabState) {
-    this.getWindow(windowId).tabs.splice(index, 0, chromeTab);
-  }
-
   removeSession(sessionId: any) {
     delete this.chromeSessions[sessionId];
     this.layoutState.sessionStates = this.layoutState.sessionStates.filter(layoutState => layoutState.sessionId !== sessionId);
