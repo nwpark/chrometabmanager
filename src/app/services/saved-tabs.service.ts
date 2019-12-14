@@ -86,13 +86,13 @@ export class SavedTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: true})
-  toggleSessionDisplay(sessionId: any) {
-    this.sessionListState.toggleSessionDisplay(sessionId);
+  toggleSessionDisplay(index: number) {
+    this.sessionListState.toggleSessionDisplay(index);
   }
 
   @modifiesState({storeResult: true})
-  setSessionTitle(sessionId: any, title: string) {
-    this.sessionListState.setSessionTitle(sessionId, title);
+  setSessionTitle(index: number, title: string) {
+    this.sessionListState.setSessionTitle(index, title);
   }
 
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean) {

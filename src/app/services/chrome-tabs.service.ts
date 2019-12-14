@@ -89,8 +89,8 @@ export class ChromeTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: true})
-  toggleSessionDisplay(sessionId: any) {
-    this.sessionListState.toggleSessionDisplay(sessionId);
+  toggleSessionDisplay(index: number) {
+    this.sessionListState.toggleSessionDisplay(index);
   }
 
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean) {
@@ -99,8 +99,8 @@ export class ChromeTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: true})
-  setSessionTitle(sessionId: any, title: string) {
-    this.sessionListState.setSessionTitle(sessionId, title);
+  setSessionTitle(index: number, title: string) {
+    this.sessionListState.setSessionTitle(index, title);
   }
 
   @modifiesState({storeResult: false})

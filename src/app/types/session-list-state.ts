@@ -83,14 +83,13 @@ export class SessionListState {
     this.hidden = hidden;
   }
 
-  toggleSessionDisplay(sessionId: any) {
-    const layoutState = this.getSessionLayout(sessionId);
+  toggleSessionDisplay(index: number) {
+    const layoutState = this.sessionStates[index].layoutState;
     layoutState.hidden = !layoutState.hidden;
   }
 
-  setSessionTitle(sessionId: any, title: string) {
-    const layoutState = this.getSessionLayout(sessionId);
-    layoutState.title = title;
+  setSessionTitle(index: number, title: string) {
+    this.sessionStates[index].layoutState.title = title;
   }
 
   removeExpiredSessions(maxSessionCount: number) {

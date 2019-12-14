@@ -22,9 +22,9 @@ export interface TabsService {
 
   toggleSessionListDisplay();
 
-  toggleSessionDisplay(sessionId: any);
+  toggleSessionDisplay(index: number);
 
-  setSessionTitle(windowId: any, title: string);
+  setSessionTitle(index: number, title: string);
 
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean);
 

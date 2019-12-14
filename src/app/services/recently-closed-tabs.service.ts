@@ -56,8 +56,8 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   @modifiesState()
-  toggleSessionDisplay(windowId: any) {
-    this.sessionListState.toggleSessionDisplay(windowId);
+  toggleSessionDisplay(index: number) {
+    this.sessionListState.toggleSessionDisplay(index);
   }
 
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean) {
@@ -83,7 +83,7 @@ export class RecentlyClosedTabsService implements TabsService {
 
   createTab(chromeWindow: ChromeAPIWindowState, tabIndex: number, chromeTab: ChromeAPITabState) { /* do nothing */ }
 
-  setSessionTitle(windowId: any, title: string) { /* do nothing */ }
+  setSessionTitle(index: number, title: string) { /* do nothing */ }
 
   onStateModified() {
     console.log(new Date().toTimeString().substring(0, 8), '- updating recently closed windows');

@@ -16,6 +16,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
 
   @Input() sessionState: SessionState;
   @Input() props: SessionComponentProps;
+  @Input() index: number;
   @Output() chromeWindowClose = new EventEmitter();
   @Output() chromeWindowToggleDisplay = new EventEmitter();
 
@@ -48,6 +49,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
       : this.layoutState.title;
   }
 
+  // todo: dragdrop service
   editTitle() {
     this.showEditForm = true;
     this.changeDetectorRef.detectChanges();
@@ -56,7 +58,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
   }
 
   submitTitleForm() {
-    this.props.tabsService.setSessionTitle(this.chromeAPIWindow.id, this.titleFormControl.value);
+    this.props.tabsService.setSessionTitle(this.index, this.titleFormControl.value);
     this.showEditForm = false;
   }
 
