@@ -69,7 +69,7 @@ export class WindowListComponent implements OnDestroy, OnInit {
 
   getTitle(): string {
     const tabCount = this.sessionListState.size();
-    if (tabCount > 0 && this.sessionListState.layoutState.hidden) {
+    if (tabCount > 0 && this.sessionListState.isHidden()) {
       return `${this.title} (${tabCount})`;
     }
     return this.title;
@@ -85,7 +85,7 @@ export class WindowListComponent implements OnDestroy, OnInit {
   }
 
   toggleDisplay() {
-    const animationState = getAnimationForToggleDisplay(this.sessionListState.layoutState.hidden);
+    const animationState = getAnimationForToggleDisplay(this.sessionListState.isHidden());
     this.setAnimationState(animationState);
     this.props.tabsService.toggleSessionListDisplay();
   }

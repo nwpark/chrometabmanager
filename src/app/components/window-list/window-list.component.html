@@ -14,10 +14,10 @@
       <button
         mat-icon-button
         *ngIf="!button.requiresMouseover || headerDiv.mouseOver"
-        [title]="sessionListState.layoutState.hidden ? button.titleWhenHidden : button.title"
+        [title]="sessionListState.isHidden() ? button.titleWhenHidden : button.title"
         (click)="button.callback()">
-        <mat-icon class="action-icon-24" *ngIf="!sessionListState.layoutState.hidden">{{button.icon}}</mat-icon>
-        <mat-icon class="action-icon-24" *ngIf="sessionListState.layoutState.hidden">{{button.iconWhenHidden || button.icon}}</mat-icon>
+        <mat-icon class="action-icon-24" *ngIf="!sessionListState.isHidden()">{{button.icon}}</mat-icon>
+        <mat-icon class="action-icon-24" *ngIf="sessionListState.isHidden()">{{button.iconWhenHidden || button.icon}}</mat-icon>
       </button>
     </ng-container>
   </span>
@@ -35,7 +35,7 @@
   [cdkDropListDisabled]="!props.isMutable"
   (cdkDropListDropped)="windowDropped($event)">
   <div
-    *ngIf="!sessionListState.layoutState.hidden || isComponentAnimating()"
+    *ngIf="!sessionListState.isHidden() || isComponentAnimating()"
     [@collapse-list]="animationState"
     (@collapse-list.done)="completeToggleDisplayAnimation($event)">
     <ng-container *ngFor="let sessionState of this.sessionListState; index as index; first as isFirst; last as isLast">

@@ -69,7 +69,7 @@ export class SyncStorageService {
     chrome.storage.sync.set({
       [StorageKeys.LastModifiedBy]: this.instanceId,
       ...sessionMap,
-      [StorageKeys.SavedWindowsLayoutState]: sessionListState.layoutState
+      [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
     }, () => {
       if (removedSessions) {
         chrome.storage.sync.remove(removedSessions);

@@ -7,9 +7,8 @@ import {SessionUtils} from '../classes/session-utils';
 export class SessionListState {
 
   private iteratorCache = {};
-
-  chromeSessions: SessionMap;
-  layoutState: SessionListLayoutState;
+  private chromeSessions: SessionMap;
+  private layoutState: SessionListLayoutState;
 
   static empty(): SessionListState {
     return new this({}, SessionListUtils.createEmptyListLayoutState());
@@ -109,6 +108,18 @@ export class SessionListState {
   clear() {
     this.chromeSessions = {};
     this.layoutState.sessionStates = [];
+  }
+
+  isHidden(): boolean {
+    return this.layoutState.hidden;
+  }
+
+  getSessionMap(): SessionMap {
+    return this.chromeSessions;
+  }
+
+  getLayoutState(): SessionListLayoutState {
+    return this.layoutState;
   }
 
   *[Symbol.iterator](): IterableIterator<SessionState> {

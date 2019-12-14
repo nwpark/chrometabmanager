@@ -31,8 +31,8 @@ export class LocalStorageService {
 
   setActiveWindowsState(sessionListState: SessionListState, callback?: () => void) {
     chrome.storage.local.set({
-      [StorageKeys.ActiveWindows]: sessionListState.chromeSessions,
-      [StorageKeys.ActiveWindowsLayoutState]: sessionListState.layoutState
+      [StorageKeys.ActiveWindows]: sessionListState.getSessionMap(),
+      [StorageKeys.ActiveWindowsLayoutState]: sessionListState.getLayoutState()
     }, () => {
       MessagePassingService.notifyActiveWindowStateListeners();
       if (callback) {
@@ -73,8 +73,8 @@ export class LocalStorageService {
 
   setRecentlyClosedSessionsState(sessionListState: SessionListState) {
     chrome.storage.local.set({
-      [StorageKeys.RecentlyClosedSessions]: sessionListState.chromeSessions,
-      [StorageKeys.RecentlyClosedSessionsLayoutState]: sessionListState.layoutState
+      [StorageKeys.RecentlyClosedSessions]: sessionListState.getSessionMap(),
+      [StorageKeys.RecentlyClosedSessionsLayoutState]: sessionListState.getLayoutState()
     }, () => {
       MessagePassingService.notifyClosedSessionStateListeners();
     });
@@ -99,8 +99,8 @@ export class LocalStorageService {
 
   setSavedWindowsState(sessionListState: SessionListState) {
     chrome.storage.local.set({
-      [StorageKeys.SavedWindows]: sessionListState.chromeSessions,
-      [StorageKeys.SavedWindowsLayoutState]: sessionListState.layoutState
+      [StorageKeys.SavedWindows]: sessionListState.getSessionMap(),
+      [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
     }, () => {
       MessagePassingService.notifySavedWindowStateListeners();
     });
