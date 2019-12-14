@@ -63,7 +63,7 @@ export class LocalStorageService {
         const recentlyClosedSessions = data[StorageKeys.RecentlyClosedSessions];
         const layoutState = data[StorageKeys.RecentlyClosedSessionsLayoutState];
         if (recentlyClosedSessions && layoutState) {
-          resolve(SessionListState.fromSessionStates(recentlyClosedSessions, layoutState));
+          resolve(new SessionListState(recentlyClosedSessions, layoutState));
         } else {
           resolve(SessionListState.empty());
         }
@@ -73,7 +73,7 @@ export class LocalStorageService {
 
   setRecentlyClosedSessionsState(sessionListState: SessionListState) {
     chrome.storage.local.set({
-      [StorageKeys.RecentlyClosedSessions]: sessionListState.getSessionStates(),
+      [StorageKeys.RecentlyClosedSessions]: sessionListState.chromeSessions,
       [StorageKeys.RecentlyClosedSessionsLayoutState]: sessionListState.layoutState
     }, () => {
       MessagePassingService.notifyClosedSessionStateListeners();
