@@ -15,8 +15,7 @@ export interface SessionStateMap {
 
 export interface SessionListLayoutState {
   hidden: boolean;
-  // todo: rename
-  sessionStates: SessionLayoutState[];
+  sessionLayoutStates: SessionLayoutState[];
 }
 
 export interface SessionLayoutState {

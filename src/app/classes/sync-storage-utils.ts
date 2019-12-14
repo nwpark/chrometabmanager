@@ -7,7 +7,7 @@ export class SyncStorageUtils {
   static readonly SESSION_KEY_LENGTH = 36;
 
   static getSortedSessionStates(storageData: SessionStateMap, listLayoutState: SessionListLayoutState) {
-    const sessionStates = listLayoutState.sessionStates.map(layoutState => {
+    const sessionStates = listLayoutState.sessionLayoutStates.map(layoutState => {
       const sessionState: SessionState = storageData[layoutState.sessionId];
       delete storageData[layoutState.sessionId];
       return sessionState;

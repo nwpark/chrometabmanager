@@ -19,7 +19,7 @@ export class SessionListState {
     sessionMap: SessionMap,
     listLayoutState: SessionListLayoutState
   ): SessionListState {
-    const sessionStates: SessionState[] = listLayoutState.sessionStates
+    const sessionStates: SessionState[] = listLayoutState.sessionLayoutStates
       .map(layoutState => {
         return {session: sessionMap[layoutState.sessionId], layoutState};
       });
@@ -55,16 +55,16 @@ export class SessionListState {
     this.sessionStates = this.sessionStates.filter(sessionState => sessionState.layoutState.sessionId !== sessionId);
   }
 
+  markWindowAsDeleted(windowId: any) {
+    this.getSessionLayout(windowId).deleted = true;
+  }
+
   moveSessionInList(sourceIndex: number, targetIndex: number) {
     moveItemInArray(this.sessionStates, sourceIndex, targetIndex);
   }
 
   unshiftSession(session: ChromeAPISession, layoutState: SessionLayoutState) {
     this.sessionStates.unshift({session, layoutState});
-  }
-
-  markWindowAsDeleted(windowId: any) {
-    this.getSessionLayout(windowId).deleted = true;
   }
 
   insertSession(sessionState: SessionState, index: number) {
@@ -96,10 +96,7 @@ export class SessionListState {
   }
 
   size(): number {
-    // todo: create a [session.window.type === 'normal'] predicate
-    return this.sessionStates.filter(sessionState => {
-      return !sessionState.session.window || sessionState.session.window.type === 'normal';
-    }).length;
+    return this.sessionStates.length;
   }
 
   getSessionIds(): string[] {
@@ -150,7 +147,7 @@ export class SessionListState {
 
   getLayoutState(): SessionListLayoutState {
     return {
-      sessionStates: this.sessionStates.map(sessionState => sessionState.layoutState),
+      sessionLayoutStates: this.sessionStates.map(sessionState => sessionState.layoutState),
       hidden: this.hidden
     };
   }

@@ -122,5 +122,4 @@ export class ChromeTabsService implements TabsService {
       this.localStorageService.setActiveWindowsState(this.sessionListState);
     }
   }
-
 }

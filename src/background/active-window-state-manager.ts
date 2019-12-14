@@ -54,6 +54,7 @@ export class ActiveWindowStateManager {
   getChromeWindowsFromAPI(): Promise<ChromeAPIWindowState[]> {
     return new Promise<ChromeAPIWindowState[]>(resolve => {
       chrome.windows.getAll({populate: true}, chromeWindows => {
+        chromeWindows = chromeWindows.filter(window => window.type === 'normal');
         resolve(chromeWindows as ChromeAPIWindowState[]);
       });
     });

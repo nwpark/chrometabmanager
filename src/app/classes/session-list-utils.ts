@@ -4,7 +4,7 @@ import {SessionUtils} from './session-utils';
 
 export class SessionListUtils {
   static createEmptyListLayoutState(): SessionListLayoutState {
-    return {hidden: false, sessionStates: []};
+    return {hidden: false, sessionLayoutStates: []};
   }
 
   static createClosedSessionFromWindow(chromeWindow: ChromeAPIWindowState): ChromeAPISession {
@@ -45,15 +45,15 @@ export class SessionListUtils {
   static fillMissingLayoutStates(layoutState: SessionListLayoutState,
                                  chromeWindows: ChromeAPIWindowState[]) {
     chromeWindows.forEach(chromeWindow => {
-      if (!layoutState.sessionStates.some(sessionState => sessionState.sessionId === chromeWindow.id)) {
-        layoutState.sessionStates.push(SessionListUtils.createBasicWindowLayoutState(chromeWindow.id));
+      if (!layoutState.sessionLayoutStates.some(sessionState => sessionState.sessionId === chromeWindow.id)) {
+        layoutState.sessionLayoutStates.push(SessionListUtils.createBasicWindowLayoutState(chromeWindow.id));
       }
     });
   }
 
   static removeRedundantLayoutStates(layoutState: SessionListLayoutState,
                                      chromeWindows: ChromeAPIWindowState[]) {
-    layoutState.sessionStates = layoutState.sessionStates.filter(sessionState =>
+    layoutState.sessionLayoutStates = layoutState.sessionLayoutStates.filter(sessionState =>
       chromeWindows.some(chromeWindow => chromeWindow.id === sessionState.sessionId)
     );
   }
