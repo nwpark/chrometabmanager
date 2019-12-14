@@ -18,11 +18,10 @@ export class LocalStorageService {
         StorageKeys.ActiveWindows,
         StorageKeys.ActiveWindowsLayoutState
       ], data => {
-        const activeWindows = data[StorageKeys.ActiveWindows];
+        const sessionMap = data[StorageKeys.ActiveWindows];
         const layoutState = data[StorageKeys.ActiveWindowsLayoutState];
-        if (activeWindows && layoutState) {
-          // todo: fix naming
-          resolve(SessionListState.fromSessionMap(activeWindows, layoutState));
+        if (sessionMap && layoutState) {
+          resolve(SessionListState.fromSessionMap(sessionMap, layoutState));
         } else {
           resolve(SessionListState.empty());
         }
@@ -61,10 +60,10 @@ export class LocalStorageService {
         StorageKeys.RecentlyClosedSessions,
         StorageKeys.RecentlyClosedSessionsLayoutState
       ], data => {
-        const recentlyClosedSessions = data[StorageKeys.RecentlyClosedSessions];
+        const sessionMap = data[StorageKeys.RecentlyClosedSessions];
         const layoutState = data[StorageKeys.RecentlyClosedSessionsLayoutState];
-        if (recentlyClosedSessions && layoutState) {
-          resolve(SessionListState.fromSessionMap(recentlyClosedSessions, layoutState));
+        if (sessionMap && layoutState) {
+          resolve(SessionListState.fromSessionMap(sessionMap, layoutState));
         } else {
           resolve(SessionListState.empty());
         }
@@ -87,10 +86,10 @@ export class LocalStorageService {
         StorageKeys.SavedWindows,
         StorageKeys.SavedWindowsLayoutState
       ], data => {
-        const savedWindows = data[StorageKeys.SavedWindows];
+        const sessionMap = data[StorageKeys.SavedWindows];
         const layoutState = data[StorageKeys.SavedWindowsLayoutState];
-        if (savedWindows && layoutState) {
-          resolve(SessionListState.fromSessionMap(savedWindows, layoutState));
+        if (sessionMap && layoutState) {
+          resolve(SessionListState.fromSessionMap(sessionMap, layoutState));
         } else {
           resolve(SessionListState.empty());
         }

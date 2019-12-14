@@ -1,6 +1,6 @@
 import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from './chrome-api-types';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
-import {SessionLayoutState, SessionListLayoutState, SessionMap, SessionState} from './session';
+import {SessionLayoutState, SessionListLayoutState, SessionMap, SessionState, SessionStateMap} from './session';
 
 export class SessionListState {
 
@@ -11,13 +11,17 @@ export class SessionListState {
     return new this([], false);
   }
 
+  static fromSessionStates(sessionStates: SessionState[], hidden: boolean): SessionListState {
+    return new this(sessionStates, hidden);
+  }
+
   static fromSessionMap(
-    chromeSessions: SessionMap,
+    sessionMap: SessionMap,
     listLayoutState: SessionListLayoutState
   ): SessionListState {
     const sessionStates: SessionState[] = listLayoutState.sessionStates
       .map(layoutState => {
-        return {session: chromeSessions[layoutState.sessionId], layoutState};
+        return {session: sessionMap[layoutState.sessionId], layoutState};
       });
     return new this(sessionStates, listLayoutState.hidden);
   }
@@ -128,11 +132,21 @@ export class SessionListState {
 
   getSessionMap(): SessionMap {
     const sessionMap: SessionMap = {};
-    this.sessionStates
-      .forEach(sessionState => {
-        sessionMap[sessionState.layoutState.sessionId] = sessionState.session;
-      });
+    this.sessionStates.forEach(sessionState => {
+      sessionMap[sessionState.layoutState.sessionId] = sessionState.session;
+    });
     return sessionMap;
+  }
+
+  getSessionStateMap(): SessionStateMap {
+    const sessionStateMap: SessionStateMap = {};
+    this.sessionStates.forEach(sessionState => {
+      sessionStateMap[sessionState.layoutState.sessionId] = {
+        session: sessionState.session,
+        layoutState: sessionState.layoutState
+      };
+    });
+    return sessionStateMap;
   }
 
   getLayoutState(): SessionListLayoutState {

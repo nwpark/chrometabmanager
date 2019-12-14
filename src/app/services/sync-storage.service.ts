@@ -46,11 +46,8 @@ export class SyncStorageService {
       chrome.storage.sync.get(data => {
         const layoutState: SessionListLayoutState = data[StorageKeys.SavedWindowsLayoutState];
         if (layoutState) {
-          const sessionStates = SyncStorageUtils.getSessionStatesFromStorageData(data);
-          SyncStorageUtils.mergeLayoutStates(layoutState, sessionStates);
-          // todo: use different factory method
-          const sessionMap = SyncStorageUtils.createSessionMap(sessionStates);
-          resolve(SessionListState.fromSessionMap(sessionMap, layoutState));
+          const sessionStates = SyncStorageUtils.getSortedSessionStates(data, layoutState);
+          resolve(SessionListState.fromSessionStates(sessionStates, layoutState.hidden));
         } else {
           resolve(SessionListState.empty());
         }
@@ -66,10 +63,10 @@ export class SyncStorageService {
   }
 
   setSavedWindowsState(sessionListState: SessionListState, removedSessions?: any[]) {
-    const sessionMap = SyncStorageUtils.convertToSessionStateMap(sessionListState);
+    const sessionStateMap = sessionListState.getSessionStateMap();
     chrome.storage.sync.set({
       [StorageKeys.LastModifiedBy]: this.instanceId,
-      ...sessionMap,
+      ...sessionStateMap,
       [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
     }, () => {
       if (removedSessions) {
