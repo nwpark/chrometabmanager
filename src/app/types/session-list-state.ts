@@ -1,36 +1,46 @@
 import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from './chrome-api-types';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
 import {SessionLayoutState, SessionListLayoutState, SessionMap, SessionState} from './session';
-import {SessionListUtils} from '../classes/session-list-utils';
-import {SessionUtils} from '../classes/session-utils';
 
 export class SessionListState {
 
-  private iteratorCache = {};
-  private chromeSessions: SessionMap;
-  private layoutState: SessionListLayoutState;
+  private sessionStates: SessionState[];
+  private hidden: boolean;
 
   static empty(): SessionListState {
-    return new this({}, SessionListUtils.createEmptyListLayoutState());
+    return new this([], false);
   }
 
-  constructor(chromeSessions: SessionMap,
-              layoutState: SessionListLayoutState) {
-    this.chromeSessions = chromeSessions;
-    this.layoutState = layoutState;
+  static fromSessionMap(
+    chromeSessions: SessionMap,
+    listLayoutState: SessionListLayoutState
+  ): SessionListState {
+    const sessionStates: SessionState[] = listLayoutState.sessionStates
+      .map(layoutState => {
+        return {session: chromeSessions[layoutState.sessionId], layoutState};
+      });
+    return new this(sessionStates, listLayoutState.hidden);
+  }
+
+  private constructor(sessionStates: SessionState[], hidden: boolean) {
+    this.sessionStates = sessionStates;
+    this.hidden = hidden;
+  }
+
+  getSessionState(sessionId: any): SessionState {
+    return this.sessionStates.find(sessionState => sessionState.layoutState.sessionId === sessionId);
   }
 
   getWindow(windowId: any): ChromeAPIWindowState {
-    return this.chromeSessions[windowId].window;
+    return this.getSessionState(windowId).session.window;
   }
 
   getSessionAtIndex(index: number): ChromeAPISession {
-    const sessionId = this.layoutState.sessionStates[index].sessionId;
-    return this.chromeSessions[sessionId];
+    return this.sessionStates[index].session;
   }
 
   getSessionLayout(sessionId: any): SessionLayoutState {
-    return this.layoutState.sessionStates.find(layoutState => layoutState.sessionId === sessionId);
+    return this.getSessionState(sessionId).layoutState;
   }
 
   getTabFromWindow(windowId: any, tabId: any): ChromeAPITabState {
@@ -38,34 +48,32 @@ export class SessionListState {
   }
 
   removeSession(sessionId: any) {
-    delete this.chromeSessions[sessionId];
-    this.layoutState.sessionStates = this.layoutState.sessionStates.filter(layoutState => layoutState.sessionId !== sessionId);
+    this.sessionStates = this.sessionStates.filter(sessionState => sessionState.layoutState.sessionId !== sessionId);
   }
 
   moveSessionInList(sourceIndex: number, targetIndex: number) {
-    moveItemInArray(this.layoutState.sessionStates, sourceIndex, targetIndex);
+    moveItemInArray(this.sessionStates, sourceIndex, targetIndex);
   }
 
-  unshiftSession(session: ChromeAPISession, windowLayoutState: SessionLayoutState) {
-    this.chromeSessions[SessionUtils.getSessionId(session)] = session;
-    this.layoutState.sessionStates.unshift(windowLayoutState);
+  unshiftSession(session: ChromeAPISession, layoutState: SessionLayoutState) {
+    this.sessionStates.unshift({session, layoutState});
   }
 
   markWindowAsDeleted(windowId: any) {
     this.getSessionLayout(windowId).deleted = true;
   }
 
+  // todo: pass session state directly
   insertSession(session: ChromeAPISession, layoutState: SessionLayoutState, index: number) {
-    this.chromeSessions[SessionUtils.getSessionId(session)] = session;
-    this.layoutState.sessionStates.splice(index, 0, layoutState);
+    this.sessionStates.splice(index, 0, {session, layoutState});
   }
 
   toggleDisplay() {
-    this.layoutState.hidden = !this.layoutState.hidden;
+    this.hidden = !this.hidden;
   }
 
   setHidden(hidden: boolean) {
-    this.layoutState.hidden = hidden;
+    this.hidden = hidden;
   }
 
   toggleSessionDisplay(sessionId: any) {
@@ -78,59 +86,65 @@ export class SessionListState {
     layoutState.title = title;
   }
 
-  removeExpiredSessions(maxTabCount: number) {
-    while (this.layoutState.sessionStates.length > maxTabCount) {
-      const layoutState = this.layoutState.sessionStates.pop();
-      delete this.chromeSessions[layoutState.sessionId];
+  removeExpiredSessions(maxSessionCount: number) {
+    while (this.sessionStates.length > maxSessionCount) {
+      this.sessionStates.pop();
     }
   }
 
   size(): number {
     // todo: create a [session.window.type === 'normal'] predicate
-    return Object.values(this.chromeSessions)
-      .filter(session => !session.window || session.window.type === 'normal')
-      .length;
+    return this.sessionStates.filter(sessionState => {
+      return !sessionState.session.window || sessionState.session.window.type === 'normal';
+    }).length;
   }
 
   getSessionIds(): string[] {
-    return this.layoutState.sessionStates
-      .map(sessionState => sessionState.sessionId.toString());
+    return this.sessionStates
+      .map(sessionState => sessionState.layoutState.sessionId.toString());
   }
 
   addAll(other: SessionListState) {
     for (const sessionState of other) {
-      if (!this.chromeSessions[sessionState.layoutState.sessionId]) {
-        this.unshiftSession(sessionState.session, sessionState.layoutState);
+      if (this.contains(sessionState.layoutState.sessionId)) {
+        this.removeSession(sessionState.layoutState.sessionId);
       }
+      this.unshiftSession(sessionState.session, sessionState.layoutState);
     }
   }
 
+  contains(sessionId: any): boolean {
+    return this.sessionStates
+      .some(sessionState => sessionState.layoutState.sessionId === sessionId);
+  }
+
   clear() {
-    this.chromeSessions = {};
-    this.layoutState.sessionStates = [];
+    this.sessionStates = [];
   }
 
   isHidden(): boolean {
-    return this.layoutState.hidden;
+    return this.hidden;
   }
 
   getSessionMap(): SessionMap {
-    return this.chromeSessions;
+    const sessionMap: SessionMap = {};
+    this.sessionStates
+      .forEach(sessionState => {
+        sessionMap[sessionState.layoutState.sessionId] = sessionState.session;
+      });
+    return sessionMap;
   }
 
   getLayoutState(): SessionListLayoutState {
-    return this.layoutState;
+    return {
+      sessionStates: this.sessionStates.map(sessionState => sessionState.layoutState),
+      hidden: this.hidden
+    };
   }
 
   *[Symbol.iterator](): IterableIterator<SessionState> {
-    for (const layoutState of this.layoutState.sessionStates) {
-      if (!this.iteratorCache[layoutState.sessionId]) {
-        this.iteratorCache[layoutState.sessionId] = {
-          session: this.chromeSessions[layoutState.sessionId],
-          layoutState
-        };
-      }
-      yield this.iteratorCache[layoutState.sessionId];
+    for (const sessionState of this.sessionStates) {
+      yield sessionState;
     }
   }
 }

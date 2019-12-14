@@ -21,7 +21,8 @@ export class LocalStorageService {
         const activeWindows = data[StorageKeys.ActiveWindows];
         const layoutState = data[StorageKeys.ActiveWindowsLayoutState];
         if (activeWindows && layoutState) {
-          resolve(new SessionListState(activeWindows, layoutState));
+          // todo: fix naming
+          resolve(SessionListState.fromSessionMap(activeWindows, layoutState));
         } else {
           resolve(SessionListState.empty());
         }
@@ -63,7 +64,7 @@ export class LocalStorageService {
         const recentlyClosedSessions = data[StorageKeys.RecentlyClosedSessions];
         const layoutState = data[StorageKeys.RecentlyClosedSessionsLayoutState];
         if (recentlyClosedSessions && layoutState) {
-          resolve(new SessionListState(recentlyClosedSessions, layoutState));
+          resolve(SessionListState.fromSessionMap(recentlyClosedSessions, layoutState));
         } else {
           resolve(SessionListState.empty());
         }
@@ -89,7 +90,7 @@ export class LocalStorageService {
         const savedWindows = data[StorageKeys.SavedWindows];
         const layoutState = data[StorageKeys.SavedWindowsLayoutState];
         if (savedWindows && layoutState) {
-          resolve(new SessionListState(savedWindows, layoutState));
+          resolve(SessionListState.fromSessionMap(savedWindows, layoutState));
         } else {
           resolve(SessionListState.empty());
         }

@@ -33,7 +33,7 @@ export class ActiveWindowStateManager {
         const chromeWindows: ChromeAPIWindowState[] = res[0];
         const layoutState = SessionListUtils.cleanupLayoutState(res[1], chromeWindows);
         const sessionMap = SessionListUtils.createSessionMapFromWindowList(chromeWindows);
-        this.sessionListState = new SessionListState(sessionMap, layoutState);
+        this.sessionListState = SessionListState.fromSessionMap(sessionMap, layoutState);
         this.localStorageService.setActiveWindowsState(this.sessionListState, releaseLock);
       });
     });

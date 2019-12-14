@@ -48,8 +48,9 @@ export class SyncStorageService {
         if (layoutState) {
           const sessionStates = SyncStorageUtils.getSessionStatesFromStorageData(data);
           SyncStorageUtils.mergeLayoutStates(layoutState, sessionStates);
+          // todo: use different factory method
           const sessionMap = SyncStorageUtils.createSessionMap(sessionStates);
-          resolve(new SessionListState(sessionMap, layoutState));
+          resolve(SessionListState.fromSessionMap(sessionMap, layoutState));
         } else {
           resolve(SessionListState.empty());
         }
