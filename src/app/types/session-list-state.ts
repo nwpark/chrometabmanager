@@ -67,9 +67,8 @@ export class SessionListState {
     this.getSessionLayout(windowId).deleted = true;
   }
 
-  // todo: pass session state directly
-  insertSession(session: ChromeAPISession, layoutState: SessionLayoutState, index: number) {
-    this.sessionStates.splice(index, 0, {session, layoutState});
+  insertSession(sessionState: SessionState, index: number) {
+    this.sessionStates.splice(index, 0, sessionState);
   }
 
   toggleDisplay() {
@@ -156,10 +155,8 @@ export class SessionListState {
     };
   }
 
-  *[Symbol.iterator](): IterableIterator<SessionState> {
-    for (const sessionState of this.sessionStates) {
-      yield sessionState;
-    }
+  [Symbol.iterator](): IterableIterator<SessionState> {
+    return this.sessionStates[Symbol.iterator]();
   }
 }
 

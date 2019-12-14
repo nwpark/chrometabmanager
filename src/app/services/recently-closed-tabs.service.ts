@@ -7,7 +7,7 @@ import {SessionListState} from '../types/session-list-state';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
 import {LocalStorageService} from './local-storage.service';
-import {SessionLayoutState} from '../types/session';
+import {SessionState} from '../types/session';
 
 @Injectable({
   providedIn: 'root'
@@ -73,7 +73,7 @@ export class RecentlyClosedTabsService implements TabsService {
     this.sessionListState.clear();
   }
 
-  insertWindow(chromeWindow: ChromeAPIWindowState, layoutState: SessionLayoutState, index: number) { /* do nothing */ }
+  insertWindow(sessionState: SessionState, index: number) { /* do nothing */ }
 
   moveWindowInList(sourceIndex: number, targetIndex: number) { /* do nothing */ }
 

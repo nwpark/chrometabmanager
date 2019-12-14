@@ -5,7 +5,7 @@ import {SessionListState} from '../app/types/session-list-state';
 import {SessionListUtils} from '../app/classes/session-list-utils';
 import {LayoutStateUtils, SessionUtils} from '../app/classes/session-utils';
 import {LocalStorageService} from '../app/services/local-storage.service';
-import {SessionLayoutState} from '../app/types/session';
+import {SessionState} from '../app/types/session';
 
 export class ActiveWindowStateManager {
 
@@ -19,7 +19,7 @@ export class ActiveWindowStateManager {
     this.sessionListState = SessionListState.empty();
     this.mutex = new Mutex();
     MessagePassingService.onInsertChromeWindowRequest((request: InsertWindowMessageData) => {
-      this.insertWindow(request.chromeWindow, request.layoutState, request.index);
+      this.insertWindow(request.sessionState, request.index);
     });
     this.updateActiveWindowState();
   }
@@ -39,13 +39,13 @@ export class ActiveWindowStateManager {
     });
   }
 
-  private insertWindow(chromeWindow: ChromeAPIWindowState, layoutState: SessionLayoutState, index) {
+  private insertWindow(sessionState: SessionState, index) {
     this.mutex.acquire().then(releaseLock => {
-      const tabsUrls = chromeWindow.tabs.map(tab => tab.url);
+      const tabsUrls = sessionState.session.window.tabs.map(tab => tab.url);
       chrome.windows.create({url: tabsUrls, focused: false}, window => {
         const session = SessionUtils.createSessionFromWindow(window as ChromeAPIWindowState);
-        layoutState = LayoutStateUtils.copyWithNewId(layoutState, window.id);
-        this.sessionListState.insertSession(session, layoutState, index);
+        const layoutState = LayoutStateUtils.copyWithNewId(sessionState.layoutState, window.id);
+        this.sessionListState.insertSession({session, layoutState}, index);
         this.localStorageService.setActiveWindowsState(this.sessionListState, releaseLock);
       });
     });

@@ -1,6 +1,6 @@
 import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {v4 as uuid} from 'uuid';
-import {SessionLayoutState} from '../types/session';
+import {SessionLayoutState, SessionState} from '../types/session';
 
 export class SessionUtils {
   static getSessionId(chromeSession: ChromeAPISession): any {
@@ -13,6 +13,20 @@ export class SessionUtils {
 
   static createSessionFromWindow(chromeWindow: ChromeAPIWindowState): ChromeAPISession {
     return {window: chromeWindow};
+  }
+}
+
+export class SessionStateUtils {
+  static convertToActiveWindow(sessionState: SessionState): SessionState {
+    const window = WindowStateUtils.convertToActiveWindow(sessionState.session.window);
+    const layoutState = LayoutStateUtils.copyWithNewId(sessionState.layoutState, window.id);
+    return {session: {window}, layoutState};
+  }
+
+  static convertToSavedWindow(sessionState: SessionState): SessionState {
+    const window = WindowStateUtils.convertToSavedWindow(sessionState.session.window);
+    const layoutState = LayoutStateUtils.copyWithNewId(sessionState.layoutState, window.id);
+    return {session: {window}, layoutState};
   }
 }
 

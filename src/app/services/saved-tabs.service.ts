@@ -8,8 +8,8 @@ import {StorageService} from './storage.service';
 import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
 import {SessionListState} from '../types/session-list-state';
 import {SessionListUtils} from '../classes/session-list-utils';
-import {LayoutStateUtils, SessionUtils, WindowStateUtils} from '../classes/session-utils';
-import {SessionLayoutState} from '../types/session';
+import {SessionStateUtils, SessionUtils, WindowStateUtils} from '../classes/session-utils';
+import {SessionState} from '../types/session';
 import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 @Injectable({
@@ -103,11 +103,9 @@ export class SavedTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: true})
-  insertWindow(chromeWindow: ChromeAPIWindowState, layoutState: SessionLayoutState, index: number) {
-    const savedWindow = WindowStateUtils.convertToSavedWindow(chromeWindow);
-    const savedSession = SessionUtils.createSessionFromWindow(savedWindow);
-    layoutState = LayoutStateUtils.copyWithNewId(layoutState, savedWindow.id);
-    this.sessionListState.insertSession(savedSession, layoutState, index);
+  insertWindow(sessionState: SessionState, index: number) {
+    sessionState = SessionStateUtils.convertToSavedWindow(sessionState);
+    this.sessionListState.insertSession(sessionState, index);
   }
 
   @modifiesState({storeResult: true})
