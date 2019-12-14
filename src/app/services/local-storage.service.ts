@@ -83,13 +83,13 @@ export class LocalStorageService {
   getSavedWindowsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
       chrome.storage.local.get([
-        StorageKeys.SavedSessions,
+        StorageKeys.SavedWindows,
         StorageKeys.SavedWindowsLayoutState
       ], data => {
-        const savedSessions = data[StorageKeys.SavedSessions];
+        const savedWindows = data[StorageKeys.SavedWindows];
         const layoutState = data[StorageKeys.SavedWindowsLayoutState];
-        if (savedSessions && layoutState) {
-          resolve(SessionListState.fromSessionStates(savedSessions, layoutState));
+        if (savedWindows && layoutState) {
+          resolve(new SessionListState(savedWindows, layoutState));
         } else {
           resolve(SessionListState.empty());
         }
@@ -99,7 +99,7 @@ export class LocalStorageService {
 
   setSavedWindowsState(sessionListState: SessionListState) {
     chrome.storage.local.set({
-      [StorageKeys.SavedSessions]: sessionListState.getSessionStates(),
+      [StorageKeys.SavedWindows]: sessionListState.chromeSessions,
       [StorageKeys.SavedWindowsLayoutState]: sessionListState.layoutState
     }, () => {
       MessagePassingService.notifySavedWindowStateListeners();

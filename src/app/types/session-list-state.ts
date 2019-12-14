@@ -3,7 +3,6 @@ import {moveItemInArray} from '@angular/cdk/drag-drop';
 import {SessionLayoutState, SessionListLayoutState, SessionMap, SessionState} from './session';
 import {SessionListUtils} from '../classes/session-list-utils';
 import {SessionUtils} from '../classes/session-utils';
-import {SyncStorageUtils} from '../classes/sync-storage-utils';
 
 export class SessionListState {
 
@@ -122,16 +121,6 @@ export class SessionListState {
       }
       yield this.iteratorCache[layoutState.sessionId];
     }
-  }
-
-  static fromSessionStates(sessionStates: SessionState[], layoutState: SessionListLayoutState): SessionListState {
-    const chromeSessions = SyncStorageUtils.createSessionMap(sessionStates);
-    SyncStorageUtils.mergeLayoutStates(layoutState, sessionStates);
-    return new SessionListState(chromeSessions, layoutState);
-  }
-
-  getSessionStates(): SessionState[] {
-    return Array.from(this);
   }
 }
 
