@@ -78,9 +78,9 @@ export class ChromeTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: true})
-  removeSession(sessionId: any) {
-    this.sessionListState.markWindowAsDeleted(sessionId);
-    chrome.windows.remove(sessionId);
+  removeSession(index: number) {
+    this.sessionListState.markWindowAsDeleted(index);
+    chrome.windows.remove(this.sessionListState.getSessionIdFromIndex(index));
   }
 
   @modifiesState({storeResult: true})

@@ -18,7 +18,7 @@ export interface TabsService {
 
   removeTab(chromeWindow: ChromeAPIWindowState, tabId: any);
 
-  removeSession(sessionId: any);
+  removeSession(index: number);
 
   toggleSessionListDisplay();
 

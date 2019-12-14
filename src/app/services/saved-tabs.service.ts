@@ -74,8 +74,9 @@ export class SavedTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: false})
-  removeSession(sessionId: any) {
-    this.sessionListState.removeSession(sessionId);
+  removeSession(index: number) {
+    const sessionId = this.sessionListState.getSessionIdFromIndex(index);
+    this.sessionListState.removeSession(index);
     this.storageService.setSavedWindowsState(this.sessionListState, [sessionId]);
   }
 

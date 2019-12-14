@@ -51,8 +51,8 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   @modifiesState()
-  removeSession(windowId: any) {
-    this.sessionListState.removeSession(windowId);
+  removeSession(index: number) {
+    this.sessionListState.removeSession(index);
   }
 
   @modifiesState()

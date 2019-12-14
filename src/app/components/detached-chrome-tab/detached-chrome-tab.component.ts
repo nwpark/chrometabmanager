@@ -26,6 +26,7 @@ export class DetachedChromeTabComponent implements OnInit {
 
   @Input() sessionState: SessionState;
   @Input() props: SessionComponentProps;
+  @Input() index: number;
   @Input() isFirstChild: boolean;
   @Input() isLastChild: boolean;
 
@@ -85,7 +86,7 @@ export class DetachedChromeTabComponent implements OnInit {
   completeCloseAnimation(event: AnimationEvent) {
     if (event.toState === AnimationState.Closing || event.toState === AnimationState.Collapsing) {
       this.setAnimationState(AnimationState.Complete);
-      this.props.tabsService.removeSession(this.chromeAPITab.id);
+      this.props.tabsService.removeSession(this.index);
     }
   }
 }

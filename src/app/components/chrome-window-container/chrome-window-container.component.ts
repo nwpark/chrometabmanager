@@ -37,6 +37,7 @@ export class ChromeWindowContainerComponent implements OnInit {
 
   @Input() sessionState: SessionState;
   @Input() props: SessionComponentProps;
+  @Input() index: number;
 
   chromeAPIWindow: ChromeAPIWindowState;
   layoutState: SessionLayoutState;
@@ -78,7 +79,7 @@ export class ChromeWindowContainerComponent implements OnInit {
   completeCloseWindow(event: AnimationEvent) {
     if (event.toState === AnimationState.Closing) {
       this.setAnimationState(AnimationState.Complete);
-      this.props.tabsService.removeSession(this.chromeAPIWindow.id);
+      this.props.tabsService.removeSession(this.index);
     }
   }
 }

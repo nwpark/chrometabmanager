@@ -46,7 +46,8 @@
         (cdkDragStarted)="beginDrag()">
         <app-chrome-window-container
           [sessionState]="sessionState"
-          [props]="props">
+          [props]="props"
+          [index]="index">
         </app-chrome-window-container>
       </div>
 
@@ -54,6 +55,7 @@
         *ngIf="sessionState.session.tab"
         [sessionState]="sessionState"
         [props]="props"
+        [index]="index"
         [isFirstChild]="isFirst || !sessionListState.getSessionAtIndex(index-1).tab"
         [isLastChild]="isLast || !sessionListState.getSessionAtIndex(index+1).tab">
       </app-detached-chrome-tab>

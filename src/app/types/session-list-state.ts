@@ -43,6 +43,10 @@ export class SessionListState {
     return this.sessionStates[index].session;
   }
 
+  getSessionIdFromIndex(index: number): any {
+    return this.sessionStates[index].layoutState.sessionId;
+  }
+
   getSessionLayout(sessionId: any): SessionLayoutState {
     return this.getSessionState(sessionId).layoutState;
   }
@@ -51,12 +55,12 @@ export class SessionListState {
     return this.getWindow(windowId).tabs.find(tab => tab.id === tabId);
   }
 
-  removeSession(sessionId: any) {
-    this.sessionStates = this.sessionStates.filter(sessionState => sessionState.layoutState.sessionId !== sessionId);
+  removeSession(index: number) {
+    this.sessionStates.splice(index, 1);
   }
 
-  markWindowAsDeleted(windowId: any) {
-    this.getSessionLayout(windowId).deleted = true;
+  markWindowAsDeleted(index: number) {
+    this.sessionStates[index].layoutState.deleted = true;
   }
 
   moveSessionInList(sourceIndex: number, targetIndex: number) {
