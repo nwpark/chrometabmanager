@@ -10,13 +10,13 @@ export interface TabsService {
 
   moveWindowInList(sourceIndex: number, targetIndex: number);
 
-  moveTabInWindow(chromeWindow: ChromeAPIWindowState, sourceIndex: number, targetIndex: number);
+  moveTabInWindow(windowIndex: number, sourceTabIndex: number, targetTabIndex: number);
 
-  transferTab(sourceWindow: ChromeAPIWindowState, targetWindow: ChromeAPIWindowState, sourceIndex: number, targetIndex: number);
+  transferTab(sourceWindowIndex: number, targetWindowIndex: number, sourceTabIndex: number, targetTabIndex: number);
 
-  createTab(chromeWindow: ChromeAPIWindowState, tabIndex: number, chromeTab: ChromeAPITabState);
+  createTab(windowIndex: number, tabIndex: number, chromeTab: ChromeAPITabState);
 
-  removeTab(chromeWindow: ChromeAPIWindowState, tabId: any);
+  removeTab(windowIndex: number, tabId: any);
 
   removeSession(index: number);
 

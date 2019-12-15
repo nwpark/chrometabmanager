@@ -1,5 +1,5 @@
 import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from './chrome-api-types';
-import {moveItemInArray} from '@angular/cdk/drag-drop';
+import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {SessionLayoutState, SessionListLayoutState, SessionMap, SessionState, SessionStateMap} from './session';
 
 export class SessionListState {
@@ -31,12 +31,12 @@ export class SessionListState {
     this.hidden = hidden;
   }
 
-  getSessionState(sessionId: any): SessionState {
-    return this.sessionStates.find(sessionState => sessionState.layoutState.sessionId === sessionId);
+  getWindow(windowId: any): ChromeAPIWindowState {
+    return this.sessionStates.find(sessionState => sessionState.layoutState.sessionId === windowId).session.window;
   }
 
-  getWindow(windowId: any): ChromeAPIWindowState {
-    return this.getSessionState(windowId).session.window;
+  getTabFromWindow(windowId: any, tabId: any): ChromeAPITabState {
+    return this.getWindow(windowId).tabs.find(tab => tab.id === tabId);
   }
 
   getSessionAtIndex(index: number): ChromeAPISession {
@@ -47,12 +47,9 @@ export class SessionListState {
     return this.sessionStates[index].layoutState.sessionId;
   }
 
-  getSessionLayout(sessionId: any): SessionLayoutState {
-    return this.getSessionState(sessionId).layoutState;
-  }
-
-  getTabFromWindow(windowId: any, tabId: any): ChromeAPITabState {
-    return this.getWindow(windowId).tabs.find(tab => tab.id === tabId);
+  getTabIdFromWindow(windowIndex: number, tabIndex: number) {
+    console.log(this, windowIndex);
+    return this.sessionStates[windowIndex].session.window.tabs[tabIndex].id;
   }
 
   removeSession(index: number) {
@@ -61,6 +58,28 @@ export class SessionListState {
 
   markWindowAsDeleted(index: number) {
     this.sessionStates[index].layoutState.deleted = true;
+  }
+
+  removeTab(windowIndex: number, tabId: any) {
+    const session = this.getSessionAtIndex(windowIndex);
+    session.window.tabs = session.window.tabs.filter(tab => tab.id !== tabId);
+  }
+
+  insertTabInWindow(windowIndex: number, tabIndex: number, chromeTab: ChromeAPITabState) {
+    this.sessionStates[windowIndex].session.window.tabs.splice(tabIndex, 0, chromeTab);
+  }
+
+  moveTabInWindow(windowIndex: number, sourceIndex: number, targetIndex: number) {
+    moveItemInArray(this.sessionStates[windowIndex].session.window.tabs, sourceIndex, targetIndex);
+  }
+
+  transferTab(sourceWindowIndex: number, targetWindowIndex: number, sourceTabIndex: number, targetTabIndex: number) {
+    transferArrayItem(
+      this.sessionStates[sourceWindowIndex].session.window.tabs,
+      this.sessionStates[targetWindowIndex].session.window.tabs,
+      sourceTabIndex,
+      targetTabIndex
+    );
   }
 
   moveSessionInList(sourceIndex: number, targetIndex: number) {

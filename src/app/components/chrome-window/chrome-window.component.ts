@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {SessionComponentProps, ChromeWindowDragDropData} from '../../types/chrome-window-component-data';
 import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {ChromeAPITabState, ChromeAPIWindowState} from '../../types/chrome-api-types';
@@ -14,12 +14,13 @@ import {takeUntil} from 'rxjs/operators';
   templateUrl: './chrome-window.component.html',
   styleUrls: ['./chrome-window.component.css']
 })
-export class ChromeWindowComponent implements OnDestroy, OnInit {
+export class ChromeWindowComponent implements OnDestroy, OnInit, OnChanges {
 
   private ngUnsubscribe = new Subject();
 
   @Input() sessionState: SessionState;
   @Input() props: SessionComponentProps;
+  @Input() index: number;
 
   chromeAPIWindow: ChromeAPIWindowState;
   layoutState: SessionLayoutState;
@@ -33,7 +34,7 @@ export class ChromeWindowComponent implements OnDestroy, OnInit {
   ngOnInit() {
     this.chromeAPIWindow = this.sessionState.session.window;
     this.layoutState = this.sessionState.layoutState;
-    this.dragDropData = {chromeWindow: this.chromeAPIWindow, ...this.props};
+    this.dragDropData = {index: this.index, ...this.props};
     this.connectedWindowIds = this.dragDropService.connectedWindowIds;
     this.dragDropService.connectedWindowIdsUpdated$
       .pipe(
@@ -45,13 +46,19 @@ export class ChromeWindowComponent implements OnDestroy, OnInit {
       });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.dragDropData) {
+      this.dragDropData.index = this.index;
+    }
+  }
+
   tabClicked(chromeTab: ChromeAPITabState, event: MouseEvent) {
     this.props.tabsService.setTabActive(chromeTab, event.ctrlKey);
   }
 
   closeTab(state: AnimationState, tabId: any) {
     if (state === AnimationState.Complete) {
-      this.props.tabsService.removeTab(this.chromeAPIWindow, tabId);
+      this.props.tabsService.removeTab(this.index, tabId);
     }
   }
 
@@ -71,23 +78,23 @@ export class ChromeWindowComponent implements OnDestroy, OnInit {
 
   tabDropped(event: CdkDragDrop<ChromeWindowDragDropData>) {
     try {
-      const targetTabList: ChromeWindowDragDropData = event.container.data;
-      const sourceTabList: ChromeWindowDragDropData = event.previousContainer.data;
+      const targetWindow: ChromeWindowDragDropData = event.container.data;
+      const sourceWindow: ChromeWindowDragDropData = event.previousContainer.data;
 
       if (event.previousContainer === event.container) {
-        targetTabList.tabsService.moveTabInWindow(targetTabList.chromeWindow,
+        targetWindow.tabsService.moveTabInWindow(targetWindow.index,
           event.previousIndex,
           event.currentIndex);
-      } else if (sourceTabList.sessionListId === targetTabList.sessionListId) {
-        targetTabList.tabsService.transferTab(sourceTabList.chromeWindow,
-          targetTabList.chromeWindow,
+      } else if (sourceWindow.sessionListId === targetWindow.sessionListId) {
+        targetWindow.tabsService.transferTab(sourceWindow.index,
+          targetWindow.index,
           event.previousIndex,
           event.currentIndex);
       } else {
         if (this.preferencesService.shouldCloseWindowOnSave()) {
-          sourceTabList.tabsService.removeTab(sourceTabList.chromeWindow, event.item.data.id);
+          sourceWindow.tabsService.removeTab(sourceWindow.index, event.item.data.id);
         }
-        targetTabList.tabsService.createTab(targetTabList.chromeWindow, event.currentIndex, event.item.data);
+        targetWindow.tabsService.createTab(targetWindow.index, event.currentIndex, event.item.data);
       }
     } finally {
       this.dragDropService.endDrag();

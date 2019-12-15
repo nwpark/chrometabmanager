@@ -46,8 +46,8 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   @modifiesState()
-  removeTab(chromeWindow: ChromeAPIWindowState, tabId: any) {
-    chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);
+  removeTab(windowIndex: number, tabId: any) {
+    this.sessionListState.removeTab(windowIndex, tabId);
   }
 
   @modifiesState()
@@ -77,11 +77,11 @@ export class RecentlyClosedTabsService implements TabsService {
 
   moveWindowInList(sourceIndex: number, targetIndex: number) { /* do nothing */ }
 
-  moveTabInWindow(chromeWindow: ChromeAPIWindowState, sourceIndex: number, targetIndex: number) { /* do nothing */ }
+  moveTabInWindow(windowIndex: number, sourceTabIndex: number, targetTabIndex: number) { /* do nothing */ }
 
-  transferTab(sourceWindow: ChromeAPIWindowState, targetWindow: ChromeAPIWindowState, sourceIndex: number, targetIndex: number) { /* do nothing */ }
+  transferTab(sourceWindowIndex: number, targetWindowIndex: number, sourceTabIndex: number, targetTabIndex: number) { /* do nothing */ }
 
-  createTab(chromeWindow: ChromeAPIWindowState, tabIndex: number, chromeTab: ChromeAPITabState) { /* do nothing */ }
+  createTab(windowIndex: number, tabIndex: number, chromeTab: ChromeAPITabState) { /* do nothing */ }
 
   setSessionTitle(index: number, title: string) { /* do nothing */ }
 

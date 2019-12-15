@@ -109,10 +109,10 @@ export class WindowListComponent implements OnDestroy, OnInit {
       if (event.previousContainer === event.container) {
         targetTabList.tabsService.moveWindowInList(event.previousIndex, event.currentIndex);
       } else {
+        targetTabList.tabsService.insertWindow(sessionState, event.currentIndex);
         if (this.preferencesService.shouldCloseWindowOnSave()) {
           sourceTabList.tabsService.removeSession(event.previousIndex);
         }
-        targetTabList.tabsService.insertWindow(sessionState, event.currentIndex);
       }
     } finally {
       this.dragDropService.endDrag();

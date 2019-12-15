@@ -53,24 +53,24 @@ export class SavedTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: true})
-  moveTabInWindow(chromeWindow: ChromeAPIWindowState, sourceIndex: number, targetIndex: number) {
-    moveItemInArray(chromeWindow.tabs, sourceIndex, targetIndex);
+  moveTabInWindow(windowIndex: number, sourceTabIndex: number, targetTabIndex: number) {
+    this.sessionListState.moveTabInWindow(windowIndex, sourceTabIndex, targetTabIndex);
   }
 
   @modifiesState({storeResult: true})
-  transferTab(sourceWindow: ChromeAPIWindowState, targetWindow: ChromeAPIWindowState, sourceIndex: number, targetIndex: number) {
-    transferArrayItem(sourceWindow.tabs, targetWindow.tabs, sourceIndex, targetIndex);
+  transferTab(sourceWindowIndex: number, targetWindowIndex: number, sourceTabIndex: number, targetTabIndex: number) {
+    this.sessionListState.transferTab(sourceWindowIndex, targetWindowIndex, sourceTabIndex, targetTabIndex);
   }
 
   @modifiesState({storeResult: true})
-  createTab(chromeWindow: ChromeAPIWindowState, tabIndex: number, chromeTab: ChromeAPITabState) {
+  createTab(windowIndex: number, tabIndex: number, chromeTab: ChromeAPITabState) {
     const savedTab = WindowStateUtils.convertToSavedTab(chromeTab);
-    chromeWindow.tabs.splice(tabIndex, 0, savedTab);
+    this.sessionListState.insertTabInWindow(windowIndex, tabIndex, savedTab);
   }
 
   @modifiesState({storeResult: true})
-  removeTab(chromeWindow: ChromeAPIWindowState, tabId: any) {
-    chromeWindow.tabs = chromeWindow.tabs.filter(tab => tab.id !== tabId);
+  removeTab(windowIndex: number, tabId: any) {
+    this.sessionListState.removeTab(windowIndex, tabId);
   }
 
   @modifiesState({storeResult: false})
