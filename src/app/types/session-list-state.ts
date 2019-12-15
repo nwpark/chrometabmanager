@@ -48,7 +48,6 @@ export class SessionListState {
   }
 
   getTabIdFromWindow(windowIndex: number, tabIndex: number) {
-    console.log(this, windowIndex);
     return this.sessionStates[windowIndex].session.window.tabs[tabIndex].id;
   }
 

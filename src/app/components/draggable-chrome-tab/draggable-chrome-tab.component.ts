@@ -2,6 +2,7 @@ import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from 
 import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {AnimationState, closeTabAnimation} from '../../animations';
+import {SessionComponentProps} from '../../types/chrome-window-component-data';
 
 @Component({
   selector: 'app-draggable-chrome-tab',
@@ -20,10 +21,8 @@ export class DraggableChromeTabComponent implements OnInit {
   static readonly NEW_TAB_URL = 'chrome://newtab/';
 
   @Input() chromeTab: ChromeAPITabState;
-  @Input() lastModified: number;
-  // todo: look into necessity of these
-  @Output() draggableChromeTabClose = new EventEmitter<AnimationState>();
-  @Output() draggableChromeTabClick = new EventEmitter<MouseEvent>();
+  @Input() props: SessionComponentProps;
+  @Input() parentIndex: number;
 
   animationState = AnimationState.Complete;
 
@@ -61,19 +60,17 @@ export class DraggableChromeTabComponent implements OnInit {
     return this.chromeTab.status === 'loading';
   }
 
-  get lastModifiedString(): string {
-    return new Date(this.lastModified).toTimeString().substring(0, 5);
+  setTabActive(event: MouseEvent) {
+    this.props.tabsService.setTabActive(this.chromeTab, event.ctrlKey);
   }
 
   closeTab() {
     this.setAnimationState(AnimationState.Closing);
-    this.draggableChromeTabClose.emit(AnimationState.Closing);
   }
 
   completeCloseAnimation(event: AnimationEvent) {
     if (event.toState === AnimationState.Closing) {
-      this.setAnimationState(AnimationState.Complete);
-      this.draggableChromeTabClose.emit(AnimationState.Complete);
+      this.props.tabsService.removeTab(this.parentIndex, this.chromeTab.id);
     }
   }
 }

@@ -14,11 +14,7 @@
   </button>
   <div
     class="chrome-tab-title"
-    (click)="draggableChromeTabClick.emit($event)">
-    <ng-container *ngIf="lastModified">
-      <div class="last-modified">{{lastModifiedString}}</div>
-      <div class="vertical-divider"></div>
-    </ng-container>
+    (click)="setTabActive($event)">
     <img
       class="favicon-icon"
       src="{{getFaviconIconUrl()}}"

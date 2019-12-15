@@ -52,16 +52,6 @@ export class ChromeWindowComponent implements OnDestroy, OnInit, OnChanges {
     }
   }
 
-  tabClicked(chromeTab: ChromeAPITabState, event: MouseEvent) {
-    this.props.tabsService.setTabActive(chromeTab, event.ctrlKey);
-  }
-
-  closeTab(state: AnimationState, tabId: any) {
-    if (state === AnimationState.Complete) {
-      this.props.tabsService.removeTab(this.index, tabId);
-    }
-  }
-
   dropTargetIsMutable(drag: CdkDrag, drop: CdkDropList<ChromeWindowDragDropData>): boolean {
     return drop.data.isMutable;
   }
