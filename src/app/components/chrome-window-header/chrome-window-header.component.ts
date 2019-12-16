@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
-import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
+import {ActionButton, ActionButtonFactory, ActionMenuItem} from '../../types/action-bar';
 import {ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {FormControl} from '@angular/forms';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
@@ -25,7 +25,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
   chromeAPIWindow: ChromeAPIWindowState;
   layoutState: SessionLayoutState;
   actionButtons: ActionButton[];
-  menuItems: ActionButton[];
+  actionMenuItems: ActionMenuItem[];
   debugModeEnabled$: Promise<boolean>;
   lastModified: string;
   menuOpen = false;
@@ -41,7 +41,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
   ngOnInit() {
     this.chromeAPIWindow = this.sessionState.session.window;
     this.layoutState = this.sessionState.layoutState;
-    this.menuItems = this.actionBarService.createWindowActionButtons(this.props.sessionListId);
+    this.actionMenuItems = this.actionBarService.createWindowActionButtons(this.props.sessionListId);
     this.actionButtons = [
       ActionButtonFactory.createMinimizeButton(() => this.chromeWindowToggleDisplay.emit()),
       ActionButtonFactory.createCloseButton(() => this.chromeWindowClose.emit())

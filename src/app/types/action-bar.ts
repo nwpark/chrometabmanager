@@ -7,7 +7,12 @@ export interface ActionButton {
   titleWhenHidden?: string;
   icon: string;
   iconWhenHidden?: string;
-  requiresMouseover: boolean;
+  callback: ActionButtonCallback;
+}
+
+export interface ActionMenuItem {
+  title: string;
+  icon: string;
   callback: ActionButtonCallback;
 }
 
@@ -59,7 +64,6 @@ export class ActionButtonFactory {
     return {
       title: 'Close window',
       icon: 'close',
-      requiresMouseover: false,
       callback
     };
   }
@@ -70,25 +74,22 @@ export class ActionButtonFactory {
       titleWhenHidden: 'Minimize window',
       icon: 'arrow_drop_down',
       iconWhenHidden: 'arrow_right',
-      requiresMouseover: false,
       callback
     };
   }
 
-  static createOpenButton(callback: ActionButtonCallback): ActionButton {
+  static createOpenButton(callback: ActionButtonCallback): ActionMenuItem {
     return {
       title: 'Restore window',
       icon: 'open_in_new',
-      requiresMouseover: true,
       callback
     };
   }
 
-  static createSaveButton(callback: ActionButtonCallback): ActionButton {
+  static createSaveButton(callback: ActionButtonCallback): ActionMenuItem {
     return {
       title: 'Save window',
       icon: 'save_alt',
-      requiresMouseover: true,
       callback
     };
   }
