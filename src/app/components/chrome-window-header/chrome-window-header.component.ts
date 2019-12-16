@@ -23,6 +23,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
   chromeAPIWindow: ChromeAPIWindowState;
   layoutState: SessionLayoutState;
   actionButtons: ActionButton[];
+  debugModeEnabled$: Promise<boolean>;
 
   @ViewChild('titleInput', {static: false}) titleInput: ElementRef;
   titleFormControl: FormControl;
@@ -41,6 +42,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
       ActionButtonFactory.createCloseButton(() => this.chromeWindowClose.emit())
     ];
     this.titleFormControl = new FormControl(this.layoutState.title);
+    this.debugModeEnabled$ = this.preferencesService.isDebugModeEnabled();
   }
 
   getTitle(): string {
@@ -68,5 +70,4 @@ export class ChromeWindowHeaderComponent implements OnInit {
   }
 
   debug() { console.log(this); }
-  debugModeEnabled(): boolean { return this.preferencesService.isDebugModeEnabled(); }
 }

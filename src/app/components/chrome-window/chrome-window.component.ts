@@ -81,10 +81,12 @@ export class ChromeWindowComponent implements OnDestroy, OnInit, OnChanges {
           event.previousIndex,
           event.currentIndex);
       } else {
-        if (this.preferencesService.shouldCloseWindowOnSave()) {
-          sourceWindow.tabsService.removeTab(sourceWindow.index, event.item.data.id);
-        }
         targetWindow.tabsService.createTab(targetWindow.index, event.currentIndex, event.item.data);
+        this.preferencesService.shouldCloseWindowOnSave().then(shouldCloseWindowsOnSave => {
+          if (shouldCloseWindowsOnSave) {
+            sourceWindow.tabsService.removeTab(sourceWindow.index, event.item.data.id);
+          }
+        });
       }
     } finally {
       this.dragDropService.endDrag();

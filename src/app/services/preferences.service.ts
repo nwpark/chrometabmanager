@@ -37,12 +37,14 @@ export class PreferencesService {
     return this.preferencesUpdated$.pipe(take(1)).toPromise();
   }
 
-  shouldCloseWindowOnSave(): boolean {
-    return this.preferences.closeWindowOnSave;
+  shouldCloseWindowOnSave(): Promise<boolean> {
+    return this.getPreferences()
+      .then(preferences => preferences.closeWindowOnSave);
   }
 
-  isDebugModeEnabled(): boolean {
-    return this.preferences.enableDebugging;
+  isDebugModeEnabled(): Promise<boolean> {
+    return this.getPreferences()
+      .then(preferences => preferences.enableDebugging);
   }
 
   @modifiesState()

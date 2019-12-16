@@ -6,7 +6,7 @@
     <button
       mat-icon-button
       title="debug"
-      *ngIf="headerDiv.mouseOver && debugModeEnabled()"
+      *ngIf="headerDiv.mouseOver && debugModeEnabled$ | async"
       (click)="debug()">
       <mat-icon class="action-icon-24">bug_report</mat-icon>
     </button>

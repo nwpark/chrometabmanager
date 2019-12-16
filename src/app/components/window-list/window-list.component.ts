@@ -44,6 +44,7 @@ export class WindowListComponent implements OnDestroy, OnInit {
   connectedWindowListIds = DragDropService.CONNECTED_WINDOW_LIST_IDS;
   actionButtons: ListActionButton[];
   animationState = AnimationState.Complete;
+  debugModeEnabled$: Promise<boolean>;
 
   constructor(private dragDropService: DragDropService,
               private preferencesService: PreferencesService,
@@ -65,6 +66,7 @@ export class WindowListComponent implements OnDestroy, OnInit {
         this.sessionListState = sessionListState;
         this.changeDetectorRef.detectChanges();
       });
+    this.debugModeEnabled$ = this.preferencesService.isDebugModeEnabled();
   }
 
   getTitle(): string {
@@ -110,9 +112,11 @@ export class WindowListComponent implements OnDestroy, OnInit {
         targetTabList.tabsService.moveWindowInList(event.previousIndex, event.currentIndex);
       } else {
         targetTabList.tabsService.insertWindow(sessionState, event.currentIndex);
-        if (this.preferencesService.shouldCloseWindowOnSave()) {
-          sourceTabList.tabsService.removeSession(event.previousIndex);
-        }
+        this.preferencesService.shouldCloseWindowOnSave().then(shouldCloseWindowsOnSave => {
+          if (shouldCloseWindowsOnSave) {
+            sourceTabList.tabsService.removeSession(event.previousIndex);
+          }
+        });
       }
     } finally {
       this.dragDropService.endDrag();
@@ -125,6 +129,4 @@ export class WindowListComponent implements OnDestroy, OnInit {
   }
 
   debug() { console.log(this); }
-  // todo: async
-  debugModeEnabled(): boolean {  return this.preferencesService.isDebugModeEnabled(); }
 }
