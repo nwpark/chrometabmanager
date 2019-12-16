@@ -15,22 +15,11 @@
   <div
     class="chrome-tab-title"
     (click)="setTabActive($event)">
-    <div class="last-modified">{{lastModifiedString}}</div>
+    <div class="last-modified">{{lastModified}}</div>
     <div class="vertical-divider"></div>
     <img
       class="favicon-icon"
-      src="{{getFaviconIconUrl()}}"
-      *ngIf="shouldShowFaviconIcon()">
-    <mat-icon
-      class="favicon-icon"
-      *ngIf="isNewTab()">
-      tab
-    </mat-icon>
-    <div
-      class="favicon-icon"
-      *ngIf="isLoading()">
-      <mat-spinner [diameter]="16"></mat-spinner>
-    </div>
+      [src]="faviconIconUrl">
     {{title}}
   </div>
 </div>

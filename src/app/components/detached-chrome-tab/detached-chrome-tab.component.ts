@@ -4,6 +4,7 @@ import {AnimationState, closeTabAnimation, closeWindowAnimation} from '../../ani
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {SessionState} from '../../types/session';
+import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-detached-chrome-tab',
@@ -22,8 +23,6 @@ import {SessionState} from '../../types/session';
 })
 export class DetachedChromeTabComponent implements OnInit {
 
-  static readonly NEW_TAB_URL = 'chrome://newtab/';
-
   @Input() sessionState: SessionState;
   @Input() props: SessionComponentProps;
   @Input() index: number;
@@ -32,45 +31,41 @@ export class DetachedChromeTabComponent implements OnInit {
 
   chromeAPITab: ChromeAPITabState;
   animationState = AnimationState.Complete;
+  title: string;
+  faviconIconUrl: SafeUrl;
+  lastModified: string;
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) { }
+  constructor(private changeDetectorRef: ChangeDetectorRef,
+              private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.chromeAPITab = this.sessionState.session.tab;
+    this.title = this.chromeAPITab.title.length > 0
+      ? this.chromeAPITab.title
+      : this.chromeAPITab.url;
+    this.faviconIconUrl = this.domSanitizer.bypassSecurityTrustUrl(this.getFaviconIconUrl());
+    this.lastModified = this.getLastModifiedString();
+  }
+
+  private getFaviconIconUrl() {
+    if (this.chromeAPITab.favIconUrl) {
+      return this.chromeAPITab.favIconUrl;
+    } else {
+      return `chrome://favicon/size/16/${this.chromeAPITab.url}`;
+    }
+  }
+
+  private getLastModifiedString(): string {
+    const lastModifiedDate = new Date(this.sessionState.session.lastModified);
+    const timeString = lastModifiedDate.toTimeString().substring(0, 5);
+    const dateString = lastModifiedDate.toDateString().substring(0, 3) + ' - ' + timeString;
+    return lastModifiedDate.toLocaleDateString() === new Date().toLocaleDateString()
+      ? timeString : dateString;
   }
 
   private setAnimationState(animationState: AnimationState) {
     this.animationState = animationState;
     this.changeDetectorRef.detectChanges();
-  }
-
-  get title() {
-    return this.chromeAPITab.title.length > 0
-      ? this.chromeAPITab.title
-      : this.chromeAPITab.url;
-  }
-
-  getFaviconIconUrl(): string {
-    if (!this.chromeAPITab.favIconUrl) {
-      return 'assets/chrome-favicon.png';
-    }
-    return this.chromeAPITab.favIconUrl;
-  }
-
-  shouldShowFaviconIcon(): boolean {
-    return !this.isLoading() && !this.isNewTab();
-  }
-
-  isNewTab(): boolean {
-    return !this.isLoading() && this.chromeAPITab.url === DetachedChromeTabComponent.NEW_TAB_URL;
-  }
-
-  isLoading(): boolean {
-    return this.chromeAPITab.status === 'loading';
-  }
-
-  get lastModifiedString(): string {
-    return new Date(this.sessionState.session.lastModified).toTimeString().substring(0, 5);
   }
 
   setTabActive(event: MouseEvent) {
