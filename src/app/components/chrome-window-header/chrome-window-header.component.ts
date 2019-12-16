@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import {ActionButton, ActionButtonFactory} from '../../types/action-bar';
 import {ChromeAPIWindowState} from '../../types/chrome-api-types';
 import {FormControl} from '@angular/forms';
@@ -11,7 +11,8 @@ import {getTimeString} from '../../classes/date-utils';
 @Component({
   selector: 'app-chrome-window-header',
   templateUrl: './chrome-window-header.component.html',
-  styleUrls: ['./chrome-window-header.component.css']
+  styleUrls: ['./chrome-window-header.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class ChromeWindowHeaderComponent implements OnInit {
 
@@ -24,8 +25,10 @@ export class ChromeWindowHeaderComponent implements OnInit {
   chromeAPIWindow: ChromeAPIWindowState;
   layoutState: SessionLayoutState;
   actionButtons: ActionButton[];
+  menuItems: ActionButton[];
   debugModeEnabled$: Promise<boolean>;
   lastModified: string;
+  menuOpen = false;
 
   @ViewChild('titleInput', {static: false}) titleInput: ElementRef;
   titleFormControl: FormControl;
@@ -38,8 +41,8 @@ export class ChromeWindowHeaderComponent implements OnInit {
   ngOnInit() {
     this.chromeAPIWindow = this.sessionState.session.window;
     this.layoutState = this.sessionState.layoutState;
+    this.menuItems = this.actionBarService.createWindowActionButtons(this.props.sessionListId);
     this.actionButtons = [
-      ...this.actionBarService.createWindowActionButtons(this.props.sessionListId),
       ActionButtonFactory.createMinimizeButton(() => this.chromeWindowToggleDisplay.emit()),
       ActionButtonFactory.createCloseButton(() => this.chromeWindowClose.emit())
     ];
@@ -66,6 +69,10 @@ export class ChromeWindowHeaderComponent implements OnInit {
   cancelTitleFormEdit() {
     this.titleFormControl.setValue(this.layoutState.title);
     this.showEditForm = false;
+  }
+
+  setMenuOpen(menuOpen: boolean) {
+    this.menuOpen = menuOpen;
   }
 
   debug() { console.log(this); }

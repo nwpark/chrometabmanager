@@ -6,6 +6,7 @@ import {
   MatGridListModule,
   MatIconModule,
   MatListModule,
+  MatMenuModule,
   MatProgressBarModule,
   MatProgressSpinnerModule,
   MatSlideToggleModule
@@ -23,7 +24,8 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
     MatSlideToggleModule,
     MatCardModule,
     MatListModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatMenuModule
   ]
 })
 export class MaterialModule {}

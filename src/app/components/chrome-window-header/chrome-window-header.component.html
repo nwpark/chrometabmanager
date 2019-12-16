@@ -4,11 +4,31 @@
   [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
   <!--Action bar-->
   <div class="chrome-window-action-bar">
+    <button
+      class="action-button-30"
+      title="Menu"
+      mat-icon-button
+      *ngIf="headerDiv.mouseOver || menuOpen"
+      [matMenuTriggerFor]="menu"
+      (menuOpened)="setMenuOpen(true)"
+      (menuClosed)="setMenuOpen(false)">
+      <mat-icon class="action-icon-18">menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <ng-container *ngFor="let menuItem of menuItems">
+        <button
+          class="menu-item"
+          mat-menu-item
+          (click)="menuItem.callback(sessionState)">
+          <mat-icon class="menu-item-icon">{{menuItem.icon}}</mat-icon>
+          <span>{{menuItem.title}}</span>
+        </button>
+      </ng-container>
+    </mat-menu>
     <ng-container *ngFor="let button of actionButtons">
       <button
         class="action-button-30"
         mat-icon-button
-        *ngIf="!button.requiresMouseover || headerDiv.mouseOver"
         [title]="button.title"
         (click)="button.callback(sessionState)">
         <mat-icon class="action-icon-18" *ngIf="!layoutState.hidden">{{button.icon}}</mat-icon>
