@@ -5,6 +5,7 @@ import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animat
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {SessionState} from '../../types/session';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {getTimeString} from '../../classes/date-utils';
 
 @Component({
   selector: 'app-detached-chrome-tab',
@@ -44,7 +45,7 @@ export class DetachedChromeTabComponent implements OnInit {
       ? this.chromeAPITab.title
       : this.chromeAPITab.url;
     this.faviconIconUrl = this.domSanitizer.bypassSecurityTrustUrl(this.getFaviconIconUrl());
-    this.lastModified = this.getLastModifiedString();
+    this.lastModified = getTimeString(this.sessionState.session.lastModified);
   }
 
   private getFaviconIconUrl() {
@@ -53,14 +54,6 @@ export class DetachedChromeTabComponent implements OnInit {
     } else {
       return `chrome://favicon/size/16/${this.chromeAPITab.url}`;
     }
-  }
-
-  private getLastModifiedString(): string {
-    const lastModifiedDate = new Date(this.sessionState.session.lastModified);
-    const timeString = lastModifiedDate.toTimeString().substring(0, 5);
-    const dateString = lastModifiedDate.toDateString().substring(0, 3) + ' - ' + timeString;
-    return lastModifiedDate.toLocaleDateString() === new Date().toLocaleDateString()
-      ? timeString : dateString;
   }
 
   private setAnimationState(animationState: AnimationState) {

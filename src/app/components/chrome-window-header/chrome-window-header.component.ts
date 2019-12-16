@@ -6,6 +6,7 @@ import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {PreferencesService} from '../../services/preferences.service';
 import {ActionBarService} from '../../services/action-bar.service';
 import {SessionLayoutState, SessionState} from '../../types/session';
+import {getTimeString} from '../../classes/date-utils';
 
 @Component({
   selector: 'app-chrome-window-header',
@@ -24,6 +25,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
   layoutState: SessionLayoutState;
   actionButtons: ActionButton[];
   debugModeEnabled$: Promise<boolean>;
+  lastModified: string;
 
   @ViewChild('titleInput', {static: false}) titleInput: ElementRef;
   titleFormControl: FormControl;
@@ -42,13 +44,10 @@ export class ChromeWindowHeaderComponent implements OnInit {
       ActionButtonFactory.createCloseButton(() => this.chromeWindowClose.emit())
     ];
     this.titleFormControl = new FormControl(this.layoutState.title);
+    if (this.sessionState.session.lastModified) {
+      this.lastModified = getTimeString(this.sessionState.session.lastModified);
+    }
     this.debugModeEnabled$ = this.preferencesService.isDebugModeEnabled();
-  }
-
-  getTitle(): string {
-    return this.layoutState.hidden
-      ? `${this.layoutState.title} (${this.chromeAPIWindow.tabs.length} tabs)`
-      : this.layoutState.title;
   }
 
   // todo: dragdrop service

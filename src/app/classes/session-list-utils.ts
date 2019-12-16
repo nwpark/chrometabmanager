@@ -15,8 +15,8 @@ export class SessionListUtils {
     return {lastModified: Date.now(), tab: chromeTab};
   }
 
-  static createClosedWindowLayoutState(windowId: any): SessionLayoutState {
-    return {sessionId: windowId, title: `${new Date().toTimeString().substring(0, 5)}`, hidden: true};
+  static createClosedSessionLayoutState(sessionId: any): SessionLayoutState {
+    return {sessionId, hidden: true};
   }
 
   static createBasicTabLayoutState(tabId: any): SessionLayoutState {

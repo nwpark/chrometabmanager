@@ -31,7 +31,9 @@
       appMouseOver
       #titleTextDiv=app-mouse-over
       *ngIf="!showEditForm">
-      {{getTitle()}}
+      <span *ngIf="lastModified">{{lastModified}}</span>
+      <span *ngIf="!lastModified">{{layoutState.title}}</span>
+      <span *ngIf="layoutState.hidden"> ({{chromeAPIWindow.tabs.length}} tabs)</span>
       <button
         class="action-button-30"
         mat-icon-button
