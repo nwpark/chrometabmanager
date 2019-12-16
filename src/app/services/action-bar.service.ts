@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {SavedTabsService} from './saved-tabs.service';
-import {ActionButtonFactory, ActionMenuItem, ListActionButton, ListActionButtonFactory} from '../types/action-bar';
+import {ActionButtonFactory, SessionMenuItem, ListActionButton, ListActionButtonFactory} from '../types/action-bar';
 import {RecentlyClosedTabsService} from './recently-closed-tabs.service';
 import {SessionListId} from '../types/chrome-window-component-data';
 
@@ -14,7 +14,7 @@ export class ActionBarService {
               private savedTabsService: SavedTabsService,
               private recentlyClosedTabsService: RecentlyClosedTabsService) { }
 
-  createWindowActionButtons(windowCategory: SessionListId): ActionMenuItem[] {
+  createSessionActionButtons(windowCategory: SessionListId): SessionMenuItem[] {
     switch (windowCategory) {
       case SessionListId.Active: return this.createActiveWindowActionButtons();
       case SessionListId.Saved: return this.createSavedWindowActionButtons();
@@ -22,7 +22,7 @@ export class ActionBarService {
     }
   }
 
-  createWindowListActionButtons(windowCategory: SessionListId): ListActionButton[] {
+  createListActionButtons(windowCategory: SessionListId): ListActionButton[] {
     switch (windowCategory) {
       case SessionListId.Active: return [];
       case SessionListId.Saved: return this.createSavedWindowListActionButtons();
@@ -46,7 +46,7 @@ export class ActionBarService {
     ];
   }
 
-  private createActiveWindowActionButtons(): ActionMenuItem[] {
+  private createActiveWindowActionButtons(): SessionMenuItem[] {
     return [
       ActionButtonFactory.createSaveButton(sessionState => {
         this.savedTabsService.insertWindow(sessionState, 0);
@@ -54,7 +54,7 @@ export class ActionBarService {
     ];
   }
 
-  private createSavedWindowActionButtons(): ActionMenuItem[] {
+  private createSavedWindowActionButtons(): SessionMenuItem[] {
     return [
       ActionButtonFactory.createOpenButton(sessionState => {
         this.chromeTabsService.insertWindow(sessionState, 0);
@@ -62,7 +62,7 @@ export class ActionBarService {
     ];
   }
 
-  private createRecentlyClosedWindowActionButtons(): ActionMenuItem[] {
+  private createRecentlyClosedWindowActionButtons(): SessionMenuItem[] {
     return [
       ActionButtonFactory.createOpenButton(sessionState => {
         this.chromeTabsService.insertWindow(sessionState, 0);

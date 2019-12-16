@@ -2,7 +2,7 @@ import {SessionState} from './session';
 
 type ActionButtonCallback = (sessionState: SessionState) => void;
 
-export interface ActionButton {
+export interface SessionActionButton {
   title: string;
   titleWhenHidden?: string;
   icon: string;
@@ -10,7 +10,7 @@ export interface ActionButton {
   callback: ActionButtonCallback;
 }
 
-export interface ActionMenuItem {
+export interface SessionMenuItem {
   title: string;
   icon: string;
   callback: ActionButtonCallback;
@@ -60,7 +60,7 @@ export class ListActionButtonFactory {
 
 export class ActionButtonFactory {
 
-  static createCloseButton(callback: ActionButtonCallback): ActionButton {
+  static createCloseButton(callback: ActionButtonCallback): SessionActionButton {
     return {
       title: 'Close window',
       icon: 'close',
@@ -68,7 +68,7 @@ export class ActionButtonFactory {
     };
   }
 
-  static createMinimizeButton(callback: ActionButtonCallback): ActionButton {
+  static createMinimizeButton(callback: ActionButtonCallback): SessionActionButton {
     return {
       title: 'Show window',
       titleWhenHidden: 'Minimize window',
@@ -78,7 +78,7 @@ export class ActionButtonFactory {
     };
   }
 
-  static createOpenButton(callback: ActionButtonCallback): ActionMenuItem {
+  static createOpenButton(callback: ActionButtonCallback): SessionMenuItem {
     return {
       title: 'Restore window',
       icon: 'open_in_new',
@@ -86,7 +86,7 @@ export class ActionButtonFactory {
     };
   }
 
-  static createSaveButton(callback: ActionButtonCallback): ActionMenuItem {
+  static createSaveButton(callback: ActionButtonCallback): SessionMenuItem {
     return {
       title: 'Save window',
       icon: 'save_alt',

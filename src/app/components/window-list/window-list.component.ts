@@ -54,7 +54,7 @@ export class WindowListComponent implements OnDestroy, OnInit {
   ngOnInit() {
     this.sessionListState = this.props.tabsService.getSessionListState();
     this.actionButtons = [
-      ...this.actionBarService.createWindowListActionButtons(this.props.sessionListId),
+      ...this.actionBarService.createListActionButtons(this.props.sessionListId),
       ListActionButtonFactory.createMinimizeButton(() => this.toggleDisplay())
     ];
     this.props.tabsService.sessionStateUpdated$
