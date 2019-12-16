@@ -126,17 +126,14 @@ export class SessionListState {
   }
 
   addAll(other: SessionListState) {
-    for (const sessionState of other) {
-      if (this.contains(sessionState.layoutState.sessionId)) {
-        this.removeSession(sessionState.layoutState.sessionId);
-      }
-      this.unshiftSession(sessionState.session, sessionState.layoutState);
-    }
+    this.removeAll(other);
+    this.sessionStates.push(...other);
   }
 
-  contains(sessionId: any): boolean {
-    return this.sessionStates
-      .some(sessionState => sessionState.layoutState.sessionId === sessionId);
+  private removeAll(other: SessionListState) {
+    const otherSessionIds = new Set(other.getSessionIds());
+    this.sessionStates = this.sessionStates
+      .filter(sessionState => !otherSessionIds.has(sessionState.layoutState.sessionId));
   }
 
   clear() {
