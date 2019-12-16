@@ -1,9 +1,9 @@
-import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
+import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState, SessionId} from '../types/chrome-api-types';
 import {v4 as uuid} from 'uuid';
 import {SessionLayoutState, SessionState} from '../types/session';
 
 export class SessionUtils {
-  static getSessionId(chromeSession: ChromeAPISession): any {
+  static getSessionId(chromeSession: ChromeAPISession): SessionId {
     if (chromeSession.window) {
       return chromeSession.window.id;
     } else if (chromeSession.tab) {
@@ -53,7 +53,7 @@ export class WindowStateUtils {
 }
 
 export class LayoutStateUtils {
-  static copyWithNewId(layoutState: SessionLayoutState, sessionId: any): SessionLayoutState {
+  static copyWithNewId(layoutState: SessionLayoutState, sessionId: SessionId): SessionLayoutState {
     return {...layoutState, sessionId};
   }
 }

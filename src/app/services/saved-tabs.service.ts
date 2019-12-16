@@ -5,12 +5,11 @@ import {modifiesState, StateModifierParams} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {StorageService} from './storage.service';
-import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
+import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState, SessionId} from '../types/chrome-api-types';
 import {SessionListState} from '../types/session-list-state';
 import {SessionListUtils} from '../classes/session-list-utils';
 import {SessionStateUtils, SessionUtils, WindowStateUtils} from '../classes/session-utils';
 import {SessionState} from '../types/session';
-import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 @Injectable({
   providedIn: 'root'
@@ -69,7 +68,7 @@ export class SavedTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: true})
-  removeTab(windowIndex: number, tabId: any) {
+  removeTab(windowIndex: number, tabId: SessionId) {
     this.sessionListState.removeTab(windowIndex, tabId);
   }
 

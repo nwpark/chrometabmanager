@@ -1,4 +1,4 @@
-import {ChromeAPISession, ChromeAPIWindowState} from '../app/types/chrome-api-types';
+import {ChromeAPISession, ChromeAPIWindowState, SessionId} from '../app/types/chrome-api-types';
 import {InsertWindowMessageData, MessagePassingService} from '../app/services/message-passing.service';
 import Mutex from 'async-mutex/lib/Mutex';
 import {SessionListState} from '../app/types/session-list-state';
@@ -68,11 +68,11 @@ export class ActiveWindowStateManager {
     });
   }
 
-  getWindow(windowId: any) {
+  getWindow(windowId: SessionId) {
     return this.sessionListState.getWindow(windowId);
   }
 
-  getTab(windowId: any, tabId: any) {
+  getTab(windowId: SessionId, tabId: SessionId) {
     return this.sessionListState.getTabFromWindow(windowId, tabId);
   }
 }

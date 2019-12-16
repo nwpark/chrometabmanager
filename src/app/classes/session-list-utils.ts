@@ -1,5 +1,5 @@
 import {SessionLayoutState, SessionListLayoutState, SessionMap} from '../types/session';
-import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
+import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState, SessionId} from '../types/chrome-api-types';
 import {SessionUtils} from './session-utils';
 
 export class SessionListUtils {
@@ -15,15 +15,15 @@ export class SessionListUtils {
     return {lastModified: Date.now(), tab: chromeTab};
   }
 
-  static createClosedSessionLayoutState(sessionId: any): SessionLayoutState {
+  static createClosedSessionLayoutState(sessionId: SessionId): SessionLayoutState {
     return {sessionId, hidden: true};
   }
 
-  static createBasicTabLayoutState(tabId: any): SessionLayoutState {
+  static createBasicTabLayoutState(tabId: SessionId): SessionLayoutState {
     return {sessionId: tabId};
   }
 
-  static createBasicWindowLayoutState(windowId: number): SessionLayoutState {
+  static createBasicWindowLayoutState(windowId: SessionId): SessionLayoutState {
     return {sessionId: windowId, title: 'Window', hidden: false};
   }
 

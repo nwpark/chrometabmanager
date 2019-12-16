@@ -2,12 +2,13 @@ import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
 import {modifiesState, StateModifierParams} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
-import {ChromeAPITabState} from '../types/chrome-api-types';
+import {ChromeAPITabState, SessionId} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
 import {SessionListState} from '../types/session-list-state';
 import {SessionStateUtils, WindowStateUtils} from '../classes/session-utils';
 import {LocalStorageService} from './local-storage.service';
 import {SessionState} from '../types/session';
+import MoveProperties = chrome.tabs.MoveProperties;
 
 @Injectable({
   providedIn: 'root'
@@ -41,22 +42,24 @@ export class ChromeTabsService implements TabsService {
 
   @modifiesState({storeResult: false})
   moveTabInWindow(windowIndex: number, sourceTabIndex: number, targetTabIndex: number) {
-    const tabId = this.sessionListState.getTabIdFromWindow(windowIndex, sourceTabIndex);
+    const tabId = this.sessionListState.getTabIdFromWindow(windowIndex, sourceTabIndex) as number;
+    const moveProperties: MoveProperties = {index: targetTabIndex};
     this.sessionListState.moveTabInWindow(windowIndex, sourceTabIndex, targetTabIndex);
-    chrome.tabs.move(tabId, {index: targetTabIndex});
+    chrome.tabs.move(tabId, moveProperties);
   }
 
   @modifiesState({storeResult: false})
   transferTab(sourceWindowIndex: number, targetWindowIndex: number, sourceTabIndex: number, targetTabIndex: number) {
-    const tabId = this.sessionListState.getTabIdFromWindow(sourceWindowIndex, sourceTabIndex);
-    const windowId = this.sessionListState.getSessionIdFromIndex(targetWindowIndex);
+    const tabId = this.sessionListState.getTabIdFromWindow(sourceWindowIndex, sourceTabIndex) as number;
+    const windowId = this.sessionListState.getSessionIdFromIndex(targetWindowIndex) as number;
+    const moveProperties: MoveProperties = {windowId, index: targetTabIndex};
     this.sessionListState.transferTab(sourceWindowIndex, targetWindowIndex, sourceTabIndex, targetTabIndex);
-    chrome.tabs.move(tabId, {windowId, index: targetTabIndex});
+    chrome.tabs.move(tabId, moveProperties);
   }
 
   @modifiesState({storeResult: false})
   createTab(windowIndex: number, tabIndex: number, chromeTab: ChromeAPITabState) {
-    const windowId = this.sessionListState.getSessionIdFromIndex(windowIndex);
+    const windowId = this.sessionListState.getSessionIdFromIndex(windowIndex) as number;
     const activeTab = WindowStateUtils.convertToActiveTab(chromeTab);
     this.sessionListState.insertTabInWindow(windowIndex, tabIndex, activeTab);
     chrome.tabs.create({windowId, index: tabIndex, url: chromeTab.url, active: false});
@@ -73,15 +76,16 @@ export class ChromeTabsService implements TabsService {
   }
 
   @modifiesState({storeResult: false})
-  removeTab(windowIndex: number, tabId: any) {
+  removeTab(windowIndex: number, tabId: SessionId) {
     this.sessionListState.removeTab(windowIndex, tabId);
-    chrome.tabs.remove(tabId);
+    chrome.tabs.remove(tabId as number);
   }
 
   @modifiesState({storeResult: true})
   removeSession(index: number) {
     this.sessionListState.markWindowAsDeleted(index);
-    chrome.windows.remove(this.sessionListState.getSessionIdFromIndex(index));
+    const windowId = this.sessionListState.getSessionIdFromIndex(index) as number;
+    chrome.windows.remove(windowId);
   }
 
   @modifiesState({storeResult: true})
@@ -95,8 +99,8 @@ export class ChromeTabsService implements TabsService {
   }
 
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean) {
-    chrome.tabs.update(chromeTab.id, {active: true});
-    chrome.windows.update(chromeTab.windowId, {focused: true});
+    chrome.tabs.update(chromeTab.id as number, {active: true});
+    chrome.windows.update(chromeTab.windowId as number, {focused: true});
   }
 
   @modifiesState({storeResult: true})

@@ -1,3 +1,5 @@
+export type SessionId = number | string;
+
 export interface ChromeAPISession {
   lastModified?: number;
   window?: ChromeAPIWindowState;
@@ -5,15 +7,15 @@ export interface ChromeAPISession {
 }
 
 export interface ChromeAPIWindowState {
-  id: any;
+  id: SessionId;
   type: string;
   tabs: ChromeAPITabState[];
   [others: string]: any; // Ignore unused API fields
 }
 
 export interface ChromeAPITabState {
-  id: any;
-  windowId?: any;
+  id: SessionId;
+  windowId?: SessionId;
   url: string;
   title: string;
   favIconUrl: string;

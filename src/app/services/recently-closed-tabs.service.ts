@@ -4,7 +4,7 @@ import {modifiesState} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
 import {SessionListState} from '../types/session-list-state';
-import {ChromeAPITabState, ChromeAPIWindowState} from '../types/chrome-api-types';
+import {ChromeAPITabState, SessionId} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
 import {LocalStorageService} from './local-storage.service';
 import {SessionState} from '../types/session';
@@ -46,7 +46,7 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   @modifiesState()
-  removeTab(windowIndex: number, tabId: any) {
+  removeTab(windowIndex: number, tabId: SessionId) {
     this.sessionListState.removeTab(windowIndex, tabId);
   }
 

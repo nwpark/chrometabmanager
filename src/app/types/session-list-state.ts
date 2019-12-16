@@ -1,4 +1,4 @@
-import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState} from './chrome-api-types';
+import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState, SessionId} from './chrome-api-types';
 import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {SessionLayoutState, SessionListLayoutState, SessionMap, SessionState, SessionStateMap} from './session';
 
@@ -31,11 +31,11 @@ export class SessionListState {
     this.hidden = hidden;
   }
 
-  getWindow(windowId: any): ChromeAPIWindowState {
+  getWindow(windowId: SessionId): ChromeAPIWindowState {
     return this.sessionStates.find(sessionState => sessionState.layoutState.sessionId === windowId).session.window;
   }
 
-  getTabFromWindow(windowId: any, tabId: any): ChromeAPITabState {
+  getTabFromWindow(windowId: SessionId, tabId: SessionId): ChromeAPITabState {
     return this.getWindow(windowId).tabs.find(tab => tab.id === tabId);
   }
 
@@ -43,11 +43,11 @@ export class SessionListState {
     return this.sessionStates[index].session;
   }
 
-  getSessionIdFromIndex(index: number): any {
+  getSessionIdFromIndex(index: number): SessionId {
     return this.sessionStates[index].layoutState.sessionId;
   }
 
-  getTabIdFromWindow(windowIndex: number, tabIndex: number) {
+  getTabIdFromWindow(windowIndex: number, tabIndex: number): SessionId {
     return this.sessionStates[windowIndex].session.window.tabs[tabIndex].id;
   }
 
@@ -59,7 +59,7 @@ export class SessionListState {
     this.sessionStates[index].layoutState.deleted = true;
   }
 
-  removeTab(windowIndex: number, tabId: any) {
+  removeTab(windowIndex: number, tabId: SessionId) {
     const session = this.getSessionAtIndex(windowIndex);
     session.window.tabs = session.window.tabs.filter(tab => tab.id !== tabId);
   }
@@ -133,7 +133,7 @@ export class SessionListState {
   private removeAll(other: SessionListState) {
     const otherSessionIds = new Set(other.getSessionIds());
     this.sessionStates = this.sessionStates
-      .filter(sessionState => !otherSessionIds.has(sessionState.layoutState.sessionId));
+      .filter(sessionState => !otherSessionIds.has(sessionState.layoutState.sessionId.toString()));
   }
 
   clear() {

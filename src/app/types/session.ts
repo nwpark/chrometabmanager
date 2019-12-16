@@ -1,4 +1,4 @@
-import {ChromeAPISession} from './chrome-api-types';
+import {ChromeAPISession, SessionId} from './chrome-api-types';
 
 export interface SessionState {
   session: ChromeAPISession;
@@ -20,7 +20,7 @@ export interface SessionListLayoutState {
 
 export interface SessionLayoutState {
   title?: string;
-  sessionId: any;
+  sessionId: SessionId;
   hidden?: boolean;
   deleted?: boolean;
 }

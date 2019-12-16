@@ -6,6 +6,7 @@ import {Preferences, PreferenceUtils} from '../types/preferences';
 import {SessionListLayoutState} from '../types/session';
 import {StorageKeys} from '../types/storage-keys';
 import {SyncStorageUtils} from '../classes/sync-storage-utils';
+import {SessionId} from '../types/chrome-api-types';
 
 @Injectable({
   providedIn: 'root'
@@ -62,15 +63,15 @@ export class SyncStorageService {
     });
   }
 
-  setSavedWindowsState(sessionListState: SessionListState, removedSessions?: any[]) {
+  setSavedWindowsState(sessionListState: SessionListState, removedSessionIds?: SessionId[]) {
     const sessionStateMap = sessionListState.getSessionStateMap();
     chrome.storage.sync.set({
       [StorageKeys.LastModifiedBy]: this.instanceId,
       ...sessionStateMap,
       [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
     }, () => {
-      if (removedSessions) {
-        chrome.storage.sync.remove(removedSessions);
+      if (removedSessionIds) {
+        chrome.storage.sync.remove(removedSessionIds.map(sessionId => sessionId.toString()));
       }
     });
   }

@@ -4,7 +4,7 @@ import {PreferencesService} from './preferences.service';
 import {Preferences} from '../types/preferences';
 import {SyncStorageService} from './sync-storage.service';
 import {LocalStorageService} from './local-storage.service';
-import {SessionListUtils} from '../classes/session-list-utils';
+import {SessionId} from '../types/chrome-api-types';
 
 @Injectable({
   providedIn: 'root'
@@ -26,10 +26,10 @@ export class StorageService {
     });
   }
 
-  setSavedWindowsState(sessionListState: SessionListState, removedSessions?: any[]) {
+  setSavedWindowsState(sessionListState: SessionListState, removedSessionIds?: SessionId[]) {
     this.preferencesService.getPreferences().then(preferences => {
       if (preferences.syncSavedWindows) {
-        this.syncStorageService.setSavedWindowsState(sessionListState, removedSessions);
+        this.syncStorageService.setSavedWindowsState(sessionListState, removedSessionIds);
       } else {
         this.localStorageService.setSavedWindowsState(sessionListState);
       }
