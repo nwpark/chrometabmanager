@@ -17,13 +17,8 @@
     (click)="setTabActive($event)">
     <img
       class="favicon-icon"
-      src="{{getFaviconIconUrl()}}"
-      *ngIf="shouldShowFaviconIcon()">
-    <mat-icon
-      class="favicon-icon"
-      *ngIf="isNewTab()">
-      tab
-    </mat-icon>
+      [src]="faviconIconUrl"
+      *ngIf="!isLoading()">
     <div
       class="favicon-icon"
       *ngIf="isLoading()">

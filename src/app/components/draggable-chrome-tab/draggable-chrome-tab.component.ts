@@ -3,6 +3,7 @@ import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {AnimationState, closeTabAnimation} from '../../animations';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
+import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-draggable-chrome-tab',
@@ -18,42 +19,35 @@ import {SessionComponentProps} from '../../types/chrome-window-component-data';
 })
 export class DraggableChromeTabComponent implements OnInit {
 
-  static readonly NEW_TAB_URL = 'chrome://newtab/';
-
   @Input() chromeTab: ChromeAPITabState;
   @Input() props: SessionComponentProps;
   @Input() parentIndex: number;
 
   animationState = AnimationState.Complete;
+  title: string;
+  faviconIconUrl: SafeUrl;
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) { }
+  constructor(private changeDetectorRef: ChangeDetectorRef,
+              private domSanitizer: DomSanitizer) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.title = this.chromeTab.title.length > 0
+      ? this.chromeTab.title
+      : this.chromeTab.url;
+    this.faviconIconUrl = this.domSanitizer.bypassSecurityTrustUrl(this.getFaviconIconUrl());
+  }
+
+  private getFaviconIconUrl() {
+    if (this.chromeTab.favIconUrl) {
+      return this.chromeTab.favIconUrl;
+    } else {
+      return `chrome://favicon/size/16/${this.chromeTab.url}`;
+    }
+  }
 
   private setAnimationState(animationState: AnimationState) {
     this.animationState = animationState;
     this.changeDetectorRef.detectChanges();
-  }
-
-  get title() {
-    return this.chromeTab.title.length > 0
-      ? this.chromeTab.title
-      : this.chromeTab.url;
-  }
-
-  getFaviconIconUrl(): string {
-    if (!this.chromeTab.favIconUrl) {
-      return 'assets/chrome-favicon.png';
-    }
-    return this.chromeTab.favIconUrl;
-  }
-
-  shouldShowFaviconIcon(): boolean {
-    return !this.isLoading() && !this.isNewTab();
-  }
-
-  isNewTab(): boolean {
-    return !this.isLoading() && this.chromeTab.url === DraggableChromeTabComponent.NEW_TAB_URL;
   }
 
   isLoading(): boolean {
