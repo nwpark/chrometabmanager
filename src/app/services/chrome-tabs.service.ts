@@ -31,6 +31,7 @@ export class ChromeTabsService implements TabsService {
   private refreshState() {
     this.localStorageService.getActiveWindowsState().then(windowListState => {
       console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
+      // todo: check if any changes
       this.sessionListState = windowListState;
       this.sessionStateUpdated.next(this.sessionListState);
     });

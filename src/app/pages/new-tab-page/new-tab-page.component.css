@@ -1,0 +1,12 @@
+/*.grid-list {*/
+/*  -webkit-mask-image: linear-gradient(rgba(0, 0, 0, 1) calc(100% - 20px), rgba(0, 0, 0, 0));*/
+/*}*/
+
+.photo-camera-icon {
+  position: absolute;
+  height: 24px;
+  line-height: 24px;
+  bottom: 5px;
+  left: 10px;
+  color: rgba(155,155,155,0.5);
+}

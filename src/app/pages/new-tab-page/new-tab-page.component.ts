@@ -4,6 +4,8 @@ import {SessionComponentProps, SessionListId} from '../../types/chrome-window-co
 import {ChromeTabsService} from '../../services/chrome-tabs.service';
 import {SavedTabsService} from '../../services/saved-tabs.service';
 import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
+import {environment} from '../../../environments/environment';
+import {PhotoMetadata} from '../../types/photo-metadata';
 
 @Component({
   selector: 'app-new-tab-page',
@@ -14,7 +16,7 @@ import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.ser
       state('fadeIn', style({opacity: 1})),
       transition(':enter', [
         style({opacity: 0}),
-        animate(200)
+        animate(800)
       ])
     ])
   ]
@@ -32,6 +34,8 @@ export class NewTabPageComponent implements OnInit {
   activeSessionProps: SessionComponentProps;
   savedSessionProps: SessionComponentProps;
   recentlyClosedSessionProps: SessionComponentProps;
+
+  backgroundPhotoMetadata: PhotoMetadata;
 
   constructor(private chromeTabsService: ChromeTabsService,
               private savedTabsService: SavedTabsService,
@@ -54,6 +58,7 @@ export class NewTabPageComponent implements OnInit {
       tabsService: this.recentlyClosedTabsService,
       isMutable: false
     };
+    this.backgroundPhotoMetadata = environment.backgroundPhotoMetadata;
   }
 
   onResize(event) {
