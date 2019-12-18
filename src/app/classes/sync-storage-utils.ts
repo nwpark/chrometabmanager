@@ -1,6 +1,7 @@
 import {SessionListUtils} from './session-list-utils';
-import {ChromeAPISession} from '../types/chrome-api-types';
-import {SessionListLayoutState, SessionState, SessionStateMap} from '../types/session';
+import {SessionListLayoutState, SessionStateMap} from '../types/session';
+import {ChromeAPISession} from '../types/chrome-api-session';
+import {SessionState} from '../types/session-state';
 
 export class SyncStorageUtils {
 

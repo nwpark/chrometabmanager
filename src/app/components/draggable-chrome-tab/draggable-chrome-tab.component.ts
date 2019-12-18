@@ -1,9 +1,9 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ChromeAPITabState} from '../../types/chrome-api-types';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {AnimationState, closeTabAnimation} from '../../animations';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {ChromeAPITabState} from '../../types/chrome-api-tab-state';
 
 @Component({
   selector: 'app-draggable-chrome-tab',

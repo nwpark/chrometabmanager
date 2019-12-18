@@ -4,7 +4,7 @@ import {PreferencesService} from './preferences.service';
 import {Preferences} from '../types/preferences';
 import {SyncStorageService} from './sync-storage.service';
 import {LocalStorageService} from './local-storage.service';
-import {SessionId} from '../types/chrome-api-types';
+import {SessionId} from '../types/chrome-api-window-state';
 
 @Injectable({
   providedIn: 'root'

@@ -1,10 +1,11 @@
-import {ChromeAPITabState, ChromeAPIWindowState} from '../app/types/chrome-api-types';
 import {SessionListState} from '../app/types/session-list-state';
 import {MessagePassingService} from '../app/services/message-passing.service';
 import {modifiesState} from '../app/decorators/modifies-state';
 import {SessionListUtils} from '../app/classes/session-list-utils';
 import {WindowStateUtils} from '../app/classes/session-utils';
 import {LocalStorageService} from '../app/services/local-storage.service';
+import {ChromeAPIWindowState} from '../app/types/chrome-api-window-state';
+import {ChromeAPITabState} from '../app/types/chrome-api-tab-state';
 
 export class ClosedSessionStateManager {
 

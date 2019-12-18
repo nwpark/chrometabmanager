@@ -1,10 +1,8 @@
-import {ChromeAPISession, SessionId} from './chrome-api-types';
+import {ChromeAPISession} from './chrome-api-session';
+import {SessionState} from './session-state';
+import {SessionLayoutState} from './session-layout-state';
 
-export interface SessionState {
-  session: ChromeAPISession;
-  layoutState: SessionLayoutState;
-}
-
+// todo: move to separate files
 export interface SessionMap {
   [sessionId: string]: ChromeAPISession;
 }
@@ -16,11 +14,4 @@ export interface SessionStateMap {
 export interface SessionListLayoutState {
   hidden: boolean;
   sessionLayoutStates: SessionLayoutState[];
-}
-
-export interface SessionLayoutState {
-  title?: string;
-  sessionId: SessionId;
-  hidden?: boolean;
-  deleted?: boolean;
 }

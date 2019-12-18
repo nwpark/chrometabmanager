@@ -2,13 +2,14 @@ import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
 import {modifiesState, StateModifierParams} from '../decorators/modifies-state';
 import {TabsService} from '../interfaces/tabs-service';
-import {ChromeAPITabState, SessionId} from '../types/chrome-api-types';
 import {MessagePassingService} from './message-passing.service';
 import {SessionListState} from '../types/session-list-state';
 import {SessionStateUtils, WindowStateUtils} from '../classes/session-utils';
 import {LocalStorageService} from './local-storage.service';
-import {SessionState} from '../types/session';
 import MoveProperties = chrome.tabs.MoveProperties;
+import {SessionId} from '../types/chrome-api-window-state';
+import {ChromeAPITabState} from '../types/chrome-api-tab-state';
+import {SessionState} from '../types/session-state';
 
 @Injectable({
   providedIn: 'root'
@@ -23,17 +24,21 @@ export class ChromeTabsService implements TabsService {
   constructor(private localStorageService: LocalStorageService) {
     this.sessionListState = SessionListState.empty();
     MessagePassingService.addActiveWindowStateListener(() => {
+      // todo: include sessionListState in message
       this.refreshState();
     });
     this.refreshState();
   }
 
   private refreshState() {
-    this.localStorageService.getActiveWindowsState().then(windowListState => {
-      console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
-      // todo: check if any changes
-      this.sessionListState = windowListState;
-      this.sessionStateUpdated.next(this.sessionListState);
+    this.localStorageService.getActiveWindowsState().then(sessionListState => {
+      if (!sessionListState.equals(this.sessionListState)) {
+        console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
+        this.sessionListState = sessionListState;
+        this.sessionStateUpdated.next(this.sessionListState);
+      } else {
+        console.log(new Date().toTimeString().substring(0, 8), '- ignoring active windows update');
+      }
     });
   }
 

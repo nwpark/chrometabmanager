@@ -6,7 +6,7 @@ import {Preferences, PreferenceUtils} from '../types/preferences';
 import {SessionListLayoutState} from '../types/session';
 import {StorageKeys} from '../types/storage-keys';
 import {SyncStorageUtils} from '../classes/sync-storage-utils';
-import {SessionId} from '../types/chrome-api-types';
+import {SessionId} from '../types/chrome-api-window-state';
 
 @Injectable({
   providedIn: 'root'

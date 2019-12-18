@@ -1,6 +1,9 @@
-import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState, SessionId} from '../types/chrome-api-types';
 import {v4 as uuid} from 'uuid';
-import {SessionLayoutState, SessionState} from '../types/session';
+import {ChromeAPISession} from '../types/chrome-api-session';
+import {ChromeAPIWindowState, SessionId} from '../types/chrome-api-window-state';
+import {ChromeAPITabState} from '../types/chrome-api-tab-state';
+import {SessionState} from '../types/session-state';
+import {SessionLayoutState} from '../types/session-layout-state';
 
 export class SessionUtils {
   static getSessionId(chromeSession: ChromeAPISession): SessionId {

@@ -1,4 +1,4 @@
-import {SessionState} from './session';
+import {SessionState} from './session-state';
 
 type ActionButtonCallback = (sessionState: SessionState) => void;
 

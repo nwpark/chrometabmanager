@@ -16,7 +16,7 @@ import {ActionBarService} from '../../services/action-bar.service';
 import {SessionListState} from '../../types/session-list-state';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {SessionState} from '../../types/session';
+import {SessionState} from '../../types/session-state';
 
 @Component({
   selector: 'app-window-list',

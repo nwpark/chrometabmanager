@@ -1,6 +1,11 @@
-import {ChromeAPISession, ChromeAPITabState, ChromeAPIWindowState, SessionId} from './chrome-api-types';
 import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {SessionLayoutState, SessionListLayoutState, SessionMap, SessionState, SessionStateMap} from './session';
+import {SessionListLayoutState, SessionMap, SessionStateMap} from './session';
+import {ChromeAPISession} from './chrome-api-session';
+import {ChromeAPIWindowState, SessionId} from './chrome-api-window-state';
+import {ChromeAPITabState} from './chrome-api-tab-state';
+import {SessionState, sessionStateEquals} from './session-state';
+import {SessionLayoutState} from './session-layout-state';
+import {isNullOrUndefined} from 'util';
 
 export class SessionListState {
 
@@ -170,8 +175,18 @@ export class SessionListState {
     };
   }
 
+  equals(other: SessionListState): boolean {
+    if (isNullOrUndefined(other)) {
+      return false;
+    }
+    const sessionStates = [...this];
+    const otherSessionStates = [...other];
+    return (this === other)
+      || (sessionStates.length === otherSessionStates.length
+        && sessionStates.every((sessionState, index) => sessionStateEquals(sessionState, otherSessionStates[index])));
+  }
+
   [Symbol.iterator](): IterableIterator<SessionState> {
     return this.sessionStates[Symbol.iterator]();
   }
 }
-
