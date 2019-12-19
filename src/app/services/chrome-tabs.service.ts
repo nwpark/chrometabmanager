@@ -126,6 +126,14 @@ export class ChromeTabsService implements TabsService {
     this.sessionListState.moveSessionInList(sourceIndex, targetIndex);
   }
 
+  @modifiesState({storeResult: false})
+  sortTabsInWindow(sessionIndex: number) {
+    this.sessionListState.sortTabsInWindow(sessionIndex).forEach((chromeTab, tabIndex) => {
+      const moveProperties: MoveProperties = {index: tabIndex};
+      chrome.tabs.move(chromeTab.id as number, moveProperties);
+    });
+  }
+
   onStateModified(params?: StateModifierParams) {
     console.log(new Date().toTimeString().substring(0, 8), '- updating active windows');
     this.sessionStateUpdated.next(this.sessionListState);

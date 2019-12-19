@@ -44,6 +44,10 @@ export class SessionListState {
     return this.getWindow(windowId).tabs.find(tab => tab.id === tabId);
   }
 
+  getSessionState(index: number): SessionState {
+    return this.sessionStates[index];
+  }
+
   getSessionAtIndex(index: number): ChromeAPISession {
     return this.sessionStates[index].session;
   }
@@ -173,6 +177,13 @@ export class SessionListState {
       sessionLayoutStates: this.sessionStates.map(sessionState => sessionState.layoutState),
       hidden: this.hidden
     };
+  }
+
+  sortTabsInWindow(sessionIndex: number): ChromeAPITabState[] {
+    this.sessionStates[sessionIndex].session.window.tabs.sort((a, b) => {
+      return a.url.localeCompare(b.url);
+    });
+    return this.sessionStates[sessionIndex].session.window.tabs;
   }
 
   equals(other: SessionListState): boolean {

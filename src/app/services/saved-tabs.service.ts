@@ -115,6 +115,11 @@ export class SavedTabsService implements TabsService {
     this.sessionListState.moveSessionInList(sourceIndex, targetIndex);
   }
 
+  @modifiesState({storeResult: true})
+  sortTabsInWindow(sessionIndex: number) {
+    this.sessionListState.sortTabsInWindow(sessionIndex);
+  }
+
   // Called by @modifiesState decorator
   onStateModified(params?: StateModifierParams) {
     console.log(new Date().toTimeString().substring(0, 8), '- updating saved windows');

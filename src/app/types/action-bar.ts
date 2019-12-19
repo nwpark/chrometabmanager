@@ -1,12 +1,11 @@
-import {SessionState} from './session-state';
-
-type ActionButtonCallback = (sessionState: SessionState) => void;
+type ActionButtonCallback = (sessionIndex: number) => void;
 
 export interface SessionActionButton {
   title: string;
   titleWhenHidden?: string;
   icon: string;
   iconWhenHidden?: string;
+  // todo: can be () => void
   callback: ActionButtonCallback;
 }
 
@@ -58,6 +57,7 @@ export class ListActionButtonFactory {
   }
 }
 
+// todo: rename
 export class ActionButtonFactory {
 
   static createCloseButton(callback: ActionButtonCallback): SessionActionButton {
@@ -90,6 +90,14 @@ export class ActionButtonFactory {
     return {
       title: 'Save window',
       icon: 'save_alt',
+      callback
+    };
+  }
+
+  static createSortButton(callback: ActionButtonCallback): SessionMenuItem {
+    return {
+      title: 'Sort tabs',
+      icon: 'sort',
       callback
     };
   }
