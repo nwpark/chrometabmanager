@@ -102,11 +102,12 @@ export class LocalStorageService {
       [StorageKeys.SavedWindows]: sessionListState.getSessionMap(),
       [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
     }, () => {
-      MessagePassingService.notifySavedWindowStateListeners();
+      this.messagePassingService.notifySavedWindowStateListeners();
     });
   }
 
   addSavedSessionsChangedListener(callback: () => void) {
-    MessagePassingService.addSavedWindowStateListener(callback);
+    // todo: cleanup caller of this method
+    this.messagePassingService.savedSessionStateUpdated$.subscribe(callback);
   }
 }

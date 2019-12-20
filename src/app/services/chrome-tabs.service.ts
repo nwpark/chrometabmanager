@@ -21,10 +21,10 @@ export class ChromeTabsService implements TabsService {
   private sessionStateUpdated = new Subject<SessionListState>();
   public sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
 
-  constructor(private localStorageService: LocalStorageService) {
+  constructor(private localStorageService: LocalStorageService,
+              private messagePassingService: MessagePassingService) {
     this.sessionListState = SessionListState.empty();
-    MessagePassingService.addActiveWindowStateListener(() => {
-      // todo: include sessionListState in message
+    this.messagePassingService.activeSessionStateUpdated$.subscribe(() => {
       this.refreshState();
     });
     this.refreshState();

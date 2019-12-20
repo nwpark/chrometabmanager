@@ -21,9 +21,10 @@ export class RecentlyClosedTabsService implements TabsService {
   public sessionStateUpdated$ = this.sessionStateUpdatedSource.asObservable();
 
   constructor(private localStorageService: LocalStorageService,
-              private chromeTabsService: ChromeTabsService) {
+              private chromeTabsService: ChromeTabsService,
+              private messagePassingService: MessagePassingService) {
     this.sessionListState = SessionListState.empty();
-    MessagePassingService.addClosedSessionStateListener(() => {
+    this.messagePassingService.closedSessionStateUpdated$.subscribe(() => {
       this.refreshState();
     });
     this.refreshState();

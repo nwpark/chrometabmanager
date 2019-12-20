@@ -8,48 +8,50 @@ import {debounceTime} from 'rxjs/operators';
 })
 export class MessagePassingService {
 
-  static readonly ACTIVE_WINDOWS_UPDATED = 'activeWindowsUpdated_71f38bbe';
-  static readonly SAVED_WINDOWS_UPDATED = 'savedWindowsUpdated_0656e252';
-  static readonly CLOSED_SESSIONS_UPDATED = 'closedSessionsUpdated_7d763bba';
-  static readonly INSERT_WINDOW_REQUEST = 'insertWindowRequest_de10f744';
-  static readonly MESSAGE_DEBOUNCE_TIME = 500;
+  private static readonly ACTIVE_SESSION_MESSAGE = 'activeWindowsUpdated_71f38bbe';
+  private static readonly SAVED_SESSION_MESSAGE = 'savedWindowsUpdated_0656e252';
+  private static readonly CLOSED_SESSION_MESSAGE = 'closedSessionsUpdated_7d763bba';
+  private static readonly INSERT_WINDOW_REQUEST = 'insertWindowRequest_de10f744';
+  private static readonly MESSAGE_DEBOUNCE_TIME = 400;
 
-  private activeSessionStateMessage = new Subject<void>();
-  private closedSessionStateMessage = new Subject<void>();
+  private savedSessionMessageRequest = new Subject<void>();
+  private activeSessionMessageRequest = new Subject<void>();
+  private closedSessionMessageRequest = new Subject<void>();
 
+  private savedSessionStateUpdated = new Subject<void>();
+  private activeSessionStateUpdated = new Subject<void>();
+  private closedSessionStateUpdated = new Subject<void>();
+
+  savedSessionStateUpdated$ = this.savedSessionStateUpdated.asObservable();
+  activeSessionStateUpdated$ = this.activeSessionStateUpdated.asObservable();
+  closedSessionStateUpdated$ = this.closedSessionStateUpdated.asObservable();
+
+  // todo: include sessionListState in messages
   constructor() {
-    this.activeSessionStateMessage
-      .asObservable()
-      .pipe(debounceTime(MessagePassingService.MESSAGE_DEBOUNCE_TIME))
-      .subscribe(() => {
-        chrome.runtime.sendMessage(MessagePassingService.ACTIVE_WINDOWS_UPDATED);
-      });
-    this.closedSessionStateMessage
-      .asObservable()
-      .pipe(debounceTime(MessagePassingService.MESSAGE_DEBOUNCE_TIME))
-      .subscribe(() => {
-        chrome.runtime.sendMessage(MessagePassingService.CLOSED_SESSIONS_UPDATED);
-      });
+    this.initMessageListener(this.activeSessionStateUpdated, MessagePassingService.ACTIVE_SESSION_MESSAGE);
+    this.initMessageSender(this.activeSessionMessageRequest, MessagePassingService.ACTIVE_SESSION_MESSAGE);
+
+    this.initMessageListener(this.savedSessionStateUpdated, MessagePassingService.SAVED_SESSION_MESSAGE);
+    this.initMessageSender(this.closedSessionMessageRequest, MessagePassingService.CLOSED_SESSION_MESSAGE);
+
+    this.initMessageListener(this.closedSessionStateUpdated, MessagePassingService.CLOSED_SESSION_MESSAGE);
+    this.initMessageSender(this.savedSessionMessageRequest, MessagePassingService.SAVED_SESSION_MESSAGE);
   }
 
-  static addActiveWindowStateListener(callback: () => void) {
-    MessagePassingService.addEventListener(MessagePassingService.ACTIVE_WINDOWS_UPDATED, callback);
-  }
-
-  static addSavedWindowStateListener(callback: () => void) {
-    MessagePassingService.addEventListener(MessagePassingService.SAVED_WINDOWS_UPDATED, callback);
-  }
-
-  static addClosedSessionStateListener(callback: () => void) {
-    MessagePassingService.addEventListener(MessagePassingService.CLOSED_SESSIONS_UPDATED, callback);
-  }
-
-  private static addEventListener(eventId: string, callback: () => void) {
+  private initMessageListener(messageSource: Subject<void>, messageId: string) {
     chrome.runtime.onMessage.addListener(message => {
-      if (message === eventId) {
-        callback();
+      if (message === messageId) {
+        messageSource.next();
       }
     });
+  }
+
+  private initMessageSender(messageSource: Subject<void>, messageId: string) {
+    messageSource.asObservable()
+      .pipe(debounceTime(MessagePassingService.MESSAGE_DEBOUNCE_TIME))
+      .subscribe(() => {
+        chrome.runtime.sendMessage(messageId);
+      });
   }
 
   static onInsertChromeWindowRequest(callback: (request: InsertWindowMessageData) => void) {
@@ -67,16 +69,16 @@ export class MessagePassingService {
     });
   }
 
-  static notifySavedWindowStateListeners() {
-    chrome.runtime.sendMessage(MessagePassingService.SAVED_WINDOWS_UPDATED);
+  notifySavedWindowStateListeners() {
+    this.savedSessionMessageRequest.next();
   }
 
   notifyClosedSessionStateListeners() {
-    this.closedSessionStateMessage.next();
+    this.closedSessionMessageRequest.next();
   }
 
   notifyActiveWindowStateListeners() {
-    this.activeSessionStateMessage.next();
+    this.activeSessionMessageRequest.next();
   }
 }
 

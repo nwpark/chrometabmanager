@@ -12,14 +12,16 @@ export class ClosedSessionStateManager {
   static readonly MAX_CLOSED_TABS = 30;
 
   private localStorageService: LocalStorageService;
+  private messagePassingService: MessagePassingService;
 
   private sessionListState: SessionListState;
 
   constructor() {
-    this.localStorageService = new LocalStorageService(new MessagePassingService());
+    this.messagePassingService = new MessagePassingService();
+    this.localStorageService = new LocalStorageService(this.messagePassingService);
     this.sessionListState = SessionListState.empty();
     // todo: remove listener (will then need to modify onstatemodified to store state and conditionally notify listeners)
-    MessagePassingService.addClosedSessionStateListener(() => {
+    this.messagePassingService.closedSessionStateUpdated$.subscribe(() => {
       this.refreshState();
     });
     this.refreshState();
