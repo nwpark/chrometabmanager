@@ -16,8 +16,9 @@ export class ClosedSessionStateManager {
   private sessionListState: SessionListState;
 
   constructor() {
-    this.localStorageService = new LocalStorageService();
+    this.localStorageService = new LocalStorageService(new MessagePassingService());
     this.sessionListState = SessionListState.empty();
+    // todo: remove listener (will then need to modify onstatemodified to store state and conditionally notify listeners)
     MessagePassingService.addClosedSessionStateListener(() => {
       this.refreshState();
     });
@@ -28,11 +29,6 @@ export class ClosedSessionStateManager {
     this.localStorageService.getRecentlyClosedSessionsState().then(sessionListState => {
       this.sessionListState = sessionListState;
     });
-  }
-
-  @modifiesState()
-  setSessionListState(sessionListState: SessionListState) {
-    this.sessionListState = sessionListState;
   }
 
   @modifiesState()

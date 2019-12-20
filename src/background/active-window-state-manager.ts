@@ -16,7 +16,7 @@ export class ActiveWindowStateManager {
   private mutex: Mutex;
 
   constructor() {
-    this.localStorageService = new LocalStorageService();
+    this.localStorageService = new LocalStorageService(new MessagePassingService());
     this.sessionListState = SessionListState.empty();
     this.mutex = new Mutex();
     MessagePassingService.onInsertChromeWindowRequest((request: InsertWindowMessageData) => {
@@ -35,7 +35,8 @@ export class ActiveWindowStateManager {
         const layoutState = SessionListUtils.cleanupLayoutState(res[1], chromeWindows);
         const sessionMap = SessionListUtils.createSessionMapFromWindowList(chromeWindows);
         this.sessionListState = SessionListState.fromSessionMap(sessionMap, layoutState);
-        this.localStorageService.setActiveWindowsState(this.sessionListState, releaseLock);
+        this.localStorageService.setActiveWindowsState(this.sessionListState)
+          .then(releaseLock);
       });
     });
   }
@@ -47,7 +48,8 @@ export class ActiveWindowStateManager {
         const session = SessionUtils.createSessionFromWindow(window as ChromeAPIWindowState);
         const layoutState = LayoutStateUtils.copyWithNewId(sessionState.layoutState, window.id);
         this.sessionListState.insertSession({session, layoutState}, index);
-        this.localStorageService.setActiveWindowsState(this.sessionListState, releaseLock);
+        this.localStorageService.setActiveWindowsState(this.sessionListState)
+          .then(releaseLock);
       });
     });
   }

@@ -10,7 +10,7 @@ import {StorageKeys} from '../types/storage-keys';
 })
 export class LocalStorageService {
 
-  constructor() { }
+  constructor(private messagePassingService: MessagePassingService) { }
 
   getActiveWindowsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
@@ -29,15 +29,15 @@ export class LocalStorageService {
     });
   }
 
-  setActiveWindowsState(sessionListState: SessionListState, callback?: () => void) {
-    chrome.storage.local.set({
-      [StorageKeys.ActiveWindows]: sessionListState.getSessionMap(),
-      [StorageKeys.ActiveWindowsLayoutState]: sessionListState.getLayoutState()
-    }, () => {
-      MessagePassingService.notifyActiveWindowStateListeners();
-      if (callback) {
-        callback();
-      }
+  setActiveWindowsState(sessionListState: SessionListState): Promise<void> {
+    return new Promise<void>(resolve => {
+      chrome.storage.local.set({
+        [StorageKeys.ActiveWindows]: sessionListState.getSessionMap(),
+        [StorageKeys.ActiveWindowsLayoutState]: sessionListState.getLayoutState()
+      }, () => {
+        this.messagePassingService.notifyActiveWindowStateListeners();
+        resolve();
+      });
     });
   }
 
@@ -76,7 +76,7 @@ export class LocalStorageService {
       [StorageKeys.RecentlyClosedSessions]: sessionListState.getSessionMap(),
       [StorageKeys.RecentlyClosedSessionsLayoutState]: sessionListState.getLayoutState()
     }, () => {
-      MessagePassingService.notifyClosedSessionStateListeners();
+      this.messagePassingService.notifyClosedSessionStateListeners();
     });
   }
 
