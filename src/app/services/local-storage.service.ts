@@ -71,12 +71,15 @@ export class LocalStorageService {
     });
   }
 
-  setRecentlyClosedSessionsState(sessionListState: SessionListState) {
-    chrome.storage.local.set({
-      [StorageKeys.RecentlyClosedSessions]: sessionListState.getSessionMap(),
-      [StorageKeys.RecentlyClosedSessionsLayoutState]: sessionListState.getLayoutState()
-    }, () => {
-      this.messagePassingService.notifyClosedSessionStateListeners();
+  setRecentlyClosedSessionsState(sessionListState: SessionListState): Promise<void> {
+    return new Promise<void>(resolve => {
+      chrome.storage.local.set({
+        [StorageKeys.RecentlyClosedSessions]: sessionListState.getSessionMap(),
+        [StorageKeys.RecentlyClosedSessionsLayoutState]: sessionListState.getLayoutState()
+      }, () => {
+        this.messagePassingService.notifyClosedSessionStateListeners();
+        resolve();
+      });
     });
   }
 
