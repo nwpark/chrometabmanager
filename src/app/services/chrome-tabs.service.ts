@@ -10,6 +10,7 @@ import MoveProperties = chrome.tabs.MoveProperties;
 import {SessionId} from '../types/chrome-api-window-state';
 import {ChromeAPITabState} from '../types/chrome-api-tab-state';
 import {SessionState} from '../types/session-state';
+import {MessageReceiverService} from './message-receiver.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,24 +23,23 @@ export class ChromeTabsService implements TabsService {
   public sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
 
   constructor(private localStorageService: LocalStorageService,
-              private messagePassingService: MessagePassingService) {
+              private messagePassingService: MessagePassingService,
+              private messageReceiverService: MessageReceiverService) {
     this.sessionListState = SessionListState.empty();
-    this.messagePassingService.activeSessionStateUpdated$.subscribe(() => {
-      this.refreshState();
-    });
-    this.refreshState();
-  }
-
-  private refreshState() {
     this.localStorageService.getActiveWindowsState().then(sessionListState => {
+      this.setSessionListState(sessionListState);
+    });
+    this.messageReceiverService.activeSessionStateUpdated$.subscribe(sessionListState => {
       if (!sessionListState.equals(this.sessionListState)) {
-        console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
-        this.sessionListState = sessionListState;
-        this.sessionStateUpdated.next(this.sessionListState);
-      } else {
-        console.log(new Date().toTimeString().substring(0, 8), '- ignoring active windows update');
+        this.setSessionListState(sessionListState);
       }
     });
+  }
+
+  private setSessionListState(sessionListState: SessionListState) {
+    console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
+    this.sessionListState = sessionListState;
+    this.sessionStateUpdated.next(this.sessionListState);
   }
 
   getSessionListState(): SessionListState {
@@ -118,7 +118,7 @@ export class ChromeTabsService implements TabsService {
   insertWindow(sessionState: SessionState, index: number) {
     const tempSession = SessionStateUtils.convertToActiveWindow(sessionState);
     this.sessionListState.insertSession(tempSession, index);
-    MessagePassingService.requestInsertChromeWindow(sessionState, index);
+    this.messagePassingService.requestInsertChromeWindow(sessionState, index);
   }
 
   @modifiesState({storeResult: true})

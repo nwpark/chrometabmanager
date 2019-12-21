@@ -20,6 +20,10 @@ export class SessionListState {
     return new this(sessionStates, hidden);
   }
 
+  static fromSessionListState(sessionListState: SessionListState): SessionListState {
+    return new this (sessionListState.sessionStates, sessionListState.hidden);
+  }
+
   static fromSessionMap(
     sessionMap: SessionMap,
     listLayoutState: SessionListLayoutState

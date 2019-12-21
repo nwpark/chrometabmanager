@@ -4,13 +4,15 @@ import {MessagePassingService} from './message-passing.service';
 import {SessionListLayoutState} from '../types/session';
 import {SessionListUtils} from '../classes/session-list-utils';
 import {StorageKeys} from '../types/storage-keys';
+import {MessageReceiverService} from './message-receiver.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocalStorageService {
 
-  constructor(private messagePassingService: MessagePassingService) { }
+  constructor(private messagePassingService: MessagePassingService,
+              private messageReceiverService: MessageReceiverService) { }
 
   getActiveWindowsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
@@ -35,7 +37,7 @@ export class LocalStorageService {
         [StorageKeys.ActiveWindows]: sessionListState.getSessionMap(),
         [StorageKeys.ActiveWindowsLayoutState]: sessionListState.getLayoutState()
       }, () => {
-        this.messagePassingService.notifyActiveWindowStateListeners();
+        this.messagePassingService.broadcastActiveSessions(sessionListState);
         resolve();
       });
     });
@@ -77,7 +79,7 @@ export class LocalStorageService {
         [StorageKeys.RecentlyClosedSessions]: sessionListState.getSessionMap(),
         [StorageKeys.RecentlyClosedSessionsLayoutState]: sessionListState.getLayoutState()
       }, () => {
-        this.messagePassingService.notifyClosedSessionStateListeners();
+        this.messagePassingService.broadcastClosedSessions(sessionListState);
         resolve();
       });
     });
@@ -105,12 +107,12 @@ export class LocalStorageService {
       [StorageKeys.SavedWindows]: sessionListState.getSessionMap(),
       [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
     }, () => {
-      this.messagePassingService.notifySavedWindowStateListeners();
+      this.messagePassingService.broadcastSavedSessions(sessionListState);
     });
   }
 
   addSavedSessionsChangedListener(callback: () => void) {
     // todo: cleanup caller of this method
-    this.messagePassingService.savedSessionStateUpdated$.subscribe(callback);
+    this.messageReceiverService.savedSessionStateUpdated$.subscribe(callback);
   }
 }

@@ -7,6 +7,7 @@ import {LocalStorageService} from '../app/services/local-storage.service';
 import {ChromeAPISession} from '../app/types/chrome-api-session';
 import {ChromeAPIWindowState, SessionId} from '../app/types/chrome-api-window-state';
 import {SessionState} from '../app/types/session-state';
+import {MessageReceiverService} from '../app/services/message-receiver.service';
 
 export class ActiveWindowStateManager {
 
@@ -16,10 +17,10 @@ export class ActiveWindowStateManager {
   private mutex: Mutex;
 
   constructor() {
-    this.localStorageService = new LocalStorageService(new MessagePassingService());
+    this.localStorageService = new LocalStorageService(new MessagePassingService(), new MessageReceiverService());
     this.sessionListState = SessionListState.empty();
     this.mutex = new Mutex();
-    MessagePassingService.onInsertChromeWindowRequest((request: InsertWindowMessageData) => {
+    MessageReceiverService.onInsertChromeWindowRequest((request: InsertWindowMessageData) => {
       this.insertWindow(request.sessionState, request.index);
     });
     this.updateActiveWindowState();

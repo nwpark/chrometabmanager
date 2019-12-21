@@ -7,6 +7,7 @@ import {ChromeAPITabState} from '../app/types/chrome-api-tab-state';
 import {ChromeAPISession} from '../app/types/chrome-api-session';
 import {SessionLayoutState} from '../app/types/session-layout-state';
 import Mutex from 'async-mutex/lib/Mutex';
+import {MessageReceiverService} from '../app/services/message-receiver.service';
 
 export class ClosedSessionStateManager {
 
@@ -16,7 +17,7 @@ export class ClosedSessionStateManager {
   private mutex: Mutex;
 
   constructor() {
-    this.localStorageService = new LocalStorageService(new MessagePassingService());
+    this.localStorageService = new LocalStorageService(new MessagePassingService(), new MessageReceiverService());
     this.mutex = new Mutex();
   }
 
