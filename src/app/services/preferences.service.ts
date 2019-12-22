@@ -21,18 +21,14 @@ export class PreferencesService {
     this.messageReceiverService.preferencesUpdated$.subscribe(() => {
       window.location.reload();
     });
-    this.syncStorageService.addPreferencesChangedListener(() => {
-      this.refreshState();
+    this.syncStorageService.getPreferences().then(preferences => {
+      this.setPreferences(preferences);
     });
-    this.refreshState();
   }
 
-  private refreshState() {
-    this.syncStorageService.getPreferences().then(preferences => {
-      console.log(new Date().toTimeString().substring(0, 8), '- refreshing preferences');
-      this.preferences = preferences;
-      this.preferencesUpdated.next(this.preferences);
-    });
+  private setPreferences(preferences: Preferences) {
+    this.preferences = preferences;
+    this.preferencesUpdated.next(this.preferences);
   }
 
   getPreferences(): Promise<Preferences> {

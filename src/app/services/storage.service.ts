@@ -36,16 +36,6 @@ export class StorageService {
     });
   }
 
-  addSavedSessionsChangedListener(callback: () => void) {
-    this.preferencesService.getPreferences().then(preferences => {
-      if (preferences.syncSavedWindows) {
-        this.syncStorageService.addSavedSessionsChangedListener(callback);
-      } else {
-        this.localStorageService.addSavedSessionsChangedListener(callback);
-      }
-    });
-  }
-
   copyLocalDataToSync() {
     Promise.all([
       this.syncStorageService.getSavedWindowsState(),

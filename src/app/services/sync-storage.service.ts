@@ -25,6 +25,19 @@ export class SyncStorageService {
     // @ts-ignore
     chrome.storage.sync.onChanged.addListener(() => {
       this.onChanged.next();
+      this.getLastModifierId().then(lastModifierId => {
+        if (lastModifierId !== this.instanceId) {
+          window.location.reload();
+        }
+      });
+    });
+  }
+
+  private getLastModifierId(): Promise<string> {
+    return new Promise<string>(resolve => {
+      chrome.storage.sync.get(StorageKeys.LastModifiedBy, data => {
+        resolve(data[StorageKeys.LastModifiedBy]);
+      });
     });
   }
 
@@ -79,27 +92,7 @@ export class SyncStorageService {
       if (removedSessionIds) {
         chrome.storage.sync.remove(removedSessionIds.map(sessionId => sessionId.toString()));
       }
-    });
-  }
-
-  addPreferencesChangedListener(callback: () => void) {
-    this.addExternalOnChangedListener(callback, StorageKeys.Preferences);
-  }
-
-  addSavedSessionsChangedListener(callback: () => void) {
-    this.addExternalOnChangedListener(callback);
-  }
-
-  addExternalOnChangedListener(callback: () => void, key?: string) {
-    // @ts-ignore
-    chrome.storage.sync.onChanged.addListener(changes => {
-      if (!key || changes[key]) {
-        chrome.storage.sync.get(StorageKeys.LastModifiedBy, data => {
-          if (data[StorageKeys.LastModifiedBy] !== this.instanceId) {
-            callback();
-          }
-        });
-      }
+      this.messagePassingService.broadcastSavedSessions(sessionListState);
     });
   }
 }

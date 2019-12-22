@@ -12,6 +12,7 @@ import {ChromeAPISession} from '../types/chrome-api-session';
 import {ChromeAPIWindowState, SessionId} from '../types/chrome-api-window-state';
 import {ChromeAPITabState} from '../types/chrome-api-tab-state';
 import {SessionState} from '../types/session-state';
+import {MessageReceiverService} from './message-receiver.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,9 +25,10 @@ export class SavedTabsService implements TabsService {
   public sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
 
   constructor(private chromeTabsService: ChromeTabsService,
-              private storageService: StorageService) {
+              private storageService: StorageService,
+              private messageReceiverService: MessageReceiverService) {
     this.sessionListState = SessionListState.empty();
-    this.storageService.addSavedSessionsChangedListener(() => {
+    this.messageReceiverService.savedSessionStateUpdated$.subscribe(() => {
       this.refreshState();
     });
     this.refreshState();

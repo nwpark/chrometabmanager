@@ -110,9 +110,4 @@ export class LocalStorageService {
       this.messagePassingService.broadcastSavedSessions(sessionListState);
     });
   }
-
-  addSavedSessionsChangedListener(callback: () => void) {
-    // todo: cleanup caller of this method
-    this.messageReceiverService.savedSessionStateUpdated$.subscribe(callback);
-  }
 }
