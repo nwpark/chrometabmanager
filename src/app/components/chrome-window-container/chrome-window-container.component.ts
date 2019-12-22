@@ -10,9 +10,9 @@ import {
   isToggleDisplayState
 } from '../../animations';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
-import {ChromeAPIWindowState} from '../../types/chrome-api-window-state';
-import {SessionState} from '../../types/session-state';
-import {SessionLayoutState} from '../../types/session-layout-state';
+import {ChromeAPIWindowState} from '../../types/chrome-api/chrome-api-window-state';
+import {SessionState} from '../../types/session/session-state';
+import {SessionLayoutState} from '../../types/session/session-layout-state';
 
 @Component({
   selector: 'app-chrome-window-container',

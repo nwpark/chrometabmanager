@@ -3,13 +3,13 @@ import {Subject} from 'rxjs';
 import {modifiesState, StateModifierParams} from '../../decorators/modifies-state';
 import {TabsService} from './tabs-service';
 import {MessagePassingService} from '../messaging/message-passing.service';
-import {SessionListState} from '../../types/session-list-state';
+import {SessionListState} from '../../types/session/session-list-state';
 import {SessionStateUtils, WindowStateUtils} from '../../utils/session-utils';
 import {LocalStorageService} from '../storage/local-storage.service';
 import MoveProperties = chrome.tabs.MoveProperties;
-import {SessionId} from '../../types/chrome-api-window-state';
-import {ChromeAPITabState} from '../../types/chrome-api-tab-state';
-import {SessionState} from '../../types/session-state';
+import {SessionId} from '../../types/chrome-api/chrome-api-window-state';
+import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
+import {SessionState} from '../../types/session/session-state';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 
 @Injectable({

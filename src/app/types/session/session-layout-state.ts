@@ -1,4 +1,4 @@
-import {SessionId} from './chrome-api-window-state';
+import {SessionId} from '../chrome-api/chrome-api-window-state';
 import {isNullOrUndefined} from 'util';
 
 export interface SessionLayoutState {

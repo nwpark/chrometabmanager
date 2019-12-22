@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
-import {SessionListState} from '../../types/session-list-state';
+import {SessionListState} from '../../types/session/session-list-state';
 import {PreferencesService} from '../preferences.service';
 import {Preferences} from '../../types/preferences';
 import {SyncStorageService} from './sync-storage.service';
 import {LocalStorageService} from './local-storage.service';
-import {SessionId} from '../../types/chrome-api-window-state';
+import {SessionId} from '../../types/chrome-api/chrome-api-window-state';
 
 @Injectable({
   providedIn: 'root'

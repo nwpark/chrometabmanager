@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
-import {SessionListState} from '../../types/session-list-state';
+import {SessionListState} from '../../types/session/session-list-state';
 import {Subject} from 'rxjs';
 import {Preferences, PreferenceUtils} from '../../types/preferences';
-import {SessionListLayoutState} from '../../types/session';
 import {StorageKeys} from './storage-keys';
 import {SyncStorageUtils} from '../../utils/sync-storage-utils';
-import {SessionId} from '../../types/chrome-api-window-state';
+import {SessionId} from '../../types/chrome-api/chrome-api-window-state';
 import {MessagePassingService} from '../messaging/message-passing.service';
+import {SessionListLayoutState} from '../../types/session/session-list-layout-state';
 
 @Injectable({
   providedIn: 'root'

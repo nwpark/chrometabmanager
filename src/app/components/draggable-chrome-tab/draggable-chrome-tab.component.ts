@@ -3,7 +3,7 @@ import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animat
 import {AnimationState, closeTabAnimation} from '../../animations';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {ChromeAPITabState} from '../../types/chrome-api-tab-state';
+import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
 
 @Component({
   selector: 'app-draggable-chrome-tab',

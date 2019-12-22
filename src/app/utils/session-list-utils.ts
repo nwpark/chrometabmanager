@@ -1,9 +1,10 @@
-import {SessionListLayoutState, SessionMap} from '../types/session';
 import {SessionUtils} from './session-utils';
-import {ChromeAPISession} from '../types/chrome-api-session';
-import {ChromeAPIWindowState, SessionId} from '../types/chrome-api-window-state';
-import {ChromeAPITabState} from '../types/chrome-api-tab-state';
-import {SessionLayoutState} from '../types/session-layout-state';
+import {ChromeAPISession} from '../types/chrome-api/chrome-api-session';
+import {ChromeAPIWindowState, SessionId} from '../types/chrome-api/chrome-api-window-state';
+import {ChromeAPITabState} from '../types/chrome-api/chrome-api-tab-state';
+import {SessionLayoutState} from '../types/session/session-layout-state';
+import {SessionMap} from '../types/session/session-map';
+import {SessionListLayoutState} from '../types/session/session-list-layout-state';
 
 export class SessionListUtils {
   static createEmptyListLayoutState(): SessionListLayoutState {

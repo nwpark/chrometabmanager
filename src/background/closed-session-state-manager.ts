@@ -2,10 +2,10 @@ import {MessagePassingService} from '../app/services/messaging/message-passing.s
 import {SessionListUtils} from '../app/utils/session-list-utils';
 import {WindowStateUtils} from '../app/utils/session-utils';
 import {LocalStorageService} from '../app/services/storage/local-storage.service';
-import {ChromeAPIWindowState} from '../app/types/chrome-api-window-state';
-import {ChromeAPITabState} from '../app/types/chrome-api-tab-state';
-import {ChromeAPISession} from '../app/types/chrome-api-session';
-import {SessionLayoutState} from '../app/types/session-layout-state';
+import {ChromeAPIWindowState} from '../app/types/chrome-api/chrome-api-window-state';
+import {ChromeAPITabState} from '../app/types/chrome-api/chrome-api-tab-state';
+import {ChromeAPISession} from '../app/types/chrome-api/chrome-api-session';
+import {SessionLayoutState} from '../app/types/session/session-layout-state';
 import Mutex from 'async-mutex/lib/Mutex';
 import {MessageReceiverService} from '../app/services/messaging/message-receiver.service';
 

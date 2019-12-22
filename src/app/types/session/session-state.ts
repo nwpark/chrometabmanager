@@ -1,4 +1,4 @@
-import {ChromeAPISession, chromeAPISessionEquals} from './chrome-api-session';
+import {ChromeAPISession, chromeAPISessionEquals} from '../chrome-api/chrome-api-session';
 import {isNullOrUndefined} from 'util';
 import {sessionLayoutStateEquals, SessionLayoutState} from './session-layout-state';
 

@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {SessionState} from '../../types/session-state';
+import {SessionState} from '../../types/session/session-state';
 import {Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
-import {SessionListState} from '../../types/session-list-state';
+import {SessionListState} from '../../types/session/session-list-state';
 
 @Injectable({
   providedIn: 'root'

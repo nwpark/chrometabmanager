@@ -1,11 +1,13 @@
 import {moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {SessionListLayoutState, SessionMap, SessionStateMap} from './session';
-import {ChromeAPISession} from './chrome-api-session';
-import {ChromeAPIWindowState, SessionId} from './chrome-api-window-state';
-import {ChromeAPITabState} from './chrome-api-tab-state';
+import {ChromeAPISession} from '../chrome-api/chrome-api-session';
+import {ChromeAPIWindowState, SessionId} from '../chrome-api/chrome-api-window-state';
+import {ChromeAPITabState} from '../chrome-api/chrome-api-tab-state';
 import {SessionState, sessionStateEquals} from './session-state';
 import {SessionLayoutState} from './session-layout-state';
 import {isNullOrUndefined} from 'util';
+import {SessionMap} from './session-map';
+import {SessionStateMap} from './session-state-map';
+import {SessionListLayoutState} from './session-list-layout-state';
 
 export class SessionListState {
 

@@ -4,8 +4,8 @@ import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animat
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {getTimeString} from '../../utils/date-utils';
-import {ChromeAPITabState} from '../../types/chrome-api-tab-state';
-import {SessionState} from '../../types/session-state';
+import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
+import {SessionState} from '../../types/session/session-state';
 
 @Component({
   selector: 'app-detached-chrome-tab',
