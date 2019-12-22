@@ -1,13 +1,15 @@
 import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
-import {SessionActionButton, ActionButtonFactory, SessionMenuItem} from '../../types/action-bar';
 import {FormControl} from '@angular/forms';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {PreferencesService} from '../../services/preferences.service';
 import {ActionBarService} from '../../services/action-bar.service';
-import {getTimeString} from '../../classes/date-utils';
+import {getTimeString} from '../../utils/date-utils';
 import {ChromeAPIWindowState} from '../../types/chrome-api-window-state';
 import {SessionState} from '../../types/session-state';
 import {SessionLayoutState} from '../../types/session-layout-state';
+import {SessionActionButton} from '../../types/action-bar/session-action-button';
+import {SessionMenuItem} from '../../types/action-bar/session-menu-item';
+import {ActionButtonFactory} from '../../utils/action-bar/action-button-factory';
 
 @Component({
   selector: 'app-chrome-window-header',

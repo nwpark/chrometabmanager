@@ -4,7 +4,7 @@ import {modifiesState, StateModifierParams} from '../../decorators/modifies-stat
 import {TabsService} from './tabs-service';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {SessionListState} from '../../types/session-list-state';
-import {SessionStateUtils, WindowStateUtils} from '../../classes/session-utils';
+import {SessionStateUtils, WindowStateUtils} from '../../utils/session-utils';
 import {LocalStorageService} from '../storage/local-storage.service';
 import MoveProperties = chrome.tabs.MoveProperties;
 import {SessionId} from '../../types/chrome-api-window-state';

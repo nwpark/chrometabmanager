@@ -1,5 +1,4 @@
 import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {ListActionButton, ListActionButtonFactory} from '../../types/action-bar';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {PreferencesService} from '../../services/preferences.service';
@@ -17,6 +16,8 @@ import {SessionListState} from '../../types/session-list-state';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {SessionState} from '../../types/session-state';
+import {ListActionButton} from '../../types/action-bar/list-action-button';
+import {ListActionButtonFactory} from '../../utils/action-bar/list-action-button-factory';
 
 @Component({
   selector: 'app-window-list',

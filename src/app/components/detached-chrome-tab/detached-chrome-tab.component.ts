@@ -3,7 +3,7 @@ import {AnimationState, closeTabAnimation, closeWindowAnimation} from '../../ani
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {getTimeString} from '../../classes/date-utils';
+import {getTimeString} from '../../utils/date-utils';
 import {ChromeAPITabState} from '../../types/chrome-api-tab-state';
 import {SessionState} from '../../types/session-state';
 

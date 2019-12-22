@@ -4,7 +4,7 @@ import {Subject} from 'rxjs';
 import {Preferences, PreferenceUtils} from '../../types/preferences';
 import {SessionListLayoutState} from '../../types/session';
 import {StorageKeys} from './storage-keys';
-import {SyncStorageUtils} from '../../classes/sync-storage-utils';
+import {SyncStorageUtils} from '../../utils/sync-storage-utils';
 import {SessionId} from '../../types/chrome-api-window-state';
 import {MessagePassingService} from '../messaging/message-passing.service';
 

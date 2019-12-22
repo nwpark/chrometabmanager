@@ -4,7 +4,7 @@ import {buffer, filter, map} from 'rxjs/operators';
 import {SavedTabsService} from './tabs/saved-tabs.service';
 import {ChromeTabsService} from './tabs/chrome-tabs.service';
 import {SessionListId} from '../types/chrome-window-component-data';
-import {SessionUtils} from '../classes/session-utils';
+import {SessionUtils} from '../utils/session-utils';
 
 @Injectable({
   providedIn: 'root'

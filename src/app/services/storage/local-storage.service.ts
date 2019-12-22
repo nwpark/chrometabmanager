@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {SessionListState} from '../../types/session-list-state';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {SessionListLayoutState} from '../../types/session';
-import {SessionListUtils} from '../../classes/session-list-utils';
+import {SessionListUtils} from '../../utils/session-list-utils';
 import {StorageKeys} from './storage-keys';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 

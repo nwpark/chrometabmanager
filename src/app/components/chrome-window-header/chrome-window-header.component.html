@@ -30,7 +30,7 @@
         class="action-button-30"
         mat-icon-button
         [title]="button.title"
-        (click)="button.callback(index)">
+        (click)="button.callback()">
         <mat-icon class="action-icon-18" *ngIf="!layoutState.hidden">{{button.icon}}</mat-icon>
         <mat-icon class="action-icon-18" *ngIf="layoutState.hidden">{{button.iconWhenHidden || button.icon}}</mat-icon>
       </button>

@@ -1,8 +1,8 @@
 import {InsertWindowMessageData, MessagePassingService} from '../app/services/messaging/message-passing.service';
 import Mutex from 'async-mutex/lib/Mutex';
 import {SessionListState} from '../app/types/session-list-state';
-import {SessionListUtils} from '../app/classes/session-list-utils';
-import {LayoutStateUtils, SessionUtils} from '../app/classes/session-utils';
+import {SessionListUtils} from '../app/utils/session-list-utils';
+import {LayoutStateUtils, SessionUtils} from '../app/utils/session-utils';
 import {LocalStorageService} from '../app/services/storage/local-storage.service';
 import {ChromeAPISession} from '../app/types/chrome-api-session';
 import {ChromeAPIWindowState, SessionId} from '../app/types/chrome-api-window-state';

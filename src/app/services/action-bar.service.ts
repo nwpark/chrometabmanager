@@ -1,9 +1,12 @@
 import {Injectable} from '@angular/core';
 import {ChromeTabsService} from './tabs/chrome-tabs.service';
 import {SavedTabsService} from './tabs/saved-tabs.service';
-import {ListActionButton, ListActionButtonFactory, MenuItemFactory, SessionMenuItem} from '../types/action-bar';
 import {RecentlyClosedTabsService} from './tabs/recently-closed-tabs.service';
 import {SessionListId} from '../types/chrome-window-component-data';
+import {SessionMenuItem} from '../types/action-bar/session-menu-item';
+import {ListActionButton} from '../types/action-bar/list-action-button';
+import {ListActionButtonFactory} from '../utils/action-bar/list-action-button-factory';
+import {MenuItemFactory} from '../utils/action-bar/menu-item-factory';
 
 @Injectable({
   providedIn: 'root'
