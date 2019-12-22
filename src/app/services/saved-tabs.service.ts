@@ -28,18 +28,18 @@ export class SavedTabsService implements TabsService {
               private storageService: StorageService,
               private messageReceiverService: MessageReceiverService) {
     this.sessionListState = SessionListState.empty();
-    this.messageReceiverService.savedSessionStateUpdated$.subscribe(() => {
-      this.refreshState();
+    this.storageService.getSavedWindowsState().then(sessionListState => {
+      this.setSessionListState(sessionListState);
     });
-    this.refreshState();
+    this.messageReceiverService.savedSessionStateUpdated$.subscribe(sessionListState => {
+      this.setSessionListState(sessionListState);
+    });
   }
 
-  private refreshState() {
-    this.storageService.getSavedWindowsState().then(windowListState => {
-      console.log(new Date().toTimeString().substring(0, 8), '- refreshing saved windows');
-      this.sessionListState = windowListState;
-      this.sessionStateUpdated.next(this.sessionListState);
-    });
+  private setSessionListState(sessionListState: SessionListState) {
+    console.log(new Date().toTimeString().substring(0, 8), '- refreshing saved windows');
+    this.sessionListState = sessionListState;
+    this.sessionStateUpdated.next(this.sessionListState);
   }
 
   getSessionListState(): SessionListState {

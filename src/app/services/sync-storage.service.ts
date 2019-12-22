@@ -82,6 +82,7 @@ export class SyncStorageService {
     });
   }
 
+  // todo: check size of each session state
   setSavedWindowsState(sessionListState: SessionListState, removedSessionIds?: SessionId[]) {
     const sessionStateMap = sessionListState.getSessionStateMap();
     chrome.storage.sync.set({

@@ -24,18 +24,18 @@ export class RecentlyClosedTabsService implements TabsService {
               private chromeTabsService: ChromeTabsService,
               private messageReceiverService: MessageReceiverService) {
     this.sessionListState = SessionListState.empty();
-    this.messageReceiverService.closedSessionStateUpdated$.subscribe(() => {
-      this.refreshState();
+    this.localStorageService.getRecentlyClosedSessionsState().then(sessionListState => {
+      this.setSessionListState(sessionListState);
     });
-    this.refreshState();
+    this.messageReceiverService.closedSessionStateUpdated$.subscribe(sessionListState => {
+      this.setSessionListState(sessionListState);
+    });
   }
 
-  private refreshState() {
-    this.localStorageService.getRecentlyClosedSessionsState().then(sessionListState => {
-      console.log(new Date().toTimeString().substring(0, 8), '- refreshing recently closed windows');
-      this.sessionListState = sessionListState;
-      this.sessionStateUpdatedSource.next(this.sessionListState);
-    });
+  private setSessionListState(sessionListState: SessionListState) {
+    console.log(new Date().toTimeString().substring(0, 8), '- refreshing recently closed windows');
+    this.sessionListState = sessionListState;
+    this.sessionStateUpdatedSource.next(this.sessionListState);
   }
 
   getSessionListState(): SessionListState {
