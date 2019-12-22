@@ -1,5 +1,7 @@
 import {ClosedSessionStateManager} from './closed-session-state-manager';
 import {ActiveWindowStateManager} from './active-window-state-manager';
+import {v4 as uuid} from 'uuid';
+import {MessageReceiverService} from '../app/services/message-receiver.service';
 
 addOnInstalledListener();
 
@@ -15,6 +17,7 @@ const chromeWindowUpdateEvents = [
 
 const ignoredTabUrls = ['chrome://newtab/'];
 
+const instanceId = uuid();
 const activeWindowStateManager = new ActiveWindowStateManager();
 const closedSessionStateManager = new ClosedSessionStateManager();
 
@@ -42,6 +45,8 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
   }
   activeWindowStateManager.updateActiveWindowState();
 });
+
+MessageReceiverService.onInstanceIdRequest(instanceId);
 
 function addOnInstalledListener() {
   chrome.runtime.onInstalled.addListener(details => {

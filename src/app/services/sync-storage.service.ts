@@ -1,25 +1,27 @@
 import {Injectable} from '@angular/core';
 import {SessionListState} from '../types/session-list-state';
-import {v4 as uuid} from 'uuid';
 import {Subject} from 'rxjs';
 import {Preferences, PreferenceUtils} from '../types/preferences';
 import {SessionListLayoutState} from '../types/session';
 import {StorageKeys} from '../types/storage-keys';
 import {SyncStorageUtils} from '../classes/sync-storage-utils';
 import {SessionId} from '../types/chrome-api-window-state';
+import {MessagePassingService} from './message-passing.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SyncStorageService {
 
-  readonly instanceId: string;
+  instanceId: string;
 
   bytesInUse = new Subject<number>();
   bytesInUse$ = this.bytesInUse.asObservable();
 
-  constructor() {
-    this.instanceId = uuid();
+  constructor(private messagePassingService: MessagePassingService) {
+    this.messagePassingService.requestInstanceId().then(instanceId => {
+      this.instanceId = instanceId;
+    });
     this.addOnChangedListener(() => {
       this.refreshState();
     });

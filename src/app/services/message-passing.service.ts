@@ -13,6 +13,7 @@ export class MessagePassingService {
   static readonly SAVED_SESSION_MESSAGE = 'savedWindowsUpdated_0656e252';
   static readonly CLOSED_SESSION_MESSAGE = 'closedSessionsUpdated_7d763bba';
   static readonly INSERT_WINDOW_REQUEST = 'insertWindowRequest_de10f744';
+  static readonly INSTANCE_ID_REQUEST = 'instanceIdRequest_7f5604d5';
   static readonly MESSAGE_DEBOUNCE_TIME = 400;
 
   private activeSessionMessageHandler = new DebouncedMessageHandler(MessagePassingService.ACTIVE_SESSION_MESSAGE);
@@ -37,6 +38,14 @@ export class MessagePassingService {
     const message: InsertWindowMessageData = { sessionState, index };
     chrome.runtime.sendMessage({
       [MessagePassingService.INSERT_WINDOW_REQUEST]: message
+    });
+  }
+
+  requestInstanceId(): Promise<string> {
+    return new Promise<string>(resolve => {
+      chrome.runtime.sendMessage({
+        messageId: MessagePassingService.INSTANCE_ID_REQUEST
+      }, (response: string) => resolve(response));
     });
   }
 }

@@ -18,7 +18,7 @@ export class MessageReceiverService {
 
   constructor() {
     chrome.runtime.onMessage.addListener((message: SessionListStateMessageData) => {
-      if (message.messageId) {
+      if (message.messageId && this.getMessageSubject(message.messageId)) {
         const sessionListState = SessionListState.fromSessionListState(message.sessionListState);
         this.getMessageSubject(message.messageId).next(sessionListState);
       }
@@ -40,6 +40,14 @@ export class MessageReceiverService {
     chrome.runtime.onMessage.addListener(message => {
       if (message[MessagePassingService.INSERT_WINDOW_REQUEST]) {
         callback(message[MessagePassingService.INSERT_WINDOW_REQUEST]);
+      }
+    });
+  }
+
+  static onInstanceIdRequest(instanceId: string) {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.messageId === MessagePassingService.INSTANCE_ID_REQUEST) {
+        sendResponse(instanceId);
       }
     });
   }
