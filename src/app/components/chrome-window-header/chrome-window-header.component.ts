@@ -42,7 +42,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
   ngOnInit() {
     this.chromeAPIWindow = this.sessionState.session.window;
     this.layoutState = this.sessionState.layoutState;
-    this.actionMenuItems = this.actionBarService.createSessionActionButtons(this.props.sessionListId);
+    this.actionMenuItems = this.actionBarService.createSessionMenuItems(this.props.sessionListId);
     this.actionButtons = [
       ActionButtonFactory.createMinimizeButton(() => this.chromeWindowToggleDisplay.emit()),
       ActionButtonFactory.createCloseButton(() => this.chromeWindowClose.emit())

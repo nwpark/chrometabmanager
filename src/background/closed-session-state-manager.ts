@@ -1,13 +1,13 @@
-import {MessagePassingService} from '../app/services/message-passing.service';
+import {MessagePassingService} from '../app/services/messaging/message-passing.service';
 import {SessionListUtils} from '../app/classes/session-list-utils';
 import {WindowStateUtils} from '../app/classes/session-utils';
-import {LocalStorageService} from '../app/services/local-storage.service';
+import {LocalStorageService} from '../app/services/storage/local-storage.service';
 import {ChromeAPIWindowState} from '../app/types/chrome-api-window-state';
 import {ChromeAPITabState} from '../app/types/chrome-api-tab-state';
 import {ChromeAPISession} from '../app/types/chrome-api-session';
 import {SessionLayoutState} from '../app/types/session-layout-state';
 import Mutex from 'async-mutex/lib/Mutex';
-import {MessageReceiverService} from '../app/services/message-receiver.service';
+import {MessageReceiverService} from '../app/services/messaging/message-receiver.service';
 
 export class ClosedSessionStateManager {
 

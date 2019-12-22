@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
-import {modifiesState} from '../decorators/modifies-state';
-import {TabsService} from '../interfaces/tabs-service';
+import {modifiesState} from '../../decorators/modifies-state';
+import {TabsService} from './tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
-import {SessionListState} from '../types/session-list-state';
-import {LocalStorageService} from './local-storage.service';
-import {SessionId} from '../types/chrome-api-window-state';
-import {ChromeAPITabState} from '../types/chrome-api-tab-state';
-import {SessionState} from '../types/session-state';
-import {MessageReceiverService} from './message-receiver.service';
+import {SessionListState} from '../../types/session-list-state';
+import {LocalStorageService} from '../storage/local-storage.service';
+import {SessionId} from '../../types/chrome-api-window-state';
+import {ChromeAPITabState} from '../../types/chrome-api-tab-state';
+import {SessionState} from '../../types/session-state';
+import {MessageReceiverService} from '../messaging/message-receiver.service';
 
 @Injectable({
   providedIn: 'root'

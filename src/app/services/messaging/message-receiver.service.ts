@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
-import {SessionListState} from '../types/session-list-state';
+import {SessionListState} from '../../types/session-list-state';
 import {InsertWindowMessageData, MessageData, MessagePassingService} from './message-passing.service';
 
 @Injectable({

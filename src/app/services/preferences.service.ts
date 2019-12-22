@@ -3,8 +3,8 @@ import {Preferences} from '../types/preferences';
 import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {take} from 'rxjs/operators';
-import {SyncStorageService} from './sync-storage.service';
-import {MessageReceiverService} from './message-receiver.service';
+import {SyncStorageService} from './storage/sync-storage.service';
+import {MessageReceiverService} from './messaging/message-receiver.service';
 
 @Injectable({
   providedIn: 'root'

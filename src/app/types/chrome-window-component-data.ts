@@ -1,4 +1,4 @@
-import {TabsService} from '../interfaces/tabs-service';
+import {TabsService} from '../services/tabs/tabs-service';
 
 export enum SessionListId {
   Saved = 'saved_window_list',

@@ -57,7 +57,6 @@ export class ListActionButtonFactory {
   }
 }
 
-// todo: rename
 export class ActionButtonFactory {
 
   static createCloseButton(callback: ActionButtonCallback): SessionActionButton {
@@ -77,7 +76,9 @@ export class ActionButtonFactory {
       callback
     };
   }
+}
 
+export class MenuItemFactory {
   static createOpenButton(callback: ActionButtonCallback): SessionMenuItem {
     return {
       title: 'Restore window',

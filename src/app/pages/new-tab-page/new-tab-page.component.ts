@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {SessionComponentProps, SessionListId} from '../../types/chrome-window-component-data';
-import {ChromeTabsService} from '../../services/chrome-tabs.service';
-import {SavedTabsService} from '../../services/saved-tabs.service';
-import {RecentlyClosedTabsService} from '../../services/recently-closed-tabs.service';
+import {ChromeTabsService} from '../../services/tabs/chrome-tabs.service';
+import {SavedTabsService} from '../../services/tabs/saved-tabs.service';
+import {RecentlyClosedTabsService} from '../../services/tabs/recently-closed-tabs.service';
 import {environment} from '../../../environments/environment';
 import {PhotoMetadata} from '../../types/photo-metadata';
 

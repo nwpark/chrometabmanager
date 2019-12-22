@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {merge, MonoTypeOperatorFunction, Observable, Subject} from 'rxjs';
 import {buffer, filter, map} from 'rxjs/operators';
-import {SavedTabsService} from './saved-tabs.service';
-import {ChromeTabsService} from './chrome-tabs.service';
+import {SavedTabsService} from './tabs/saved-tabs.service';
+import {ChromeTabsService} from './tabs/chrome-tabs.service';
 import {SessionListId} from '../types/chrome-window-component-data';
 import {SessionUtils} from '../classes/session-utils';
 

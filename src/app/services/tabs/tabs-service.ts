@@ -1,7 +1,7 @@
-import {SessionListState} from '../types/session-list-state';
-import {SessionId} from '../types/chrome-api-window-state';
-import {ChromeAPITabState} from '../types/chrome-api-tab-state';
-import {SessionState} from '../types/session-state';
+import {SessionListState} from '../../types/session-list-state';
+import {SessionId} from '../../types/chrome-api-window-state';
+import {ChromeAPITabState} from '../../types/chrome-api-tab-state';
+import {SessionState} from '../../types/session-state';
 
 export interface TabsService {
 

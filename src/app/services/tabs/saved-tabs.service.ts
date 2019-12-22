@@ -1,18 +1,18 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
 import {v4 as uuid} from 'uuid';
-import {modifiesState, StateModifierParams} from '../decorators/modifies-state';
-import {TabsService} from '../interfaces/tabs-service';
+import {modifiesState, StateModifierParams} from '../../decorators/modifies-state';
+import {TabsService} from './tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
-import {StorageService} from './storage.service';
-import {SessionListState} from '../types/session-list-state';
-import {SessionListUtils} from '../classes/session-list-utils';
-import {SessionStateUtils, SessionUtils, WindowStateUtils} from '../classes/session-utils';
-import {ChromeAPISession} from '../types/chrome-api-session';
-import {ChromeAPIWindowState, SessionId} from '../types/chrome-api-window-state';
-import {ChromeAPITabState} from '../types/chrome-api-tab-state';
-import {SessionState} from '../types/session-state';
-import {MessageReceiverService} from './message-receiver.service';
+import {StorageService} from '../storage/storage.service';
+import {SessionListState} from '../../types/session-list-state';
+import {SessionListUtils} from '../../classes/session-list-utils';
+import {SessionStateUtils, SessionUtils, WindowStateUtils} from '../../classes/session-utils';
+import {ChromeAPISession} from '../../types/chrome-api-session';
+import {ChromeAPIWindowState, SessionId} from '../../types/chrome-api-window-state';
+import {ChromeAPITabState} from '../../types/chrome-api-tab-state';
+import {SessionState} from '../../types/session-state';
+import {MessageReceiverService} from '../messaging/message-receiver.service';
 
 @Injectable({
   providedIn: 'root'

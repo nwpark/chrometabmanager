@@ -4,8 +4,8 @@ import {Preferences} from '../../types/preferences';
 import {MatSlideToggleChange} from '@angular/material';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {SyncStorageService} from '../../services/sync-storage.service';
-import {StorageService} from '../../services/storage.service';
+import {SyncStorageService} from '../../services/storage/sync-storage.service';
+import {StorageService} from '../../services/storage/storage.service';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 

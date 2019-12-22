@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {ChromeTabsService} from './chrome-tabs.service';
-import {SavedTabsService} from './saved-tabs.service';
-import {ActionButtonFactory, SessionMenuItem, ListActionButton, ListActionButtonFactory} from '../types/action-bar';
-import {RecentlyClosedTabsService} from './recently-closed-tabs.service';
+import {ChromeTabsService} from './tabs/chrome-tabs.service';
+import {SavedTabsService} from './tabs/saved-tabs.service';
+import {ListActionButton, ListActionButtonFactory, MenuItemFactory, SessionMenuItem} from '../types/action-bar';
+import {RecentlyClosedTabsService} from './tabs/recently-closed-tabs.service';
 import {SessionListId} from '../types/chrome-window-component-data';
 
 @Injectable({
@@ -14,16 +14,16 @@ export class ActionBarService {
               private savedTabsService: SavedTabsService,
               private recentlyClosedTabsService: RecentlyClosedTabsService) { }
 
-  createSessionActionButtons(windowCategory: SessionListId): SessionMenuItem[] {
-    switch (windowCategory) {
-      case SessionListId.Active: return this.createActiveWindowActionButtons();
-      case SessionListId.Saved: return this.createSavedWindowActionButtons();
-      case SessionListId.RecentlyClosed: return this.createRecentlyClosedWindowActionButtons();
+  createSessionMenuItems(sessionCategory: SessionListId): SessionMenuItem[] {
+    switch (sessionCategory) {
+      case SessionListId.Active: return this.createActiveSessionMenuItems();
+      case SessionListId.Saved: return this.createSavedSessionMenuItems();
+      case SessionListId.RecentlyClosed: return this.createClosedSessionMenuItems();
     }
   }
 
-  createListActionButtons(windowCategory: SessionListId): ListActionButton[] {
-    switch (windowCategory) {
+  createListActionButtons(sessionCategory: SessionListId): ListActionButton[] {
+    switch (sessionCategory) {
       case SessionListId.Active: return [];
       case SessionListId.Saved: return this.createSavedWindowListActionButtons();
       case SessionListId.RecentlyClosed: return this.createRecentlyClosedListActionButtons();
@@ -46,33 +46,33 @@ export class ActionBarService {
     ];
   }
 
-  private createActiveWindowActionButtons(): SessionMenuItem[] {
+  private createActiveSessionMenuItems(): SessionMenuItem[] {
     return [
-      ActionButtonFactory.createSaveButton(sessionIndex => {
+      MenuItemFactory.createSaveButton(sessionIndex => {
         const sessionState = this.chromeTabsService.getSessionListState().getSessionState(sessionIndex);
         this.savedTabsService.insertWindow(sessionState, 0);
       }),
-      ActionButtonFactory.createSortButton(sessionIndex => {
+      MenuItemFactory.createSortButton(sessionIndex => {
         this.chromeTabsService.sortTabsInWindow(sessionIndex);
       })
     ];
   }
 
-  private createSavedWindowActionButtons(): SessionMenuItem[] {
+  private createSavedSessionMenuItems(): SessionMenuItem[] {
     return [
-      ActionButtonFactory.createOpenButton(sessionIndex => {
+      MenuItemFactory.createOpenButton(sessionIndex => {
         const sessionState = this.savedTabsService.getSessionListState().getSessionState(sessionIndex);
         this.chromeTabsService.insertWindow(sessionState, 0);
       }),
-      ActionButtonFactory.createSortButton(sessionIndex => {
+      MenuItemFactory.createSortButton(sessionIndex => {
         this.savedTabsService.sortTabsInWindow(sessionIndex);
       })
     ];
   }
 
-  private createRecentlyClosedWindowActionButtons(): SessionMenuItem[] {
+  private createClosedSessionMenuItems(): SessionMenuItem[] {
     return [
-      ActionButtonFactory.createOpenButton(sessionIndex => {
+      MenuItemFactory.createOpenButton(sessionIndex => {
         const sessionState = this.recentlyClosedTabsService.getSessionListState().getSessionState(sessionIndex);
         this.chromeTabsService.insertWindow(sessionState, 0);
       })
