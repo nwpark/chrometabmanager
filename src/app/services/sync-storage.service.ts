@@ -15,22 +15,24 @@ export class SyncStorageService {
 
   instanceId: string;
 
-  bytesInUse = new Subject<number>();
-  bytesInUse$ = this.bytesInUse.asObservable();
+  private onChanged = new Subject<void>();
+  onChanged$ = this.onChanged.asObservable();
 
   constructor(private messagePassingService: MessagePassingService) {
     this.messagePassingService.requestInstanceId().then(instanceId => {
       this.instanceId = instanceId;
     });
-    this.addOnChangedListener(() => {
-      this.refreshState();
+    // @ts-ignore
+    chrome.storage.sync.onChanged.addListener(() => {
+      this.onChanged.next();
     });
-    this.refreshState();
   }
 
-  private refreshState() {
-    chrome.storage.sync.getBytesInUse(bytesInUse => {
-      this.bytesInUse.next(bytesInUse);
+  getBytesInUse(): Promise<number> {
+    return new Promise<number>(resolve => {
+      chrome.storage.sync.getBytesInUse(bytesInUse => {
+        resolve(bytesInUse);
+      });
     });
   }
 
@@ -99,11 +101,6 @@ export class SyncStorageService {
         });
       }
     });
-  }
-
-  private addOnChangedListener(callback: () => void) {
-    // @ts-ignore
-    chrome.storage.sync.onChanged.addListener(callback);
   }
 }
 

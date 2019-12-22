@@ -29,6 +29,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
 
   preferences: Preferences;
   syncBytesInUse: number;
+  syncBytesInUsePercentage: number;
   syncQuotaBytes = chrome.storage.sync.QUOTA_BYTES;
   downloadJsonHref: Promise<SafeUrl>;
 
@@ -39,23 +40,27 @@ export class OptionsComponent implements OnDestroy, OnInit {
               private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
-    this.preferencesService.preferencesUpdated$
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(preferences => {
-        this.preferences = preferences;
-        this.changeDetectorRef.detectChanges();
-      });
-    this.syncStorageService.bytesInUse$
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(syncBytesInUse => {
-        this.syncBytesInUse = syncBytesInUse;
-        this.changeDetectorRef.detectChanges();
-      });
+    this.preferencesService.preferencesUpdated$.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(preferences => {
+      this.preferences = preferences;
+      this.changeDetectorRef.detectChanges();
+    });
+    this.syncStorageService.onChanged$.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.refreshBytesInUse();
+    });
+    this.refreshBytesInUse();
     this.downloadJsonHref = this.generateDownloadJsonUri();
   }
 
-  getBytesInUsePercentage(): number {
-    return Math.round((this.syncBytesInUse / this.syncQuotaBytes) * 100);
+  private refreshBytesInUse() {
+    this.syncStorageService.getBytesInUse().then(bytesInUse => {
+      this.syncBytesInUse = bytesInUse;
+      this.syncBytesInUsePercentage = Math.round((bytesInUse / this.syncQuotaBytes) * 100);
+      this.changeDetectorRef.detectChanges();
+    });
   }
 
   setCloseWindowOnSave(event: MatSlideToggleChange) {

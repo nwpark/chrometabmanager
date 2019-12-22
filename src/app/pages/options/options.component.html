@@ -56,9 +56,9 @@
           <mat-list-item>
 <!--            <mat-icon style="font-size: 18px; line-height: 14px; height: 14px">help_outline</mat-icon>-->
             <div mat-line style="font-size: 14px; color: grey; margin-bottom: 5px">
-              Bytes in use: {{syncBytesInUse | number}} out of {{syncQuotaBytes | number}} ({{getBytesInUsePercentage()}}%)
+              Bytes in use: {{syncBytesInUse | number}} out of {{syncQuotaBytes | number}} ({{syncBytesInUsePercentage}}%)
             </div>
-            <mat-progress-bar mat-line mode="determinate" value="{{getBytesInUsePercentage()}}"></mat-progress-bar>
+            <mat-progress-bar mat-line mode="determinate" value="{{syncBytesInUsePercentage}}"></mat-progress-bar>
           </mat-list-item>
           <h3 mat-subheader style="height: 30px">
             Warning: Chrome sync storage has a maximum quota of {{syncQuotaBytes | number}} bytes
