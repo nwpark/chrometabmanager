@@ -1,31 +1,32 @@
-import { Injectable } from '@angular/core';
-import {Subject} from 'rxjs';
+import {Injectable} from '@angular/core';
+import {Observable, Subject} from 'rxjs';
 import {SessionListState} from '../types/session-list-state';
-import {InsertWindowMessageData, MessagePassingService, SessionListStateMessageData} from './message-passing.service';
+import {InsertWindowMessageData, MessageData, MessagePassingService} from './message-passing.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageReceiverService {
 
-  private savedSessionStateUpdated = new Subject<SessionListState>();
-  private activeSessionStateUpdated = new Subject<SessionListState>();
-  private closedSessionStateUpdated = new Subject<SessionListState>();
+  private savedSessionStateUpdated = new SessionListMessageReceiver();
+  private activeSessionStateUpdated = new SessionListMessageReceiver();
+  private closedSessionStateUpdated = new SessionListMessageReceiver();
+  private preferencesUpdated = new MessageReceiver<void>();
 
   savedSessionStateUpdated$ = this.savedSessionStateUpdated.asObservable();
   activeSessionStateUpdated$ = this.activeSessionStateUpdated.asObservable();
   closedSessionStateUpdated$ = this.closedSessionStateUpdated.asObservable();
+  preferencesUpdated$ = this.preferencesUpdated.asObservable();
 
   constructor() {
-    chrome.runtime.onMessage.addListener((message: SessionListStateMessageData) => {
-      if (message.messageId && this.getMessageSubject(message.messageId)) {
-        const sessionListState = SessionListState.fromSessionListState(message.sessionListState);
-        this.getMessageSubject(message.messageId).next(sessionListState);
+    chrome.runtime.onMessage.addListener((message: MessageData<any>) => {
+      if (message.messageId && this.getMessageReceiver(message.messageId)) {
+        this.getMessageReceiver(message.messageId).next(message.data);
       }
     });
   }
 
-  private getMessageSubject(messageId: string) {
+  private getMessageReceiver(messageId: string): MessageReceiver<any> {
     switch (messageId) {
       case MessagePassingService.ACTIVE_SESSION_MESSAGE:
         return this.activeSessionStateUpdated;
@@ -33,6 +34,8 @@ export class MessageReceiverService {
         return this.savedSessionStateUpdated;
       case MessagePassingService.CLOSED_SESSION_MESSAGE:
         return this.closedSessionStateUpdated;
+      case MessagePassingService.PREFERENCES_UPDATED:
+        return this.preferencesUpdated;
     }
   }
 
@@ -50,5 +53,24 @@ export class MessageReceiverService {
         sendResponse(instanceId);
       }
     });
+  }
+}
+
+class MessageReceiver<T> {
+  subject = new Subject<T>();
+
+  next(messageData: T) {
+    this.subject.next(messageData);
+  }
+
+  asObservable(): Observable<T> {
+    return this.subject.asObservable();
+  }
+}
+
+class SessionListMessageReceiver extends MessageReceiver<SessionListState> {
+  next(messageData: SessionListState) {
+    const sessionListState = SessionListState.fromSessionListState(messageData);
+    this.subject.next(sessionListState);
   }
 }

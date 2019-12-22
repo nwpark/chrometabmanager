@@ -4,6 +4,7 @@ import {Subject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {take} from 'rxjs/operators';
 import {SyncStorageService} from './sync-storage.service';
+import {MessageReceiverService} from './message-receiver.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,11 @@ export class PreferencesService {
   preferencesUpdated = new Subject<Preferences>();
   preferencesUpdated$ = this.preferencesUpdated.asObservable();
 
-  constructor(private syncStorageService: SyncStorageService) {
+  constructor(private syncStorageService: SyncStorageService,
+              private messageReceiverService: MessageReceiverService) {
+    this.messageReceiverService.preferencesUpdated$.subscribe(() => {
+      window.location.reload();
+    });
     this.syncStorageService.addPreferencesChangedListener(() => {
       this.refreshState();
     });

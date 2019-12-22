@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {SyncStorageService} from './services/sync-storage.service';
 
 @Component({
   selector: 'app-root',
@@ -10,13 +9,10 @@ export class AppComponent implements OnInit {
 
   pageTitle: string;
 
-  constructor(private syncStorageService: SyncStorageService) { }
+  constructor() { }
 
   ngOnInit() {
     this.pageTitle = document.title;
-    this.syncStorageService.addPreferencesChangedListener(() => {
-      window.location.reload();
-    });
   }
 
   isNewTabPage(): boolean {

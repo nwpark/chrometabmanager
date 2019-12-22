@@ -62,6 +62,8 @@ export class SyncStorageService {
     chrome.storage.sync.set({
       [StorageKeys.LastModifiedBy]: this.instanceId,
       [StorageKeys.Preferences]: preferences
+    }, () => {
+      this.messagePassingService.broadcastPreferencesUpdated();
     });
   }
 
