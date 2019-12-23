@@ -27,6 +27,7 @@ export class SyncStorageService {
       this.onChanged.next();
       this.getLastModifierId().then(lastModifierId => {
         if (lastModifierId !== this.instanceId) {
+          // todo: if sync toggled then copy data
           window.location.reload();
         }
       });

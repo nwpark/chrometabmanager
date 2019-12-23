@@ -2,6 +2,7 @@ import {ClosedSessionStateManager} from './closed-session-state-manager';
 import {ActiveWindowStateManager} from './active-window-state-manager';
 import {v4 as uuid} from 'uuid';
 import {MessageReceiverService} from '../app/services/messaging/message-receiver.service';
+import {StorageKeys} from '../app/services/storage/storage-keys';
 
 addOnInstalledListener();
 
@@ -50,7 +51,42 @@ MessageReceiverService.onInstanceIdRequest(instanceId);
 
 function addOnInstalledListener() {
   chrome.runtime.onInstalled.addListener(details => {
-    if (details.previousVersion === '0.3.9') {
+    if (details.previousVersion === '0.5.2.1') {
+      // chrome.storage.local.remove([
+      //   StorageKeys.ActiveWindows,
+      //   StorageKeys.ActiveWindowsLayoutState,
+      //   StorageKeys.SavedWindowsLayoutState,
+      //   StorageKeys.RecentlyClosedSessions,
+      //   StorageKeys.RecentlyClosedSessionsLayoutState
+      // ]);
+      // chrome.storage.sync.remove([StorageKeys.SavedWindowsLayoutState]);
+      // chrome.runtime.reload();
+
+      const local = new Promise(resolve => {
+        chrome.storage.local.get([
+          StorageKeys.SavedWindowsLayoutState,
+          StorageKeys.ActiveWindowsLayoutState,
+          StorageKeys.RecentlyClosedSessionsLayoutState
+        ], data => {
+          data[StorageKeys.SavedWindowsLayoutState].sessionLayoutStates = data[StorageKeys.SavedWindowsLayoutState].sessionStates;
+          delete data[StorageKeys.SavedWindowsLayoutState].sessionStates;
+          data[StorageKeys.ActiveWindowsLayoutState].sessionLayoutStates = data[StorageKeys.ActiveWindowsLayoutState].sessionStates;
+          delete data[StorageKeys.ActiveWindowsLayoutState].sessionStates;
+          data[StorageKeys.RecentlyClosedSessionsLayoutState].sessionLayoutStates = data[StorageKeys.RecentlyClosedSessionsLayoutState].sessionStates;
+          delete data[StorageKeys.RecentlyClosedSessionsLayoutState].sessionStates;
+          chrome.storage.local.set(data, resolve);
+        });
+      });
+      const sync = new Promise(resolve => {
+        chrome.storage.sync.get([
+          StorageKeys.SavedWindowsLayoutState
+        ], data => {
+          data[StorageKeys.SavedWindowsLayoutState].sessionLayoutStates = data[StorageKeys.SavedWindowsLayoutState].sessionStates;
+          delete data[StorageKeys.SavedWindowsLayoutState].sessionStates;
+          chrome.storage.sync.set(data, resolve);
+        });
+      });
+      Promise.all([local, sync]).then(() => chrome.runtime.reload());
     }
   });
 }
