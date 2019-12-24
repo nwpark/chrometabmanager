@@ -51,17 +51,7 @@ MessageReceiverService.onInstanceIdRequest(instanceId);
 
 function addOnInstalledListener() {
   chrome.runtime.onInstalled.addListener(details => {
-    if (details.previousVersion === '0.5.2.1') {
-      // chrome.storage.local.remove([
-      //   StorageKeys.ActiveWindows,
-      //   StorageKeys.ActiveWindowsLayoutState,
-      //   StorageKeys.SavedWindowsLayoutState,
-      //   StorageKeys.RecentlyClosedSessions,
-      //   StorageKeys.RecentlyClosedSessionsLayoutState
-      // ]);
-      // chrome.storage.sync.remove([StorageKeys.SavedWindowsLayoutState]);
-      // chrome.runtime.reload();
-
+    if (details.previousVersion === '0.4.4') {
       const local = new Promise(resolve => {
         chrome.storage.local.get([
           StorageKeys.SavedWindowsLayoutState,
