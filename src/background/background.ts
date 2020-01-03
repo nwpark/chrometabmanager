@@ -51,19 +51,25 @@ MessageReceiverService.onInstanceIdRequest(instanceId);
 
 function addOnInstalledListener() {
   chrome.runtime.onInstalled.addListener(details => {
-    if (details.previousVersion === '0.4.4') {
+    if (details.reason === 'update' && details.previousVersion !== chrome.runtime.getManifest().version) {
       const local = new Promise(resolve => {
         chrome.storage.local.get([
           StorageKeys.SavedWindowsLayoutState,
           StorageKeys.ActiveWindowsLayoutState,
           StorageKeys.RecentlyClosedSessionsLayoutState
         ], data => {
-          data[StorageKeys.SavedWindowsLayoutState].sessionLayoutStates = data[StorageKeys.SavedWindowsLayoutState].sessionStates;
-          delete data[StorageKeys.SavedWindowsLayoutState].sessionStates;
-          data[StorageKeys.ActiveWindowsLayoutState].sessionLayoutStates = data[StorageKeys.ActiveWindowsLayoutState].sessionStates;
-          delete data[StorageKeys.ActiveWindowsLayoutState].sessionStates;
-          data[StorageKeys.RecentlyClosedSessionsLayoutState].sessionLayoutStates = data[StorageKeys.RecentlyClosedSessionsLayoutState].sessionStates;
-          delete data[StorageKeys.RecentlyClosedSessionsLayoutState].sessionStates;
+          if (data[StorageKeys.SavedWindowsLayoutState].sessionStates) {
+            data[StorageKeys.SavedWindowsLayoutState].sessionLayoutStates = data[StorageKeys.SavedWindowsLayoutState].sessionStates;
+            delete data[StorageKeys.SavedWindowsLayoutState].sessionStates;
+          }
+          if (data[StorageKeys.ActiveWindowsLayoutState].sessionStates) {
+            data[StorageKeys.ActiveWindowsLayoutState].sessionLayoutStates = data[StorageKeys.ActiveWindowsLayoutState].sessionStates;
+            delete data[StorageKeys.ActiveWindowsLayoutState].sessionStates;
+          }
+          if (data[StorageKeys.RecentlyClosedSessionsLayoutState].sessionStates) {
+            data[StorageKeys.RecentlyClosedSessionsLayoutState].sessionLayoutStates = data[StorageKeys.RecentlyClosedSessionsLayoutState].sessionStates;
+            delete data[StorageKeys.RecentlyClosedSessionsLayoutState].sessionStates;
+          }
           chrome.storage.local.set(data, resolve);
         });
       });
@@ -71,8 +77,10 @@ function addOnInstalledListener() {
         chrome.storage.sync.get([
           StorageKeys.SavedWindowsLayoutState
         ], data => {
-          data[StorageKeys.SavedWindowsLayoutState].sessionLayoutStates = data[StorageKeys.SavedWindowsLayoutState].sessionStates;
-          delete data[StorageKeys.SavedWindowsLayoutState].sessionStates;
+          if (data[StorageKeys.SavedWindowsLayoutState].sessionStates) {
+            data[StorageKeys.SavedWindowsLayoutState].sessionLayoutStates = data[StorageKeys.SavedWindowsLayoutState].sessionStates;
+            delete data[StorageKeys.SavedWindowsLayoutState].sessionStates;
+          }
           chrome.storage.sync.set(data, resolve);
         });
       });
