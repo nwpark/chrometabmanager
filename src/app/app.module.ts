@@ -15,6 +15,7 @@ import {NewTabPageComponent} from './pages/new-tab-page/new-tab-page.component';
 import { WindowListComponent } from './components/window-list/window-list.component';
 import { ChromeWindowContainerComponent } from './components/chrome-window-container/chrome-window-container.component';
 import { DetachedChromeTabComponent } from './components/detached-chrome-tab/detached-chrome-tab.component';
+import { StorageReadErrorDialogComponent } from './components/storage-read-error-dialog/storage-read-error-dialog.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { DetachedChromeTabComponent } from './components/detached-chrome-tab/det
     NewTabPageComponent,
     WindowListComponent,
     ChromeWindowContainerComponent,
-    DetachedChromeTabComponent
+    DetachedChromeTabComponent,
+    StorageReadErrorDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -36,6 +38,9 @@ import { DetachedChromeTabComponent } from './components/detached-chrome-tab/det
     MaterialModule,
     FormsModule,
     ReactiveFormsModule
+  ],
+  entryComponents: [
+    StorageReadErrorDialogComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -13,6 +13,8 @@ import {ChromeAPIWindowState, SessionId} from '../../types/chrome-api/chrome-api
 import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
 import {SessionState} from '../../types/session/session-state';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
+import {MatDialog} from '@angular/material';
+import {StorageReadErrorDialogComponent} from '../../components/storage-read-error-dialog/storage-read-error-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -26,10 +28,16 @@ export class SavedTabsService implements TabsService {
 
   constructor(private chromeTabsService: ChromeTabsService,
               private storageService: StorageService,
-              private messageReceiverService: MessageReceiverService) {
+              private messageReceiverService: MessageReceiverService,
+              private dialog: MatDialog) {
     this.sessionListState = SessionListState.empty();
     this.storageService.getSavedWindowsState().then(sessionListState => {
       this.setSessionListState(sessionListState);
+    }, (error: Error) => {
+      this.dialog.open(StorageReadErrorDialogComponent, {
+        data: { title: 'Error retrieving saved tabs', error },
+        disableClose: true
+      });
     });
     this.messageReceiverService.savedSessionStateUpdated$.subscribe(sessionListState => {
       this.setSessionListState(sessionListState);

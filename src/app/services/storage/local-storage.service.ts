@@ -86,17 +86,21 @@ export class LocalStorageService {
   }
 
   getSavedWindowsState(): Promise<SessionListState> {
-    return new Promise<SessionListState>(resolve => {
+    return new Promise<SessionListState>((resolve, reject) => {
       chrome.storage.local.get([
         StorageKeys.SavedWindows,
         StorageKeys.SavedWindowsLayoutState
       ], data => {
-        const sessionMap = data[StorageKeys.SavedWindows];
-        const layoutState = data[StorageKeys.SavedWindowsLayoutState];
-        if (sessionMap && layoutState) {
-          resolve(SessionListState.fromSessionMap(sessionMap, layoutState));
-        } else {
-          resolve(SessionListState.empty());
+        try {
+          const sessionMap = data[StorageKeys.SavedWindows];
+          const layoutState = data[StorageKeys.SavedWindowsLayoutState];
+          if (sessionMap && layoutState) {
+            resolve(SessionListState.fromSessionMap(sessionMap, layoutState));
+          } else {
+            resolve(SessionListState.empty());
+          }
+        } catch (error) {
+          reject(error);
         }
       });
     });
