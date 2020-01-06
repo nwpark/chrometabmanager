@@ -72,26 +72,17 @@ export class OptionsComponent implements OnDestroy, OnInit {
   }
 
   setSyncSavedWindows(event: MatSlideToggleChange) {
+    // todo: dont change preference if copy throws an error
     this.preferencesService.setSyncSavedWindows(event.checked);
     if (event.checked) {
-      this.copyLocalDataToSync();
+      this.storageService.copyLocalDataToSync();
     } else {
-      this.copySyncDataToLocal();
+      this.storageService.copySyncDataToLocal();
     }
   }
 
-  copyLocalDataToSync() {
-    this.storageService.copyLocalDataToSync();
-  }
-
-  copySyncDataToLocal() {
-    this.storageService.copySyncDataToLocal();
-  }
-
   reset() {
-    chrome.storage.local.clear();
-    chrome.storage.sync.clear();
-    chrome.runtime.reload();
+    this.storageService.clearStorage();
   }
 
   generateDownloadJsonUri(): Promise<SafeUrl> {

@@ -57,4 +57,11 @@ export class StorageService {
       this.localStorageService.setSavedWindowsState(sessionListState);
     });
   }
+
+  clearStorage() {
+    // todo: split into clear for each section
+    chrome.storage.local.clear();
+    chrome.storage.sync.clear();
+    chrome.runtime.reload();
+  }
 }
