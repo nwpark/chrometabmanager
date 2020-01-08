@@ -3,16 +3,14 @@ import {SessionListState} from '../../types/session/session-list-state';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {SessionListUtils} from '../../utils/session-list-utils';
 import {StorageKeys} from './storage-keys';
-import {MessageReceiverService} from '../messaging/message-receiver.service';
-import {SessionListLayoutState} from '../../types/session/session-list-layout-state';
+import {SessionListLayoutState, validateSessionListLayoutState} from '../../types/session/session-list-layout-state';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocalStorageService {
 
-  constructor(private messagePassingService: MessagePassingService,
-              private messageReceiverService: MessageReceiverService) { }
+  constructor(private messagePassingService: MessagePassingService) { }
 
   getActiveWindowsState(): Promise<SessionListState> {
     return new Promise<SessionListState>(resolve => {
@@ -47,9 +45,10 @@ export class LocalStorageService {
     return new Promise<SessionListLayoutState>(resolve => {
       chrome.storage.local.get(StorageKeys.ActiveWindowsLayoutState, data => {
         const layoutState = data[StorageKeys.ActiveWindowsLayoutState];
-        if (layoutState) {
+        try {
+          validateSessionListLayoutState(layoutState);
           resolve(layoutState);
-        } else {
+        } catch (error) {
           resolve(SessionListUtils.createEmptyListLayoutState());
         }
       });

@@ -17,7 +17,7 @@ export class ActiveWindowStateManager {
   private mutex: Mutex;
 
   constructor() {
-    this.localStorageService = new LocalStorageService(new MessagePassingService(), new MessageReceiverService());
+    this.localStorageService = new LocalStorageService(new MessagePassingService());
     this.sessionListState = SessionListState.empty();
     this.mutex = new Mutex();
     MessageReceiverService.onInsertChromeWindowRequest((request: InsertWindowMessageData) => {

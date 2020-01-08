@@ -1,5 +1,6 @@
 import {SessionId} from '../chrome-api/chrome-api-window-state';
 import {isNullOrUndefined} from 'util';
+import {InvalidLayoutStateError} from '../errors/InvalidLayoutStateError';
 
 export interface SessionLayoutState {
   title?: string;
@@ -16,4 +17,10 @@ export function sessionLayoutStateEquals(a: SessionLayoutState, b: SessionLayout
     && a.title === b.title
     && a.hidden === b.hidden
     && a.deleted === b.deleted;
+}
+
+export function validateSessionLayoutState(object: any) {
+  if (isNullOrUndefined(object) || !('sessionId' in object)) {
+    throw new InvalidLayoutStateError();
+  }
 }
