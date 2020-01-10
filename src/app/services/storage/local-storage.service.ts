@@ -4,6 +4,8 @@ import {MessagePassingService} from '../messaging/message-passing.service';
 import {SessionListUtils} from '../../utils/session-list-utils';
 import {StorageKeys} from './storage-keys';
 import {SessionListLayoutState, validateSessionListLayoutState} from '../../types/session/session-list-layout-state';
+import {validateSessionMap} from '../../types/session/session-map';
+import {UndefinedObjectError} from '../../types/errors/UndefinedObjectError';
 
 @Injectable({
   providedIn: 'root'
@@ -13,17 +15,23 @@ export class LocalStorageService {
   constructor(private messagePassingService: MessagePassingService) { }
 
   getActiveWindowsState(): Promise<SessionListState> {
-    return new Promise<SessionListState>(resolve => {
+    return new Promise<SessionListState>((resolve, reject) => {
       chrome.storage.local.get([
         StorageKeys.ActiveWindows,
         StorageKeys.ActiveWindowsLayoutState
       ], data => {
-        const sessionMap = data[StorageKeys.ActiveWindows];
-        const layoutState = data[StorageKeys.ActiveWindowsLayoutState];
-        if (sessionMap && layoutState) {
+        try {
+          const sessionMap = data[StorageKeys.ActiveWindows];
+          const layoutState = data[StorageKeys.ActiveWindowsLayoutState];
+          validateSessionMap(sessionMap);
+          validateSessionListLayoutState(layoutState);
           resolve(SessionListState.fromSessionMap(sessionMap, layoutState));
-        } else {
-          resolve(SessionListState.empty());
+        } catch (error) {
+          if (error instanceof UndefinedObjectError) {
+            resolve(SessionListState.empty());
+          } else {
+            reject(error);
+          }
         }
       });
     });
@@ -94,6 +102,7 @@ export class LocalStorageService {
           const sessionMap = data[StorageKeys.SavedWindows];
           const layoutState = data[StorageKeys.SavedWindowsLayoutState];
           if (sessionMap && layoutState) {
+            // todo: validate sessionMap and layoutState
             resolve(SessionListState.fromSessionMap(sessionMap, layoutState));
           } else {
             resolve(SessionListState.empty());

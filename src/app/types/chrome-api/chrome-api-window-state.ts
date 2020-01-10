@@ -1,5 +1,6 @@
-import {ChromeAPITabState, chromeAPITabStateEquals} from './chrome-api-tab-state';
+import {ChromeAPITabState, chromeAPITabStateEquals, validateChromeAPITabState} from './chrome-api-tab-state';
 import {isNullOrUndefined} from 'util';
+import {InvalidSessionError} from '../errors/InvalidSessionError';
 
 export type SessionId = number | string;
 
@@ -18,4 +19,14 @@ export function chromeAPIWindowStateEquals(a: ChromeAPIWindowState, b: ChromeAPI
     && a.type === b.type
     && a.tabs.length === b.tabs.length
     && a.tabs.every((tab, index) => chromeAPITabStateEquals(tab, b.tabs[index]));
+}
+
+export function validateChromeAPIWindowState(windowState: ChromeAPIWindowState) {
+  if (isNullOrUndefined(windowState)
+    || !('id' in windowState)
+    || !('type' in windowState)
+    || !('tabs' in windowState)) {
+    throw new InvalidSessionError();
+  }
+  windowState.tabs.forEach(validateChromeAPITabState);
 }

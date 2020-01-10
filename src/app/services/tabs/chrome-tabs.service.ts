@@ -11,6 +11,7 @@ import {SessionId} from '../../types/chrome-api/chrome-api-window-state';
 import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
 import {SessionState} from '../../types/session/session-state';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
+import {InvalidLayoutStateError} from '../../types/errors/InvalidLayoutStateError';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,7 @@ export class ChromeTabsService implements TabsService {
     this.sessionListState = SessionListState.empty();
     this.localStorageService.getActiveWindowsState().then(sessionListState => {
       this.setSessionListState(sessionListState);
-    });
+    }, error => this.handleStorageReadError(error));
     this.messageReceiverService.activeSessionStateUpdated$.subscribe(sessionListState => {
       if (!sessionListState.equals(this.sessionListState)) {
         this.setSessionListState(sessionListState);
@@ -139,6 +140,14 @@ export class ChromeTabsService implements TabsService {
     this.sessionStateUpdated.next(this.sessionListState);
     if (params.storeResult) {
       this.localStorageService.setActiveWindowsState(this.sessionListState);
+    }
+  }
+
+  handleStorageReadError(error: Error) {
+    if (error instanceof InvalidLayoutStateError) {
+      // todo: reset layout state
+    } else {
+      // todo: reset active windows and reload extension
     }
   }
 }

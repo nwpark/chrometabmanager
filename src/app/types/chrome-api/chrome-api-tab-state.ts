@@ -1,5 +1,6 @@
 import {SessionId} from './chrome-api-window-state';
 import {isNullOrUndefined} from 'util';
+import {InvalidSessionError} from '../errors/InvalidSessionError';
 
 export interface ChromeAPITabState {
   id: SessionId;
@@ -21,4 +22,15 @@ export function chromeAPITabStateEquals(a: ChromeAPITabState, b: ChromeAPITabSta
     && a.status === b.status
     && a.windowId === b.windowId
     && a.title === b.title;
+}
+
+export function validateChromeAPITabState(tabState: ChromeAPITabState) {
+  if (isNullOrUndefined(tabState)
+    || !('id' in tabState)
+    || !('url' in tabState)
+    || !('title' in tabState)
+    || !('favIconUrl' in tabState)
+    || !('status' in tabState)) {
+    throw new InvalidSessionError();
+  }
 }

@@ -34,6 +34,7 @@ export class SavedTabsService implements TabsService {
     this.storageService.getSavedWindowsState().then(sessionListState => {
       this.setSessionListState(sessionListState);
     }, (error: Error) => {
+      // todo: move to error handling method method
       this.dialog.open(StorageReadErrorDialogComponent, {
         data: { title: 'Error retrieving saved tabs', error },
         disableClose: true
