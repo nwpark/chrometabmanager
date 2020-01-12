@@ -33,13 +33,7 @@ export class SavedTabsService implements TabsService {
     this.sessionListState = SessionListState.empty();
     this.storageService.getSavedWindowsState().then(sessionListState => {
       this.setSessionListState(sessionListState);
-    }, (error: Error) => {
-      // todo: move to error handling method method
-      this.dialog.open(StorageReadErrorDialogComponent, {
-        data: { title: 'Error retrieving saved tabs', error },
-        disableClose: true
-      });
-    });
+    }, error => this.handleStorageReadError(error));
     this.messageReceiverService.savedSessionStateUpdated$.subscribe(sessionListState => {
       this.setSessionListState(sessionListState);
     });
@@ -138,5 +132,12 @@ export class SavedTabsService implements TabsService {
     if (params.storeResult) {
       this.storageService.setSavedWindowsState(this.sessionListState);
     }
+  }
+
+  handleStorageReadError(error: Error) {
+    this.dialog.open(StorageReadErrorDialogComponent, {
+      data: { title: 'Error retrieving saved tabs', error },
+      disableClose: true
+    });
   }
 }

@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {SessionListState} from '../../types/session/session-list-state';
 import {MessagePassingService} from '../messaging/message-passing.service';
-import {SessionListUtils} from '../../utils/session-list-utils';
 import {StorageKeys} from './storage-keys';
 import {SessionListLayoutState, validateSessionListLayoutState} from '../../types/session/session-list-layout-state';
 import {validateSessionMap} from '../../types/session/session-map';
@@ -50,31 +49,37 @@ export class LocalStorageService {
   }
 
   getActiveWindowsLayoutState(): Promise<SessionListLayoutState> {
-    return new Promise<SessionListLayoutState>(resolve => {
+    return new Promise<SessionListLayoutState>((resolve, reject) => {
       chrome.storage.local.get(StorageKeys.ActiveWindowsLayoutState, data => {
         const layoutState = data[StorageKeys.ActiveWindowsLayoutState];
         try {
           validateSessionListLayoutState(layoutState);
           resolve(layoutState);
         } catch (error) {
-          resolve(SessionListUtils.createEmptyListLayoutState());
+          reject(error);
         }
       });
     });
   }
 
   getRecentlyClosedSessionsState(): Promise<SessionListState> {
-    return new Promise<SessionListState>(resolve => {
+    return new Promise<SessionListState>((resolve, reject) => {
       chrome.storage.local.get([
         StorageKeys.RecentlyClosedSessions,
         StorageKeys.RecentlyClosedSessionsLayoutState
       ], data => {
-        const sessionMap = data[StorageKeys.RecentlyClosedSessions];
-        const layoutState = data[StorageKeys.RecentlyClosedSessionsLayoutState];
-        if (sessionMap && layoutState) {
+        try {
+          const sessionMap = data[StorageKeys.RecentlyClosedSessions];
+          const layoutState = data[StorageKeys.RecentlyClosedSessionsLayoutState];
+          validateSessionMap(sessionMap);
+          validateSessionListLayoutState(layoutState);
           resolve(SessionListState.fromSessionMap(sessionMap, layoutState));
-        } else {
-          resolve(SessionListState.empty());
+        } catch (error) {
+          if (error instanceof UndefinedObjectError) {
+            resolve(SessionListState.empty());
+          } else {
+            reject(error);
+          }
         }
       });
     });
@@ -101,14 +106,15 @@ export class LocalStorageService {
         try {
           const sessionMap = data[StorageKeys.SavedWindows];
           const layoutState = data[StorageKeys.SavedWindowsLayoutState];
-          if (sessionMap && layoutState) {
-            // todo: validate sessionMap and layoutState
-            resolve(SessionListState.fromSessionMap(sessionMap, layoutState));
-          } else {
-            resolve(SessionListState.empty());
-          }
+          validateSessionMap(sessionMap);
+          validateSessionListLayoutState(layoutState);
+          resolve(SessionListState.fromSessionMap(sessionMap, layoutState));
         } catch (error) {
-          reject(error);
+          if (error instanceof UndefinedObjectError) {
+            resolve(SessionListState.empty());
+          } else {
+            reject(error);
+          }
         }
       });
     });

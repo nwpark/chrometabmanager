@@ -6,7 +6,8 @@ import {StorageKeys} from './storage-keys';
 import {SyncStorageUtils} from '../../utils/sync-storage-utils';
 import {SessionId} from '../../types/chrome-api/chrome-api-window-state';
 import {MessagePassingService} from '../messaging/message-passing.service';
-import {SessionListLayoutState} from '../../types/session/session-list-layout-state';
+import {validateSessionListLayoutState} from '../../types/session/session-list-layout-state';
+import {UndefinedObjectError} from '../../types/errors/UndefinedObjectError';
 
 @Injectable({
   providedIn: 'root'
@@ -61,14 +62,20 @@ export class SyncStorageService {
   }
 
   getSavedWindowsState(): Promise<SessionListState> {
-    return new Promise<SessionListState>(resolve => {
+    return new Promise<SessionListState>((resolve, reject) => {
       chrome.storage.sync.get(data => {
-        const layoutState: SessionListLayoutState = data[StorageKeys.SavedWindowsLayoutState];
-        if (layoutState) {
+        try {
+          const layoutState = data[StorageKeys.SavedWindowsLayoutState];
+          validateSessionListLayoutState(layoutState);
+          // todo: validate sessionStates
           const sessionStates = SyncStorageUtils.getSortedSessionStates(data, layoutState);
           resolve(SessionListState.fromSessionStates(sessionStates, layoutState.hidden));
-        } else {
-          resolve(SessionListState.empty());
+        } catch (error) {
+          if (error instanceof UndefinedObjectError) {
+            resolve(SessionListState.empty());
+          } else {
+            reject(error);
+          }
         }
       });
     });
