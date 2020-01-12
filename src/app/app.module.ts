@@ -12,10 +12,10 @@ import {MouseOverDirective} from './directives/mouse-over.directive';
 import {ChromeWindowHeaderComponent} from './components/chrome-window-header/chrome-window-header.component';
 import {OptionsComponent} from './pages/options/options.component';
 import {NewTabPageComponent} from './pages/new-tab-page/new-tab-page.component';
-import { WindowListComponent } from './components/window-list/window-list.component';
-import { ChromeWindowContainerComponent } from './components/chrome-window-container/chrome-window-container.component';
-import { DetachedChromeTabComponent } from './components/detached-chrome-tab/detached-chrome-tab.component';
-import { StorageReadErrorDialogComponent } from './components/storage-read-error-dialog/storage-read-error-dialog.component';
+import {WindowListComponent} from './components/window-list/window-list.component';
+import {ChromeWindowContainerComponent} from './components/chrome-window-container/chrome-window-container.component';
+import {DetachedChromeTabComponent} from './components/detached-chrome-tab/detached-chrome-tab.component';
+import {ErrorDialogComponent} from './components/error-dialog/error-dialog.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +30,7 @@ import { StorageReadErrorDialogComponent } from './components/storage-read-error
     WindowListComponent,
     ChromeWindowContainerComponent,
     DetachedChromeTabComponent,
-    StorageReadErrorDialogComponent
+    ErrorDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +40,7 @@ import { StorageReadErrorDialogComponent } from './components/storage-read-error
     ReactiveFormsModule
   ],
   entryComponents: [
-    StorageReadErrorDialogComponent
+    ErrorDialogComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

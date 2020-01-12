@@ -6,12 +6,12 @@ import {MessagePassingService} from '../messaging/message-passing.service';
 import {SessionListState} from '../../types/session/session-list-state';
 import {SessionStateUtils, WindowStateUtils} from '../../utils/session-utils';
 import {LocalStorageService} from '../storage/local-storage.service';
-import MoveProperties = chrome.tabs.MoveProperties;
 import {SessionId} from '../../types/chrome-api/chrome-api-window-state';
 import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
 import {SessionState} from '../../types/session/session-state';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
-import {InvalidLayoutStateError} from '../../types/errors/InvalidLayoutStateError';
+import {ErrorDialogService} from '../error-dialog.service';
+import MoveProperties = chrome.tabs.MoveProperties;
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +25,8 @@ export class ChromeTabsService implements TabsService {
 
   constructor(private localStorageService: LocalStorageService,
               private messagePassingService: MessagePassingService,
-              private messageReceiverService: MessageReceiverService) {
+              private messageReceiverService: MessageReceiverService,
+              private errorDialogService: ErrorDialogService) {
     this.sessionListState = SessionListState.empty();
     this.localStorageService.getActiveWindowsState().then(sessionListState => {
       this.setSessionListState(sessionListState);
@@ -144,10 +145,15 @@ export class ChromeTabsService implements TabsService {
   }
 
   handleStorageReadError(error: Error) {
-    if (error instanceof InvalidLayoutStateError) {
-      // todo: reset layout state
-    } else {
-      // todo: reset active windows and reload extension
-    }
+    this.errorDialogService.open({
+      errorId: '1434',
+      title: 'Error retrieving active tabs',
+      description: 'An error occurred while retrieving active tabs from storage.',
+      error,
+      callback: {
+        function: () => console.log('todo'),
+        requiresReload: true
+      }
+    });
   }
 }

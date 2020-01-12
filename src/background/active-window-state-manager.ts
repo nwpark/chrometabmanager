@@ -31,7 +31,7 @@ export class ActiveWindowStateManager {
       Promise.all([
         this.getChromeWindowsFromAPI(),
         this.localStorageService.getActiveWindowsLayoutState()
-          .catch(SessionListUtils.createEmptyListLayoutState)
+          // .catch(SessionListUtils.createEmptyListLayoutState)
       ]).then(res => {
         const chromeWindows: ChromeAPIWindowState[] = res[0];
         // todo: support different session types here
