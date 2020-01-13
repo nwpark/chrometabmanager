@@ -1,5 +1,5 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material';
+import {Component} from '@angular/core';
+import {MatDialogRef} from '@angular/material';
 import {ErrorDialogData} from '../../types/errors/ErrorDialogData';
 import {environment} from '../../../environments/environment';
 
@@ -8,22 +8,45 @@ import {environment} from '../../../environments/environment';
   templateUrl: './error-dialog.component.html',
   styleUrls: ['./error-dialog.component.css']
 })
-export class ErrorDialogComponent implements OnInit {
+export class ErrorDialogComponent {
 
-  errorReportSubject = 'Chrome Tab Manager Error Report';
-  errorReportBody: string;
-  errorReportEmail: string;
+  private readonly errorReportEmail = environment.errorReportEmailAddress;
+  private readonly errorReportSubject = 'Chrome Tab Manager Error Report';
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) {}
+  errorList: ErrorDialogData[] = [];
 
-  ngOnInit() {
-    this.errorReportEmail = environment.errorReportEmail;
-    const stackTrace = this.data.error.stack.replace(/\n/g, '%0A');
-    const manifestVersion = chrome.runtime.getManifest().version;
-    this.errorReportBody = `Application%20Version:%20${manifestVersion}%0A%0AError%20id:%20${this.data.errorId}%0A${stackTrace}`;
+  constructor(private dialogRef: MatDialogRef<ErrorDialogComponent>) {}
+
+  appendError(errorData: ErrorDialogData) {
+    this.errorList.push(errorData);
+  }
+
+  sendErrorReport() {
+    const errorReportBody = this.getErrorReportBody();
+    const mailURL = `mailto:${this.errorReportEmail}?subject=${this.errorReportSubject}&body=${errorReportBody}`;
+    window.open(mailURL, '_blank');
+  }
+
+  private getErrorReportBody(): string {
+    let errorReportBody = `Application%20Version:%20${chrome.runtime.getManifest().version}`;
+    this.errorList.forEach(errorData => {
+      const stackTrace = errorData.error.stack.replace(/\n/g, '%0A');
+      errorReportBody += `%0A%0AError%20id:%20${errorData.errorId}%0A${stackTrace}`;
+    });
+    return errorReportBody;
   }
 
   executeCallbacks() {
-    this.data.callback.function();
+    let reloadRequired = false;
+    this.errorList.forEach(error => {
+      if (error.callback) {
+        error.callback.function();
+        reloadRequired = reloadRequired || error.callback.requiresReload;
+      }
+    });
+    if (reloadRequired) {
+      chrome.runtime.reload();
+    }
+    this.dialogRef.close();
   }
 }

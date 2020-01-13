@@ -31,6 +31,7 @@ export class ActiveWindowStateManager {
       Promise.all([
         this.getChromeWindowsFromAPI(),
         this.localStorageService.getActiveWindowsLayoutState()
+          // todo: uncomment
           // .catch(SessionListUtils.createEmptyListLayoutState)
       ]).then(res => {
         const chromeWindows: ChromeAPIWindowState[] = res[0];

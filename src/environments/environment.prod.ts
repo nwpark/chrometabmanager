@@ -4,5 +4,5 @@ export const environment = {
     author: 'Owen Perry',
     url: 'https://www.flickr.com/photos/152977080@N03/34668462710/'
   },
-  errorReportEmail: 'nick.wpa@gmail.com'
+  errorReportEmailAddress: 'nick.wpa@gmail.com'
 };

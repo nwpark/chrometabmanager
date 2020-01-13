@@ -145,14 +145,14 @@ export class ChromeTabsService implements TabsService {
   }
 
   handleStorageReadError(error: Error) {
-    this.errorDialogService.open({
+    this.errorDialogService.showError({
       errorId: '1434',
       title: 'Error retrieving active tabs',
       description: 'An error occurred while retrieving active tabs from storage.',
       error,
       callback: {
         function: () => console.log('todo'),
-        requiresReload: true
+        requiresReload: false
       }
     });
   }

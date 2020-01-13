@@ -4,33 +4,34 @@
     An error occurred...
   </div>
   <div mat-dialog-content>
-    <div style="padding-left: 10px; border-left: 5px solid grey">
-      <h3>{{data.title}}</h3>
+    <div
+      style="padding-left: 10px; border-left: 5px solid grey"
+      *ngFor="let error of errorList">
+      <h3>{{error.title}}</h3>
       <p>
-        {{data.description}}
+        {{error.description}}
       </p>
     </div>
   </div>
   <div mat-dialog-actions>
     <p>
-      Press fix to continue, or submit an error report to help improve the extension.
+      Please press repair to continue, or submit an error report to help improve the extension.
     </p>
-    <a
+    <button
       mat-stroked-button
-      matTooltip="The error report does NOT include any of your browsing data and you will be able to review exactly what information is being sent before submitting"
+      matTooltip="Error reports do NOT include any of your personal browsing data. You will be able to review exactly what information is being sent before submitting."
       color="primary"
-      href="mailto:{{errorReportEmail}}?subject={{errorReportSubject}}&body={{errorReportBody}}"
-      target="_blank">
+      (click)="sendErrorReport()">
       <mat-icon style="font-size: 17px; height: 17px; width: 17px; margin-right: 5px">email</mat-icon>
       Send Error Report
-    </a>
+    </button>
     <button
       mat-stroked-button
       matTooltip="Repair the extension"
       color="warn"
       (click)="executeCallbacks()">
       <mat-icon style="font-size: 17px; height: 17px; width: 17px; margin-right: 5px">build</mat-icon>
-      Fix
+      Repair
     </button>
   </div>
 </div>

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {MatDialog} from '@angular/material';
+import {MatDialog, MatDialogRef} from '@angular/material';
 import {ErrorDialogData} from '../types/errors/ErrorDialogData';
 import {ErrorDialogComponent} from '../components/error-dialog/error-dialog.component';
 
@@ -8,12 +8,26 @@ import {ErrorDialogComponent} from '../components/error-dialog/error-dialog.comp
 })
 export class ErrorDialogService {
 
+  private dialogRef: MatDialogRef<ErrorDialogComponent>;
+
   constructor(private dialog: MatDialog) { }
 
-  open(dialogData: ErrorDialogData) {
-    this.dialog.open(ErrorDialogComponent, {
-      data: dialogData,
-      disableClose: true
+  showError(errorData: ErrorDialogData) {
+    this.openDialog();
+    this.dialogRef.afterOpened().subscribe(() => {
+      this.dialogRef.componentInstance.appendError(errorData);
     });
+  }
+
+  private openDialog() {
+    if (!this.dialogIsOpen()) {
+      this.dialogRef = this.dialog.open(ErrorDialogComponent, {
+        disableClose: true
+      });
+    }
+  }
+
+  private dialogIsOpen() {
+    return this.dialogRef && this.dialogRef.componentInstance;
   }
 }
