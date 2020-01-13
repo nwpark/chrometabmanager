@@ -46,6 +46,8 @@ export class ErrorDialogComponent {
     });
     if (reloadRequired) {
       chrome.runtime.reload();
+    } else {
+      window.location.reload();
     }
     this.dialogRef.close();
   }

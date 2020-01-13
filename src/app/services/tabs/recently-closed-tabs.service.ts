@@ -9,6 +9,7 @@ import {SessionId} from '../../types/chrome-api/chrome-api-window-state';
 import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
 import {SessionState} from '../../types/session/session-state';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
+import {ErrorDialogService} from '../error-dialog.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,11 +23,12 @@ export class RecentlyClosedTabsService implements TabsService {
 
   constructor(private localStorageService: LocalStorageService,
               private chromeTabsService: ChromeTabsService,
-              private messageReceiverService: MessageReceiverService) {
+              private messageReceiverService: MessageReceiverService,
+              private errorDialogService: ErrorDialogService) {
     this.sessionListState = SessionListState.empty();
     this.localStorageService.getRecentlyClosedSessionsState().then(sessionListState => {
       this.setSessionListState(sessionListState);
-    });
+    }, error => this.handleStorageReadError(error));
     this.messageReceiverService.closedSessionStateUpdated$.subscribe(sessionListState => {
       this.setSessionListState(sessionListState);
     });
@@ -91,5 +93,18 @@ export class RecentlyClosedTabsService implements TabsService {
     console.log(new Date().toTimeString().substring(0, 8), '- updating recently closed windows');
     this.sessionStateUpdatedSource.next(this.sessionListState);
     this.localStorageService.setRecentlyClosedSessionsState(this.sessionListState);
+  }
+
+  handleStorageReadError(error: Error) {
+    this.errorDialogService.showError({
+      errorId: '4209',
+      title: 'Error retrieving recently closed tabs',
+      description: 'An error occurred while retrieving recently closed tabs from storage.',
+      error,
+      callback: {
+        function: () => this.localStorageService.setRecentlyClosedSessionsState(SessionListState.empty()),
+        requiresReload: false
+      }
+    });
   }
 }

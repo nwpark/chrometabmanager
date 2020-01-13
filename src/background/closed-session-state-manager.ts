@@ -36,12 +36,16 @@ export class ClosedSessionStateManager {
 
   private unshiftSession(session: ChromeAPISession, layoutState: SessionLayoutState) {
     this.mutex.acquire().then(releaseLock => {
-      this.localStorageService.getRecentlyClosedSessionsState().then(sessionListState => {
-        sessionListState.unshiftSession(session, layoutState);
-        sessionListState.removeExpiredSessions(ClosedSessionStateManager.MAX_CLOSED_TABS);
-        this.localStorageService.setRecentlyClosedSessionsState(sessionListState)
-          .then(releaseLock);
-      });
+      this.localStorageService.getRecentlyClosedSessionsState()
+        // todo: uncomment
+        // .catch(SessionListState.empty)
+        .then(sessionListState => {
+          console.log(sessionListState);
+          sessionListState.unshiftSession(session, layoutState);
+          sessionListState.removeExpiredSessions(ClosedSessionStateManager.MAX_CLOSED_TABS);
+          this.localStorageService.setRecentlyClosedSessionsState(sessionListState)
+            .then(releaseLock);
+        }).catch(releaseLock);
     });
   }
 }

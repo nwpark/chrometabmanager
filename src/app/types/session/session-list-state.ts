@@ -15,15 +15,15 @@ export class SessionListState {
   private hidden: boolean;
 
   static empty(): SessionListState {
-    return new this([], false);
+    return new SessionListState([], false);
   }
 
   static fromSessionStates(sessionStates: SessionState[], hidden: boolean): SessionListState {
-    return new this(sessionStates, hidden);
+    return new SessionListState(sessionStates, hidden);
   }
 
   static fromSessionListState(sessionListState: SessionListState): SessionListState {
-    return new this (sessionListState.sessionStates, sessionListState.hidden);
+    return new SessionListState(sessionListState.sessionStates, sessionListState.hidden);
   }
 
   static fromSessionMap(
@@ -34,7 +34,7 @@ export class SessionListState {
       .map(layoutState => {
         return {session: sessionMap[layoutState.sessionId], layoutState};
       });
-    return new this(sessionStates, listLayoutState.hidden);
+    return new SessionListState(sessionStates, listLayoutState.hidden);
   }
 
   private constructor(sessionStates: SessionState[], hidden: boolean) {

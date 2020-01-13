@@ -41,7 +41,7 @@ export class ActiveWindowStateManager {
         this.sessionListState = SessionListState.fromSessionMap(sessionMap, layoutState);
         this.localStorageService.setActiveWindowsState(this.sessionListState)
           .then(releaseLock);
-      });
+      }).catch(releaseLock);
     });
   }
 

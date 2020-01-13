@@ -136,9 +136,13 @@ export class SavedTabsService implements TabsService {
   handleStorageReadError(error: Error) {
     this.errorDialogService.showError({
       errorId: '8416',
-      title: 'Error retrieving saved tabs',
-      description: 'An error occurred while retrieving your saved tabs from storage.',
-      error
+      title: 'Error retrieving saved windows',
+      description: 'An error occurred while retrieving your saved windows from storage.',
+      error,
+      callback: {
+        function: () => this.storageService.setSavedWindowsState(SessionListState.empty()),
+        requiresReload: false
+      }
     });
   }
 }

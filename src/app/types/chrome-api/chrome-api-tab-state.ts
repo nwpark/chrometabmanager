@@ -7,7 +7,7 @@ export interface ChromeAPITabState {
   windowId?: SessionId;
   url: string;
   title: string;
-  favIconUrl: string;
+  favIconUrl?: string;
   status: string;
   [others: string]: any; // Ignore unused API fields
 }
@@ -29,7 +29,6 @@ export function validateChromeAPITabState(tabState: ChromeAPITabState) {
     || !('id' in tabState)
     || !('url' in tabState)
     || !('title' in tabState)
-    || !('favIconUrl' in tabState)
     || !('status' in tabState)) {
     throw new InvalidSessionError();
   }
