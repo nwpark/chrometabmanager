@@ -40,7 +40,6 @@ export class ClosedSessionStateManager {
         // todo: uncomment
         // .catch(SessionListState.empty)
         .then(sessionListState => {
-          console.log(sessionListState);
           sessionListState.unshiftSession(session, layoutState);
           sessionListState.removeExpiredSessions(ClosedSessionStateManager.MAX_CLOSED_TABS);
           this.localStorageService.setRecentlyClosedSessionsState(sessionListState)

@@ -21,9 +21,7 @@ export class ErrorDialogService {
 
   private openDialog() {
     if (!this.dialogIsOpen()) {
-      this.dialogRef = this.dialog.open(ErrorDialogComponent, {
-        disableClose: true
-      });
+      this.dialogRef = this.dialog.open(ErrorDialogComponent);
     }
   }
 

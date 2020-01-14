@@ -9,5 +9,5 @@ export interface ErrorDialogData {
 export interface ErrorDialogCallback {
   function: () => void;
   requiresReload: boolean;
-  confirmationMessage?: string;
+  warningMessage?: string;
 }

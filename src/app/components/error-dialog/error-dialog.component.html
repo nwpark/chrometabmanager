@@ -29,9 +29,41 @@
       mat-stroked-button
       matTooltip="Repair"
       color="warn"
-      (click)="executeCallbacks()">
+      (click)="repairErrors()">
       <mat-icon style="font-size: 17px; height: 17px; width: 17px; margin-right: 5px">build</mat-icon>
       Repair
     </button>
   </div>
 </div>
+
+<ng-template #warningDialog>
+  <div style="width: 400px">
+    <div mat-dialog-title>
+      <mat-icon style="vertical-align: -5px; margin-right: 5px">warning</mat-icon>
+      Warning
+    </div>
+    <div mat-dialog-content>
+      <div *ngFor="let error of errorList">
+        <p
+          style="padding-left: 10px; border-left: 5px solid grey"
+          *ngIf="error.callback.warningMessage">
+          {{error.callback.warningMessage}}
+        </p>
+      </div>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="closeWarningDialog()">
+        Cancel
+      </button>
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="invokeErrorCallbacks()">
+        Proceed
+      </button>
+    </div>
+  </div>
+</ng-template>

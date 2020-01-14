@@ -141,7 +141,8 @@ export class SavedTabsService implements TabsService {
       error,
       callback: {
         function: () => this.storageService.setSavedWindowsState(SessionListState.empty()),
-        requiresReload: false
+        requiresReload: false,
+        warningMessage: 'This will reset the state of the application and your saved tabs will be permanently deleted.'
       }
     });
   }
