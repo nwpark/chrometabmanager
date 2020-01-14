@@ -120,12 +120,15 @@ export class LocalStorageService {
     });
   }
 
-  setSavedWindowsState(sessionListState: SessionListState) {
-    chrome.storage.local.set({
-      [StorageKeys.SavedWindows]: sessionListState.getSessionMap(),
-      [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
-    }, () => {
-      this.messagePassingService.broadcastSavedSessions(sessionListState);
+  setSavedWindowsState(sessionListState: SessionListState): Promise<void> {
+    return new Promise<void>(resolve => {
+      chrome.storage.local.set({
+        [StorageKeys.SavedWindows]: sessionListState.getSessionMap(),
+        [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
+      }, () => {
+        this.messagePassingService.broadcastSavedSessions(sessionListState);
+        resolve();
+      });
     });
   }
 }

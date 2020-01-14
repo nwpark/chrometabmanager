@@ -17,19 +17,17 @@ export class StorageService {
   getSavedWindowsState(): Promise<SessionListState> {
     const savedWindowsStateSync$ = this.syncStorageService.getSavedWindowsState();
     const savedWindowsStateLocal$ = this.localStorageService.getSavedWindowsState();
-    return this.preferencesService.getPreferences().then(preferences => {
-      return preferences.syncSavedWindows ? savedWindowsStateSync$ : savedWindowsStateLocal$;
-    });
+    return this.preferencesService.getPreferences().then(preferences =>
+      preferences.syncSavedWindows ? savedWindowsStateSync$ : savedWindowsStateLocal$
+    );
   }
 
-  setSavedWindowsState(sessionListState: SessionListState, removedSessionIds?: SessionId[]) {
-    this.preferencesService.getPreferences().then(preferences => {
-      if (preferences.syncSavedWindows) {
-        this.syncStorageService.setSavedWindowsState(sessionListState, removedSessionIds);
-      } else {
-        this.localStorageService.setSavedWindowsState(sessionListState);
-      }
-    });
+  setSavedWindowsState(sessionListState: SessionListState, removedSessionIds?: SessionId[]): Promise<void> {
+    return this.preferencesService.getPreferences().then(preferences =>
+      preferences.syncSavedWindows
+        ? this.syncStorageService.setSavedWindowsState(sessionListState, removedSessionIds)
+        : this.localStorageService.setSavedWindowsState(sessionListState)
+    );
   }
 
   copyLocalDataToSync() {

@@ -90,18 +90,24 @@ export class SyncStorageService {
     });
   }
 
-  // todo: check size of each session state
-  setSavedWindowsState(sessionListState: SessionListState, removedSessionIds?: SessionId[]) {
-    const sessionStateMap = sessionListState.getSessionStateMap();
-    chrome.storage.sync.set({
-      [StorageKeys.LastModifiedBy]: this.instanceId,
-      ...sessionStateMap,
-      [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
-    }, () => {
-      if (removedSessionIds) {
-        chrome.storage.sync.remove(removedSessionIds.map(sessionId => sessionId.toString()));
-      }
-      this.messagePassingService.broadcastSavedSessions(sessionListState);
+  setSavedWindowsState(sessionListState: SessionListState, removedSessionIds?: SessionId[]): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const sessionStateMap = sessionListState.getSessionStateMap();
+      chrome.storage.sync.set({
+        [StorageKeys.LastModifiedBy]: this.instanceId,
+        ...sessionStateMap,
+        [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
+      }, () => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError.message);
+        } else {
+          if (removedSessionIds) {
+            chrome.storage.sync.remove(removedSessionIds.map(sessionId => sessionId.toString()));
+          }
+          this.messagePassingService.broadcastSavedSessions(sessionListState);
+          resolve();
+        }
+      });
     });
   }
 }

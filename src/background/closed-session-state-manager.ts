@@ -7,6 +7,7 @@ import {ChromeAPITabState} from '../app/types/chrome-api/chrome-api-tab-state';
 import {ChromeAPISession} from '../app/types/chrome-api/chrome-api-session';
 import {SessionLayoutState} from '../app/types/session/session-layout-state';
 import Mutex from 'async-mutex/lib/Mutex';
+import {SessionListState} from '../app/types/session/session-list-state';
 
 export class ClosedSessionStateManager {
 
@@ -37,8 +38,7 @@ export class ClosedSessionStateManager {
   private unshiftSession(session: ChromeAPISession, layoutState: SessionLayoutState) {
     this.mutex.acquire().then(releaseLock => {
       this.localStorageService.getRecentlyClosedSessionsState()
-        // todo: uncomment
-        // .catch(SessionListState.empty)
+        .catch(SessionListState.empty)
         .then(sessionListState => {
           sessionListState.unshiftSession(session, layoutState);
           sessionListState.removeExpiredSessions(ClosedSessionStateManager.MAX_CLOSED_TABS);

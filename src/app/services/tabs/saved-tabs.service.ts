@@ -30,12 +30,16 @@ export class SavedTabsService implements TabsService {
               private messageReceiverService: MessageReceiverService,
               private errorDialogService: ErrorDialogService) {
     this.sessionListState = SessionListState.empty();
-    this.storageService.getSavedWindowsState().then(sessionListState => {
-      this.setSessionListState(sessionListState);
-    }, error => this.handleStorageReadError(error));
+    this.initializeStateFromStorage();
     this.messageReceiverService.savedSessionStateUpdated$.subscribe(sessionListState => {
       this.setSessionListState(sessionListState);
     });
+  }
+
+  private initializeStateFromStorage() {
+    this.storageService.getSavedWindowsState().then(sessionListState => {
+      this.setSessionListState(sessionListState);
+    }, error => this.handleStorageReadError(error));
   }
 
   private setSessionListState(sessionListState: SessionListState) {
@@ -82,7 +86,9 @@ export class SavedTabsService implements TabsService {
   removeSession(index: number) {
     const sessionId = this.sessionListState.getSessionIdFromIndex(index);
     this.sessionListState.removeSession(index);
-    this.storageService.setSavedWindowsState(this.sessionListState, [sessionId]);
+    this.storageService.setSavedWindowsState(this.sessionListState, [sessionId]).catch(() => {
+      this.handleStorageWriteError();
+    });
   }
 
   @modifiesState({storeResult: true})
@@ -129,7 +135,9 @@ export class SavedTabsService implements TabsService {
     console.log(new Date().toTimeString().substring(0, 8), '- updating saved windows');
     this.sessionStateUpdated.next(this.sessionListState);
     if (params.storeResult) {
-      this.storageService.setSavedWindowsState(this.sessionListState);
+      this.storageService.setSavedWindowsState(this.sessionListState).catch(() => {
+        this.handleStorageWriteError();
+      });
     }
   }
 
@@ -145,5 +153,9 @@ export class SavedTabsService implements TabsService {
         warningMessage: 'This will reset the state of the application and your saved tabs will be permanently deleted.'
       }
     });
+  }
+
+  handleStorageWriteError() {
+    this.initializeStateFromStorage();
   }
 }
