@@ -90,11 +90,11 @@ export class OptionsComponent implements OnDestroy, OnInit {
       if (error instanceof InvalidSessionError || error instanceof InvalidLayoutStateError) {
         // todo
       } else if (error instanceof StorageWriteError) {
-        const dialogData = ErrorDialogDataFactory.couldNotCopySyncData(error);
-        this.errorDialogService.showBasicRuntimeError(dialogData);
+        const dialogData = ErrorDialogDataFactory.couldNotStoreCopiedData(error);
+        this.errorDialogService.showError(dialogData);
       } else {
-        const dialogData: ErrorDialogData = {errorMessage: error.message};
-        this.errorDialogService.showBasicRuntimeError(dialogData);
+        const dialogData = ErrorDialogDataFactory.unknownError(error);
+        this.errorDialogService.showError(dialogData);
       }
     });
   }

@@ -4,7 +4,7 @@ import {RuntimeErrorCode} from '../types/errors/runtime-error-code';
 
 export class ErrorDialogDataFactory {
 
-  static couldNotCopySyncData(error: StorageWriteError): ErrorDialogData {
+  static couldNotStoreCopiedData(error: StorageWriteError): ErrorDialogData {
     if (error.errorCode === RuntimeErrorCode.QuotaBytes) {
       return {
         title: 'Could not enable sync...',
@@ -20,7 +20,40 @@ export class ErrorDialogDataFactory {
           <p>You currently have one or more saved windows that exceed this constraint. If you wish to enable sync, you will need to split these windows into smaller groups.</p>`
       };
     } else {
-      return {errorMessage: error.message};
+      return ErrorDialogDataFactory.unknownError(error);
     }
+  }
+
+  static couldNotStoreModifiedData(error: StorageWriteError): ErrorDialogData {
+    switch (error.errorCode) {
+      case RuntimeErrorCode.QuotaBytes:
+        return {
+          title: 'Too many tabs!',
+          errorMessage: 'Storage quota exceeded.',
+          descriptionHTML: `<p>You have exceeded the maximum storage quota for saved tabs. This is a limitation of sync storage.</p>
+            <p>If you wish to save more tabs, then consider disabling sync to remove the limitations.</p>`,
+          actions: [{
+            buttonText: 'Disable Sync',
+            callback: () => window.open('/options.html')
+          }]
+        };
+      case RuntimeErrorCode.QuotaBytesPerItem:
+        return {
+          title: 'Too many tabs!',
+          errorMessage: 'You cannot place any more tabs in this group.',
+          descriptionHTML: `<p>A single window cannot contain more than ~30 tabs when sync is enabled. This is a limitation of sync storage.</p>
+            <p>If you wish to save more tabs in a single group, then consider disabling sync to remove the limitations.</p>`,
+          actions: [{
+            buttonText: 'Disable Sync',
+            callback: () => window.open('/options.html')
+          }]
+        };
+      default:
+        return ErrorDialogDataFactory.unknownError(error);
+    }
+  }
+
+  static unknownError(error: Error): ErrorDialogData {
+    return {errorMessage: error.message};
   }
 }

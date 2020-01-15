@@ -5,10 +5,22 @@
     <span *ngIf="!data.title">An error occurred...</span>
   </div>
   <div mat-dialog-content>
-    <p style="padding-left: 10px; border-left: 5px solid grey">{{data.errorMessage}}</p>
+    <h3 style="padding-left: 10px; border-left: 5px solid grey">
+      {{data.errorMessage}}
+    </h3>
   </div>
-  <div *ngIf="data.descriptionHTML" [innerHTML]="data.descriptionHTML"></div>
+  <div
+    *ngIf="data.descriptionHTML"
+    [innerHTML]="data.descriptionHTML">
+  </div>
   <div mat-dialog-actions>
+    <button
+      mat-stroked-button
+      color="primary"
+      *ngFor="let action of data.actions"
+      (click)="action.callback()">
+      {{action.buttonText}}
+    </button>
     <button
       mat-stroked-button
       matDialogClose

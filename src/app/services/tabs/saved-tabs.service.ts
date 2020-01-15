@@ -15,6 +15,7 @@ import {SessionState} from '../../types/session/session-state';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {ErrorDialogService} from '../error-dialog.service';
 import {StorageWriteError} from '../../types/errors/storage-write-error';
+import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
 
 @Injectable({
   providedIn: 'root'
@@ -157,7 +158,8 @@ export class SavedTabsService implements TabsService {
   }
 
   handleStorageWriteError(error: StorageWriteError) {
-    this.errorDialogService.showStorageWriteError(error);
+    const dialogData = ErrorDialogDataFactory.couldNotStoreModifiedData(error);
+    this.errorDialogService.showError(dialogData);
     this.initializeStateFromStorage();
   }
 }
