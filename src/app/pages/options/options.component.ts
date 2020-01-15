@@ -8,6 +8,12 @@ import {SyncStorageService} from '../../services/storage/sync-storage.service';
 import {StorageService} from '../../services/storage/storage.service';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {InvalidSessionError} from '../../types/errors/InvalidSessionError';
+import {InvalidLayoutStateError} from '../../types/errors/InvalidLayoutStateError';
+import {StorageWriteError} from '../../types/errors/storage-write-error';
+import {ErrorDialogService} from '../../services/error-dialog.service';
+import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
+import {ErrorDialogData} from '../../types/errors/error-dialog-data';
 
 @Component({
   selector: 'app-options',
@@ -37,7 +43,8 @@ export class OptionsComponent implements OnDestroy, OnInit {
               private storageService: StorageService,
               private syncStorageService: SyncStorageService,
               private changeDetectorRef: ChangeDetectorRef,
-              private domSanitizer: DomSanitizer) { }
+              private domSanitizer: DomSanitizer,
+              private errorDialogService: ErrorDialogService) { }
 
   ngOnInit() {
     this.preferencesService.preferencesUpdated$.pipe(
@@ -72,13 +79,24 @@ export class OptionsComponent implements OnDestroy, OnInit {
   }
 
   setSyncSavedWindows(event: MatSlideToggleChange) {
-    // todo: dont change preference if copy throws an error
-    this.preferencesService.setSyncSavedWindows(event.checked);
-    if (event.checked) {
-      this.storageService.copyLocalDataToSync();
-    } else {
-      this.storageService.copySyncDataToLocal();
-    }
+    const copyData$ = event.checked
+      ? this.storageService.copyLocalDataToSync()
+      : this.storageService.copySyncDataToLocal();
+
+    copyData$.then(() => {
+      this.preferencesService.setSyncSavedWindows(event.checked);
+    }).catch((error: Error) => {
+      event.source.checked = !event.checked;
+      if (error instanceof InvalidSessionError || error instanceof InvalidLayoutStateError) {
+        // todo
+      } else if (error instanceof StorageWriteError) {
+        const dialogData = ErrorDialogDataFactory.couldNotCopySyncData(error);
+        this.errorDialogService.showBasicRuntimeError(dialogData);
+      } else {
+        const dialogData: ErrorDialogData = {errorMessage: error.message};
+        this.errorDialogService.showBasicRuntimeError(dialogData);
+      }
+    });
   }
 
   reset() {

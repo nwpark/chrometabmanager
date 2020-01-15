@@ -30,25 +30,25 @@ export class StorageService {
     );
   }
 
-  copyLocalDataToSync() {
-    Promise.all([
+  copyLocalDataToSync(): Promise<void> {
+    return Promise.all([
       this.syncStorageService.getSavedWindowsState(),
       this.localStorageService.getSavedWindowsState()
     ]).then(res => {
       const sessionListState: SessionListState = res[0];
       sessionListState.addAll(res[1]);
-      this.syncStorageService.setSavedWindowsState(sessionListState);
+      return this.syncStorageService.setSavedWindowsState(sessionListState);
     });
   }
 
-  copySyncDataToLocal() {
-    Promise.all([
+  copySyncDataToLocal(): Promise<void> {
+    return Promise.all([
       this.localStorageService.getSavedWindowsState(),
       this.syncStorageService.getSavedWindowsState()
     ]).then(res => {
       const sessionListState: SessionListState = res[0];
       sessionListState.addAll(res[1]);
-      this.localStorageService.setSavedWindowsState(sessionListState);
+      return this.localStorageService.setSavedWindowsState(sessionListState);
     });
   }
 

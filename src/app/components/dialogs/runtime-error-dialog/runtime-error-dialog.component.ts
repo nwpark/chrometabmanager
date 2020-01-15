@@ -1,5 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material';
+import {ErrorDialogData} from '../../../types/errors/error-dialog-data';
 
 @Component({
   selector: 'app-runtime-error-dialog',
@@ -8,7 +9,7 @@ import {MAT_DIALOG_DATA} from '@angular/material';
 })
 export class RuntimeErrorDialogComponent implements OnInit {
 
-  constructor(@Inject(MAT_DIALOG_DATA) public message: string) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) { }
 
   ngOnInit() {
   }

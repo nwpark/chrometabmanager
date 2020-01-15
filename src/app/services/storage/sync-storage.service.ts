@@ -8,6 +8,7 @@ import {SessionId} from '../../types/chrome-api/chrome-api-window-state';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {validateSessionListLayoutState} from '../../types/session/session-list-layout-state';
 import {UndefinedObjectError} from '../../types/errors/UndefinedObjectError';
+import {StorageWriteError} from '../../types/errors/storage-write-error';
 
 @Injectable({
   providedIn: 'root'
@@ -99,7 +100,7 @@ export class SyncStorageService {
         [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
       }, () => {
         if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError.message);
+          reject(new StorageWriteError(chrome.runtime.lastError.message));
         } else {
           if (removedSessionIds) {
             chrome.storage.sync.remove(removedSessionIds.map(sessionId => sessionId.toString()));
