@@ -1,31 +1,36 @@
 import {Injectable} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material';
-import {ErrorDialogData} from '../types/errors/ErrorDialogData';
-import {ErrorDialogComponent} from '../components/error-dialog/error-dialog.component';
+import {ActionableError} from '../types/errors/ActionableError';
+import {ActionableErrorDialogComponent} from '../components/dialogs/actionable-error-dialog/actionable-error-dialog.component';
+import {StorageQuotaExceededDialogComponent} from '../components/dialogs/storage-quota-exceeded-dialog/storage-quota-exceeded-dialog.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ErrorDialogService {
 
-  private dialogRef: MatDialogRef<ErrorDialogComponent>;
+  private actionableErrorDialogRef: MatDialogRef<ActionableErrorDialogComponent>;
 
-  constructor(private dialog: MatDialog) { }
+  constructor(private matDialogService: MatDialog) { }
 
-  showError(errorData: ErrorDialogData) {
-    this.openDialog();
-    this.dialogRef.afterOpened().subscribe(() => {
-      this.dialogRef.componentInstance.appendError(errorData);
+  showActionableError(errorData: ActionableError) {
+    this.openActionableErrorDialog();
+    this.actionableErrorDialogRef.afterOpened().subscribe(() => {
+      this.actionableErrorDialogRef.componentInstance.appendError(errorData);
     });
   }
 
-  private openDialog() {
-    if (!this.dialogIsOpen()) {
-      this.dialogRef = this.dialog.open(ErrorDialogComponent);
+  private openActionableErrorDialog() {
+    if (!this.actionableErrorDialogIsOpen()) {
+      this.actionableErrorDialogRef = this.matDialogService.open(ActionableErrorDialogComponent);
     }
   }
 
-  private dialogIsOpen() {
-    return this.dialogRef && this.dialogRef.componentInstance;
+  private actionableErrorDialogIsOpen() {
+    return this.actionableErrorDialogRef && this.actionableErrorDialogRef.componentInstance;
+  }
+
+  showStorageWriteError() {
+    this.matDialogService.open(StorageQuotaExceededDialogComponent);
   }
 }

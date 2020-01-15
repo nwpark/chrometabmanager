@@ -1,14 +1,14 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {environment} from '../../../../environments/environment';
 import {MatDialog, MatDialogRef} from '@angular/material';
-import {ErrorDialogData} from '../../types/errors/ErrorDialogData';
-import {environment} from '../../../environments/environment';
+import {ActionableError} from '../../../types/errors/ActionableError';
 
 @Component({
-  selector: 'app-error-dialog',
-  templateUrl: './error-dialog.component.html',
-  styleUrls: ['./error-dialog.component.css']
+  selector: 'app-actionable-error-dialog',
+  templateUrl: './actionable-error-dialog.component.html',
+  styleUrls: ['./actionable-error-dialog.component.css']
 })
-export class ErrorDialogComponent implements OnInit {
+export class ActionableErrorDialogComponent implements OnInit {
 
   private readonly errorReportEmail = environment.errorReportEmailAddress;
   private readonly errorReportSubject = 'Chrome Tab Manager Error Report';
@@ -17,10 +17,10 @@ export class ErrorDialogComponent implements OnInit {
   warningDialogTemplate: TemplateRef<any>;
   warningDialogRef: MatDialogRef<TemplateRef<any>>;
 
-  errorList: ErrorDialogData[] = [];
+  errorList: ActionableError[] = [];
 
   constructor(private matDialogService: MatDialog,
-              private dialogRef: MatDialogRef<ErrorDialogComponent>) {}
+              private dialogRef: MatDialogRef<ActionableErrorDialogComponent>) {}
 
   ngOnInit(): void {
     this.dialogRef.disableClose = true;
@@ -29,12 +29,12 @@ export class ErrorDialogComponent implements OnInit {
     });
   }
 
-  appendError(errorData: ErrorDialogData) {
+  appendError(errorData: ActionableError) {
     this.errorList.push(errorData);
   }
 
   repairErrors() {
-    const requiresConfirmation = this.errorList.some(error => error.callback.warningMessage);
+    const requiresConfirmation = this.errorList.some(error => error.action.warningMessage);
     if (requiresConfirmation) {
       this.warningDialogRef = this.matDialogService.open(this.warningDialogTemplate);
     } else {
@@ -44,8 +44,8 @@ export class ErrorDialogComponent implements OnInit {
 
   invokeErrorCallbacks() {
     this.errorList.forEach(error => {
-      if (error.callback) {
-        error.callback.function();
+      if (error.action) {
+        error.action.callback();
       }
     });
     this.reloadPage();
@@ -53,7 +53,7 @@ export class ErrorDialogComponent implements OnInit {
 
   reloadPage() {
     const applicationReloadRequired = this.errorList.some(error =>
-      error.callback && error.callback.requiresReload
+      error.action && error.action.requiresReload
     );
     if (applicationReloadRequired) {
       chrome.runtime.reload();

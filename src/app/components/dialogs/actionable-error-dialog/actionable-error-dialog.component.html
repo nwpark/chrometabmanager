@@ -46,8 +46,8 @@
       <div *ngFor="let error of errorList">
         <p
           style="padding-left: 10px; border-left: 5px solid grey"
-          *ngIf="error.callback.warningMessage">
-          {{error.callback.warningMessage}}
+          *ngIf="error.action.warningMessage">
+          {{error.action.warningMessage}}
         </p>
       </div>
     </div>

@@ -96,13 +96,13 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   handleStorageReadError(error: Error) {
-    this.errorDialogService.showError({
+    this.errorDialogService.showActionableError({
       errorId: '4209',
       title: 'Error retrieving recently closed tabs',
       description: 'An error occurred while retrieving recently closed tabs from storage.',
       error,
-      callback: {
-        function: () => this.localStorageService.setRecentlyClosedSessionsState(SessionListState.empty()),
+      action: {
+        callback: () => this.localStorageService.setRecentlyClosedSessionsState(SessionListState.empty()),
         requiresReload: false
       }
     });

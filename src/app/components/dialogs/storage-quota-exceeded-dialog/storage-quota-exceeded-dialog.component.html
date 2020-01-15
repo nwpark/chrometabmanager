@@ -1,0 +1,31 @@
+<div style="width: 380px">
+  <div mat-dialog-title>
+    <mat-icon style="vertical-align: -5px; margin-right: 5px">error_outline</mat-icon>
+    Too many tabs!
+  </div>
+  <div mat-dialog-content>
+    <h3 style="padding-left: 10px; border-left: 5px solid grey">
+      You cannot place any more tabs in this group.
+    </h3>
+    <p>
+      A single window cannot contain more than ~30 tabs when sync is enabled. This is a limitation of sync storage.
+    </p>
+    <p>
+      If you wish to store more tabs in a single group, then consider disabling sync to remove the limitations.
+    </p>
+  </div>
+  <div mat-dialog-actions>
+    <a
+      mat-stroked-button
+      color="primary"
+      href="/options.html">
+      Disable Sync
+    </a>
+    <button
+      mat-stroked-button
+      matDialogClose
+      color="primary">
+      Got it
+    </button>
+  </div>
+</div>

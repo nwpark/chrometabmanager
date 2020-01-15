@@ -15,7 +15,8 @@ import {NewTabPageComponent} from './pages/new-tab-page/new-tab-page.component';
 import {WindowListComponent} from './components/window-list/window-list.component';
 import {ChromeWindowContainerComponent} from './components/chrome-window-container/chrome-window-container.component';
 import {DetachedChromeTabComponent} from './components/detached-chrome-tab/detached-chrome-tab.component';
-import {ErrorDialogComponent} from './components/error-dialog/error-dialog.component';
+import {ActionableErrorDialogComponent} from './components/dialogs/actionable-error-dialog/actionable-error-dialog.component';
+import {StorageQuotaExceededDialogComponent} from './components/dialogs/storage-quota-exceeded-dialog/storage-quota-exceeded-dialog.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import {ErrorDialogComponent} from './components/error-dialog/error-dialog.compo
     WindowListComponent,
     ChromeWindowContainerComponent,
     DetachedChromeTabComponent,
-    ErrorDialogComponent
+    ActionableErrorDialogComponent,
+    StorageQuotaExceededDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +42,8 @@ import {ErrorDialogComponent} from './components/error-dialog/error-dialog.compo
     ReactiveFormsModule
   ],
   entryComponents: [
-    ErrorDialogComponent
+    ActionableErrorDialogComponent,
+    StorageQuotaExceededDialogComponent
   ],
   providers: [],
   bootstrap: [AppComponent]
