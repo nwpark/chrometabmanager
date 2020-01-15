@@ -14,6 +14,7 @@ import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
 import {SessionState} from '../../types/session/session-state';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {ErrorDialogService} from '../error-dialog.service';
+import {getRuntimeErrorCodeFromMessage} from '../../types/errors/runtime-error-code';
 
 @Injectable({
   providedIn: 'root'
@@ -86,8 +87,8 @@ export class SavedTabsService implements TabsService {
   removeSession(index: number) {
     const sessionId = this.sessionListState.getSessionIdFromIndex(index);
     this.sessionListState.removeSession(index);
-    this.storageService.setSavedWindowsState(this.sessionListState, [sessionId]).catch(() => {
-      this.handleStorageWriteError();
+    this.storageService.setSavedWindowsState(this.sessionListState, [sessionId]).catch(message => {
+      this.handleStorageWriteError(message);
     });
   }
 
@@ -135,8 +136,8 @@ export class SavedTabsService implements TabsService {
     console.log(new Date().toTimeString().substring(0, 8), '- updating saved windows');
     this.sessionStateUpdated.next(this.sessionListState);
     if (params.storeResult) {
-      this.storageService.setSavedWindowsState(this.sessionListState).catch(() => {
-        this.handleStorageWriteError();
+      this.storageService.setSavedWindowsState(this.sessionListState).catch(message => {
+        this.handleStorageWriteError(message);
       });
     }
   }
@@ -155,8 +156,9 @@ export class SavedTabsService implements TabsService {
     });
   }
 
-  handleStorageWriteError() {
+  handleStorageWriteError(message: string) {
+    const errorCode = getRuntimeErrorCodeFromMessage(message);
+    this.errorDialogService.showStorageWriteError(errorCode);
     this.initializeStateFromStorage();
-    this.errorDialogService.showStorageWriteError();
   }
 }
