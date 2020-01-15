@@ -2,6 +2,7 @@
   appMouseOver
   #tabContainer=app-mouse-over
   class="chrome-tab"
+  [title]="chromeTab.url"
   [@close-tab]="animationState"
   (@close-tab.done)="completeCloseAnimation($event)">
   <button

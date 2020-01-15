@@ -158,7 +158,7 @@ export class SavedTabsService implements TabsService {
 
   handleStorageWriteError(message: string) {
     const errorCode = getRuntimeErrorCodeFromMessage(message);
-    this.errorDialogService.showStorageWriteError(errorCode);
+    this.errorDialogService.showStorageWriteError(errorCode, message);
     this.initializeStateFromStorage();
   }
 }

@@ -17,6 +17,7 @@ import {ChromeWindowContainerComponent} from './components/chrome-window-contain
 import {DetachedChromeTabComponent} from './components/detached-chrome-tab/detached-chrome-tab.component';
 import {ActionableErrorDialogComponent} from './components/dialogs/actionable-error-dialog/actionable-error-dialog.component';
 import {StorageQuotaExceededDialogComponent} from './components/dialogs/storage-quota-exceeded-dialog/storage-quota-exceeded-dialog.component';
+import { RuntimeErrorDialogComponent } from './components/dialogs/runtime-error-dialog/runtime-error-dialog.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import {StorageQuotaExceededDialogComponent} from './components/dialogs/storage-
     ChromeWindowContainerComponent,
     DetachedChromeTabComponent,
     ActionableErrorDialogComponent,
-    StorageQuotaExceededDialogComponent
+    StorageQuotaExceededDialogComponent,
+    RuntimeErrorDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +45,8 @@ import {StorageQuotaExceededDialogComponent} from './components/dialogs/storage-
   ],
   entryComponents: [
     ActionableErrorDialogComponent,
-    StorageQuotaExceededDialogComponent
+    StorageQuotaExceededDialogComponent,
+    RuntimeErrorDialogComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -2,6 +2,7 @@
   appMouseOver
   #tabContainer=app-mouse-over
   [ngClass]="{'chrome-tab': true, 'chrome-tab-firstchild': isFirstChild, 'chrome-tab-lastchild': isLastChild}"
+  [title]="chromeAPITab.url"
   [@close-tab]="animationState"
   (@close-tab.done)="completeCloseAnimation($event)">
   <button
