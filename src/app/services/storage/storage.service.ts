@@ -30,28 +30,6 @@ export class StorageService {
     );
   }
 
-  copyLocalDataToSync(): Promise<void> {
-    return Promise.all([
-      this.syncStorageService.getSavedWindowsState(),
-      this.localStorageService.getSavedWindowsState()
-    ]).then(res => {
-      const sessionListState: SessionListState = res[0];
-      sessionListState.addAll(res[1]);
-      return this.syncStorageService.setSavedWindowsState(sessionListState);
-    });
-  }
-
-  copySyncDataToLocal(): Promise<void> {
-    return Promise.all([
-      this.localStorageService.getSavedWindowsState(),
-      this.syncStorageService.getSavedWindowsState()
-    ]).then(res => {
-      const sessionListState: SessionListState = res[0];
-      sessionListState.addAll(res[1]);
-      return this.localStorageService.setSavedWindowsState(sessionListState);
-    });
-  }
-
   clearStorage() {
     // todo: split into clear for each section
     chrome.storage.local.clear();

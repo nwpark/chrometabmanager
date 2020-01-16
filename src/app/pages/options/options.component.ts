@@ -8,12 +8,10 @@ import {SyncStorageService} from '../../services/storage/sync-storage.service';
 import {StorageService} from '../../services/storage/storage.service';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {InvalidSessionError} from '../../types/errors/InvalidSessionError';
-import {InvalidLayoutStateError} from '../../types/errors/InvalidLayoutStateError';
-import {StorageWriteError} from '../../types/errors/storage-write-error';
 import {ErrorDialogService} from '../../services/error-dialog.service';
 import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
-import {ErrorDialogData} from '../../types/errors/error-dialog-data';
+import {SessionListState} from '../../types/session/session-list-state';
+import {LocalStorageService} from '../../services/storage/local-storage.service';
 
 @Component({
   selector: 'app-options',
@@ -42,6 +40,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
   constructor(private preferencesService: PreferencesService,
               private storageService: StorageService,
               private syncStorageService: SyncStorageService,
+              private localStorageService: LocalStorageService,
               private changeDetectorRef: ChangeDetectorRef,
               private domSanitizer: DomSanitizer,
               private errorDialogService: ErrorDialogService) { }
@@ -79,23 +78,50 @@ export class OptionsComponent implements OnDestroy, OnInit {
   }
 
   setSyncSavedWindows(event: MatSlideToggleChange) {
-    const copyData$ = event.checked
-      ? this.storageService.copyLocalDataToSync()
-      : this.storageService.copySyncDataToLocal();
-
-    copyData$.then(() => {
+    this.copySavedSessions(event.checked).then(() => {
       this.preferencesService.setSyncSavedWindows(event.checked);
-    }).catch((error: Error) => {
+    }).catch(() => {
       event.source.checked = !event.checked;
-      if (error instanceof InvalidSessionError || error instanceof InvalidLayoutStateError) {
-        // todo
-      } else if (error instanceof StorageWriteError) {
-        const dialogData = ErrorDialogDataFactory.couldNotStoreCopiedData(error);
-        this.errorDialogService.showError(dialogData);
-      } else {
-        const dialogData = ErrorDialogDataFactory.unknownError(error);
-        this.errorDialogService.showError(dialogData);
-      }
+    });
+  }
+
+  private copySavedSessions(copyToSync: boolean) {
+    return Promise.all([
+      this.getSavedSessionStateSync(),
+      this.getSavedSessionStateLocal()
+    ]).then(res => {
+      const sessionListState: SessionListState = res[0];
+      sessionListState.addAll(res[1]);
+      return this.storeCopiedSessionState(sessionListState, copyToSync);
+    });
+  }
+
+  private getSavedSessionStateSync(): Promise<SessionListState> {
+    return this.syncStorageService.getSavedWindowsState().catch(error => {
+      const dialogData = ErrorDialogDataFactory.couldNotRetrieveSyncSavedSessions(error, () =>
+        this.syncStorageService.setSavedWindowsState(SessionListState.empty())
+      );
+      this.errorDialogService.showActionableError(dialogData);
+      throw error;
+    });
+  }
+
+  private getSavedSessionStateLocal(): Promise<SessionListState> {
+    return this.localStorageService.getSavedWindowsState().catch(error => {
+      const dialogData = ErrorDialogDataFactory.couldNotRetrieveLocalSavedSessions(error, () =>
+        this.localStorageService.setSavedWindowsState(SessionListState.empty())
+      );
+      this.errorDialogService.showActionableError(dialogData);
+      throw error;
+    });
+  }
+
+  private storeCopiedSessionState(sessionListState: SessionListState, copyToSync: boolean): Promise<void> {
+    const storageService = copyToSync ? this.syncStorageService : this.localStorageService;
+    return storageService.setSavedWindowsState(sessionListState).catch(error => {
+      const dialogData = ErrorDialogDataFactory.couldNotStoreCopiedData(error);
+      this.errorDialogService.showError(dialogData);
+      throw error;
     });
   }
 

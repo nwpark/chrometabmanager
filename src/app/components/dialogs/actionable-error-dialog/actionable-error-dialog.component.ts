@@ -43,12 +43,11 @@ export class ActionableErrorDialogComponent implements OnInit {
   }
 
   invokeErrorCallbacks() {
-    this.errorList.forEach(error => {
-      if (error.action) {
-        error.action.callback();
-      }
-    });
-    this.reloadPage();
+    const finished: Promise<void>[] = this.errorList
+      .filter(error => error.action)
+      .map(error => error.action.callback());
+    // todo: success dialog
+    Promise.all(finished).then(() => this.reloadPage());
   }
 
   reloadPage() {

@@ -1,6 +1,7 @@
 import {StorageWriteError} from '../types/errors/storage-write-error';
 import {ErrorDialogData} from '../types/errors/error-dialog-data';
 import {RuntimeErrorCode} from '../types/errors/runtime-error-code';
+import {ActionableError} from '../types/errors/ActionableError';
 
 export class ErrorDialogDataFactory {
 
@@ -51,6 +52,34 @@ export class ErrorDialogDataFactory {
       default:
         return ErrorDialogDataFactory.unknownError(error);
     }
+  }
+
+  static couldNotRetrieveSyncSavedSessions(error: Error, callback: () => Promise<any>): ActionableError {
+    return {
+      errorId: '5500',
+      title: 'Error retrieving saved windows from sync storage',
+      description: 'An error occurred while retrieving your saved windows from sync storage.',
+      error,
+      action: {
+        callback,
+        requiresReload: false,
+        warningMessage: 'This will reset the state of the application and your saved tabs will be permanently deleted.'
+      }
+    };
+  }
+
+  static couldNotRetrieveLocalSavedSessions(error: Error, callback: () => Promise<any>): ActionableError {
+    return {
+      errorId: '3747',
+      title: 'Error retrieving saved windows from local storage',
+      description: 'An error occurred while retrieving your saved windows from local storage.',
+      error,
+      action: {
+        callback,
+        requiresReload: false,
+        warningMessage: 'This will reset the state of the application and your saved tabs will be permanently deleted.'
+      }
+    };
   }
 
   static unknownError(error: Error): ErrorDialogData {

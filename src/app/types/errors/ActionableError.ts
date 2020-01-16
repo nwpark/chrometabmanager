@@ -7,7 +7,7 @@ export interface ActionableError {
 }
 
 export interface ActionableErrorCallback {
-  callback: () => void;
+  callback: () => Promise<any>;
   requiresReload: boolean;
   warningMessage?: string;
 }
