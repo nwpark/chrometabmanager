@@ -11,16 +11,17 @@ import {MessageReceiverService} from '../app/services/messaging/message-receiver
 
 export class ActiveWindowStateManager {
 
-  private localStorageService: LocalStorageService;
-
   private sessionListState: SessionListState;
   private mutex: Mutex;
 
-  constructor() {
-    this.localStorageService = new LocalStorageService(new MessagePassingService());
-    this.sessionListState = SessionListState.empty();
+  constructor(private localStorageService: LocalStorageService,
+              private messageReceiverService: MessageReceiverService) {
     this.mutex = new Mutex();
-    MessageReceiverService.onInsertChromeWindowRequest((request: InsertWindowMessageData) => {
+    this.sessionListState = SessionListState.empty();
+    this.messageReceiverService.activeSessionStateUpdated$.subscribe(sessionListState => {
+      this.sessionListState = sessionListState;
+    });
+    this.messageReceiverService.onInsertChromeWindowRequest((request: InsertWindowMessageData) => {
       this.insertWindow(request.sessionState, request.index);
     });
     this.updateActiveWindowState();

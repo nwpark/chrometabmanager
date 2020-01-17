@@ -39,7 +39,7 @@ export class MessageReceiverService {
     }
   }
 
-  static onInsertChromeWindowRequest(callback: (request: InsertWindowMessageData) => void) {
+  onInsertChromeWindowRequest(callback: (request: InsertWindowMessageData) => void) {
     chrome.runtime.onMessage.addListener(message => {
       if (message[MessagePassingService.INSERT_WINDOW_REQUEST]) {
         callback(message[MessagePassingService.INSERT_WINDOW_REQUEST]);
@@ -47,7 +47,7 @@ export class MessageReceiverService {
     });
   }
 
-  static onInstanceIdRequest(instanceId: string) {
+  onInstanceIdRequest(instanceId: string) {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message.messageId === MessagePassingService.INSTANCE_ID_REQUEST) {
         sendResponse(instanceId);

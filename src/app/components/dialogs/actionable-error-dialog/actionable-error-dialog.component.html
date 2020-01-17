@@ -67,3 +67,28 @@
     </div>
   </div>
 </ng-template>
+
+<ng-template #successDialog>
+  <div style="width: 400px">
+    <div mat-dialog-title>
+      <mat-icon style="vertical-align: -5px; margin-right: 5px">done</mat-icon>
+      Success
+    </div>
+    <div mat-dialog-content>
+      <h3 style="padding-left: 10px; border-left: 5px solid grey">
+        Repair completed successfully.
+      </h3>
+      <p>
+        The application will now reload.
+      </p>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="reloadPage()">
+        Okay
+      </button>
+    </div>
+  </div>
+</ng-template>

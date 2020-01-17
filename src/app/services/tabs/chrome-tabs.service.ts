@@ -12,6 +12,7 @@ import {SessionState} from '../../types/session/session-state';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {ErrorDialogService} from '../error-dialog.service';
 import MoveProperties = chrome.tabs.MoveProperties;
+import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
 
 @Injectable({
   providedIn: 'root'
@@ -145,15 +146,9 @@ export class ChromeTabsService implements TabsService {
   }
 
   handleStorageReadError(error: Error) {
-    this.errorDialogService.showActionableError({
-      errorId: '1434',
-      title: 'Error retrieving active windows',
-      description: 'An error occurred while retrieving active windows from storage.',
-      error,
-      action: {
-        callback: () => this.localStorageService.setActiveWindowsState(SessionListState.empty()),
-        requiresReload: false
-      }
-    });
+    const dialogData = ErrorDialogDataFactory.couldNotRetrieveActiveSessions(error, () =>
+      this.localStorageService.setActiveWindowsState(SessionListState.empty())
+    );
+    this.errorDialogService.showActionableError(dialogData);
   }
 }

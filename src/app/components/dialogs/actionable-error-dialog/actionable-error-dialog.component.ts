@@ -17,6 +17,10 @@ export class ActionableErrorDialogComponent implements OnInit {
   warningDialogTemplate: TemplateRef<any>;
   warningDialogRef: MatDialogRef<TemplateRef<any>>;
 
+  @ViewChild('successDialog', {static: false})
+  successDialogTemplate: TemplateRef<any>;
+  successDialogRef: MatDialogRef<TemplateRef<any>>;
+
   errorList: ActionableError[] = [];
 
   constructor(private matDialogService: MatDialog,
@@ -24,9 +28,6 @@ export class ActionableErrorDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.dialogRef.disableClose = true;
-    this.dialogRef.beforeClosed().subscribe(() => {
-      this.closeWarningDialog();
-    });
   }
 
   appendError(errorData: ActionableError) {
@@ -46,8 +47,17 @@ export class ActionableErrorDialogComponent implements OnInit {
     const finished: Promise<void>[] = this.errorList
       .filter(error => error.action)
       .map(error => error.action.callback());
-    // todo: success dialog
-    Promise.all(finished).then(() => this.reloadPage());
+    Promise.all(finished).then(() => {
+      this.openSuccessDialog();
+    });
+  }
+
+  openSuccessDialog() {
+    this.closeWarningDialog();
+    this.successDialogRef = this.matDialogService.open(this.successDialogTemplate);
+    this.successDialogRef.afterClosed().subscribe(() =>
+      this.reloadPage()
+    );
   }
 
   reloadPage() {

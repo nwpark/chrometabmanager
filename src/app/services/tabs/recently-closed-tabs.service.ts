@@ -10,6 +10,7 @@ import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
 import {SessionState} from '../../types/session/session-state';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {ErrorDialogService} from '../error-dialog.service';
+import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
 
 @Injectable({
   providedIn: 'root'
@@ -96,15 +97,9 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   handleStorageReadError(error: Error) {
-    this.errorDialogService.showActionableError({
-      errorId: '4209',
-      title: 'Error retrieving recently closed tabs',
-      description: 'An error occurred while retrieving recently closed tabs from storage.',
-      error,
-      action: {
-        callback: () => this.localStorageService.setRecentlyClosedSessionsState(SessionListState.empty()),
-        requiresReload: false
-      }
-    });
+    const dialogData = ErrorDialogDataFactory.couldNotRetrieveClosedSessions(error, () =>
+      this.localStorageService.setRecentlyClosedSessionsState(SessionListState.empty())
+    );
+    this.errorDialogService.showActionableError(dialogData);
   }
 }

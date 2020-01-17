@@ -144,17 +144,10 @@ export class SavedTabsService implements TabsService {
   }
 
   handleStorageReadError(error: Error) {
-    this.errorDialogService.showActionableError({
-      errorId: '8416',
-      title: 'Error retrieving saved windows',
-      description: 'An error occurred while retrieving your saved windows from storage.',
-      error,
-      action: {
-        callback: () => this.storageService.setSavedWindowsState(SessionListState.empty()),
-        requiresReload: false,
-        warningMessage: 'This will reset the state of the application and your saved tabs will be permanently deleted.'
-      }
-    });
+    const dialogData = ErrorDialogDataFactory.couldNotRetrieveSavedSessions(error, () =>
+      this.storageService.setSavedWindowsState(SessionListState.empty())
+    );
+    this.errorDialogService.showActionableError(dialogData);
   }
 
   handleStorageWriteError(error: StorageWriteError) {

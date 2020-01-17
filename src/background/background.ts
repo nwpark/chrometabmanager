@@ -3,6 +3,8 @@ import {ActiveWindowStateManager} from './active-window-state-manager';
 import {v4 as uuid} from 'uuid';
 import {MessageReceiverService} from '../app/services/messaging/message-receiver.service';
 import {StorageKeys} from '../app/services/storage/storage-keys';
+import {LocalStorageService} from '../app/services/storage/local-storage.service';
+import {MessagePassingService} from '../app/services/messaging/message-passing.service';
 
 addOnInstalledListener();
 
@@ -18,9 +20,13 @@ const chromeWindowUpdateEvents = [
 
 const ignoredTabUrls = ['chrome://newtab/'];
 
+const localStorageService = new LocalStorageService(new MessagePassingService());
+const messageReceiverService = new MessageReceiverService();
+const activeWindowStateManager = new ActiveWindowStateManager(localStorageService, messageReceiverService);
+const closedSessionStateManager = new ClosedSessionStateManager(localStorageService);
+
 const instanceId = uuid();
-const activeWindowStateManager = new ActiveWindowStateManager();
-const closedSessionStateManager = new ClosedSessionStateManager();
+messageReceiverService.onInstanceIdRequest(instanceId);
 
 chromeWindowUpdateEvents.forEach(windowEvent => {
   windowEvent.addListener(() => {
@@ -46,8 +52,6 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
   }
   activeWindowStateManager.updateActiveWindowState();
 });
-
-MessageReceiverService.onInstanceIdRequest(instanceId);
 
 function addOnInstalledListener() {
   chrome.runtime.onInstalled.addListener(details => {

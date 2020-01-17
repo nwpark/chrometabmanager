@@ -1,4 +1,3 @@
-import {MessagePassingService} from '../app/services/messaging/message-passing.service';
 import {SessionListUtils} from '../app/utils/session-list-utils';
 import {WindowStateUtils} from '../app/utils/session-utils';
 import {LocalStorageService} from '../app/services/storage/local-storage.service';
@@ -13,11 +12,9 @@ export class ClosedSessionStateManager {
 
   static readonly MAX_CLOSED_TABS = 30;
 
-  private localStorageService: LocalStorageService;
   private mutex: Mutex;
 
-  constructor() {
-    this.localStorageService = new LocalStorageService(new MessagePassingService());
+  constructor(private localStorageService: LocalStorageService) {
     this.mutex = new Mutex();
   }
 
