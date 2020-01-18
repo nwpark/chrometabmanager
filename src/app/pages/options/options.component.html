@@ -1,10 +1,12 @@
 <div
   [@simpleFadeAnimation]="'fadeIn'"
   [ngStyle]="{
-    background: 'url(/assets/background_image.jpg) no-repeat center center fixed',
+    backgroundImage: 'url(' + backgroundPhoto.data + ')',
+    backgroundRepeat: 'no-repeat',
+    backgroundAttachment: 'fixed',
     backgroundSize: 'cover',
     height: 'calc(100% - 80px)',
-    paddingTop:'80px',
+    paddingTop: '80px',
     overflowY: 'scroll'
   }">
   <mat-card style="width: 500px; margin: 0 auto 20px auto">

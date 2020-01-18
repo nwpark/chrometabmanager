@@ -1,7 +1,9 @@
 <div
   [@simpleFadeAnimation]="'fadeIn'"
   [ngStyle]="{
-    background: 'url(/assets/background_image.jpg) no-repeat center center fixed',
+    backgroundImage: 'url(' + backgroundPhoto.data + ')',
+    backgroundRepeat: 'no-repeat',
+    backgroundAttachment: 'fixed',
     backgroundSize: 'cover',
     height: '100%'
   }">
@@ -38,8 +40,8 @@
 
 <a
   mat-icon-button
-  matTooltip="Background photo by {{backgroundPhotoMetadata.author}}"
+  matTooltip="Background photo by {{backgroundPhoto.author}}"
   class="photo-camera-icon"
-  [href]="backgroundPhotoMetadata.url">
+  [href]="backgroundPhoto.url">
   <mat-icon class="action-icon-24">photo_camera</mat-icon>
 </a>

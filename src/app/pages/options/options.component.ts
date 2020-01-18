@@ -12,6 +12,8 @@ import {ErrorDialogService} from '../../services/error-dialog.service';
 import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
 import {SessionListState} from '../../types/session/session-list-state';
 import {LocalStorageService} from '../../services/storage/local-storage.service';
+import {ImageData} from '../../types/image-data';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-options',
@@ -36,6 +38,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
   syncBytesInUsePercentage: number;
   syncQuotaBytes = chrome.storage.sync.QUOTA_BYTES;
   downloadJsonHref: Promise<SafeUrl>;
+  backgroundPhoto: ImageData;
 
   constructor(private preferencesService: PreferencesService,
               private storageService: StorageService,
@@ -59,6 +62,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
     });
     this.refreshBytesInUse();
     this.downloadJsonHref = this.generateDownloadJsonUri();
+    this.backgroundPhoto = environment.backgroundPhoto;
   }
 
   private refreshBytesInUse() {
