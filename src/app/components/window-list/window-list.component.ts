@@ -56,15 +56,6 @@ export class WindowListComponent implements OnInit {
     this.debugModeEnabled$ = this.preferencesService.isDebugModeEnabled();
   }
 
-  // todo: store result in variable
-  getTitle(): string {
-    const tabCount = this.sessionListState.size();
-    if (tabCount > 0 && this.sessionListState.isHidden()) {
-      return `${this.title} (${tabCount})`;
-    }
-    return this.title;
-  }
-
   // todo: result can be stored
   isComponentAnimating(): boolean {
     return isToggleDisplayState(this.animationState);

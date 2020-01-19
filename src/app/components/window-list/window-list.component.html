@@ -23,7 +23,8 @@
     </ng-container>
   </span>
   <span class="column-title-text">
-    {{getTitle()}}
+    {{title}}
+    <span *ngIf="sessionListState.isHidden()"> ({{sessionListState.size()}})</span>
   </span>
 </div>
 

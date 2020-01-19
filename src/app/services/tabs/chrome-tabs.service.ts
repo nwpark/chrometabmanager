@@ -110,8 +110,13 @@ export class ChromeTabsService implements TabsService {
   }
 
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean) {
-    chrome.tabs.update(chromeTab.id as number, {active: true});
-    chrome.windows.update(chromeTab.windowId as number, {focused: true});
+    chrome.tabs.getCurrent(currentTab => {
+      if (chromeTab.id !== currentTab.id) {
+        chrome.tabs.update(chromeTab.id as number, {active: true});
+        chrome.windows.update(chromeTab.windowId as number, {focused: true});
+        chrome.tabs.remove(currentTab.id);
+      }
+    });
   }
 
   @modifiesState({storeResult: true})

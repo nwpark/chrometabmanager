@@ -23,7 +23,7 @@ export class MenuItemFactory {
     return {
       title: 'Sort tabs',
       icon: 'sort',
-      tooltip: 'Sort tabs by url',
+      tooltip: 'Sort tabs by URL',
       callback
     };
   }
