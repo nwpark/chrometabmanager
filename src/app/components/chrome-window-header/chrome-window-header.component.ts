@@ -3,7 +3,7 @@ import {FormControl} from '@angular/forms';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {PreferencesService} from '../../services/preferences.service';
 import {ActionBarService} from '../../services/action-bar.service';
-import {getTimeString} from '../../utils/date-utils';
+import {getTimeStampString} from '../../utils/date-utils';
 import {ChromeAPIWindowState} from '../../types/chrome-api/chrome-api-window-state';
 import {SessionState} from '../../types/session/session-state';
 import {SessionLayoutState} from '../../types/session/session-layout-state';
@@ -51,7 +51,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
     ];
     this.titleFormControl = new FormControl(this.layoutState.title);
     if (this.sessionState.session.lastModified) {
-      this.lastModified = getTimeString(this.sessionState.session.lastModified);
+      this.lastModified = getTimeStampString(this.sessionState.session.lastModified);
     }
     this.debugModeEnabled$ = this.preferencesService.isDebugModeEnabled();
   }
