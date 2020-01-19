@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {modifiesState} from '../../decorators/modifies-state';
 import {TabsService} from './tabs-service';
 import {ChromeTabsService} from './chrome-tabs.service';
@@ -17,16 +17,18 @@ import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
 })
 export class RecentlyClosedTabsService implements TabsService {
 
-  private sessionListState: SessionListState;
+  sessionListState: SessionListState;
 
-  private sessionStateUpdatedSource = new Subject<SessionListState>();
-  public sessionStateUpdated$ = this.sessionStateUpdatedSource.asObservable();
+  private sessionStateUpdated: BehaviorSubject<SessionListState>;
+  public sessionStateUpdated$: Observable<SessionListState>;
 
   constructor(private localStorageService: LocalStorageService,
               private chromeTabsService: ChromeTabsService,
               private messageReceiverService: MessageReceiverService,
               private errorDialogService: ErrorDialogService) {
-    this.sessionListState = SessionListState.empty();
+    this.sessionStateUpdated = new BehaviorSubject(SessionListState.empty());
+    this.sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
+    this.sessionListState = this.sessionStateUpdated.getValue();
     this.localStorageService.getRecentlyClosedSessionsState().then(sessionListState => {
       this.setSessionListState(sessionListState);
     }, error => this.handleStorageReadError(error));
@@ -38,7 +40,7 @@ export class RecentlyClosedTabsService implements TabsService {
   private setSessionListState(sessionListState: SessionListState) {
     console.log(new Date().toTimeString().substring(0, 8), '- refreshing recently closed windows');
     this.sessionListState = sessionListState;
-    this.sessionStateUpdatedSource.next(this.sessionListState);
+    this.sessionStateUpdated.next(this.sessionListState);
   }
 
   getSessionListState(): SessionListState {
@@ -92,7 +94,7 @@ export class RecentlyClosedTabsService implements TabsService {
 
   onStateModified() {
     console.log(new Date().toTimeString().substring(0, 8), '- updating recently closed windows');
-    this.sessionStateUpdatedSource.next(this.sessionListState);
+    this.sessionStateUpdated.next(this.sessionListState);
     this.localStorageService.setRecentlyClosedSessionsState(this.sessionListState);
   }
 

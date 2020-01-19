@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {PreferencesService} from '../../services/preferences.service';
@@ -13,8 +13,6 @@ import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animat
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {ActionBarService} from '../../services/action-bar.service';
 import {SessionListState} from '../../types/session/session-list-state';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
 import {SessionState} from '../../types/session/session-state';
 import {ListActionButton} from '../../types/action-bar/list-action-button';
 import {ListActionButtonFactory} from '../../utils/action-bar/list-action-button-factory';
@@ -34,14 +32,12 @@ import {ListActionButtonFactory} from '../../utils/action-bar/list-action-button
     ])
   ]
 })
-export class WindowListComponent implements OnDestroy, OnInit {
-
-  private ngUnsubscribe = new Subject();
+export class WindowListComponent implements OnInit {
 
   @Input() title: string;
   @Input() props: SessionComponentProps;
+  @Input() sessionListState: SessionListState;
 
-  sessionListState: SessionListState;
   connectedWindowListIds = DragDropService.CONNECTED_WINDOW_LIST_IDS;
   actionButtons: ListActionButton[];
   animationState = AnimationState.Complete;
@@ -53,23 +49,14 @@ export class WindowListComponent implements OnDestroy, OnInit {
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
-    this.sessionListState = this.props.tabsService.getSessionListState();
     this.actionButtons = [
       ...this.actionBarService.createListActionButtons(this.props.sessionListId),
       ListActionButtonFactory.createMinimizeButton(() => this.toggleDisplay())
     ];
-    this.props.tabsService.sessionStateUpdated$
-      .pipe(
-        this.dragDropService.ignoreWhenDragging(),
-        takeUntil(this.ngUnsubscribe)
-      )
-      .subscribe(sessionListState => {
-        this.sessionListState = sessionListState;
-        this.changeDetectorRef.detectChanges();
-      });
     this.debugModeEnabled$ = this.preferencesService.isDebugModeEnabled();
   }
 
+  // todo: store result in variable
   getTitle(): string {
     const tabCount = this.sessionListState.size();
     if (tabCount > 0 && this.sessionListState.isHidden()) {
@@ -78,6 +65,7 @@ export class WindowListComponent implements OnDestroy, OnInit {
     return this.title;
   }
 
+  // todo: result can be stored
   isComponentAnimating(): boolean {
     return isToggleDisplayState(this.animationState);
   }
@@ -122,11 +110,6 @@ export class WindowListComponent implements OnDestroy, OnInit {
     } finally {
       this.dragDropService.endDrag();
     }
-  }
-
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
   }
 
   debug() { console.log(this); }

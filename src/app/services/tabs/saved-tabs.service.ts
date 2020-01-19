@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {v4 as uuid} from 'uuid';
 import {modifiesState, StateModifierParams} from '../../decorators/modifies-state';
 import {TabsService} from './tabs-service';
@@ -22,16 +22,18 @@ import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
 })
 export class SavedTabsService implements TabsService {
 
-  private sessionListState: SessionListState;
+  sessionListState: SessionListState;
 
-  private sessionStateUpdated = new Subject<SessionListState>();
-  public sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
+  private sessionStateUpdated: BehaviorSubject<SessionListState>;
+  public sessionStateUpdated$: Observable<SessionListState>;
 
   constructor(private chromeTabsService: ChromeTabsService,
               private storageService: StorageService,
               private messageReceiverService: MessageReceiverService,
               private errorDialogService: ErrorDialogService) {
-    this.sessionListState = SessionListState.empty();
+    this.sessionStateUpdated = new BehaviorSubject(SessionListState.empty());
+    this.sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
+    this.sessionListState = this.sessionStateUpdated.getValue();
     this.initializeStateFromStorage();
     this.messageReceiverService.savedSessionStateUpdated$.subscribe(sessionListState => {
       this.setSessionListState(sessionListState);

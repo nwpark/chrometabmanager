@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {modifiesState, StateModifierParams} from '../../decorators/modifies-state';
 import {TabsService} from './tabs-service';
 import {MessagePassingService} from '../messaging/message-passing.service';
@@ -11,24 +11,26 @@ import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
 import {SessionState} from '../../types/session/session-state';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {ErrorDialogService} from '../error-dialog.service';
-import MoveProperties = chrome.tabs.MoveProperties;
 import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
+import MoveProperties = chrome.tabs.MoveProperties;
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChromeTabsService implements TabsService {
 
-  private sessionListState: SessionListState;
+  sessionListState: SessionListState;
 
-  private sessionStateUpdated = new Subject<SessionListState>();
-  public sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
+  private sessionStateUpdated: BehaviorSubject<SessionListState>;
+  public sessionStateUpdated$: Observable<SessionListState>;
 
   constructor(private localStorageService: LocalStorageService,
               private messagePassingService: MessagePassingService,
               private messageReceiverService: MessageReceiverService,
               private errorDialogService: ErrorDialogService) {
-    this.sessionListState = SessionListState.empty();
+    this.sessionStateUpdated = new BehaviorSubject(SessionListState.empty());
+    this.sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
+    this.sessionListState = this.sessionStateUpdated.getValue();
     this.localStorageService.getActiveWindowsState().then(sessionListState => {
       this.setSessionListState(sessionListState);
     }, error => this.handleStorageReadError(error));

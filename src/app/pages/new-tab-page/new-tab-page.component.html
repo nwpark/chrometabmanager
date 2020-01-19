@@ -16,6 +16,7 @@
       <app-window-list
         class="full-height-column"
         [title]="'Saved'"
+        [sessionListState]="savedSessionState$ | async"
         [props]="savedSessionProps">
       </app-window-list>
     </mat-grid-tile>
@@ -24,6 +25,7 @@
       <app-window-list
         class="full-height-column"
         [title]="'Active'"
+        [sessionListState]="activeSessionState$ | async"
         [props]="activeSessionProps">
       </app-window-list>
     </mat-grid-tile>
@@ -32,6 +34,7 @@
       <app-window-list
         class="full-height-column"
         [title]="'Recently Closed'"
+        [sessionListState]="closedSessionState$ | async"
         [props]="recentlyClosedSessionProps">
       </app-window-list>
     </mat-grid-tile>
