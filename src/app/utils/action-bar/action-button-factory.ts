@@ -11,8 +11,8 @@ export class ActionButtonFactory {
 
   static createMinimizeButton(callback: ActionButtonCallback): SessionActionButton {
     return {
-      title: 'Show window',
-      titleWhenHidden: 'Minimize window',
+      title: 'Minimize window',
+      titleWhenHidden: 'Show window',
       icon: 'arrow_drop_down',
       iconWhenHidden: 'arrow_right',
       callback

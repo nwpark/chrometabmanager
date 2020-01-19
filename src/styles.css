@@ -29,6 +29,10 @@ body {
   font-weight: bold;
 }
 
+.tooltip-reduced-margin {
+  margin: 5px !important;
+}
+
 /**************************************** Chrome Window List ********************************************/
 .full-height-column {
   width: 400px;

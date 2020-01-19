@@ -5,6 +5,7 @@ export class MenuItemFactory {
     return {
       title: 'Restore window',
       icon: 'open_in_new',
+      tooltip: 'Open tabs in a new window',
       callback
     };
   }
@@ -13,6 +14,7 @@ export class MenuItemFactory {
     return {
       title: 'Save window',
       icon: 'save_alt',
+      tooltip: 'Save window',
       callback
     };
   }
@@ -21,6 +23,7 @@ export class MenuItemFactory {
     return {
       title: 'Sort tabs',
       icon: 'sort',
+      tooltip: 'Sort tabs by url',
       callback
     };
   }

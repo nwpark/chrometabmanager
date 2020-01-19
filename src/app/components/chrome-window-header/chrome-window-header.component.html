@@ -6,7 +6,8 @@
   <div class="chrome-window-action-bar">
     <button
       class="action-button-30"
-      title="Menu"
+      matTooltip="Menu"
+      matTooltipClass="tooltip-reduced-margin"
       mat-icon-button
       *ngIf="headerDiv.mouseOver || menuOpen"
       [matMenuTriggerFor]="menu"
@@ -19,6 +20,9 @@
         <button
           class="menu-item"
           mat-menu-item
+          [matTooltip]="menuItem.tooltip"
+          matTooltipPosition="after"
+          matTooltipClass="tooltip-reduced-margin"
           (click)="menuItem.callback(index)">
           <mat-icon class="menu-item-icon">{{menuItem.icon}}</mat-icon>
           <span>{{menuItem.title}}</span>
@@ -29,18 +33,19 @@
       <button
         class="action-button-30"
         mat-icon-button
-        [title]="button.title"
+        [matTooltip]="layoutState.hidden ? button.titleWhenHidden || button.title : button.title"
+        matTooltipClass="tooltip-reduced-margin"
         (click)="button.callback()">
-        <mat-icon class="action-icon-18" *ngIf="!layoutState.hidden">{{button.icon}}</mat-icon>
-        <mat-icon class="action-icon-18" *ngIf="layoutState.hidden">{{button.iconWhenHidden || button.icon}}</mat-icon>
+        <mat-icon class="action-icon-18">{{layoutState.hidden ? button.iconWhenHidden || button.icon : button.icon}}</mat-icon>
       </button>
     </ng-container>
   </div>
   <button
     class="chrome-window-action-bar action-button-30"
     mat-icon-button
-    *ngIf="headerDiv.mouseOver && debugModeEnabled$ | async"
-    [title]="'debug'"
+    *ngIf="headerDiv.mouseOver && (debugModeEnabled$ | async)"
+    matTooltip="Debug"
+    matTooltipClass="tooltip-reduced-margin"
     (click)="debug()">
     <mat-icon class="action-icon-18">bug_report</mat-icon>
   </button>
@@ -57,7 +62,8 @@
       <button
         class="action-button-30"
         mat-icon-button
-        title="Edit title"
+        matTooltip="Edit title"
+        matTooltipClass="tooltip-reduced-margin"
         *ngIf="props.isMutable && titleTextDiv.mouseOver"
         (click)="editTitle()">
         <mat-icon class="action-icon-18">edit</mat-icon>

@@ -75,6 +75,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
   }
 
   setMenuOpen(menuOpen: boolean) {
+    // todo: set busy on service to prevent updates
     this.menuOpen = menuOpen;
   }
 

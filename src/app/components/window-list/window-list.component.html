@@ -5,7 +5,8 @@
   <span style="float: right">
     <button
       mat-icon-button
-      title="debug"
+      matTooltip="Debug"
+      matTooltipClass="tooltip-reduced-margin"
       *ngIf="headerDiv.mouseOver && debugModeEnabled$ | async"
       (click)="debug()">
       <mat-icon class="action-icon-24">bug_report</mat-icon>
@@ -13,11 +14,11 @@
     <ng-container *ngFor="let button of actionButtons">
       <button
         mat-icon-button
+        [matTooltip]="sessionListState.isHidden() ? button.titleWhenHidden || button.title : button.title"
+        matTooltipClass="tooltip-reduced-margin"
         *ngIf="!button.requiresMouseover || headerDiv.mouseOver"
-        [title]="sessionListState.isHidden() ? button.titleWhenHidden : button.title"
         (click)="button.callback()">
-        <mat-icon class="action-icon-24" *ngIf="!sessionListState.isHidden()">{{button.icon}}</mat-icon>
-        <mat-icon class="action-icon-24" *ngIf="sessionListState.isHidden()">{{button.iconWhenHidden || button.icon}}</mat-icon>
+        <mat-icon class="action-icon-24">{{sessionListState.isHidden() ? button.iconWhenHidden || button.icon : button.icon}}</mat-icon>
       </button>
     </ng-container>
   </span>
