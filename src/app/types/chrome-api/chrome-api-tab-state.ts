@@ -3,12 +3,15 @@ import {isNullOrUndefined} from 'util';
 import {InvalidSessionError} from '../errors/InvalidSessionError';
 
 export interface ChromeAPITabState {
+  // todo: some of these fields are supposed to be optional
   id: SessionId;
   windowId?: SessionId;
   url: string;
   title: string;
   favIconUrl?: string;
   status: string;
+  active?: boolean;
+  discarded?: boolean;
   [others: string]: any; // Ignore unused API fields
 }
 
@@ -21,7 +24,9 @@ export function chromeAPITabStateEquals(a: ChromeAPITabState, b: ChromeAPITabSta
     && a.id === b.id
     && a.status === b.status
     && a.windowId === b.windowId
-    && a.title === b.title;
+    && a.title === b.title
+    && a.active === b.active
+    && a.discarded === b.discarded;
 }
 
 export function validateChromeAPITabState(tabState: ChromeAPITabState) {

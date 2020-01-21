@@ -12,6 +12,8 @@ const chromeWindowUpdateEvents = [
   chrome.tabs.onCreated,
   chrome.tabs.onUpdated,
   chrome.tabs.onMoved,
+  chrome.tabs.onActivated,
+  chrome.tabs.onHighlighted,
   chrome.tabs.onDetached,
   chrome.tabs.onAttached,
   chrome.tabs.onReplaced,

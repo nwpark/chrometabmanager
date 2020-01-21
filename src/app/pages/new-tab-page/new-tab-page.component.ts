@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {SessionComponentProps, SessionListId} from '../../types/chrome-window-component-data';
 import {ChromeTabsService} from '../../services/tabs/chrome-tabs.service';
@@ -35,6 +35,7 @@ export class NewTabPageComponent implements OnInit {
   cols: number;
   backgroundPhoto: ImageData;
 
+  // todo: separate component for each
   activeSessionState$: Observable<SessionListState>;
   savedSessionState$: Observable<SessionListState>;
   closedSessionState$: Observable<SessionListState>;

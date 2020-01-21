@@ -15,6 +15,7 @@
   </button>
   <div
     class="chrome-tab-title"
+    [ngStyle]="{opacity: chromeTab.discarded ? 0.5 : 1}"
     (click)="setTabActive($event)">
     <img
       class="favicon-icon"
@@ -25,6 +26,7 @@
       *ngIf="isLoading()">
       <mat-spinner [diameter]="16"></mat-spinner>
     </div>
-    {{title}}
+    <span *ngIf="!chromeTab.discarded">{{title}}</span>
+    <em *ngIf="chromeTab.discarded">(suspended) {{title}}</em>
   </div>
 </div>

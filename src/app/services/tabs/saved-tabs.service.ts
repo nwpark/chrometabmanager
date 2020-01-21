@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {v4 as uuid} from 'uuid';
 import {modifiesState, StateModifierParams} from '../../decorators/modifies-state';
@@ -30,13 +30,14 @@ export class SavedTabsService implements TabsService {
   constructor(private chromeTabsService: ChromeTabsService,
               private storageService: StorageService,
               private messageReceiverService: MessageReceiverService,
-              private errorDialogService: ErrorDialogService) {
+              private errorDialogService: ErrorDialogService,
+              private ngZone: NgZone) {
     this.sessionStateUpdated = new BehaviorSubject(SessionListState.empty());
     this.sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
     this.sessionListState = this.sessionStateUpdated.getValue();
     this.initializeStateFromStorage();
     this.messageReceiverService.savedSessionStateUpdated$.subscribe(sessionListState => {
-      this.setSessionListState(sessionListState);
+      ngZone.run(() => this.setSessionListState(sessionListState));
     });
   }
 

@@ -57,6 +57,9 @@ export class ActionBarService {
       }),
       MenuItemFactory.createSortButton(sessionIndex => {
         this.chromeTabsService.sortTabsInWindow(sessionIndex);
+      }),
+      MenuItemFactory.createSuspendTabsButton(sessionIndex => {
+        this.chromeTabsService.suspendTabsInWindow(sessionIndex);
       })
     ];
   }

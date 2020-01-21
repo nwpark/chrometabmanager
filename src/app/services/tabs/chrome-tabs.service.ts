@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {modifiesState, StateModifierParams} from '../../decorators/modifies-state';
 import {TabsService} from './tabs-service';
@@ -27,7 +27,8 @@ export class ChromeTabsService implements TabsService {
   constructor(private localStorageService: LocalStorageService,
               private messagePassingService: MessagePassingService,
               private messageReceiverService: MessageReceiverService,
-              private errorDialogService: ErrorDialogService) {
+              private errorDialogService: ErrorDialogService,
+              private ngZone: NgZone) {
     this.sessionStateUpdated = new BehaviorSubject(SessionListState.empty());
     this.sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
     this.sessionListState = this.sessionStateUpdated.getValue();
@@ -36,7 +37,7 @@ export class ChromeTabsService implements TabsService {
     }, error => this.handleStorageReadError(error));
     this.messageReceiverService.activeSessionStateUpdated$.subscribe(sessionListState => {
       if (!sessionListState.equals(this.sessionListState)) {
-        this.setSessionListState(sessionListState);
+        ngZone.run(() => this.setSessionListState(sessionListState));
       }
     });
   }
@@ -141,6 +142,14 @@ export class ChromeTabsService implements TabsService {
     this.sessionListState.sortTabsInWindow(sessionIndex).forEach((chromeTab, tabIndex) => {
       const moveProperties: MoveProperties = {index: tabIndex};
       chrome.tabs.move(chromeTab.id as number, moveProperties);
+    });
+  }
+
+  suspendTabsInWindow(sessionIndex: number) {
+    this.sessionListState.getSessionAtIndex(sessionIndex).window.tabs.forEach(chromeTab => {
+      if (!chromeTab.active && !chromeTab.discarded) {
+        chrome.tabs.discard(chromeTab.id as number);
+      }
     });
   }
 

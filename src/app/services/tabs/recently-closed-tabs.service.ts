@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {modifiesState} from '../../decorators/modifies-state';
 import {TabsService} from './tabs-service';
@@ -25,7 +25,8 @@ export class RecentlyClosedTabsService implements TabsService {
   constructor(private localStorageService: LocalStorageService,
               private chromeTabsService: ChromeTabsService,
               private messageReceiverService: MessageReceiverService,
-              private errorDialogService: ErrorDialogService) {
+              private errorDialogService: ErrorDialogService,
+              private ngZone: NgZone) {
     this.sessionStateUpdated = new BehaviorSubject(SessionListState.empty());
     this.sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
     this.sessionListState = this.sessionStateUpdated.getValue();
@@ -33,7 +34,7 @@ export class RecentlyClosedTabsService implements TabsService {
       this.setSessionListState(sessionListState);
     }, error => this.handleStorageReadError(error));
     this.messageReceiverService.closedSessionStateUpdated$.subscribe(sessionListState => {
-      this.setSessionListState(sessionListState);
+      ngZone.run(() => this.setSessionListState(sessionListState));
     });
   }
 
