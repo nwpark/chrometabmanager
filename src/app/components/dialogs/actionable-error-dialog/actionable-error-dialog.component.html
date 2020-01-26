@@ -1,11 +1,11 @@
 <div style="width: 380px">
   <div mat-dialog-title>
-    <mat-icon style="vertical-align: -5px; margin-right: 5px">error_outline</mat-icon>
+    <mat-icon class="dialog-title-icon">error_outline</mat-icon>
     An error occurred...
   </div>
   <div mat-dialog-content>
     <div
-      style="padding-left: 10px; border-left: 5px solid grey"
+      class="dialog-emphasised-content"
       *ngFor="let error of errorList">
       <h3>{{error.title}}</h3>
       <p>
@@ -39,13 +39,13 @@
 <ng-template #warningDialog>
   <div style="width: 400px">
     <div mat-dialog-title>
-      <mat-icon style="vertical-align: -5px; margin-right: 5px">warning</mat-icon>
+      <mat-icon class="dialog-title-icon">warning</mat-icon>
       Warning
     </div>
     <div mat-dialog-content>
       <div *ngFor="let error of errorList">
         <p
-          style="padding-left: 10px; border-left: 5px solid grey"
+          class="dialog-emphasised-content"
           *ngIf="error.action.warningMessage">
           {{error.action.warningMessage}}
         </p>
@@ -71,11 +71,11 @@
 <ng-template #successDialog>
   <div style="width: 400px">
     <div mat-dialog-title>
-      <mat-icon style="vertical-align: -5px; margin-right: 5px">done</mat-icon>
+      <mat-icon class="dialog-title-icon">done</mat-icon>
       Success
     </div>
     <div mat-dialog-content>
-      <h3 style="padding-left: 10px; border-left: 5px solid grey">
+      <h3 class="dialog-emphasised-content">
         Repair completed successfully.
       </h3>
       <p>

@@ -1,18 +1,13 @@
 <div style="width: 380px">
   <div mat-dialog-title>
-    <mat-icon style="vertical-align: -5px; margin-right: 5px">error_outline</mat-icon>
+    <mat-icon class="dialog-title-icon">error_outline</mat-icon>
     <span *ngIf="data.title">{{data.title}}</span>
     <span *ngIf="!data.title">An error occurred...</span>
   </div>
   <div mat-dialog-content>
-    <h3 style="padding-left: 10px; border-left: 5px solid grey">
-      {{data.errorMessage}}
-    </h3>
+    <h3 class="dialog-emphasised-content">{{data.errorMessage}}</h3>
   </div>
-  <div
-    *ngIf="data.descriptionHTML"
-    [innerHTML]="data.descriptionHTML">
-  </div>
+  <div *ngIf="data.descriptionHTML" [innerHTML]="data.descriptionHTML"></div>
   <div mat-dialog-actions>
     <button
       mat-stroked-button

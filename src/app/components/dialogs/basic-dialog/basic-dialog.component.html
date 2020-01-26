@@ -1,0 +1,26 @@
+<div style="width: 380px">
+  <div mat-dialog-title>
+    <mat-icon class="dialog-title-icon" *ngIf="data.titleIcon">{{data.titleIcon}}</mat-icon>
+    {{data.title}}
+  </div>
+  <div mat-dialog-content>
+    <div
+      class="dialog-emphasised-content"
+      *ngIf="data.contentEmphasisedHTML"
+      [innerHTML]="data.contentEmphasisedHTML">
+    </div>
+  </div>
+  <div
+    *ngIf="data.contentHTML"
+    [innerHTML]="data.contentHTML">
+  </div>
+  <div mat-dialog-actions>
+    <button
+      mat-stroked-button
+      color="primary"
+      *ngFor="let action of data.actions"
+      (click)="performAction(action)">
+      {{action.buttonText}}
+    </button>
+  </div>
+</div>

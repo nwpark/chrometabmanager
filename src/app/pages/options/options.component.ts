@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {PreferencesService} from '../../services/preferences.service';
 import {Preferences} from '../../types/preferences';
-import {MatSlideToggleChange} from '@angular/material';
+import {MatDialog, MatSlideToggleChange} from '@angular/material';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {SyncStorageService} from '../../services/storage/sync-storage.service';
@@ -14,6 +14,9 @@ import {SessionListState} from '../../types/session/session-list-state';
 import {LocalStorageService} from '../../services/storage/local-storage.service';
 import {ImageData} from '../../types/image-data';
 import {environment} from '../../../environments/environment';
+import {BasicDialogComponent} from '../../components/dialogs/basic-dialog/basic-dialog.component';
+import {BasicDialogData} from '../../types/errors/basic-dialog-data';
+import {DialogDataFactory} from '../../utils/dialog-data-factory';
 
 @Component({
   selector: 'app-options',
@@ -46,7 +49,8 @@ export class OptionsComponent implements OnDestroy, OnInit {
               private localStorageService: LocalStorageService,
               private changeDetectorRef: ChangeDetectorRef,
               private domSanitizer: DomSanitizer,
-              private errorDialogService: ErrorDialogService) { }
+              private errorDialogService: ErrorDialogService,
+              private matDialogService: MatDialog) { }
 
   ngOnInit() {
     this.preferencesService.preferencesUpdated$.pipe(
@@ -130,7 +134,10 @@ export class OptionsComponent implements OnDestroy, OnInit {
   }
 
   reset() {
-    this.storageService.clearStorage();
+    const dialogData: BasicDialogData = DialogDataFactory.resetApplicationStateWarning(() =>
+      this.storageService.clearStorage()
+    );
+    this.matDialogService.open(BasicDialogComponent, {data: dialogData});
   }
 
   generateDownloadJsonUri(): Promise<SafeUrl> {
