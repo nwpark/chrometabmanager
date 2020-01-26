@@ -9,6 +9,7 @@ import {ErrorDialogData} from '../../../types/errors/error-dialog-data';
 })
 export class RuntimeErrorDialogComponent implements OnInit {
 
+  // todo: remove component in favour of BasicDialogComponent
   constructor(@Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) { }
 
   ngOnInit() {

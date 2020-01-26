@@ -1,0 +1,18 @@
+.mat-slide-toggle {
+  line-height: normal !important;
+  width: 100% !important;
+}
+
+::ng-deep .mat-slide-toggle-content {
+  width: 100% !important;
+}
+
+.settings-card {
+  width: 500px;
+  margin: 0 auto 20px auto;
+}
+
+.settings-card-sub-text {
+  font-size: 13px !important;
+  color: grey;
+}

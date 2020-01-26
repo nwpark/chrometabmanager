@@ -9,7 +9,7 @@
     paddingTop: '80px',
     overflowY: 'scroll'
   }">
-  <mat-card style="width: 500px; margin: 0 auto 20px auto">
+  <mat-card class="settings-card">
     <mat-card-header>
       <mat-card-title>Preferences</mat-card-title>
     </mat-card-header>
@@ -21,17 +21,22 @@
             [checked]="preferences?.closeWindowOnSave"
             [color]="'primary'"
             [labelPosition]="'before'"
+            [disableRipple]="true"
             (change)="setCloseWindowOnSave($event)">
-            <div style="width: 460px">
-              <div style="">Close windows on drop</div>
-              <div style="font-size: 14px; color: grey">Close the original window/tab after dragging to a different region</div>
+            <div>
+              <div>Remove items after moving</div>
+              <div class="settings-card-sub-text">
+                Remove the original window/tab after dragging it to a different section
+              </div>
             </div>
           </mat-slide-toggle>
         </mat-list-item>
       </mat-list>
     </mat-card-content>
   </mat-card>
-  <mat-card style="width: 500px; margin: 0 auto 20px auto">
+
+
+  <mat-card class="settings-card">
     <mat-card-header>
       <mat-card-title>Sync Options</mat-card-title>
     </mat-card-header>
@@ -40,14 +45,14 @@
       <mat-list>
         <mat-list-item>
           <mat-slide-toggle
-            style=""
             [checked]="preferences?.syncSavedWindows"
             [color]="'primary'"
             [labelPosition]="'before'"
+            [disableRipple]="true"
             (change)="setSyncSavedWindows($event)">
-            <div style="width: 460px">
-              <div style="">Enable sync</div>
-              <div style="font-size: 14px; color: grey">Synchronize saved windows between devices</div>
+            <div style="">Enable sync</div>
+            <div class="settings-card-sub-text">
+              Synchronize saved windows between devices
             </div>
           </mat-slide-toggle>
         </mat-list-item>
@@ -56,19 +61,28 @@
         <ng-container>
           <mat-divider [inset]="true"></mat-divider>
           <mat-list-item>
-            <div mat-line style="font-size: 14px; color: grey; margin-bottom: 5px">
+            <div mat-line style="margin-bottom: 5px" class="settings-card-sub-text">
               Bytes in use: {{syncBytesInUse | number}} out of {{syncQuotaBytes | number}} ({{syncBytesInUsePercentage}}%)
             </div>
-            <mat-progress-bar mat-line mode="determinate" value="{{syncBytesInUsePercentage}}"></mat-progress-bar>
+            <mat-progress-bar
+              mat-line mode="determinate"
+              value="{{syncBytesInUsePercentage}}">
+            </mat-progress-bar>
           </mat-list-item>
-          <h3 mat-subheader style="height: 30px">
+          <h3
+            mat-subheader
+            style="height: 30px"
+            class="settings-card-sub-text">
+            <mat-icon class="icon-18" style="height: 20px; width: 18px; margin-right: 5px">warning</mat-icon>
             Warning: Chrome sync storage has a maximum quota of {{syncQuotaBytes | number}} bytes
           </h3>
         </ng-container>
       </mat-list>
     </mat-card-content>
   </mat-card>
-  <mat-card style="width: 500px; margin: 0 auto 20px auto">
+
+
+  <mat-card class="settings-card">
     <mat-card-header>
       <mat-card-title>Data</mat-card-title>
     </mat-card-header>
@@ -76,20 +90,32 @@
     <mat-card-content>
       <mat-list>
         <mat-list-item>
-          <div style="width: 500px">
-            <div style="width: 350px; margin: 0; padding: 0; float: left">
+          <div style="width: 100%">
+            <div style="float: left">
               <div style="">Download your data</div>
-              <div style="font-size: 14px; color: grey">Download your saved tabs and windows</div>
+              <div class="settings-card-sub-text">
+                Download your saved tabs and windows
+              </div>
             </div>
-            <a style="float: right" title="Download Tab Data" [href]="downloadJsonHref | async" download="TabManagerData.txt">
-              <button mat-stroked-button color="primary" style="width: 100%">Download</button>
+            <a
+              style="float: right"
+              title="Download Tab Data"
+              [href]="downloadJsonHref | async"
+              download="TabManagerData.txt">
+              <button
+                mat-stroked-button
+                color="primary">
+                Download
+              </button>
             </a>
           </div>
         </mat-list-item>
       </mat-list>
     </mat-card-content>
   </mat-card>
-  <mat-card style="width: 500px; margin: 0 auto 20px auto">
+
+
+  <mat-card class="settings-card">
     <mat-card-header>
       <mat-card-title>Reset and clean up</mat-card-title>
     </mat-card-header>
@@ -97,18 +123,28 @@
     <mat-card-content>
       <mat-list>
         <mat-list-item>
-          <div style="width: 500px">
-            <div style="width: 370px; margin: 0; padding: 0; float: left">
-              <div style="">Restore defaults</div>
-              <div style="font-size: 14px; color: grey">Reset the state of the application and wipe all saved data</div>
+          <div style="width: 100%">
+            <div style="float: left">
+              <div>Restore defaults</div>
+              <div class="settings-card-sub-text">
+                Reset the state of the application and wipe all saved data
+              </div>
             </div>
-            <button mat-stroked-button color="warn" style="float: right" (click)="reset()">Reset</button>
+            <button
+              mat-stroked-button
+              style="float: right"
+              color="warn"
+              (click)="reset()">
+              Reset
+            </button>
           </div>
         </mat-list-item>
       </mat-list>
     </mat-card-content>
   </mat-card>
-  <mat-card style="width: 500px; margin: 0 auto 20px auto">
+
+
+  <mat-card class="settings-card">
     <mat-card-header>
       <mat-card-title>Developer Options</mat-card-title>
     </mat-card-header>
@@ -120,8 +156,9 @@
             [checked]="preferences?.enableDebugging"
             [color]="'primary'"
             [labelPosition]="'before'"
+            [disableRipple]="true"
             (change)="setEnableDebugging($event)">
-            <div style="width: 460px">Enable debug mode</div>
+            Enable debug mode
           </mat-slide-toggle>
         </mat-list-item>
       </mat-list>
