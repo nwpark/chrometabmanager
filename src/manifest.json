@@ -21,7 +21,15 @@
     "default_title": "Chrome Tab Manager v0.6.2-alpha"
   },
 
-  "permissions": ["tabs", "storage", "sessions", "chrome://favicon/"],
+  "permissions": [
+    "tabs",
+    "storage",
+    "sessions",
+    "chrome://favicon/",
+    "activeTab",
+    "http://*/",
+    "https://*/"
+  ],
 
   "options_page": "options.html",
 

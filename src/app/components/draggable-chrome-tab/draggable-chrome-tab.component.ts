@@ -31,6 +31,7 @@ export class DraggableChromeTabComponent implements OnInit {
               private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
+    // todo: create title cache (map url to title) in case it doesnt exist
     this.title = this.chromeTab.title.length > 0
       ? this.chromeTab.title
       : this.chromeTab.url;

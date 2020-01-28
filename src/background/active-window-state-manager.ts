@@ -1,4 +1,4 @@
-import {InsertWindowMessageData, MessagePassingService} from '../app/services/messaging/message-passing.service';
+import {InsertWindowMessageData} from '../app/services/messaging/message-passing.service';
 import Mutex from 'async-mutex/lib/Mutex';
 import {SessionListState} from '../app/types/session/session-list-state';
 import {SessionListUtils} from '../app/utils/session-list-utils';
@@ -8,6 +8,7 @@ import {ChromeAPISession} from '../app/types/chrome-api/chrome-api-session';
 import {ChromeAPIWindowState, SessionId} from '../app/types/chrome-api/chrome-api-window-state';
 import {SessionState} from '../app/types/session/session-state';
 import {MessageReceiverService} from '../app/services/messaging/message-receiver.service';
+import CreateData = chrome.windows.CreateData;
 
 export class ActiveWindowStateManager {
 
@@ -48,17 +49,39 @@ export class ActiveWindowStateManager {
   private insertWindow(sessionState: SessionState, index) {
     this.mutex.acquire().then(releaseLock => {
       const tabsUrls = sessionState.session.window.tabs.map(tab => tab.url);
-      chrome.windows.create({url: tabsUrls, focused: false}, window => {
+      this.createAPIWindow({url: tabsUrls.shift(), focused: false}).then(window => {
+        tabsUrls.forEach(url => this.createAndDiscardTab(url, window.id as number));
         const session = SessionUtils.createSessionFromWindow(window as ChromeAPIWindowState);
         const layoutState = LayoutStateUtils.copyWithNewId(sessionState.layoutState, window.id);
         this.sessionListState.insertSession({session, layoutState}, index);
         this.localStorageService.setActiveWindowsState(this.sessionListState)
           .then(releaseLock);
-      });
+      }).catch(releaseLock);
     });
   }
 
-  getChromeWindowsFromAPI(): Promise<ChromeAPIWindowState[]> {
+  private createAPIWindow(createData: CreateData): Promise<ChromeAPIWindowState> {
+    return new Promise<ChromeAPIWindowState>(resolve => {
+      chrome.windows.create(createData, window =>
+        resolve(window as ChromeAPIWindowState)
+      );
+    });
+  }
+
+  private createAndDiscardTab(url: string, windowId: number) {
+    chrome.tabs.create({windowId, url, active: false}, tab => {
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        chrome.tabs.executeScript(tab.id as number, {
+          code: 'window.stop()',
+          runAt: 'document_start'
+        }, () => {
+          chrome.tabs.discard(tab.id as number);
+        });
+      }
+    });
+  }
+
+  private getChromeWindowsFromAPI(): Promise<ChromeAPIWindowState[]> {
     return new Promise<ChromeAPIWindowState[]>(resolve => {
       chrome.windows.getAll({populate: true}, chromeWindows => {
         chromeWindows = chromeWindows.filter(window => window.type === 'normal');
