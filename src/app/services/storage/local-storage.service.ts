@@ -140,14 +140,17 @@ export class LocalStorageService {
         if (data[StorageKeys.WebpageTitleCache]) {
           resolve(data[StorageKeys.WebpageTitleCache]);
         } else {
-          resolve({});
+          resolve(WebpageTitleCache.empty());
         }
       });
     });
   }
 
-  setWebpageTitleCacheData(urlCacheData: WebpageTitleCache) {
-    // todo: broadcast update
-    chrome.storage.local.set({[StorageKeys.WebpageTitleCache]: urlCacheData});
+  setWebpageTitleCacheData(webpageTitleCache: WebpageTitleCache) {
+    chrome.storage.local.set({
+      [StorageKeys.WebpageTitleCache]: webpageTitleCache
+    }, () => {
+      this.messagePassingService.broadcastWebpageTitleCache(webpageTitleCache);
+    });
   }
 }

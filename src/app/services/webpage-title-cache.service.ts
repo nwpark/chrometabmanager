@@ -3,6 +3,7 @@ import {LocalStorageService} from './storage/local-storage.service';
 import {WebpageTitleCache} from '../types/webpage-title-cache';
 import {ChromeAPITabState} from '../types/chrome-api/chrome-api-tab-state';
 import {modifiesState} from '../decorators/modifies-state';
+import {MessageReceiverService} from './messaging/message-receiver.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +14,20 @@ export class WebpageTitleCacheService {
 
   private webpageTitleCache: WebpageTitleCache;
 
-  constructor(private localStorageService: LocalStorageService) {
-    this.webpageTitleCache = {};
-    this.localStorageService.getWebpageTitleCacheData().then(tabMetadataCache => {
-      this.webpageTitleCache = tabMetadataCache;
+  constructor(private localStorageService: LocalStorageService,
+              private messageReceiverService: MessageReceiverService) {
+    this.webpageTitleCache = WebpageTitleCache.empty();
+    this.localStorageService.getWebpageTitleCacheData().then(webpageTitleCache => {
+      this.setWebpageTitleCache(webpageTitleCache);
     });
+    this.messageReceiverService.webpageTitleCacheUpdated$.subscribe(webpageTitleCache => {
+      this.setWebpageTitleCache(webpageTitleCache);
+    });
+  }
+
+  private setWebpageTitleCache(webpageTitleCache: WebpageTitleCache) {
+    console.log(new Date().toTimeString().substring(0, 8), '- refreshing webpage title cache');
+    this.webpageTitleCache = webpageTitleCache;
   }
 
   getTitleForUrl(url: string): string {

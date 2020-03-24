@@ -25,7 +25,7 @@ const ignoredTabUrls = ['chrome://newtab/'];
 
 const localStorageService = new LocalStorageService(new MessagePassingService());
 const messageReceiverService = new MessageReceiverService();
-const webpageTitleCacheService = new WebpageTitleCacheService(localStorageService);
+const webpageTitleCacheService = new WebpageTitleCacheService(localStorageService, messageReceiverService);
 const activeWindowStateManager = new ActiveWindowStateManager(localStorageService, messageReceiverService, webpageTitleCacheService);
 const closedSessionStateManager = new ClosedSessionStateManager(localStorageService);
 

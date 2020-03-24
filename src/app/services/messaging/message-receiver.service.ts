@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {SessionListState} from '../../types/session/session-list-state';
 import {InsertWindowMessageData, MessageData, MessagePassingService} from './message-passing.service';
+import {WebpageTitleCache} from '../../types/webpage-title-cache';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +13,13 @@ export class MessageReceiverService {
   private activeSessionStateUpdated = new SessionListMessageReceiver();
   private closedSessionStateUpdated = new SessionListMessageReceiver();
   private preferencesUpdated = new MessageReceiver<void>();
+  private webpageTitleCacheUpdated = new MessageReceiver<WebpageTitleCache>();
 
   savedSessionStateUpdated$ = this.savedSessionStateUpdated.asObservable();
   activeSessionStateUpdated$ = this.activeSessionStateUpdated.asObservable();
   closedSessionStateUpdated$ = this.closedSessionStateUpdated.asObservable();
   preferencesUpdated$ = this.preferencesUpdated.asObservable();
+  webpageTitleCacheUpdated$ = this.webpageTitleCacheUpdated.asObservable();
 
   constructor() {
     chrome.runtime.onMessage.addListener((message: MessageData<any>) => {
@@ -36,6 +39,8 @@ export class MessageReceiverService {
         return this.closedSessionStateUpdated;
       case MessagePassingService.PREFERENCES_UPDATED:
         return this.preferencesUpdated;
+      case MessagePassingService.WEBPAGE_TITLE_CACHE_UPDATED:
+        return this.webpageTitleCacheUpdated;
     }
   }
 

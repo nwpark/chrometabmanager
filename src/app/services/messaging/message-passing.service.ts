@@ -3,6 +3,7 @@ import {SessionState} from '../../types/session/session-state';
 import {Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 import {SessionListState} from '../../types/session/session-list-state';
+import {WebpageTitleCache} from '../../types/webpage-title-cache';
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +14,13 @@ export class MessagePassingService {
   static readonly SAVED_SESSION_MESSAGE = 'savedWindowsUpdated_0656e252';
   static readonly CLOSED_SESSION_MESSAGE = 'closedSessionsUpdated_7d763bba';
   static readonly PREFERENCES_UPDATED = 'preferencesUpdated_8c6d0f54';
+  static readonly WEBPAGE_TITLE_CACHE_UPDATED = 'webpageTitleCacheUpdated_b79e54ea';
   static readonly INSERT_WINDOW_REQUEST = 'insertWindowRequest_de10f744';
   static readonly INSTANCE_ID_REQUEST = 'instanceIdRequest_7f5604d5';
   static readonly MESSAGE_DEBOUNCE_TIME = 400;
 
   private preferencesMessageHandler = new SimpleMessageHandler<void>(MessagePassingService.PREFERENCES_UPDATED);
+  private webpageTitleCacheMessageHandler = new SimpleMessageHandler<WebpageTitleCache>(MessagePassingService.WEBPAGE_TITLE_CACHE_UPDATED);
   private activeSessionMessageHandler = new DebouncedMessageHandler(MessagePassingService.ACTIVE_SESSION_MESSAGE);
   private savedSessionMessageHandler = new DebouncedMessageHandler(MessagePassingService.SAVED_SESSION_MESSAGE);
   private closedSessionMessageHandler = new DebouncedMessageHandler(MessagePassingService.CLOSED_SESSION_MESSAGE);
@@ -38,6 +41,10 @@ export class MessagePassingService {
 
   broadcastPreferencesUpdated() {
     this.preferencesMessageHandler.broadcast();
+  }
+
+  broadcastWebpageTitleCache(webpageTitleCache: WebpageTitleCache) {
+    this.webpageTitleCacheMessageHandler.broadcast(webpageTitleCache);
   }
 
   requestInsertChromeWindow(sessionState: SessionState, index: number) {
