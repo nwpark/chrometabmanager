@@ -1,9 +1,10 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {AnimationState, closeTabAnimation} from '../../animations';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
+import {ChromeAPITabState, hasTitle} from '../../types/chrome-api/chrome-api-tab-state';
+import {WebpageTitleCacheService} from '../../services/webpage-title-cache.service';
 
 @Component({
   selector: 'app-draggable-chrome-tab',
@@ -27,14 +28,14 @@ export class DraggableChromeTabComponent implements OnInit {
   title: string;
   faviconIconUrl: SafeUrl;
 
-  constructor(private changeDetectorRef: ChangeDetectorRef,
+  constructor(private webpageTitleCacheService: WebpageTitleCacheService,
+              private changeDetectorRef: ChangeDetectorRef,
               private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
-    // todo: create title cache (map url to title) in case it doesnt exist
-    this.title = this.chromeTab.title.length > 0
+    this.title = hasTitle(this.chromeTab)
       ? this.chromeTab.title
-      : this.chromeTab.url;
+      : this.webpageTitleCacheService.getTitleForUrl(this.chromeTab.url);
     this.faviconIconUrl = this.domSanitizer.bypassSecurityTrustUrl(this.getFaviconIconUrl());
   }
 

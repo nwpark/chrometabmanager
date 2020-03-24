@@ -9,6 +9,7 @@ import {ChromeAPIWindowState, SessionId} from '../app/types/chrome-api/chrome-ap
 import {SessionState} from '../app/types/session/session-state';
 import {MessageReceiverService} from '../app/services/messaging/message-receiver.service';
 import CreateData = chrome.windows.CreateData;
+import {WebpageTitleCacheService} from '../app/services/webpage-title-cache.service';
 
 export class ActiveWindowStateManager {
 
@@ -16,7 +17,8 @@ export class ActiveWindowStateManager {
   private mutex: Mutex;
 
   constructor(private localStorageService: LocalStorageService,
-              private messageReceiverService: MessageReceiverService) {
+              private messageReceiverService: MessageReceiverService,
+              private webpageTitleCacheService: WebpageTitleCacheService) {
     this.mutex = new Mutex();
     this.sessionListState = SessionListState.empty();
     this.messageReceiverService.activeSessionStateUpdated$.subscribe(sessionListState => {
@@ -47,6 +49,9 @@ export class ActiveWindowStateManager {
   }
 
   private insertWindow(sessionState: SessionState, index) {
+    // All tabs are suspended after the new window is created - this causes the title for each tab to be lost,
+    // so each title is inserted into the cache.
+    this.webpageTitleCacheService.insertTabs(sessionState.session.window.tabs);
     this.mutex.acquire().then(releaseLock => {
       const tabsUrls = sessionState.session.window.tabs.map(tab => tab.url);
       this.createAPIWindow({url: tabsUrls.shift(), focused: false}).then(window => {
@@ -71,6 +76,7 @@ export class ActiveWindowStateManager {
   private createAndDiscardTab(url: string, windowId: number) {
     chrome.tabs.create({windowId, url, active: false}, tab => {
       if (url.startsWith('http://') || url.startsWith('https://')) {
+        // todo: handle error (doesnt work on google domains for example)
         chrome.tabs.executeScript(tab.id as number, {
           code: 'window.stop()',
           runAt: 'document_start'

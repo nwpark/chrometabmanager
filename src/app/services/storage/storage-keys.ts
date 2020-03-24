@@ -6,5 +6,6 @@ export enum StorageKeys {
   RecentlyClosedSessions = 'closedSessionsStorage_882c0c64',
   RecentlyClosedSessionsLayoutState = 'closedSessionsLayoutStateStorage_b120de96',
   Preferences = 'preferencesStorage_166b6914',
-  LastModifiedBy = 'lastModifiedBy_1266a87e'
+  LastModifiedBy = 'lastModifiedBy_1266a87e',
+  WebpageTitleCache = 'webpageTitleCache_c0d63a5d'
 }

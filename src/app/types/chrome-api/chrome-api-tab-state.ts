@@ -15,6 +15,10 @@ export interface ChromeAPITabState {
   [others: string]: any; // Ignore unused API fields
 }
 
+export function hasTitle(tab: ChromeAPITabState): boolean {
+  return tab.title.length > 0 && !(tab.title === tab.url);
+}
+
 export function chromeAPITabStateEquals(a: ChromeAPITabState, b: ChromeAPITabState): boolean {
   if (isNullOrUndefined(a) || isNullOrUndefined(b)) {
     return a === b;

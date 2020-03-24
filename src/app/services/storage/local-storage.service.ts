@@ -5,6 +5,7 @@ import {StorageKeys} from './storage-keys';
 import {SessionListLayoutState, validateSessionListLayoutState} from '../../types/session/session-list-layout-state';
 import {validateSessionMap} from '../../types/session/session-map';
 import {UndefinedObjectError} from '../../types/errors/UndefinedObjectError';
+import {WebpageTitleCache} from '../../types/webpage-title-cache';
 
 @Injectable({
   providedIn: 'root'
@@ -130,5 +131,23 @@ export class LocalStorageService {
         resolve();
       });
     });
+  }
+
+  getWebpageTitleCacheData(): Promise<WebpageTitleCache> {
+    return new Promise<WebpageTitleCache>(resolve => {
+      chrome.storage.local.get(StorageKeys.WebpageTitleCache, data => {
+        // todo: add data validation
+        if (data[StorageKeys.WebpageTitleCache]) {
+          resolve(data[StorageKeys.WebpageTitleCache]);
+        } else {
+          resolve({});
+        }
+      });
+    });
+  }
+
+  setWebpageTitleCacheData(urlCacheData: WebpageTitleCache) {
+    // todo: broadcast update
+    chrome.storage.local.set({[StorageKeys.WebpageTitleCache]: urlCacheData});
   }
 }

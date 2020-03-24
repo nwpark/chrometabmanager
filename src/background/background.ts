@@ -5,6 +5,7 @@ import {MessageReceiverService} from '../app/services/messaging/message-receiver
 import {StorageKeys} from '../app/services/storage/storage-keys';
 import {LocalStorageService} from '../app/services/storage/local-storage.service';
 import {MessagePassingService} from '../app/services/messaging/message-passing.service';
+import {WebpageTitleCacheService} from '../app/services/webpage-title-cache.service';
 
 addOnInstalledListener();
 
@@ -24,7 +25,8 @@ const ignoredTabUrls = ['chrome://newtab/'];
 
 const localStorageService = new LocalStorageService(new MessagePassingService());
 const messageReceiverService = new MessageReceiverService();
-const activeWindowStateManager = new ActiveWindowStateManager(localStorageService, messageReceiverService);
+const webpageTitleCacheService = new WebpageTitleCacheService(localStorageService);
+const activeWindowStateManager = new ActiveWindowStateManager(localStorageService, messageReceiverService, webpageTitleCacheService);
 const closedSessionStateManager = new ClosedSessionStateManager(localStorageService);
 
 const instanceId = uuid();

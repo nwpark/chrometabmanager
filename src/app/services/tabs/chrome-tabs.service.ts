@@ -128,12 +128,6 @@ export class ChromeTabsService implements TabsService {
   @modifiesState({storeResult: false})
   insertWindow(sessionState: SessionState, index: number) {
     const tempSession = SessionStateUtils.convertToActiveWindow(sessionState);
-    // todo: create window with single url (the desired active tab), then create all other tabs with {active: false} and suspend immediately
-    // (requires addition of a title field to layout state)
-    // "permissions": ["activeTab", "http://*/", "https://*/"]
-    // chrome.tabs.create({url: 'https://www.youtube.com', active: false}, tab => {
-    //   chrome.tabs.executeScript(tab.id, {code: '', runAt: 'document_start'}, () => chrome.tabs.discard(tab.id));
-    // });
     this.sessionListState.insertSession(tempSession, index);
     this.messagePassingService.requestInsertChromeWindow(sessionState, index);
   }
