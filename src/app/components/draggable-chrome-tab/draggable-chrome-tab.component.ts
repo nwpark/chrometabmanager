@@ -3,7 +3,7 @@ import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animat
 import {AnimationState, closeTabAnimation} from '../../animations';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {ChromeAPITabState, hasTitle} from '../../types/chrome-api/chrome-api-tab-state';
+import {ChromeAPITabState, getUrl, hasTitle} from '../../types/chrome-api/chrome-api-tab-state';
 import {WebpageTitleCacheService} from '../../services/webpage-title-cache.service';
 
 @Component({
@@ -36,7 +36,7 @@ export class DraggableChromeTabComponent implements OnInit {
     // todo: use pending url if no url
     this.title = hasTitle(this.chromeTab)
       ? this.chromeTab.title
-      : this.webpageTitleCacheService.getTitleForUrl(this.chromeTab.url);
+      : this.webpageTitleCacheService.getTitleForUrl(getUrl(this.chromeTab));
     this.faviconIconUrl = this.domSanitizer.bypassSecurityTrustUrl(this.getFaviconIconUrl());
   }
 

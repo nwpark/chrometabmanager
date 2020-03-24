@@ -7,6 +7,7 @@ export interface ChromeAPITabState {
   id: SessionId;
   windowId?: SessionId;
   url: string;
+  pendingUrl?: string;
   title: string;
   favIconUrl?: string;
   status: string;
@@ -16,7 +17,14 @@ export interface ChromeAPITabState {
 }
 
 export function hasTitle(tab: ChromeAPITabState): boolean {
-  return tab.title.length > 0 && !(tab.title === tab.url);
+  return tab.title && !(tab.title === tab.url);
+}
+
+export function getUrl(tab: ChromeAPITabState): string {
+  if (!tab.url && tab.pendingUrl) {
+    return tab.pendingUrl;
+  }
+  return tab.url;
 }
 
 export function chromeAPITabStateEquals(a: ChromeAPITabState, b: ChromeAPITabState): boolean {
