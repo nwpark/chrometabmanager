@@ -18,14 +18,14 @@ export class WebpageTitleCacheService {
               private messageReceiverService: MessageReceiverService) {
     this.webpageTitleCache = WebpageTitleCache.empty();
     this.localStorageService.getWebpageTitleCacheData().then(webpageTitleCache => {
-      this.setWebpageTitleCache(webpageTitleCache);
+      this.setCacheData(webpageTitleCache);
     });
     this.messageReceiverService.webpageTitleCacheUpdated$.subscribe(webpageTitleCache => {
-      this.setWebpageTitleCache(webpageTitleCache);
+      this.setCacheData(webpageTitleCache);
     });
   }
 
-  private setWebpageTitleCache(webpageTitleCache: WebpageTitleCache) {
+  private setCacheData(webpageTitleCache: WebpageTitleCache) {
     console.log(new Date().toTimeString().substring(0, 8), '- refreshing webpage title cache');
     this.webpageTitleCache = webpageTitleCache;
   }
@@ -45,24 +45,25 @@ export class WebpageTitleCacheService {
         lastModified: Date.now()
       };
     });
+    this.removeExpiredCacheEntries();
   }
 
-  // private removeOverflowCacheEntries() {
-  //   if (this.size() > this.MAX_CACHE_SIZE) {
-  //     this.getOrderedCacheEntries()
-  //       .splice(this.MAX_CACHE_SIZE)
-  //       .forEach(([url, cacheEntry]) => delete this.urlCacheData[url]);
-  //   }
-  // }
-  //
-  // private size(): number {
-  //   return Object.entries(this.urlCacheData).length;
-  // }
-  //
-  // private getOrderedCacheEntries() {
-  //   return Object.entries(this.urlCacheData)
-  //     .sort((a, b) => b[1].lastModified - a[1].lastModified);
-  // }
+  private removeExpiredCacheEntries() {
+    if (this.size() > this.MAX_CACHE_SIZE) {
+      this.getOrderedCacheEntries()
+        .splice(this.MAX_CACHE_SIZE)
+        .forEach(([url, cacheEntry]) => delete this.webpageTitleCache[url]);
+    }
+  }
+
+  private size(): number {
+    return Object.entries(this.webpageTitleCache).length;
+  }
+
+  private getOrderedCacheEntries() {
+    return Object.entries(this.webpageTitleCache)
+      .sort((a, b) => b[1].lastModified - a[1].lastModified);
+  }
 
   onStateModified() {
     console.log(new Date().toTimeString().substring(0, 8), '- updating webpage title cache');

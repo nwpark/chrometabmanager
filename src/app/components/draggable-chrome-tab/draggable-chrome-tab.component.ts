@@ -33,7 +33,6 @@ export class DraggableChromeTabComponent implements OnInit {
               private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
-    // todo: use pending url if no url
     this.title = hasTitle(this.chromeTab)
       ? this.chromeTab.title
       : this.webpageTitleCacheService.getTitleForUrl(getUrl(this.chromeTab));

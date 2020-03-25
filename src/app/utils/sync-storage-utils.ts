@@ -21,15 +21,6 @@ export class SyncStorageUtils {
   static filterSessionStatesFromStorageData(data: SessionStateMap): SessionState[] {
     return Object.entries(data)
       .filter(entry => entry[0].length === this.SESSION_KEY_LENGTH)
-      .map(entry => entry[1])
-      // todo: this is only for compatibility with old versions.
-      .map((sessionState: SessionState) => {
-        if (sessionState.layoutState) {
-          return sessionState;
-        } else {
-          const session = sessionState as ChromeAPISession;
-          return {session, layoutState: SessionListUtils.createBasicWindowLayoutState(session.window.id)};
-        }
-      });
+      .map(entry => entry[1]);
   }
 }
