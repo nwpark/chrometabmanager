@@ -1,12 +1,6 @@
 <div
   [@simpleFadeAnimation]="'fadeIn'"
-  [ngStyle]="{
-    backgroundImage: 'url(' + backgroundPhoto.data + ')',
-    backgroundRepeat: 'no-repeat',
-    backgroundAttachment: 'fixed',
-    backgroundSize: 'cover',
-    height: '100%'
-  }">
+  style="height: 100%">
   <mat-grid-list
     cols="{{cols}}"
     style="height: 100%"

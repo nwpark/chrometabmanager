@@ -1,14 +1,6 @@
 <div
   [@simpleFadeAnimation]="'fadeIn'"
-  [ngStyle]="{
-    backgroundImage: 'url(' + backgroundPhoto.data + ')',
-    backgroundRepeat: 'no-repeat',
-    backgroundAttachment: 'fixed',
-    backgroundSize: 'cover',
-    height: 'calc(100% - 80px)',
-    paddingTop: '80px',
-    overflowY: 'scroll'
-  }">
+  style="height: calc(100% - 80px); padding-top: 80px; overflow-y: scroll">
   <mat-card class="settings-card">
     <mat-card-header>
       <mat-card-title>Preferences</mat-card-title>
@@ -24,7 +16,7 @@
             [disableRipple]="true"
             (change)="setCloseWindowOnSave($event)">
             <div>
-              <div>Remove items after moving</div>
+              <div>Close tabs after moving</div>
               <div class="settings-card-sub-text">
                 Remove the original window/tab after dragging it to a different section
               </div>
