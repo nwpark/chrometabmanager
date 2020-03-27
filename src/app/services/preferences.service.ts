@@ -13,8 +13,8 @@ export class PreferencesService {
 
   private preferences: Preferences;
 
-  preferencesUpdated = new Subject<Preferences>();
-  preferencesUpdated$ = this.preferencesUpdated.asObservable();
+  private preferencesUpdated = new Subject<Preferences>();
+  preferences$ = this.preferencesUpdated.asObservable();
 
   constructor(private syncStorageService: SyncStorageService,
               private messageReceiverService: MessageReceiverService) {
@@ -35,7 +35,7 @@ export class PreferencesService {
     if (this.preferences) {
       return Promise.resolve(this.preferences);
     }
-    return this.preferencesUpdated$.pipe(take(1)).toPromise();
+    return this.preferences$.pipe(take(1)).toPromise();
   }
 
   shouldCloseWindowOnSave(): Promise<boolean> {
@@ -61,6 +61,11 @@ export class PreferencesService {
   @modifiesState()
   setSyncSavedWindows(syncSavedWindows: boolean) {
     this.preferences.syncSavedWindows = syncSavedWindows;
+  }
+
+  @modifiesState()
+  setDarkThemeEnabled(enableDarkTheme: boolean) {
+    this.preferences.enableDarkTheme = enableDarkTheme;
   }
 
   onStateModified() {

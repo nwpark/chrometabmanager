@@ -60,6 +60,7 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
 function addOnInstalledListener() {
   chrome.runtime.onInstalled.addListener(details => {
     if (details.reason === 'update' && details.previousVersion !== chrome.runtime.getManifest().version) {
+      // todo: set dark theme to false in preferences
       const local = new Promise(resolve => {
         chrome.storage.local.get([
           StorageKeys.SavedWindowsLayoutState,

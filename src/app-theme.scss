@@ -8,22 +8,20 @@
 // Be sure that you only ever include this mixin once!
 @include mat-core();
 
-$app-light-primary: mat-palette($mat-indigo);
-$app-light-accent: mat-palette($mat-pink, A200, A100, A400);
-$app-light-warn: mat-palette($mat-red);
-$app-light-theme:mat-light-theme($app-light-primary, $app-light-accent, $app-light-warn);
+$app-default-primary: mat-palette($mat-indigo);
+$app-default-accent: mat-palette($mat-pink, A200, A100, A400);
+$app-default-warn: mat-palette($mat-red);
+$app-default-theme:mat-light-theme($app-default-primary, $app-default-accent, $app-default-warn);
 
 $app-dark-primary: mat-palette($mat-blue-grey);
 $app-dark-accent: mat-palette($mat-amber, A200, A100, A400);
 $app-dark-warn: mat-palette($mat-deep-orange);
 $app-dark-theme:mat-dark-theme($app-dark-primary, $app-dark-accent, $app-dark-warn);
 
-.light-theme {
-  @include angular-material-theme($app-light-theme);
-  @include chrome-window-theme($app-light-theme);
-  @include draggable-chrome-tab-theme($app-light-theme);
-  @include detached-chrome-tab-theme($app-light-theme);
-}
+@include angular-material-theme($app-default-theme);
+@include chrome-window-theme($app-default-theme);
+@include draggable-chrome-tab-theme($app-default-theme);
+@include detached-chrome-tab-theme($app-default-theme);
 
 .dark-theme {
   @include angular-material-theme($app-dark-theme);

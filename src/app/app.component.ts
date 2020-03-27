@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {OverlayContainer} from '@angular/cdk/overlay';
+import {PreferencesService} from './services/preferences.service';
 
 @Component({
   selector: 'app-root',
@@ -8,16 +9,22 @@ import {OverlayContainer} from '@angular/cdk/overlay';
 })
 export class AppComponent implements OnInit {
 
-  private readonly LIGHT_THEME_CLASS = 'light-theme';
-  private readonly DARK_THEME_CLASS = 'dark-theme';
+  private readonly DARK_THEME = 'dark-theme';
 
   pageTitle: string;
 
-  constructor(private overlayContainer: OverlayContainer) { }
+  constructor(private overlayContainer: OverlayContainer,
+              private preferencesService: PreferencesService) { }
 
   ngOnInit() {
-    const classList = this.overlayContainer.getContainerElement().parentElement.classList;
-    classList.add(this.LIGHT_THEME_CLASS);
+    this.preferencesService.preferences$.subscribe(preferences => {
+      const classList = this.overlayContainer.getContainerElement().parentElement.classList;
+      if (preferences.enableDarkTheme) {
+        classList.add(this.DARK_THEME);
+      } else {
+        classList.remove(this.DARK_THEME);
+      }
+    });
     this.pageTitle = document.title;
   }
 

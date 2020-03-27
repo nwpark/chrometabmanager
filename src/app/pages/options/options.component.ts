@@ -53,7 +53,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
               private matDialogService: MatDialog) { }
 
   ngOnInit() {
-    this.preferencesService.preferencesUpdated$.pipe(
+    this.preferencesService.preferences$.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(preferences => {
       this.preferences = preferences;
@@ -83,6 +83,10 @@ export class OptionsComponent implements OnDestroy, OnInit {
 
   setEnableDebugging(event: MatSlideToggleChange) {
     this.preferencesService.setEnableDebugging(event.checked);
+  }
+
+  setDarkThemeEnabled(event: MatSlideToggleChange) {
+    this.preferencesService.setDarkThemeEnabled(event.checked);
   }
 
   setSyncSavedWindows(event: MatSlideToggleChange) {

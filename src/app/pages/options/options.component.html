@@ -10,6 +10,16 @@
       <mat-list>
         <mat-list-item>
           <mat-slide-toggle
+            [checked]="preferences?.enableDarkTheme"
+            [color]="'primary'"
+            [labelPosition]="'before'"
+            [disableRipple]="true"
+            (change)="setDarkThemeEnabled($event)">
+            Dark theme
+          </mat-slide-toggle>
+        </mat-list-item>
+        <mat-list-item>
+          <mat-slide-toggle
             [checked]="preferences?.closeWindowOnSave"
             [color]="'primary'"
             [labelPosition]="'before'"
