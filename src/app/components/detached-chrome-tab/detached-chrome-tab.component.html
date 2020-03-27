@@ -5,22 +5,24 @@
   [title]="chromeAPITab.url"
   [@close-tab]="animationState"
   (@close-tab.done)="completeCloseAnimation($event)">
-  <button
-    mat-icon-button
-    class="action-button-30"
-    style="float: right"
-    title="Close tab"
-    (click)="closeTab()">
-    <mat-icon class="action-icon-18" *ngIf="tabContainer.mouseOver">close</mat-icon>
-  </button>
-  <div
-    class="chrome-tab-title"
-    (click)="setTabActive($event)">
-    <div class="last-modified">{{lastModified}}</div>
-    <div class="vertical-divider"></div>
-    <img
-      class="favicon-icon"
-      [src]="faviconIconUrl">
-    {{title}}
+  <div class="detached-chrome-tab-inner">
+    <button
+      mat-icon-button
+      class="action-button-30"
+      style="float: right"
+      title="Close tab"
+      (click)="closeTab()">
+      <mat-icon class="action-icon-18" *ngIf="tabContainer.mouseOver">close</mat-icon>
+    </button>
+    <div
+      class="chrome-tab-title"
+      (click)="setTabActive($event)">
+      <div class="last-modified">{{lastModified}}</div>
+      <div class="detached-chrome-tab-vertical-divider"></div>
+      <img
+        class="favicon-icon"
+        [src]="faviconIconUrl">
+      {{title}}
+    </div>
   </div>
 </div>

@@ -27,7 +27,7 @@
             (change)="setCloseWindowOnSave($event)">
             <div>
               <div>Close tabs after moving</div>
-              <div class="settings-card-sub-text">
+              <div class="options-settings-card-sub-text">
                 Remove the original window/tab after dragging it to a different section
               </div>
             </div>
@@ -53,7 +53,7 @@
             [disableRipple]="true"
             (change)="setSyncSavedWindows($event)">
             <div style="">Enable sync</div>
-            <div class="settings-card-sub-text">
+            <div class="options-settings-card-sub-text">
               Synchronize saved windows between devices
             </div>
           </mat-slide-toggle>
@@ -63,7 +63,7 @@
         <ng-container>
           <mat-divider [inset]="true"></mat-divider>
           <mat-list-item>
-            <div mat-line style="margin-bottom: 5px" class="settings-card-sub-text">
+            <div mat-line style="margin-bottom: 5px" class="options-settings-card-sub-text">
               Bytes in use: {{syncBytesInUse | number}} out of {{syncQuotaBytes | number}} ({{syncBytesInUsePercentage}}%)
             </div>
             <mat-progress-bar
@@ -74,7 +74,7 @@
           <h3
             mat-subheader
             style="height: 30px"
-            class="settings-card-sub-text">
+            class="options-settings-card-sub-text">
             <mat-icon class="icon-18" style="height: 20px; width: 18px; margin-right: 5px">warning</mat-icon>
             Warning: Chrome sync storage has a maximum quota of {{syncQuotaBytes | number}} bytes
           </h3>
@@ -95,7 +95,7 @@
           <div style="width: 100%">
             <div style="float: left">
               <div style="">Download your data</div>
-              <div class="settings-card-sub-text">
+              <div class="options-settings-card-sub-text">
                 Download your saved tabs and windows
               </div>
             </div>
@@ -128,7 +128,7 @@
           <div style="width: 100%">
             <div style="float: left">
               <div>Restore defaults</div>
-              <div class="settings-card-sub-text">
+              <div class="options-settings-card-sub-text">
                 Reset the state of the application and wipe all saved data
               </div>
             </div>

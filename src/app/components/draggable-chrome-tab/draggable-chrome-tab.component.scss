@@ -32,16 +32,3 @@
   color: rgba(0, 0, 0, 0.65);
   font-size: 16px;
 }
-
-.vertical-divider {
-  display: inline-block;
-  height: 20px; /* TAB_HEIGHT */
-  border-left: 1px solid #ccc;
-  transform: translateY(5px);
-}
-
-.last-modified {
-  padding-left: 10px;
-  padding-right: 10px;
-  display: inline-block;
-}

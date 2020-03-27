@@ -13,7 +13,7 @@
       [matMenuTriggerFor]="menu"
       (menuOpened)="setMenuOpen(true)"
       (menuClosed)="setMenuOpen(false)">
-      <mat-icon class="action-icon-18">menu</mat-icon>
+      <mat-icon class="action-icon-18-black">menu</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
       <ng-container *ngFor="let menuItem of actionMenuItems">
@@ -36,7 +36,7 @@
         [matTooltip]="layoutState.hidden ? button.titleWhenHidden || button.title : button.title"
         matTooltipClass="tooltip-reduced-margin"
         (click)="button.callback()">
-        <mat-icon class="action-icon-18">{{layoutState.hidden ? button.iconWhenHidden || button.icon : button.icon}}</mat-icon>
+        <mat-icon class="action-icon-18-black">{{layoutState.hidden ? button.iconWhenHidden || button.icon : button.icon}}</mat-icon>
       </button>
     </ng-container>
   </div>
@@ -47,7 +47,7 @@
     matTooltip="Debug"
     matTooltipClass="tooltip-reduced-margin"
     (click)="debug()">
-    <mat-icon class="action-icon-18">bug_report</mat-icon>
+    <mat-icon class="action-icon-18-black">bug_report</mat-icon>
   </button>
 
   <!--Title text-->
@@ -65,7 +65,7 @@
       <div
         style="display: inline-block"
         class="action-button-30">
-        <mat-icon class="icon-18">
+        <mat-icon class="icon-18-black">
           {{props.isMutable && titleTextDiv.mouseOver ? 'edit' : ''}}
         </mat-icon>
       </div>
@@ -85,7 +85,7 @@
         type="submit"
         matTooltip="Save title"
         matTooltipClass="tooltip-reduced-margin">
-        <mat-icon class="action-icon-18">save_alt</mat-icon>
+        <mat-icon class="action-icon-18-black">save_alt</mat-icon>
       </button>
     </form>
   </div>

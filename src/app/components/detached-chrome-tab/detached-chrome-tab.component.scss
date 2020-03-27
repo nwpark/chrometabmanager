@@ -7,13 +7,21 @@
     background: map-get($background-palette, background);
     cursor: pointer;
     user-select: none;
-    border-bottom: solid 1px #ccc;
+    border-bottom: solid 1px map-get($foreground-palette, divider);
     border-left: 1px solid dimgrey;
     border-right: 1px solid dimgrey;
     color: map-get($foreground-palette, text);
   }
-  .detached-chrome-tab:hover {
+
+  .detached-chrome-tab-inner:hover {
     background: map-get($background-palette, hover);
+  }
+
+  .detached-chrome-tab-vertical-divider {
+    display: inline-block;
+    height: 20px; /* TAB_HEIGHT */
+    border-left: 1px solid map-get($foreground-palette, divider);
+    transform: translateY(5px);
   }
 }
 
@@ -46,13 +54,6 @@
   padding: 0 10px;
   color: rgba(0, 0, 0, 0.65);
   font-size: 16px;
-}
-
-.vertical-divider {
-  display: inline-block;
-  height: 20px; /* TAB_HEIGHT */
-  border-left: 1px solid #ccc;
-  transform: translateY(5px);
 }
 
 .last-modified {
