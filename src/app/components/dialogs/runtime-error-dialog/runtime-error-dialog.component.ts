@@ -5,11 +5,11 @@ import {ErrorDialogData} from '../../../types/errors/error-dialog-data';
 @Component({
   selector: 'app-runtime-error-dialog',
   templateUrl: './runtime-error-dialog.component.html',
-  styleUrls: ['./runtime-error-dialog.component.css']
+  styleUrls: ['./runtime-error-dialog.component.scss']
 })
 export class RuntimeErrorDialogComponent implements OnInit {
 
-  // todo: remove component in favour of BasicDialogComponent
+  // todo: remove this component in favour of BasicDialogComponent
   constructor(@Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) { }
 
   ngOnInit() {

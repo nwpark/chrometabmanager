@@ -10,7 +10,7 @@ import {SessionState} from '../../types/session/session-state';
 @Component({
   selector: 'app-detached-chrome-tab',
   templateUrl: './detached-chrome-tab.component.html',
-  styleUrls: ['./detached-chrome-tab.component.css'],
+  styleUrls: ['./detached-chrome-tab.component.scss'],
   animations: [
     trigger('close-tab', [
       transition(`* => ${AnimationState.Collapsing}`, [

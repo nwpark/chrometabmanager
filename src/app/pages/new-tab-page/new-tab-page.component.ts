@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {SessionComponentProps, SessionListId} from '../../types/chrome-window-component-data';
 import {ChromeTabsService} from '../../services/tabs/chrome-tabs.service';
@@ -13,7 +13,7 @@ import {DragDropService} from '../../services/drag-drop.service';
 @Component({
   selector: 'app-new-tab-page',
   templateUrl: './new-tab-page.component.html',
-  styleUrls: ['./new-tab-page.component.css'],
+  styleUrls: ['./new-tab-page.component.scss'],
   animations: [
     trigger('simpleFadeAnimation', [
       state('fadeIn', style({opacity: 1})),

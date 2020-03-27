@@ -13,7 +13,7 @@ import {SessionLayoutState} from '../../types/session/session-layout-state';
 @Component({
   selector: 'app-chrome-window',
   templateUrl: './chrome-window.component.html',
-  styleUrls: ['./chrome-window.component.css']
+  styleUrls: ['./chrome-window.component.scss']
 })
 export class ChromeWindowComponent implements OnDestroy, OnInit, OnChanges {
 

@@ -5,7 +5,7 @@ import {BasicDialogAction, BasicDialogData} from '../../../types/errors/basic-di
 @Component({
   selector: 'app-basic-dialog',
   templateUrl: './basic-dialog.component.html',
-  styleUrls: ['./basic-dialog.component.css']
+  styleUrls: ['./basic-dialog.component.scss']
 })
 export class BasicDialogComponent implements OnInit {
 

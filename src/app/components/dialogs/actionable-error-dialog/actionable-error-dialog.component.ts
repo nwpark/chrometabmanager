@@ -6,7 +6,7 @@ import {ActionableError} from '../../../types/errors/ActionableError';
 @Component({
   selector: 'app-actionable-error-dialog',
   templateUrl: './actionable-error-dialog.component.html',
-  styleUrls: ['./actionable-error-dialog.component.css']
+  styleUrls: ['./actionable-error-dialog.component.scss']
 })
 export class ActionableErrorDialogComponent implements OnInit {
 

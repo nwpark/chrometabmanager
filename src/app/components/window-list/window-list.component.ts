@@ -20,7 +20,7 @@ import {ListActionButtonFactory} from '../../utils/action-bar/list-action-button
 @Component({
   selector: 'app-window-list',
   templateUrl: './window-list.component.html',
-  styleUrls: ['./window-list.component.css'],
+  styleUrls: ['./window-list.component.scss'],
   animations: [
     trigger('collapse-list', [
       transition(`* => ${AnimationState.Collapsing}`, [

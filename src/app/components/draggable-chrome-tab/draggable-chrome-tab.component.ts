@@ -9,7 +9,7 @@ import {WebpageTitleCacheService} from '../../services/webpage-title-cache.servi
 @Component({
   selector: 'app-draggable-chrome-tab',
   templateUrl: './draggable-chrome-tab.component.html',
-  styleUrls: ['./draggable-chrome-tab.component.css'],
+  styleUrls: ['./draggable-chrome-tab.component.scss'],
   animations: [
     trigger('close-tab', [
       transition(`* => ${AnimationState.Closing}`, [

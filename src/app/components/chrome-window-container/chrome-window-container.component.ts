@@ -17,7 +17,7 @@ import {SessionLayoutState} from '../../types/session/session-layout-state';
 @Component({
   selector: 'app-chrome-window-container',
   templateUrl: './chrome-window-container.component.html',
-  styleUrls: ['./chrome-window-container.component.css'],
+  styleUrls: ['./chrome-window-container.component.scss'],
   animations: [
     trigger('close-window', [
       transition(`* => ${AnimationState.Closing}`, [

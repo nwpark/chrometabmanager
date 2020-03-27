@@ -21,7 +21,7 @@ import {DialogDataFactory} from '../../utils/dialog-data-factory';
 @Component({
   selector: 'app-options',
   templateUrl: './options.component.html',
-  styleUrls: ['./options.component.css'],
+  styleUrls: ['./options.component.scss'],
   animations: [
     trigger('simpleFadeAnimation', [
       state('fadeIn', style({opacity: 1})),

@@ -14,7 +14,7 @@ import {ActionButtonFactory} from '../../utils/action-bar/action-button-factory'
 @Component({
   selector: 'app-chrome-window-header',
   templateUrl: './chrome-window-header.component.html',
-  styleUrls: ['./chrome-window-header.component.css'],
+  styleUrls: ['./chrome-window-header.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class ChromeWindowHeaderComponent implements OnInit {
