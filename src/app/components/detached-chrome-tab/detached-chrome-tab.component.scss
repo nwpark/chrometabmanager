@@ -1,15 +1,22 @@
-.chrome-tab {
-  height: 30px; /* TAB_HEIGHT */
-  background: white;
-  cursor: pointer;
-  user-select: none;
-  border-bottom: solid 1px #ccc;
-  border-left: 1px solid dimgrey;
-  border-right: 1px solid dimgrey;
+@mixin detached-chrome-tab-theme($theme) {
+  $background-palette: map-get($theme, background);
+  $foreground-palette: map-get($theme, foreground);
+
+  .detached-chrome-tab {
+    height: 30px; /* TAB_HEIGHT */
+    background: map-get($background-palette, background);
+    cursor: pointer;
+    user-select: none;
+    border-bottom: solid 1px #ccc;
+    border-left: 1px solid dimgrey;
+    border-right: 1px solid dimgrey;
+    color: map-get($foreground-palette, text);
+  }
+  .detached-chrome-tab:hover {
+    background: map-get($background-palette, hover);
+  }
 }
-.chrome-tab:hover {
-  background: #f8f8f8;
-}
+
 .chrome-tab-lastchild {
   border-bottom: 1px solid dimgrey;
   border-bottom-left-radius: 4px;

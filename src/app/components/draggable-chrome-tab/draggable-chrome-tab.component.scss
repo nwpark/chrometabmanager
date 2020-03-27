@@ -1,11 +1,17 @@
-.chrome-tab {
-  height: 30px; /* TAB_HEIGHT */
-  background: white;
-  cursor: pointer;
-  user-select: none;
-}
-.chrome-tab:hover {
-  background: #f8f8f8;
+@mixin draggable-chrome-tab-theme($theme) {
+  $background-palette: map-get($theme, background);
+  $foreground-palette: map-get($theme, foreground);
+
+  .draggable-chrome-tab {
+    height: 30px; /* TAB_HEIGHT */
+    background: map-get($background-palette, background);
+    cursor: pointer;
+    user-select: none;
+    color: map-get($foreground-palette, text);
+  }
+  .draggable-chrome-tab:hover {
+    background: map-get($background-palette, hover);
+  }
 }
 
 .chrome-tab-title {
