@@ -1,6 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {PreferencesService} from './services/preferences.service';
+import {MatDialog} from '@angular/material';
+import {BasicDialogComponent} from './components/dialogs/basic-dialog/basic-dialog.component';
+import {BasicDialogData} from './types/errors/basic-dialog-data';
+import {DialogDataFactory} from './utils/dialog-data-factory';
 
 @Component({
   selector: 'app-root',
@@ -14,18 +18,29 @@ export class AppComponent implements OnInit {
   pageTitle: string;
 
   constructor(private overlayContainer: OverlayContainer,
+              private matDialogService: MatDialog,
               private preferencesService: PreferencesService) { }
 
   ngOnInit() {
     this.preferencesService.preferences$.subscribe(preferences => {
-      const classList = this.overlayContainer.getContainerElement().parentElement.classList;
-      if (preferences.enableDarkTheme) {
-        classList.add(this.DARK_THEME);
-      } else {
-        classList.remove(this.DARK_THEME);
-      }
+      this.initializeAppTheme(preferences.enableDarkTheme);
+      this.showNewVersionDialog();
     });
     this.pageTitle = document.title;
+  }
+
+  private initializeAppTheme(enableDarkTheme: boolean) {
+    const classList = this.overlayContainer.getContainerElement().parentElement.classList;
+    if (enableDarkTheme) {
+      classList.add(this.DARK_THEME);
+    } else {
+      classList.remove(this.DARK_THEME);
+    }
+  }
+
+  private showNewVersionDialog() {
+    const dialogData: BasicDialogData = DialogDataFactory.createNewVersionDialog('0.6.3', () => {});
+    this.matDialogService.open(BasicDialogComponent, {data: dialogData});
   }
 
   isNewTabPage(): boolean {

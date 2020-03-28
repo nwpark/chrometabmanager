@@ -1,4 +1,5 @@
 export class BasicDialogData {
+  width?: number;
   title: string;
   titleIcon?: string;
   contentEmphasisedHTML?: string;

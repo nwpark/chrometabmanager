@@ -1,4 +1,5 @@
 import {BasicDialogData} from '../types/errors/basic-dialog-data';
+import {getFormattedVersionHistoryHTML} from '../../versioning/released-versions';
 
 export class DialogDataFactory {
 
@@ -10,6 +11,18 @@ export class DialogDataFactory {
       actions: [
         {buttonText: 'Cancel', closeDialog: true},
         {buttonText: 'Proceed', callback}
+      ]
+    };
+  }
+
+  static createNewVersionDialog(version: string, callback: () => void): BasicDialogData {
+    return {
+      width: 500,
+      title: `Welcome to version ${version}-alpha!`,
+      titleIcon: 'info',
+      contentHTML: getFormattedVersionHistoryHTML(),
+      actions: [
+        {buttonText: 'Got it!', callback, closeDialog: true}
       ]
     };
   }

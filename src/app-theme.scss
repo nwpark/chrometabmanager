@@ -20,6 +20,7 @@ $app-dark-warn: mat-palette($mat-red);
 $app-dark-theme:mat-dark-theme($app-dark-primary, $app-dark-accent, $app-dark-warn);
 
 @include angular-material-theme($app-default-theme);
+@include styles-theme($app-default-theme);
 @include chrome-window-theme($app-default-theme);
 @include chrome-tab-theme($app-default-theme);
 @include draggable-chrome-tab-theme($app-default-theme);
@@ -29,6 +30,7 @@ $app-dark-theme:mat-dark-theme($app-dark-primary, $app-dark-accent, $app-dark-wa
 
 .dark-theme {
   @include angular-material-theme($app-dark-theme);
+  @include styles-theme($app-dark-theme);
   @include chrome-window-theme($app-dark-theme);
   @include chrome-tab-theme($app-dark-theme);
   @include draggable-chrome-tab-theme($app-dark-theme);

@@ -1,3 +1,11 @@
+@mixin styles-theme($theme) {
+  $foreground-palette: map-get($theme, foreground);
+
+  .secondary-text {
+    color: map-get($foreground-palette, secondary-text);
+  }
+}
+
 html, body { height: 100%; }
 body {
   margin: 0;

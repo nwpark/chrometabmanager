@@ -1,4 +1,4 @@
-<div style="width: 380px">
+<div [ngStyle]="{'width': width}">
   <div mat-dialog-title>
     <mat-icon class="dialog-title-icon" *ngIf="data.titleIcon">{{data.titleIcon}}</mat-icon>
     {{data.title}}
