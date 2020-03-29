@@ -15,7 +15,8 @@ export class DialogDataFactory {
     };
   }
 
-  static createNewVersionDialog(version: string, callback: () => void): BasicDialogData {
+  static createVersionHistoryDialog(callback: () => void): BasicDialogData {
+    const version = chrome.runtime.getManifest().version;
     return {
       width: 500,
       title: `Welcome to version ${version}-alpha!`,

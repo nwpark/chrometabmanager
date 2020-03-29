@@ -1,8 +1,8 @@
 export interface VersionHistory {
-  [version: string]: VersionInformation;
+  [version: string]: ReleaseNotes;
 }
 
-export interface VersionInformation {
+export interface ReleaseNotes {
   releaseDate: Date;
   changes: {
     title: string;

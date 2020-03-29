@@ -3,6 +3,7 @@ export interface Preferences {
   syncSavedWindows: boolean;
   enableDarkTheme: boolean;
   enableDebugging: boolean;
+  showReleaseNotesOnStartup: boolean;
 }
 
 export class PreferenceUtils {
@@ -11,7 +12,8 @@ export class PreferenceUtils {
       closeWindowOnSave: false,
       syncSavedWindows: false,
       enableDarkTheme: false,
-      enableDebugging: false
+      enableDebugging: false,
+      showReleaseNotesOnStartup: false
     };
   }
 }

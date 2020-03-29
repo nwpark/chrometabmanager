@@ -68,6 +68,11 @@ export class PreferencesService {
     this.preferences.enableDarkTheme = enableDarkTheme;
   }
 
+  @modifiesState()
+  setShowReleaseNotesOnStartup(showReleaseNotesOnStartup: boolean) {
+    this.preferences.showReleaseNotesOnStartup = showReleaseNotesOnStartup;
+  }
+
   onStateModified() {
     console.log(new Date().toTimeString().substring(0, 8), '- updating preferences');
     this.preferencesUpdated.next(this.preferences);

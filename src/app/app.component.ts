@@ -24,7 +24,9 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.preferencesService.preferences$.subscribe(preferences => {
       this.initializeAppTheme(preferences.enableDarkTheme);
-      this.showNewVersionDialog();
+      if (preferences.showReleaseNotesOnStartup) {
+        this.showVersionHistoryDialog();
+      }
     });
     this.pageTitle = document.title;
   }
@@ -38,8 +40,10 @@ export class AppComponent implements OnInit {
     }
   }
 
-  private showNewVersionDialog() {
-    const dialogData: BasicDialogData = DialogDataFactory.createNewVersionDialog('0.6.3', () => {});
+  private showVersionHistoryDialog() {
+    const dialogData: BasicDialogData = DialogDataFactory.createVersionHistoryDialog(() => {
+      this.preferencesService.setShowReleaseNotesOnStartup(false);
+    });
     this.matDialogService.open(BasicDialogComponent, {data: dialogData});
   }
 
