@@ -42,6 +42,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
   syncQuotaBytes = chrome.storage.sync.QUOTA_BYTES;
   downloadJsonHref: Promise<SafeUrl>;
   backgroundPhoto: ImageData;
+  applicationVersion: string;
 
   constructor(private preferencesService: PreferencesService,
               private storageService: StorageService,
@@ -67,6 +68,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
     this.refreshBytesInUse();
     this.downloadJsonHref = this.generateDownloadJsonUri();
     this.backgroundPhoto = environment.backgroundPhoto;
+    this.applicationVersion = chrome.runtime.getManifest().version;
   }
 
   private refreshBytesInUse() {
@@ -135,6 +137,11 @@ export class OptionsComponent implements OnDestroy, OnInit {
       this.errorDialogService.showError(dialogData);
       throw error;
     });
+  }
+
+  private showVersionHistoryDialog() {
+    const dialogData: BasicDialogData = DialogDataFactory.createVersionHistoryDialog(() => {});
+    this.matDialogService.open(BasicDialogComponent, {data: dialogData});
   }
 
   reset() {

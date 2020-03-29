@@ -18,8 +18,8 @@ export class DialogDataFactory {
   static createVersionHistoryDialog(callback: () => void): BasicDialogData {
     const version = chrome.runtime.getManifest().version;
     return {
-      width: 500,
-      title: `Welcome to version ${version}-alpha!`,
+      width: 550,
+      title: `Welcome to Version ${version}-alpha!`,
       titleIcon: 'info',
       contentHTML: getFormattedVersionHistoryHTML(),
       actions: [

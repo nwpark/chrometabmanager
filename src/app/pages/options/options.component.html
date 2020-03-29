@@ -86,11 +86,25 @@
 
   <mat-card class="settings-card">
     <mat-card-header>
-      <mat-card-title>Data</mat-card-title>
+      <mat-card-title>General Management</mat-card-title>
     </mat-card-header>
     <mat-divider [inset]="true"></mat-divider>
     <mat-card-content>
       <mat-list>
+        <mat-list-item>
+          <div style="width: 100%">
+            <div style="float: left; line-height: 34px">
+              Application version {{applicationVersion}}
+            </div>
+            <button
+              mat-stroked-button
+              style="float: right"
+              color="primary"
+              (click)="showVersionHistoryDialog()">
+              Release Notes
+            </button>
+          </div>
+        </mat-list-item>
         <mat-list-item>
           <div style="width: 100%">
             <div style="float: left">
@@ -112,18 +126,6 @@
             </a>
           </div>
         </mat-list-item>
-      </mat-list>
-    </mat-card-content>
-  </mat-card>
-
-
-  <mat-card class="settings-card">
-    <mat-card-header>
-      <mat-card-title>Reset and clean up</mat-card-title>
-    </mat-card-header>
-    <mat-divider [inset]="true"></mat-divider>
-    <mat-card-content>
-      <mat-list>
         <mat-list-item>
           <div style="width: 100%">
             <div style="float: left">
