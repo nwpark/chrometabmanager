@@ -139,7 +139,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
     });
   }
 
-  private showVersionHistoryDialog() {
+  showVersionHistoryDialog() {
     const dialogData: BasicDialogData = DialogDataFactory.createVersionHistoryDialog(() => {});
     this.matDialogService.open(BasicDialogComponent, {data: dialogData});
   }

@@ -1,10 +1,11 @@
 import {VersionHistory, ReleaseNotes} from './version-history';
+import {InstallationScripts} from './installation-scripts';
 
-export const releasedVersions = ['0.6.3'];
+export const releasedVersions = ['0.6.2', '0.6.3'];
 
 export const versionHistory: VersionHistory = {
   '0.6.3': {
-    releaseDate: new Date(2020, 2, 28),
+    releaseDate: new Date(2020, 2, 30),
     changes: [{
       title: 'Introduction of dark theme.',
       description: 'Dark theme can be now enabled from the options page.'
@@ -15,6 +16,19 @@ export const versionHistory: VersionHistory = {
       title: 'The background image should now load faster.'
     }]
   }
+};
+
+export const versionUpdateScripts: InstallationScripts = {
+  '0.6.3': () => {
+    return new Promise<void>(resolve => {
+      chrome.storage.sync.get('preferencesStorage_166b6914', res => {
+        const preferences = res['preferencesStorage_166b6914'];
+        preferences.enableDarkTheme = false;
+        preferences.showReleaseNotesOnStartup = true;
+        chrome.storage.sync.set({'preferencesStorage_166b6914': preferences}, resolve);
+      });
+    });
+  },
 };
 
 export function getFormattedVersionHistoryHTML(): string {
