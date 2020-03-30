@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   backgroundPhoto: {
-    author: 'Stas Bartnikas',
-    url: 'https://www.flickr.com/photos/100799973@N07/33167804003/in/gallery-152977080@N03-72157680462443671/'
+    author: 'Aditya Jagtiani',
+    url: 'https://www.flickr.com/photos/164512945@N03/47351470081/in/photosof-152977080@N03/'
   },
   errorReportEmailAddress: 'nick.wpa@gmail.com'
 };

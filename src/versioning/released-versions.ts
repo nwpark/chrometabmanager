@@ -1,5 +1,6 @@
 import {VersionHistory, ReleaseNotes} from './version-history';
 import {InstallationScripts} from './installation-scripts';
+import {isNullOrUndefined} from 'util';
 
 export const releasedVersions = ['0.6.2', '0.6.3'];
 
@@ -32,9 +33,9 @@ export const versionUpdateScripts: InstallationScripts = {
 };
 
 export function getFormattedVersionHistoryHTML(): string {
-  const formattedChangelog = releasedVersions.reduce((acc, version) => {
-    return acc + formatReleaseNotesHTML(version, versionHistory[version]);
-  }, '');
+  const formattedChangelog = releasedVersions
+    .filter(version => !isNullOrUndefined(versionHistory[version]))
+    .reduce((acc, version) => acc + formatReleaseNotesHTML(version, versionHistory[version]), '');
   return `<h2>What\'s new?</h2>${formattedChangelog}`;
 }
 
