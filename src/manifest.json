@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Chrome Tab Manager",
-  "version": "0.6.2",
+  "version": "0.6.3",
 
   "description": "A simple, powerful tab manager.",
   "icons": {
@@ -18,7 +18,7 @@
     "persistent": false
   },
   "browser_action": {
-    "default_title": "Chrome Tab Manager v0.6.2-alpha"
+    "default_title": "Chrome Tab Manager v0.6.3-alpha"
   },
 
   "permissions": [
