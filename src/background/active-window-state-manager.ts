@@ -81,8 +81,11 @@ export class ActiveWindowStateManager {
         code: '',
         runAt: 'document_start'
       }, () => {
-        // Ignore error - the extension may not have permission to access the host, but no code was intended to execute anyway.
-        const ignoredError = chrome.runtime.lastError;
+        if (chrome.runtime.lastError) {
+          // Ignore error - the extension may not have had permission to access the host, but no code was intended to execute anyway.
+          // tslint:disable-next-line:no-unused-expression
+          void(chrome.runtime.lastError.message);
+        }
         chrome.tabs.discard(tab.id as number);
       });
     });
