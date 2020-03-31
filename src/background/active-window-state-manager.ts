@@ -75,15 +75,16 @@ export class ActiveWindowStateManager {
 
   private createAndDiscardTab(url: string, windowId: number) {
     chrome.tabs.create({windowId, url, active: false}, tab => {
-      if (url.startsWith('http://') || url.startsWith('https://')) {
-        // todo: handle error (doesnt work on google domains for example)
-        chrome.tabs.executeScript(tab.id as number, {
-          code: 'window.stop()',
-          runAt: 'document_start'
-        }, () => {
-          chrome.tabs.discard(tab.id as number);
-        });
-      }
+      // No code is actually injected into the page here - executeScript only is used to get a reliable callback
+      // at a time when it is safe to discard the tab.
+      chrome.tabs.executeScript(tab.id as number, {
+        code: '',
+        runAt: 'document_start'
+      }, () => {
+        // Ignore error - the extension may not have permission to access the host, but no code was intended to execute anyway.
+        const ignoredError = chrome.runtime.lastError;
+        chrome.tabs.discard(tab.id as number);
+      });
     });
   }
 

@@ -26,9 +26,7 @@
     "storage",
     "sessions",
     "chrome://favicon/",
-    "activeTab",
-    "http://*/",
-    "https://*/"
+    "activeTab"
   ],
 
   "options_page": "options.html",
