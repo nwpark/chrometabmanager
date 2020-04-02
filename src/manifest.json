@@ -26,7 +26,8 @@
     "storage",
     "sessions",
     "chrome://favicon/",
-    "activeTab"
+    "activeTab",
+    "bookmarks"
   ],
 
   "options_page": "options.html",

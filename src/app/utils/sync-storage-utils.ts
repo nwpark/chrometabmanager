@@ -1,5 +1,3 @@
-import {SessionListUtils} from './session-list-utils';
-import {ChromeAPISession} from '../types/chrome-api/chrome-api-session';
 import {SessionState} from '../types/session/session-state';
 import {SessionStateMap} from '../types/session/session-state-map';
 import {SessionListLayoutState} from '../types/session/session-list-layout-state';

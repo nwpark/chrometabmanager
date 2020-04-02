@@ -31,6 +31,14 @@ export class SessionStateUtils {
     const layoutState = LayoutStateUtils.copyWithNewId(sessionState.layoutState, window.id);
     return {session: {window}, layoutState};
   }
+
+  static createWindowSession(id: SessionId, tabs: ChromeAPITabState[]): ChromeAPISession {
+    return {
+      window: {
+        id, tabs, type: 'normal',
+      }
+    };
+  }
 }
 
 export class WindowStateUtils {
