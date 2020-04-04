@@ -7,7 +7,6 @@ import {MessagePassingService} from '../app/services/messaging/message-passing.s
 import {WebpageTitleCacheService} from '../app/services/webpage-title-cache.service';
 import {releasedVersions, versionUpdateScripts} from '../versioning/released-versions';
 import {InstallationScript} from '../versioning/installation-scripts';
-import {isNullOrUndefined} from 'util';
 
 addOnInstalledListener();
 
