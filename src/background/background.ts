@@ -1,5 +1,5 @@
-import {ClosedSessionStateManager} from './closed-session-state-manager';
-import {ActiveWindowStateManager} from './active-window-state-manager';
+import {ClosedSessionStateManager} from './state-managers/closed-session-state-manager';
+import {ActiveWindowStateManager} from './state-managers/active-window-state-manager';
 import {v4 as uuid} from 'uuid';
 import {MessageReceiverService} from '../app/services/messaging/message-receiver.service';
 import {LocalStorageService} from '../app/services/storage/local-storage.service';
