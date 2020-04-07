@@ -31,7 +31,9 @@ const activeWindowStateManager = new ActiveWindowStateManager(localStorageServic
 const closedSessionStateManager = new ClosedSessionStateManager(localStorageService);
 
 const instanceId = uuid();
-messageReceiverService.onInstanceIdRequest(instanceId);
+messageReceiverService.onInstanceIdRequest$.subscribe(request => {
+  request.sendResponse(instanceId);
+});
 
 chromeWindowUpdateEvents.forEach(windowEvent => {
   windowEvent.addListener(() => {

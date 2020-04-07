@@ -1,4 +1,3 @@
-import {InsertWindowMessageData} from '../../app/services/messaging/message-passing.service';
 import Mutex from 'async-mutex/lib/Mutex';
 import {SessionListState} from '../../app/types/session/session-list-state';
 import {SessionListUtils} from '../../app/utils/session-list-utils';
@@ -8,8 +7,9 @@ import {ChromeAPISession} from '../../app/types/chrome-api/chrome-api-session';
 import {ChromeAPIWindowState, SessionId} from '../../app/types/chrome-api/chrome-api-window-state';
 import {SessionState} from '../../app/types/session/session-state';
 import {MessageReceiverService} from '../../app/services/messaging/message-receiver.service';
-import CreateData = chrome.windows.CreateData;
 import {WebpageTitleCacheService} from '../../app/services/webpage-title-cache.service';
+import CreateData = chrome.windows.CreateData;
+import {ignoreChromeRuntimeErrors} from '../../app/utils/error-utils';
 
 export class ActiveWindowStateManager {
 
@@ -24,7 +24,7 @@ export class ActiveWindowStateManager {
     this.messageReceiverService.activeSessionStateUpdated$.subscribe(sessionListState => {
       this.sessionListState = sessionListState;
     });
-    this.messageReceiverService.onInsertChromeWindowRequest((request: InsertWindowMessageData) => {
+    this.messageReceiverService.onInsertChromeWindowRequest$.subscribe(request => {
       this.insertWindow(request.sessionState, request.index);
     });
     this.updateActiveWindowState();
@@ -81,11 +81,8 @@ export class ActiveWindowStateManager {
         code: '',
         runAt: 'document_start'
       }, () => {
-        if (chrome.runtime.lastError) {
-          // Ignore error - the extension may not have had permission to access the host, but no code was intended to execute anyway.
-          // tslint:disable-next-line:no-unused-expression
-          void(chrome.runtime.lastError.message);
-        }
+        // Ignore error - the extension may not have had permission to access the host, but no code was intended to execute anyway.
+        ignoreChromeRuntimeErrors();
         chrome.tabs.discard(tab.id as number);
       });
     });

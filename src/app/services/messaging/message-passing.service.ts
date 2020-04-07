@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {SessionState} from '../../types/session/session-state';
-import {Subject} from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
 import {SessionListState} from '../../types/session/session-list-state';
 import {WebpageTitleCache} from '../../types/webpage-title-cache';
+import {DebouncedMessageSender, RespondableMessageSender, SimpleMessageSender} from './message-sender';
 
 @Injectable({
   providedIn: 'root'
@@ -12,86 +11,63 @@ export class MessagePassingService {
 
   static readonly ACTIVE_SESSION_MESSAGE = 'activeWindowsUpdated_71f38bbe';
   static readonly SAVED_SESSION_MESSAGE = 'savedWindowsUpdated_0656e252';
+  static readonly SAVED_SESSION_SYNC_MESSAGE = 'savedWindowsSyncUpdated_392ee83d';
   static readonly CLOSED_SESSION_MESSAGE = 'closedSessionsUpdated_7d763bba';
   static readonly PREFERENCES_UPDATED = 'preferencesUpdated_8c6d0f54';
   static readonly WEBPAGE_TITLE_CACHE_UPDATED = 'webpageTitleCacheUpdated_b79e54ea';
   static readonly INSERT_WINDOW_REQUEST = 'insertWindowRequest_de10f744';
   static readonly INSTANCE_ID_REQUEST = 'instanceIdRequest_7f5604d5';
+  static readonly UPDATE_DRIVE_SAVED_SESSIONS_REQUEST = 'updateDriveSavedSessionsRequest_46c18270';
   static readonly MESSAGE_DEBOUNCE_TIME = 400;
 
-  private preferencesMessageHandler = new SimpleMessageHandler<void>(MessagePassingService.PREFERENCES_UPDATED);
-  private webpageTitleCacheMessageHandler = new SimpleMessageHandler<WebpageTitleCache>(MessagePassingService.WEBPAGE_TITLE_CACHE_UPDATED);
-  private activeSessionMessageHandler = new DebouncedMessageHandler(MessagePassingService.ACTIVE_SESSION_MESSAGE);
-  private savedSessionMessageHandler = new DebouncedMessageHandler(MessagePassingService.SAVED_SESSION_MESSAGE);
-  private closedSessionMessageHandler = new DebouncedMessageHandler(MessagePassingService.CLOSED_SESSION_MESSAGE);
+  private preferencesMessageSender = new SimpleMessageSender<void>(MessagePassingService.PREFERENCES_UPDATED);
+  private webpageTitleCacheMessageSender = new SimpleMessageSender<WebpageTitleCache>(MessagePassingService.WEBPAGE_TITLE_CACHE_UPDATED);
+  private activeSessionMessageSender = new DebouncedMessageSender(MessagePassingService.ACTIVE_SESSION_MESSAGE, MessagePassingService.MESSAGE_DEBOUNCE_TIME);
+  private savedSessionMessageSender = new DebouncedMessageSender(MessagePassingService.SAVED_SESSION_MESSAGE, MessagePassingService.MESSAGE_DEBOUNCE_TIME);
+  private savedSessionSyncMessageSender = new DebouncedMessageSender(MessagePassingService.SAVED_SESSION_SYNC_MESSAGE, MessagePassingService.MESSAGE_DEBOUNCE_TIME);
+  private closedSessionMessageSender = new DebouncedMessageSender(MessagePassingService.CLOSED_SESSION_MESSAGE, MessagePassingService.MESSAGE_DEBOUNCE_TIME);
+  private instanceIdRequestSender = new RespondableMessageSender<void, string>(MessagePassingService.INSTANCE_ID_REQUEST);
+  private updateDriveSavedSessionsRequestSender = new RespondableMessageSender<SessionListState, string>(MessagePassingService.UPDATE_DRIVE_SAVED_SESSIONS_REQUEST);
+  private insertChromeWindowRequestSender = new SimpleMessageSender<InsertWindowMessageData>(MessagePassingService.INSERT_WINDOW_REQUEST);
 
   constructor() {}
 
   broadcastActiveSessions(sessionListState: SessionListState) {
-    this.activeSessionMessageHandler.broadcast(sessionListState);
+    this.activeSessionMessageSender.broadcast(sessionListState);
   }
 
   broadcastSavedSessions(sessionListState: SessionListState) {
-    this.savedSessionMessageHandler.broadcast(sessionListState);
+    this.savedSessionMessageSender.broadcast(sessionListState);
+  }
+
+  broadcastSavedSessionsSync(sessionListState: SessionListState) {
+    this.savedSessionSyncMessageSender.broadcast(sessionListState);
   }
 
   broadcastClosedSessions(sessionListState: SessionListState) {
-    this.closedSessionMessageHandler.broadcast(sessionListState);
+    this.closedSessionMessageSender.broadcast(sessionListState);
   }
 
   broadcastPreferencesUpdated() {
-    this.preferencesMessageHandler.broadcast();
+    this.preferencesMessageSender.broadcast();
   }
 
   broadcastWebpageTitleCache(webpageTitleCache: WebpageTitleCache) {
-    this.webpageTitleCacheMessageHandler.broadcast(webpageTitleCache);
+    this.webpageTitleCacheMessageSender.broadcast(webpageTitleCache);
   }
 
   requestInsertChromeWindow(sessionState: SessionState, index: number) {
     const message: InsertWindowMessageData = { sessionState, index };
-    chrome.runtime.sendMessage({
-      [MessagePassingService.INSERT_WINDOW_REQUEST]: message
-    });
+    this.insertChromeWindowRequestSender.broadcast(message);
   }
 
   requestInstanceId(): Promise<string> {
-    return new Promise<string>(resolve => {
-      chrome.runtime.sendMessage({
-        messageId: MessagePassingService.INSTANCE_ID_REQUEST
-      }, (response: string) => resolve(response));
-    });
-  }
-}
-
-class SimpleMessageHandler<T> {
-  constructor(private messageId: string) {}
-
-  broadcast(messageData: T) {
-    const message: MessageData<T> = {messageId: this.messageId, data: messageData};
-    chrome.runtime.sendMessage(message);
-  }
-}
-
-class DebouncedMessageHandler {
-  private subject = new Subject<SessionListState>();
-
-  constructor(messageId: string) {
-    this.subject.asObservable().pipe(
-      debounceTime(MessagePassingService.MESSAGE_DEBOUNCE_TIME)
-    ).subscribe(sessionListState => {
-      const message: MessageData<SessionListState> = {messageId, data: sessionListState};
-      chrome.runtime.sendMessage(message);
-    });
+    return this.instanceIdRequestSender.sendRequest();
   }
 
-  broadcast(sessionListState: SessionListState) {
-    this.subject.next(sessionListState);
+  requestUpdateDriveSavedSessions(sessionListState: SessionListState): Promise<any> {
+    return this.updateDriveSavedSessionsRequestSender.sendRequest(sessionListState);
   }
-}
-
-export interface MessageData<T> {
-  messageId: string;
-  data: T;
 }
 
 export interface InsertWindowMessageData {

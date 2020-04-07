@@ -15,14 +15,13 @@ import {StorageWriteError} from '../../types/errors/storage-write-error';
 })
 export class SyncStorageService {
 
-  instanceId: string;
-
+  private instanceId: string;
   private onChanged = new Subject<void>();
   onChanged$ = this.onChanged.asObservable();
 
   constructor(private messagePassingService: MessagePassingService) {
-    this.messagePassingService.requestInstanceId().then(instanceId => {
-      this.instanceId = instanceId;
+    this.messagePassingService.requestInstanceId().then(res => {
+      this.instanceId = res;
     });
     // @ts-ignore
     chrome.storage.sync.onChanged.addListener(() => {
