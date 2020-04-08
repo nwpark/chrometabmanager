@@ -23,7 +23,7 @@ export class DriveApiFileService {
     });
   }
 
-  getJSONFileContent(fileId: string): Promise<any> {
+  requestJSONFileContent(fileId: string): Promise<any> {
     return this.driveApiAccountService.getAuthToken().then(token => {
       const url = this.DRIVE_API_FILE_GET_MEDIA.replace('fileId', fileId);
 
@@ -36,7 +36,7 @@ export class DriveApiFileService {
     });
   }
 
-  private updateJSONFileContent(fileId: string, fileContent: any): Promise<any> {
+  patchJSONFileContent(fileId: string, fileContent: any): Promise<any> {
     return this.driveApiAccountService.getAuthToken().then(token => {
       const url = new UrlBuilder(this.DRIVE_API_FILE_PATCH_MEDIA.replace('fileId', fileId))
         .queryParam('access_token', token)
@@ -52,7 +52,7 @@ export class DriveApiFileService {
   }
 
   // Returns metadata for newly created file
-  createJSONAppDataFile(fileName: string, fileContent: any): Promise<any> {
+  postJSONAppDataFile(fileName: string, fileContent: any): Promise<any> {
     return this.driveApiAccountService.getAuthToken().then(token => {
       const url = new UrlBuilder(this.DRIVE_API_FILE_POST_MULTIPART)
         .queryParam('access_token', token)

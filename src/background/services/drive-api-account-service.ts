@@ -15,7 +15,7 @@ export class DriveApiAccountService {
   private attemptAutomaticLogin(): Promise<boolean> {
     return this.getAuthToken().then(authToken => {
       if (authToken) {
-        this.refreshUserAccountFromDrive(authToken);
+        this.refreshUserAccountInfoFromDrive(authToken);
       }
       return !isNullOrUndefined(authToken);
     });
@@ -23,11 +23,11 @@ export class DriveApiAccountService {
 
   performInteractiveLogin(): Promise<void> {
     return this.getAuthToken({interactive: true}).then(authToken => {
-      return this.refreshUserAccountFromDrive(authToken);
+      return this.refreshUserAccountInfoFromDrive(authToken);
     });
   }
 
-  private refreshUserAccountFromDrive(authToken: string) {
+  private refreshUserAccountInfoFromDrive(authToken: string) {
     this.fetchUserAccountInformation(authToken).then(res => {
       this.userAccountInfo = {
         displayName: res.displayName,

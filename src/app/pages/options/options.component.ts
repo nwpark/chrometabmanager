@@ -17,6 +17,7 @@ import {environment} from '../../../environments/environment';
 import {BasicDialogComponent} from '../../components/dialogs/basic-dialog/basic-dialog.component';
 import {BasicDialogData} from '../../types/errors/basic-dialog-data';
 import {DialogDataFactory} from '../../utils/dialog-data-factory';
+import {DriveStorageCacheService} from '../../services/storage/drive-storage-cache.service';
 
 @Component({
   selector: 'app-options',
@@ -48,6 +49,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
               private storageService: StorageService,
               private syncStorageService: SyncStorageService,
               private localStorageService: LocalStorageService,
+              private driveStorageCacheService: DriveStorageCacheService,
               private changeDetectorRef: ChangeDetectorRef,
               private domSanitizer: DomSanitizer,
               private errorDialogService: ErrorDialogService,
@@ -111,9 +113,9 @@ export class OptionsComponent implements OnDestroy, OnInit {
   }
 
   private getSavedSessionStateSync(): Promise<SessionListState> {
-    return this.syncStorageService.getSavedWindowsState().catch(error => {
+    return this.driveStorageCacheService.getSavedWindowsState().catch(error => {
       const dialogData = ErrorDialogDataFactory.couldNotRetrieveSyncSavedSessions(error, () =>
-        this.syncStorageService.setSavedWindowsState(SessionListState.empty())
+        this.driveStorageCacheService.setSavedWindowsState(SessionListState.empty())
       );
       this.errorDialogService.showActionableError(dialogData);
       throw error;
@@ -131,7 +133,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
   }
 
   private storeCopiedSessionState(sessionListState: SessionListState, copyToSync: boolean): Promise<void> {
-    const storageService = copyToSync ? this.syncStorageService : this.localStorageService;
+    const storageService = copyToSync ? this.driveStorageCacheService : this.localStorageService;
     return storageService.setSavedWindowsState(sessionListState).catch(error => {
       const dialogData = ErrorDialogDataFactory.couldNotStoreCopiedData(error);
       this.errorDialogService.showError(dialogData);

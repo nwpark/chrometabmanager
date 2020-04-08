@@ -1,6 +1,8 @@
 export enum StorageKeys {
   SavedWindows = 'savedWindowsStorage_0a565f6f',
   SavedWindowsLayoutState = 'savedWindowsLayoutStateStorage_00adb476',
+  DriveCacheSavedWindows = 'driveCacheSavedWindows_4de3f6ee',
+  DriveCacheSavedWindowsLayoutState = 'driveCacheSavedWindowsLayoutState_9df7911f',
   ActiveWindows = 'activeWindowsStorage_2e062a09',
   ActiveWindowsLayoutState = 'activeWindowsLayoutStateStorage_41b6b427',
   RecentlyClosedSessions = 'closedSessionsStorage_882c0c64',

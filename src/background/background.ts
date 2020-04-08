@@ -7,6 +7,16 @@ import {MessagePassingService} from '../app/services/messaging/message-passing.s
 import {WebpageTitleCacheService} from '../app/services/webpage-title-cache.service';
 import {releasedVersions, versionUpdateScripts} from '../versioning/released-versions';
 import {InstallationScript} from '../versioning/installation-scripts';
+import {DriveApiAccountService} from './services/drive-api-account-service';
+import {DriveApiFileService} from './services/drive-api-file-service';
+import {SavedSessionStateManager} from './state-managers/saved-session-state-manager';
+import {DriveStorageCacheService} from '../app/services/storage/drive-storage-cache.service';
+
+const head = document.getElementsByTagName('head')[0];
+const script = document.createElement('script');
+script.type = 'text/javascript';
+script.src = 'https://apis.google.com/js/client.js';
+head.appendChild(script);
 
 addOnInstalledListener();
 
@@ -24,11 +34,21 @@ const chromeWindowUpdateEvents = [
 
 const ignoredTabUrls = ['chrome://newtab/'];
 
-const localStorageService = new LocalStorageService(new MessagePassingService());
+const messagePassingService = new MessagePassingService();
+const localStorageService = new LocalStorageService(messagePassingService);
+const driveStorageCacheService = new DriveStorageCacheService(messagePassingService);
 const messageReceiverService = new MessageReceiverService();
 const webpageTitleCacheService = new WebpageTitleCacheService(localStorageService, messageReceiverService);
 const activeWindowStateManager = new ActiveWindowStateManager(localStorageService, messageReceiverService, webpageTitleCacheService);
 const closedSessionStateManager = new ClosedSessionStateManager(localStorageService);
+const driveApiAccountService = new DriveApiAccountService();
+const driveApiFileService = new DriveApiFileService(driveApiAccountService);
+const savedSessionStateManager = new SavedSessionStateManager(
+  driveStorageCacheService,
+  messageReceiverService,
+  driveApiAccountService,
+  driveApiFileService
+);
 
 const instanceId = uuid();
 messageReceiverService.onInstanceIdRequest$.subscribe(request => {

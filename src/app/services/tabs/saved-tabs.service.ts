@@ -12,7 +12,6 @@ import {ChromeAPISession} from '../../types/chrome-api/chrome-api-session';
 import {ChromeAPIWindowState, SessionId} from '../../types/chrome-api/chrome-api-window-state';
 import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
 import {SessionState} from '../../types/session/session-state';
-import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {ErrorDialogService} from '../error-dialog.service';
 import {StorageWriteError} from '../../types/errors/storage-write-error';
 import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
@@ -29,14 +28,13 @@ export class SavedTabsService implements TabsService {
 
   constructor(private chromeTabsService: ChromeTabsService,
               private storageService: StorageService,
-              private messageReceiverService: MessageReceiverService,
               private errorDialogService: ErrorDialogService,
               private ngZone: NgZone) {
     this.sessionStateUpdated = new BehaviorSubject(SessionListState.empty());
     this.sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
     this.sessionListState = this.sessionStateUpdated.getValue();
     this.initializeStateFromStorage();
-    this.messageReceiverService.savedSessionStateUpdated$.subscribe(sessionListState => {
+    this.storageService.savedSessionStateUpdated$().subscribe(sessionListState => {
       ngZone.run(() => this.setSessionListState(sessionListState));
     });
   }
@@ -87,13 +85,9 @@ export class SavedTabsService implements TabsService {
     this.sessionListState.removeTab(windowIndex, tabId);
   }
 
-  @modifiesState({storeResult: false})
+  @modifiesState({storeResult: true})
   removeSession(index: number) {
-    const sessionId = this.sessionListState.getSessionIdFromIndex(index);
     this.sessionListState.removeSession(index);
-    this.storageService.setSavedWindowsState(this.sessionListState, [sessionId]).catch(error => {
-      this.handleStorageWriteError(error);
-    });
   }
 
   @modifiesState({storeResult: true})
