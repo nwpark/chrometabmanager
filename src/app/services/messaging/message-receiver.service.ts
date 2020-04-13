@@ -9,6 +9,7 @@ import {
   SimpleMessageReceiver
 } from './message-receiver';
 import {MessageData} from './message-sender';
+import {DriveLoginStatus} from '../../types/drive-login-status';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +22,10 @@ export class MessageReceiverService {
   private closedSessionStateUpdated = new SessionListMessageReceiver();
   private preferencesUpdated = new SimpleMessageReceiver<void>();
   private webpageTitleCacheUpdated = new SimpleMessageReceiver<WebpageTitleCache>();
+  private driveLoginStatusUpdated = new SimpleMessageReceiver<DriveLoginStatus>();
   private onInstanceIdRequest = new RespondableMessageReceiver<void, string>();
   private onUpdateDriveSavedSessionsRequest = new RespondableMessageReceiver<SessionListState, any>();
+  private onLoadDriveFileDataRequest = new RespondableMessageReceiver<void, void>();
   private onInsertChromeWindowRequest = new SimpleMessageReceiver<InsertWindowMessageData>();
 
   savedSessionStateUpdated$ = this.savedSessionStateUpdated.asObservable();
@@ -31,8 +34,10 @@ export class MessageReceiverService {
   closedSessionStateUpdated$ = this.closedSessionStateUpdated.asObservable();
   preferencesUpdated$ = this.preferencesUpdated.asObservable();
   webpageTitleCacheUpdated$ = this.webpageTitleCacheUpdated.asObservable();
+  driveLoginStatusUpdated$ = this.driveLoginStatusUpdated.asObservable();
   onInstanceIdRequest$ = this.onInstanceIdRequest.asObservable();
   onUpdateDriveSavedSessionsRequest$ = this.onUpdateDriveSavedSessionsRequest.asObservable();
+  onLoadDriveFileDataRequest$ = this.onLoadDriveFileDataRequest.asObservable();
   onInsertChromeWindowRequest$ = this.onInsertChromeWindowRequest.asObservable();
 
   constructor() {
@@ -65,6 +70,10 @@ export class MessageReceiverService {
         return this.onUpdateDriveSavedSessionsRequest;
       case MessagePassingService.INSERT_WINDOW_REQUEST:
         return this.onInsertChromeWindowRequest;
+      case MessagePassingService.DRIVE_LOGIN_STATUS_UPDATED:
+        return this.driveLoginStatusUpdated;
+      case MessagePassingService.LOAD_DRIVE_FILE_DATA_REQUEST:
+        return this.onLoadDriveFileDataRequest;
     }
   }
 }

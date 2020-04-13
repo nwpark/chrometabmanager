@@ -45,40 +45,58 @@
     <mat-divider [inset]="true"></mat-divider>
     <mat-card-content>
       <mat-list>
-        <mat-list-item>
-          <mat-slide-toggle
-            [checked]="preferences?.syncSavedWindows"
-            [color]="'primary'"
-            [labelPosition]="'before'"
-            [disableRipple]="true"
-            (change)="setSyncSavedWindows($event)">
-            <div style="">Enable sync</div>
-            <div class="options-settings-card-sub-text">
-              Synchronize saved windows between devices
+<!--        <mat-list-item *ngIf="!(driveAuthenticationStatus$ | async)?.isLoggedIn">-->
+<!--          <mat-slide-toggle-->
+<!--            [checked]="preferences?.syncSavedWindows"-->
+<!--            [color]="'primary'"-->
+<!--            [labelPosition]="'before'"-->
+<!--            [disableRipple]="true"-->
+<!--            (change)="setSyncSavedWindows($event)">-->
+<!--            <div style="">Enable sync</div>-->
+<!--            <div class="options-settings-card-sub-text">-->
+<!--              Synchronize saved windows between devices-->
+<!--            </div>-->
+<!--          </mat-slide-toggle>-->
+<!--        </mat-list-item>-->
+        <mat-list-item *ngIf="!driveLoginStatus?.isLoggedIn">
+          <div style="width: 100%">
+            <div style="float: left">
+              <div>Enable sync</div>
+              <div class="options-settings-card-sub-text">
+                Synchronize saved windows between devices
+              </div>
             </div>
-          </mat-slide-toggle>
+            <button
+              mat-stroked-button
+              style="float: right"
+              color="primary"
+              (click)="enableSync()">
+              Enable Sync
+            </button>
+          </div>
         </mat-list-item>
-      </mat-list>
-      <mat-list *ngIf="preferences?.syncSavedWindows">
-        <ng-container>
-          <mat-divider [inset]="true"></mat-divider>
-          <mat-list-item>
-            <div mat-line style="margin-bottom: 5px" class="options-settings-card-sub-text">
-              Bytes in use: {{syncBytesInUse | number}} out of {{syncQuotaBytes | number}} ({{syncBytesInUsePercentage}}%)
+        <mat-list-item *ngIf="driveLoginStatus?.isLoggedIn">
+          <div style="width: 100%">
+            <div style="float: left">
+              <img
+                src="{{driveLoginStatus?.userAccountInfo.photoLink}}"
+                style="width: 35px; height: 35px; border-radius: 50%; display: inline-block; vertical-align: bottom">
+              <div style="display: inline-block; margin-left: 10px">
+                <div>{{driveLoginStatus?.userAccountInfo.displayName}}</div>
+                <div class="options-settings-card-sub-text">
+                  Syncing to {{driveLoginStatus?.userAccountInfo.emailAddress}}
+                </div>
+              </div>
             </div>
-            <mat-progress-bar
-              mat-line mode="determinate"
-              value="{{syncBytesInUsePercentage}}">
-            </mat-progress-bar>
-          </mat-list-item>
-          <h3
-            mat-subheader
-            style="height: 30px"
-            class="options-settings-card-sub-text">
-            <mat-icon class="icon-18" style="height: 20px; width: 18px; margin-right: 5px">warning</mat-icon>
-            Warning: Chrome sync storage has a maximum quota of {{syncQuotaBytes | number}} bytes
-          </h3>
-        </ng-container>
+            <button
+              mat-stroked-button
+              style="float: right"
+              color="primary"
+              (click)="disableSync()">
+              Sign out
+            </button>
+          </div>
+        </mat-list-item>
       </mat-list>
     </mat-card-content>
   </mat-card>

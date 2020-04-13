@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Preferences} from '../types/preferences';
-import {Subject} from 'rxjs';
+import {ReplaySubject} from 'rxjs';
 import {modifiesState} from '../decorators/modifies-state';
 import {take} from 'rxjs/operators';
 import {SyncStorageService} from './storage/sync-storage.service';
@@ -13,7 +13,7 @@ export class PreferencesService {
 
   private preferences: Preferences;
 
-  private preferencesUpdated = new Subject<Preferences>();
+  private preferencesUpdated = new ReplaySubject<Preferences>(1);
   preferences$ = this.preferencesUpdated.asObservable();
 
   constructor(private syncStorageService: SyncStorageService,

@@ -30,7 +30,9 @@ export class HttpRequestBuilder {
     if (this._authorization) {
       xmlHttpRequest.setRequestHeader('Authorization', this._authorization);
     }
-    xmlHttpRequest.responseType = this._responseType;
+    if (this._responseType) {
+      xmlHttpRequest.responseType = this._responseType;
+    }
     return new HttpRequest(xmlHttpRequest);
   }
 

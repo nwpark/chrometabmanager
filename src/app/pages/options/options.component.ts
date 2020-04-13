@@ -17,7 +17,9 @@ import {environment} from '../../../environments/environment';
 import {BasicDialogComponent} from '../../components/dialogs/basic-dialog/basic-dialog.component';
 import {BasicDialogData} from '../../types/errors/basic-dialog-data';
 import {DialogDataFactory} from '../../utils/dialog-data-factory';
-import {DriveStorageCacheService} from '../../services/storage/drive-storage-cache.service';
+import {DriveLoginStatus} from '../../types/drive-login-status';
+import {DriveAccountService} from '../../services/drive-api/drive-account.service';
+import {DriveStorageService} from '../../services/drive-api/drive-storage.service';
 
 @Component({
   selector: 'app-options',
@@ -38,18 +40,16 @@ export class OptionsComponent implements OnDestroy, OnInit {
   private ngUnsubscribe = new Subject();
 
   preferences: Preferences;
-  syncBytesInUse: number;
-  syncBytesInUsePercentage: number;
-  syncQuotaBytes = chrome.storage.sync.QUOTA_BYTES;
   downloadJsonHref: Promise<SafeUrl>;
   backgroundPhoto: ImageData;
   applicationVersion: string;
+  driveLoginStatus: DriveLoginStatus;
 
   constructor(private preferencesService: PreferencesService,
               private storageService: StorageService,
-              private syncStorageService: SyncStorageService,
               private localStorageService: LocalStorageService,
-              private driveStorageCacheService: DriveStorageCacheService,
+              private driveAccountService: DriveAccountService,
+              private driveStorageService: DriveStorageService,
               private changeDetectorRef: ChangeDetectorRef,
               private domSanitizer: DomSanitizer,
               private errorDialogService: ErrorDialogService,
@@ -62,23 +62,15 @@ export class OptionsComponent implements OnDestroy, OnInit {
       this.preferences = preferences;
       this.changeDetectorRef.detectChanges();
     });
-    this.syncStorageService.onChanged$.pipe(
+    this.driveAccountService.loginStatus$.pipe(
       takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.refreshBytesInUse();
+    ).subscribe(loginStatus => {
+      this.driveLoginStatus = loginStatus;
+      this.changeDetectorRef.detectChanges();
     });
-    this.refreshBytesInUse();
     this.downloadJsonHref = this.generateDownloadJsonUri();
     this.backgroundPhoto = environment.backgroundPhoto;
     this.applicationVersion = chrome.runtime.getManifest().version;
-  }
-
-  private refreshBytesInUse() {
-    this.syncStorageService.getBytesInUse().then(bytesInUse => {
-      this.syncBytesInUse = bytesInUse;
-      this.syncBytesInUsePercentage = Math.round((bytesInUse / this.syncQuotaBytes) * 100);
-      this.changeDetectorRef.detectChanges();
-    });
   }
 
   setCloseWindowOnSave(event: MatSlideToggleChange) {
@@ -93,11 +85,28 @@ export class OptionsComponent implements OnDestroy, OnInit {
     this.preferencesService.setDarkThemeEnabled(event.checked);
   }
 
+  // todo: move method to sign in dialog
   setSyncSavedWindows(event: MatSlideToggleChange) {
     this.copySavedSessions(event.checked).then(() => {
       this.preferencesService.setSyncSavedWindows(event.checked);
     }).catch(() => {
       event.source.checked = !event.checked;
+    });
+  }
+
+  enableSync() {
+    // todo: open sign in dialog
+    this.driveAccountService.performInteractiveLogin().then(() => {
+      return this.driveAccountService.loadDataFromDrive();
+    }).then(() => {
+      this.preferencesService.setSyncSavedWindows(true);
+    });
+  }
+
+  disableSync() {
+    // todo: open sign out dialog
+    this.driveAccountService.logout().then(() => {
+      this.preferencesService.setSyncSavedWindows(false);
     });
   }
 
@@ -113,9 +122,9 @@ export class OptionsComponent implements OnDestroy, OnInit {
   }
 
   private getSavedSessionStateSync(): Promise<SessionListState> {
-    return this.driveStorageCacheService.getSavedWindowsState().catch(error => {
+    return this.driveStorageService.getSavedWindowsState().catch(error => {
       const dialogData = ErrorDialogDataFactory.couldNotRetrieveSyncSavedSessions(error, () =>
-        this.driveStorageCacheService.setSavedWindowsState(SessionListState.empty())
+        this.driveStorageService.setSavedWindowsState(SessionListState.empty())
       );
       this.errorDialogService.showActionableError(dialogData);
       throw error;
@@ -133,7 +142,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
   }
 
   private storeCopiedSessionState(sessionListState: SessionListState, copyToSync: boolean): Promise<void> {
-    const storageService = copyToSync ? this.driveStorageCacheService : this.localStorageService;
+    const storageService = copyToSync ? this.driveStorageService : this.localStorageService;
     return storageService.setSavedWindowsState(sessionListState).catch(error => {
       const dialogData = ErrorDialogDataFactory.couldNotStoreCopiedData(error);
       this.errorDialogService.showError(dialogData);
