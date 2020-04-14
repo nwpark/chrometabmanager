@@ -1,0 +1,82 @@
+<div style="width: 400px">
+  <div *ngIf="state === 'loginRequired'">
+    <div mat-dialog-title>
+      Enable Sync
+    </div>
+    <div mat-dialog-content>
+      <p>Chrome Tab Manager uses Google Drive cloud storage to synchronize your saved data between devices.</p>
+      <p>To enable sync, you will need to sign in with your Google account.</p>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-button
+        color="primary"
+        (click)="closeDialog()">
+        Cancel
+      </button>
+      <button
+        mat-stroked-button
+        cdkFocusInitial
+        color="primary"
+        (click)="performInteractiveLogin()">
+        <img src="assets/google-logo32.png" class="inline-image-17px" alt="Google logo">
+        Sign in with Google
+      </button>
+    </div>
+  </div>
+  <div *ngIf="state === 'awaitingLogin'">
+    <div mat-dialog-title>
+      Waiting for sign in...
+    </div>
+    <div mat-dialog-content>
+      <p>Please refer to the popup window to complete sign in</p>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-button
+        color="primary"
+        (click)="closeDialog()">
+        Cancel
+      </button>
+    </div>
+  </div>
+  <div *ngIf="state === 'preparingData'">
+    <div mat-dialog-title>
+      <img src="assets/google-drive-logo32.png" class="inline-image-24px" alt="Google drive logo">
+      Preparing your files
+    </div>
+    <div mat-dialog-content>
+      <mat-spinner [diameter]="64" style="margin: 0 auto"></mat-spinner>
+      <p>Please wait while we prepare your files in Google Drive...</p>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-button
+        color="primary"
+        (click)="closeDialog()">
+        Cancel
+      </button>
+    </div>
+  </div>
+  <div *ngIf="state === 'complete'">
+    <div mat-dialog-title style="text-align: center">
+      Welcome, {{driveLoginStatus?.userAccountInfo.displayName}}
+    </div>
+    <div mat-dialog-content>
+      <img
+        *ngIf="driveLoginStatus?.userAccountInfo.photoLink"
+        src="{{driveLoginStatus?.userAccountInfo.photoLink}}"
+        alt="Profile photo"
+        class="profile-photo-center">
+      <p>Your saved tabs will now be shared across all devices that you are signed in to this account with.</p>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="closeDialog()">
+        Okay
+      </button>
+    </div>
+  </div>
+</div>

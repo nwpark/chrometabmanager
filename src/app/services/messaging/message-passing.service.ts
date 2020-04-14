@@ -32,7 +32,7 @@ export class MessagePassingService {
   private closedSessionMessageSender = new DebouncedMessageSender(MessagePassingService.CLOSED_SESSION_MESSAGE, MessagePassingService.MESSAGE_DEBOUNCE_TIME);
   private instanceIdRequestSender = new RespondableMessageSender<void, string>(MessagePassingService.INSTANCE_ID_REQUEST);
   private updateDriveSavedSessionsRequestSender = new RespondableMessageSender<SessionListState, any>(MessagePassingService.UPDATE_DRIVE_SAVED_SESSIONS_REQUEST);
-  private loadDriveFileDataRequestSender = new RespondableMessageSender<void, void>(MessagePassingService.LOAD_DRIVE_FILE_DATA_REQUEST);
+  private loadDriveFileDataRequestSender = new RespondableMessageSender<void, any>(MessagePassingService.LOAD_DRIVE_FILE_DATA_REQUEST);
   private insertChromeWindowRequestSender = new SimpleMessageSender<InsertWindowMessageData>(MessagePassingService.INSERT_WINDOW_REQUEST);
 
   constructor() {}

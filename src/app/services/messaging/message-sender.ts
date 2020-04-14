@@ -8,7 +8,7 @@ export class SimpleMessageSender<T> {
 
   broadcast(messageData: T) {
     const message: MessageData<T> = {messageId: this.messageId, data: messageData};
-    sendMessage(message);
+    chrome.runtime.sendMessage(message);
   }
 }
 
@@ -17,7 +17,7 @@ export class RespondableMessageSender<T, R> {
 
   sendRequest(messageData: T): Promise<R> {
     const message: MessageData<T> = {messageId: this.messageId, data: messageData};
-    return sendMessage(message);
+    return sendRespondableMessage(message);
   }
 }
 
@@ -29,7 +29,7 @@ export class DebouncedMessageSender {
       debounceTime(minimumInterval)
     ).subscribe(sessionListState => {
       const message: MessageData<SessionListState> = {messageId, data: sessionListState};
-      sendMessage(message);
+      chrome.runtime.sendMessage(message);
     });
   }
 
@@ -38,10 +38,9 @@ export class DebouncedMessageSender {
   }
 }
 
-function sendMessage(message: any): Promise<any> {
+function sendRespondableMessage(message: MessageData<any>): Promise<any> {
   return new Promise<any>(resolve => {
     chrome.runtime.sendMessage(message, response => {
-      ignoreChromeRuntimeErrors();
       resolve(response);
     });
   });

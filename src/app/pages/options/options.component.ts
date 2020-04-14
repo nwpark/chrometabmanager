@@ -20,6 +20,7 @@ import {DialogDataFactory} from '../../utils/dialog-data-factory';
 import {DriveLoginStatus} from '../../types/drive-login-status';
 import {DriveAccountService} from '../../services/drive-api/drive-account.service';
 import {DriveStorageService} from '../../services/drive-api/drive-storage.service';
+import {DriveLoginDialogComponent} from '../../components/dialogs/drive-login-dialog/drive-login-dialog.component';
 
 @Component({
   selector: 'app-options',
@@ -95,12 +96,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
   }
 
   enableSync() {
-    // todo: open sign in dialog
-    this.driveAccountService.performInteractiveLogin().then(() => {
-      return this.driveAccountService.loadDataFromDrive();
-    }).then(() => {
-      this.preferencesService.setSyncSavedWindows(true);
-    });
+    this.matDialogService.open(DriveLoginDialogComponent);
   }
 
   disableSync() {

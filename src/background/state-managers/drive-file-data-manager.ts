@@ -21,17 +21,17 @@ export class DriveFileDataManager {
         this.loadFileData();
       }
     });
-    this.messageReceiverService.onLoadDriveFileDataRequest$.subscribe(() => {
-      return this.loadFileData();
+    this.messageReceiverService.onLoadDriveFileDataRequest$.subscribe(request => {
+      this.loadFileData()
+        .then(request.sendResponse);
     });
     this.messageReceiverService.onUpdateDriveSavedSessionsRequest$.subscribe(request => {
-      this.googleApiService.patchJSONFileContent(this.savedSessionsFileId, request.messageData).then(res => {
-        request.sendResponse(res);
-      });
+      this.googleApiService.patchJSONFileContent(this.savedSessionsFileId, request.messageData)
+        .then(request.sendResponse);
     });
   }
 
-  loadFileData(): Promise<void> {
+  loadFileData(): Promise<any> {
     return this.requestSavedSessionsFileId().then(fileId => {
       this.savedSessionsFileId = fileId;
       return this.loadSavedSessions();
@@ -55,7 +55,7 @@ export class DriveFileDataManager {
     });
   }
 
-  private loadSavedSessions(): Promise<void> {
+  private loadSavedSessions(): Promise<any> {
     return this.googleApiService.requestJSONFileContent(this.savedSessionsFileId).then(sessionListStateData => {
       const sessionListState = SessionListState.fromSessionListState(sessionListStateData);
       this.driveStorageService.setSavedWindowsState(sessionListState, {writeThrough: false});

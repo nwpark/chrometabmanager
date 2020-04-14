@@ -1,25 +1,27 @@
 export class HttpRequest {
-  constructor(private xmlHttpRequest: XMLHttpRequest) {}
+  constructor(private xmlHttpRequest: XMLHttpRequest,
+              private method: string,
+              private url: string) {}
 
   send(body?): Promise<any> {
+    console.log(`${new Date().toTimeString().substring(0, 8)} - Sending http request: ${this.method} ${this.url}`);
     return new Promise<any>(resolve => {
-      this.xmlHttpRequest.onload = () => resolve(this.xmlHttpRequest.response);
+      this.xmlHttpRequest.onload = () => {
+        console.log(`${new Date().toTimeString().substring(0, 8)} - Received http response: ${this.xmlHttpRequest.status} ${this.xmlHttpRequest.responseURL}`);
+        resolve(this.xmlHttpRequest.response);
+      };
       this.xmlHttpRequest.send(body);
     });
   }
 }
 
 export class HttpRequestBuilder {
-  private readonly method: string;
-  private readonly url: string;
   private _contentType: string;
   private _authorization: string;
   private _responseType: XMLHttpRequestResponseType;
 
-  constructor(method: HTTPMethod, url: string) {
-    this.method = method;
-    this.url = url;
-  }
+  constructor(private method: HTTPMethod,
+              private url: string) { }
 
   build(): HttpRequest {
     const xmlHttpRequest = new XMLHttpRequest();
@@ -33,7 +35,7 @@ export class HttpRequestBuilder {
     if (this._responseType) {
       xmlHttpRequest.responseType = this._responseType;
     }
-    return new HttpRequest(xmlHttpRequest);
+    return new HttpRequest(xmlHttpRequest, this.method, this.url);
   }
 
   contentTypeJSON(): HttpRequestBuilder {

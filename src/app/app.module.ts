@@ -18,6 +18,7 @@ import {DetachedChromeTabComponent} from './components/detached-chrome-tab/detac
 import {ActionableErrorDialogComponent} from './components/dialogs/actionable-error-dialog/actionable-error-dialog.component';
 import { RuntimeErrorDialogComponent } from './components/dialogs/runtime-error-dialog/runtime-error-dialog.component';
 import { BasicDialogComponent } from './components/dialogs/basic-dialog/basic-dialog.component';
+import { DriveLoginDialogComponent } from './components/dialogs/drive-login-dialog/drive-login-dialog.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { BasicDialogComponent } from './components/dialogs/basic-dialog/basic-di
     DetachedChromeTabComponent,
     ActionableErrorDialogComponent,
     RuntimeErrorDialogComponent,
-    BasicDialogComponent
+    BasicDialogComponent,
+    DriveLoginDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -46,7 +48,8 @@ import { BasicDialogComponent } from './components/dialogs/basic-dialog/basic-di
   entryComponents: [
     ActionableErrorDialogComponent,
     RuntimeErrorDialogComponent,
-    BasicDialogComponent
+    BasicDialogComponent,
+    DriveLoginDialogComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

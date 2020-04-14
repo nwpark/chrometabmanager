@@ -5,8 +5,7 @@ export class MessageReceiver<T, R, S> {
   subject = new Subject<S>();
   mightSendResponse = false;
 
-  next(messageData: T, sendResponse: MessageResponseCallback<R>) {
-  }
+  next(messageData: T, sendResponse: MessageResponseCallback<R>) { }
 
   asObservable(): Observable<S> {
     return this.subject.asObservable();
