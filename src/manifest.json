@@ -21,15 +21,16 @@
     "default_title": "Chrome Tab Manager v0.6.3-alpha"
   },
 
-  // todo: make permissions optional
   "permissions": [
     "tabs",
     "storage",
     "sessions",
     "chrome://favicon/",
-    "activeTab",
+    "activeTab"
+  ],
+
+  "optional_permissions": [
     "identity",
-    "identity.email",
     "https://www.googleapis.com/*"
   ],
 

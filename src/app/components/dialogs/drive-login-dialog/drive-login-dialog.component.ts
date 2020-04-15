@@ -5,6 +5,7 @@ import {PreferencesService} from '../../../services/preferences.service';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {DriveLoginStatus} from '../../../types/drive-login-status';
+import {ChromePermissionsService} from '../../../services/chrome-permissions.service';
 
 @Component({
   selector: 'app-drive-login-dialog',
@@ -15,16 +16,18 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
 
   private ngUnsubscribe = new Subject();
 
-  state: DriveLoginDialogState;
+  stepperState: DriveLoginStepperState = DriveLoginStepperState.UNINITIALIZED;
   driveLoginStatus: DriveLoginStatus;
+  errorMessage: string;
 
   constructor(private dialogRef: MatDialogRef<DriveLoginDialogComponent>,
               private driveAccountService: DriveAccountService,
               private preferencesService: PreferencesService,
+              private chromePermissionsService: ChromePermissionsService,
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
-    this.state = DriveLoginDialogState.LOGIN_REQUIRED;
+    this.advanceStepperState();
     this.driveAccountService.loginStatus$.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(loginStatus => {
@@ -33,18 +36,63 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
     });
   }
 
-  performInteractiveLogin() {
-    this.dialogRef.disableClose = true;
-    this.state = DriveLoginDialogState.AWAITING_LOGIN;
-    this.driveAccountService.performInteractiveLogin().then(() => {
-      this.state = DriveLoginDialogState.PREPARING_DATA;
-      return this.driveAccountService.loadDataFromDrive().then(res => console.log(res));
-    }).then(() => {
-      return this.preferencesService.setSyncSavedWindows(true);
-    }).then(() => {
-      this.state = DriveLoginDialogState.FINISHED;
-      this.dialogRef.disableClose = false;
+  advanceStepperState() {
+    this.getNextStepperState().then(nextStepperState => {
+      this.setStepperState(nextStepperState);
     });
+  }
+
+  setStepperState(stepperState: DriveLoginStepperState) {
+    this.stepperState = stepperState;
+    switch (this.stepperState) {
+      case DriveLoginStepperState.REQUEST_PERMISSIONS:
+        this.dialogRef.disableClose = false;
+        break;
+      case DriveLoginStepperState.AWAITING_PERMISSIONS:
+        this.dialogRef.disableClose = true;
+        this.chromePermissionsService.requestDriveAPIPermissions().then(() => {
+          this.advanceStepperState();
+        });
+        break;
+      case DriveLoginStepperState.REQUEST_LOGIN:
+        this.dialogRef.disableClose = false;
+        break;
+      case DriveLoginStepperState.AWAITING_LOGIN:
+        this.dialogRef.disableClose = true;
+        this.driveAccountService.performInteractiveLogin().then(() => {
+          this.advanceStepperState();
+        });
+        break;
+      case DriveLoginStepperState.PREPARING_DATA:
+        this.dialogRef.disableClose = true;
+        this.driveAccountService.loadDataFromDrive().then(() => {
+          return this.preferencesService.setSyncSavedWindows(true);
+        }).then(() => this.advanceStepperState());
+        break;
+      case DriveLoginStepperState.FINISHED:
+        this.dialogRef.disableClose = false;
+        break;
+    }
+  }
+
+  getNextStepperState(): Promise<DriveLoginStepperState> {
+    switch (this.stepperState) {
+      case DriveLoginStepperState.UNINITIALIZED:
+        return this.chromePermissionsService.hasDriveAPIPermissions().then(hasRequiredPermissions =>
+          hasRequiredPermissions ? DriveLoginStepperState.REQUEST_LOGIN : DriveLoginStepperState.REQUEST_PERMISSIONS
+        );
+      case DriveLoginStepperState.REQUEST_PERMISSIONS:
+        return Promise.resolve(DriveLoginStepperState.AWAITING_PERMISSIONS);
+      case DriveLoginStepperState.AWAITING_PERMISSIONS:
+        return Promise.resolve(DriveLoginStepperState.REQUEST_LOGIN);
+      case DriveLoginStepperState.REQUEST_LOGIN:
+        return Promise.resolve(DriveLoginStepperState.AWAITING_LOGIN);
+      case DriveLoginStepperState.AWAITING_LOGIN:
+        return Promise.resolve(DriveLoginStepperState.PREPARING_DATA);
+      case DriveLoginStepperState.PREPARING_DATA:
+      case DriveLoginStepperState.FINISHED:
+        return Promise.resolve(DriveLoginStepperState.FINISHED);
+    }
   }
 
   closeDialog() {
@@ -57,9 +105,13 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
   }
 }
 
-export enum DriveLoginDialogState {
-  LOGIN_REQUIRED = 'loginRequired',
+export enum DriveLoginStepperState {
+  UNINITIALIZED = 'uninitialized',
+  REQUEST_PERMISSIONS = 'requestPermissions',
+  AWAITING_PERMISSIONS = 'awaitingPermissions',
+  REQUEST_LOGIN = 'requestLogin',
   AWAITING_LOGIN = 'awaitingLogin',
   PREPARING_DATA = 'preparingData',
-  FINISHED = 'complete'
+  FINISHED = 'complete',
+  ERROR = 'error'
 }

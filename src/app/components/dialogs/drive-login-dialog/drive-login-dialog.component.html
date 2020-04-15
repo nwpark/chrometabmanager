@@ -1,10 +1,50 @@
-<div style="width: 400px">
-  <div *ngIf="state === 'loginRequired'">
+<div style="width: 400px" [ngSwitch]="stepperState">
+  <div *ngSwitchCase="'requestPermissions'">
     <div mat-dialog-title>
       Enable Sync
     </div>
     <div mat-dialog-content>
-      <p>Chrome Tab Manager uses Google Drive cloud storage to synchronize your saved data between devices.</p>
+<!--      <p>To enable sync, you will need to grant Chrome Tab Manager permission to know your email address.</p>-->
+      <p>To enable sync, you will need to grant Chrome Tab Manager permission share your data with Google servers.</p>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-button
+        color="primary"
+        (click)="closeDialog()">
+        Cancel
+      </button>
+      <button
+        mat-stroked-button
+        cdkFocusInitial
+        color="primary"
+        (click)="advanceStepperState()">
+        Continue
+      </button>
+    </div>
+  </div>
+  <div *ngSwitchCase="'awaitingPermissions'">
+    <div mat-dialog-title>
+      Waiting for permissions...
+    </div>
+    <div mat-dialog-content>
+      <p>Please refer to the popup to grant the permissions.</p>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-button
+        color="primary"
+        (click)="closeDialog()">
+        Cancel
+      </button>
+    </div>
+  </div>
+  <div *ngSwitchCase="'requestLogin'">
+    <div mat-dialog-title>
+      Enable Sync
+    </div>
+    <div mat-dialog-content>
+      <p>Chrome Tab Manager uses Google Drive cloud storage to synchronize your saved data between devices. This is to keep your data safe and secure.</p>
       <p>To enable sync, you will need to sign in with your Google account.</p>
     </div>
     <div mat-dialog-actions>
@@ -18,18 +58,19 @@
         mat-stroked-button
         cdkFocusInitial
         color="primary"
-        (click)="performInteractiveLogin()">
+        (click)="advanceStepperState()">
         <img src="assets/google-logo32.png" class="inline-image-17px" alt="Google logo">
         Sign in with Google
       </button>
     </div>
   </div>
-  <div *ngIf="state === 'awaitingLogin'">
+  <div *ngSwitchCase="'awaitingLogin'">
     <div mat-dialog-title>
       Waiting for sign in...
     </div>
     <div mat-dialog-content>
-      <p>Please refer to the popup window to complete sign in</p>
+      <p>A popup window will appear in a moment.</p>
+      <p>Please follow the instructions in the popup window to complete sign in.</p>
     </div>
     <div mat-dialog-actions>
       <button
@@ -40,7 +81,7 @@
       </button>
     </div>
   </div>
-  <div *ngIf="state === 'preparingData'">
+  <div *ngSwitchCase="'preparingData'">
     <div mat-dialog-title>
       <img src="assets/google-drive-logo32.png" class="inline-image-24px" alt="Google drive logo">
       Preparing your files
@@ -58,7 +99,7 @@
       </button>
     </div>
   </div>
-  <div *ngIf="state === 'complete'">
+  <div *ngSwitchCase="'complete'">
     <div mat-dialog-title style="text-align: center">
       Welcome, {{driveLoginStatus?.userAccountInfo.displayName}}
     </div>
@@ -68,14 +109,15 @@
         src="{{driveLoginStatus?.userAccountInfo.photoLink}}"
         alt="Profile photo"
         class="profile-photo-center">
-      <p>Your saved tabs will now be shared across all devices that you are signed in to this account with.</p>
+      <p>You're all set!</p>
+      <p>Your saved tabs will now be synchronized between all devices that you are signed in on this account with.</p>
     </div>
     <div mat-dialog-actions>
       <button
         mat-stroked-button
         color="primary"
         (click)="closeDialog()">
-        Okay
+        Got it!
       </button>
     </div>
   </div>

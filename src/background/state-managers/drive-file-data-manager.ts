@@ -26,8 +26,9 @@ export class DriveFileDataManager {
         .then(request.sendResponse);
     });
     this.messageReceiverService.onUpdateDriveSavedSessionsRequest$.subscribe(request => {
-      this.googleApiService.patchJSONFileContent(this.savedSessionsFileId, request.messageData)
-        .then(request.sendResponse);
+      this.requestSavedSessionsFileId().then(fileId => {
+        return this.googleApiService.patchJSONFileContent(fileId, request.messageData);
+      }).then(request.sendResponse);
     });
   }
 
@@ -39,6 +40,9 @@ export class DriveFileDataManager {
   }
 
   private requestSavedSessionsFileId(): Promise<string> {
+    if (this.savedSessionsFileId) {
+      return Promise.resolve(this.savedSessionsFileId);
+    }
     return this.googleApiService.searchAppDataFiles(this.SAVED_SESSIONS_FILE_NAME).then(fileMetadata => {
       if (fileMetadata) {
         return fileMetadata.id;
