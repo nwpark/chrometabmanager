@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {isNullOrUndefined} from 'util';
 import {HTTPMethod, HttpRequestBuilder} from '../../../background/types/http-request';
+import {ChromeRuntimeErrorMessage} from '../../types/errors/chrome-runtime-error-message';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,14 @@ export class OAuth2Service {
   constructor() { }
 
   getAuthToken(details = {interactive: false}): Promise<string> {
-    return new Promise<string>(resolve => {
-      chrome.identity.getAuthToken(details, resolve);
+    return new Promise<string>((resolve, reject) => {
+      chrome.identity.getAuthToken(details, token => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError.message);
+        } else {
+          resolve(token);
+        }
+      });
     });
   }
 
@@ -29,6 +36,16 @@ export class OAuth2Service {
   hasValidAuthToken(): Promise<boolean> {
     return this.getAuthToken().then(authToken => {
       return !isNullOrUndefined(authToken);
+    }).catch(() => {
+      return false;
+    });
+  }
+
+  chromeSignInRequired(): Promise<boolean> {
+    return this.getAuthToken().then(() => {
+      return false;
+    }).catch(errorMessage => {
+      return errorMessage === ChromeRuntimeErrorMessage.UserNotSignedIn;
     });
   }
 

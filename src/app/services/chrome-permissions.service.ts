@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import {DriveLoginStepperState} from '../components/dialogs/drive-login-dialog/drive-login-dialog.component';
+import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +6,7 @@ import {DriveLoginStepperState} from '../components/dialogs/drive-login-dialog/d
 export class ChromePermissionsService {
 
   private readonly DRIVE_API_PERMISSIONS = {
-    permissions: ['identity', 'identity.email'],
+    permissions: ['identity'],
     origins: ['https://www.googleapis.com/*']
   };
 
@@ -25,7 +24,7 @@ export class ChromePermissionsService {
         if (granted) {
           resolve();
         } else {
-          reject('Permission was not granted.');
+          reject();
         }
       });
     });

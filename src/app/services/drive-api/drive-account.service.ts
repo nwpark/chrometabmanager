@@ -6,6 +6,7 @@ import {MessagePassingService} from '../messaging/message-passing.service';
 import {OAuth2Service} from './o-auth-2.service';
 import {GoogleApiService} from './google-api.service';
 import {DriveStorageService} from './drive-storage.service';
+import {ChromePermissionsService} from '../chrome-permissions.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,7 @@ export class DriveAccountService {
   constructor(private driveStorageService: DriveStorageService,
               private oAuth2Service: OAuth2Service,
               private googleApiService: GoogleApiService,
+              private chromePermissionsService: ChromePermissionsService,
               private messageReceiverService: MessageReceiverService,
               private messagePassingService: MessagePassingService) {
     this.driveStorageService.getLoginStatus().then(loginStatus => {

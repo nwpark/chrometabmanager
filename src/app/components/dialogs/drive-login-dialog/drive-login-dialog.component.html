@@ -1,10 +1,9 @@
-<div style="width: 400px" [ngSwitch]="stepperState">
-  <div *ngSwitchCase="'requestPermissions'">
+<div style="width: 400px" [ngSwitch]="currentStepperStateId">
+  <div *ngSwitchCase="'requiresChromePermissions'">
     <div mat-dialog-title>
       Enable Sync
     </div>
     <div mat-dialog-content>
-<!--      <p>To enable sync, you will need to grant Chrome Tab Manager permission to know your email address.</p>-->
       <p>To enable sync, you will need to grant Chrome Tab Manager permission share your data with Google servers.</p>
     </div>
     <div mat-dialog-actions>
@@ -23,7 +22,7 @@
       </button>
     </div>
   </div>
-  <div *ngSwitchCase="'awaitingPermissions'">
+  <div *ngSwitchCase="'awaitingChromePermissions'">
     <div mat-dialog-title>
       Waiting for permissions...
     </div>
@@ -39,13 +38,60 @@
       </button>
     </div>
   </div>
-  <div *ngSwitchCase="'requestLogin'">
+  <div *ngSwitchCase="'requiresChromeLogin'">
+    <div mat-dialog-title>
+      Sign in to Chrome
+    </div>
+    <div mat-dialog-content>
+      <p>You are not currently signed into Google Chrome. To enable sync, you need to be signed in.</p>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-button
+        color="primary"
+        (click)="closeDialog()">
+        Cancel
+      </button>
+      <button
+        mat-stroked-button
+        cdkFocusInitial
+        color="primary"
+        (click)="advanceStepperState()">
+        Sign in to Chrome
+      </button>
+    </div>
+  </div>
+  <div *ngSwitchCase="'awaitingChromeLogin'">
+    <div mat-dialog-title>
+      Signing into Chrome...
+    </div>
+    <div mat-dialog-content>
+      <p>Press continue to proceed.</p>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-button
+        color="primary"
+        (click)="closeDialog()">
+        Cancel
+      </button>
+      <button
+        mat-stroked-button
+        cdkFocusInitial
+        color="primary"
+        (click)="advanceStepperState()">
+        Continue
+      </button>
+    </div>
+  </div>
+  <div *ngSwitchCase="'requiresOAuthLogin'">
     <div mat-dialog-title>
       Enable Sync
     </div>
     <div mat-dialog-content>
       <p>Chrome Tab Manager uses Google Drive cloud storage to synchronize your saved data between devices. This is to keep your data safe and secure.</p>
       <p>To enable sync, you will need to sign in with your Google account.</p>
+<!--      <p>To enable sync, you will need to authorize Chrome Tab Manager to store data with your Google account.</p>-->
     </div>
     <div mat-dialog-actions>
       <button
@@ -61,10 +107,12 @@
         (click)="advanceStepperState()">
         <img src="assets/google-logo32.png" class="inline-image-17px" alt="Google logo">
         Sign in with Google
+<!--        <img src="assets/google-drive-logo32.png" class="inline-image-17px" alt="Google Drive logo">-->
+<!--        Authorize Google Drive-->
       </button>
     </div>
   </div>
-  <div *ngSwitchCase="'awaitingLogin'">
+  <div *ngSwitchCase="'awaitingOAuthLogin'">
     <div mat-dialog-title>
       Waiting for sign in...
     </div>
@@ -81,7 +129,7 @@
       </button>
     </div>
   </div>
-  <div *ngSwitchCase="'preparingData'">
+  <div *ngSwitchCase="'preparingDriveData'">
     <div mat-dialog-title>
       <img src="assets/google-drive-logo32.png" class="inline-image-24px" alt="Google drive logo">
       Preparing your files
