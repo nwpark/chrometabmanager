@@ -1,8 +1,9 @@
 import {SessionListState} from '../../app/types/session/session-list-state';
 import {MessageReceiverService} from '../../app/services/messaging/message-receiver.service';
-import {OAuth2Service} from '../../app/services/drive-api/o-auth-2.service';
 import {GoogleApiService} from '../../app/services/drive-api/google-api.service';
 import {DriveStorageService} from '../../app/services/drive-api/drive-storage.service';
+import {DriveAccountService} from '../../app/services/drive-api/drive-account.service';
+import {performsSynchronization} from '../../app/decorators/performs-synchronization';
 
 export class DriveFileDataManager {
 
@@ -12,9 +13,9 @@ export class DriveFileDataManager {
 
   private savedSessionsFileId;
 
-  constructor(private oAuth2Service: OAuth2Service,
-              private googleApiService: GoogleApiService,
+  constructor(private googleApiService: GoogleApiService,
               private driveStorageService: DriveStorageService,
+              private driveAccountService: DriveAccountService,
               private messageReceiverService: MessageReceiverService) {
     this.driveStorageService.getLoginStatus().then(loginStatus => {
       if (loginStatus.isLoggedIn) {
@@ -59,10 +60,11 @@ export class DriveFileDataManager {
     });
   }
 
+  @performsSynchronization()
   private loadSavedSessions(): Promise<any> {
     return this.googleApiService.requestJSONFileContent(this.savedSessionsFileId).then(sessionListStateData => {
       const sessionListState = SessionListState.fromSessionListState(sessionListStateData);
-      this.driveStorageService.setSavedWindowsState(sessionListState, {writeThrough: false});
+      return this.driveStorageService.setSavedWindowsState(sessionListState, {writeThrough: false});
     });
   }
 }

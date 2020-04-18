@@ -11,6 +11,8 @@ import {DriveFileDataManager} from './state-managers/drive-file-data-manager';
 import {OAuth2Service} from '../app/services/drive-api/o-auth-2.service';
 import {GoogleApiService} from '../app/services/drive-api/google-api.service';
 import {DriveStorageService} from '../app/services/drive-api/drive-storage.service';
+import {DriveAccountService} from '../app/services/drive-api/drive-account.service';
+import {ChromePermissionsService} from '../app/services/chrome-permissions.service';
 
 const head = document.getElementsByTagName('head')[0];
 const script = document.createElement('script');
@@ -35,19 +37,21 @@ const chromeWindowUpdateEvents = [
 
 const ignoredTabUrls = ['chrome://newtab/'];
 
-const oAuth2Service = new OAuth2Service();
 const messagePassingService = new MessagePassingService();
-const localStorageService = new LocalStorageService(messagePassingService);
-const driveStorageService = new DriveStorageService(oAuth2Service, messagePassingService);
 const messageReceiverService = new MessageReceiverService();
+const localStorageService = new LocalStorageService(messagePassingService);
 const webpageTitleCacheService = new WebpageTitleCacheService(localStorageService, messageReceiverService);
 const activeWindowStateManager = new ActiveWindowStateManager(localStorageService, messageReceiverService, webpageTitleCacheService);
 const closedSessionStateManager = new ClosedSessionStateManager(localStorageService);
+const oAuth2Service = new OAuth2Service();
 const googleApiService = new GoogleApiService(oAuth2Service);
+const driveStorageService = new DriveStorageService(oAuth2Service, messagePassingService);
+const chromePermissionsService = new ChromePermissionsService();
+const driveAccountService = new DriveAccountService(driveStorageService, oAuth2Service, googleApiService, chromePermissionsService, messageReceiverService, messagePassingService);
 const driveFileDataManager = new DriveFileDataManager(
-  oAuth2Service,
   googleApiService,
   driveStorageService,
+  driveAccountService,
   messageReceiverService
 );
 

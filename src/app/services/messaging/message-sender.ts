@@ -1,7 +1,6 @@
 import {Subject} from 'rxjs';
 import {SessionListState} from '../../types/session/session-list-state';
 import {debounceTime} from 'rxjs/operators';
-import {ignoreChromeRuntimeErrors} from '../../utils/error-utils';
 
 export class SimpleMessageSender<T> {
   constructor(private messageId: string) { }

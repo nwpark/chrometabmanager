@@ -1,19 +1,20 @@
 import {Injectable} from '@angular/core';
 import {createDefaultDriveLoginStatus, DriveLoginStatus} from '../../types/drive-login-status';
-import {Subject} from 'rxjs';
+import {ReplaySubject} from 'rxjs';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {OAuth2Service} from './o-auth-2.service';
 import {GoogleApiService} from './google-api.service';
 import {DriveStorageService} from './drive-storage.service';
 import {ChromePermissionsService} from '../chrome-permissions.service';
+import {take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DriveAccountService {
 
-  private loginStatus = new Subject<DriveLoginStatus>();
+  private loginStatus = new ReplaySubject<DriveLoginStatus>(1);
   loginStatus$ = this.loginStatus.asObservable();
 
   constructor(private driveStorageService: DriveStorageService,
@@ -55,8 +56,16 @@ export class DriveAccountService {
     });
   }
 
+  setSyncInProgress(syncInProgress: boolean): Promise<void> {
+    return this.loginStatus$.pipe(take(1)).toPromise().then(loginStatus => {
+      loginStatus.syncInProgress = syncInProgress;
+      return this.updateLoginStatus(loginStatus);
+    });
+  }
+
   private updateLoginStatus(loginStatus: DriveLoginStatus): Promise<void> {
-    this.setLoginStatus(loginStatus);
+    console.log(new Date().toTimeString().substring(0, 8), '- updating drive login status');
+    this.loginStatus.next(loginStatus);
     return this.driveStorageService.setLoginStatus(loginStatus);
   }
 
@@ -64,6 +73,7 @@ export class DriveAccountService {
     return this.googleApiService.requestUserAccountInformation().then(accountInfo => {
       return {
         isLoggedIn: true,
+        syncInProgress: false,
         userAccountInfo: {
           displayName: accountInfo.user.displayName,
           photoLink: accountInfo.user.photoLink,
