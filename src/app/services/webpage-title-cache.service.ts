@@ -4,6 +4,7 @@ import {WebpageTitleCache} from '../types/webpage-title-cache';
 import {ChromeAPITabState} from '../types/chrome-api/chrome-api-tab-state';
 import {modifiesState} from '../decorators/modifies-state';
 import {MessageReceiverService} from './messaging/message-receiver.service';
+import {getCurrentTimeStringWithMillis} from '../utils/date-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,7 @@ export class WebpageTitleCacheService {
   }
 
   private setCacheData(webpageTitleCache: WebpageTitleCache) {
-    console.log(new Date().toTimeString().substring(0, 8), '- refreshing webpage title cache');
+    console.log(getCurrentTimeStringWithMillis(), '- refreshing webpage title cache');
     this.webpageTitleCache = webpageTitleCache;
   }
 
@@ -66,7 +67,7 @@ export class WebpageTitleCacheService {
   }
 
   onStateModified() {
-    console.log(new Date().toTimeString().substring(0, 8), '- updating webpage title cache');
+    console.log(getCurrentTimeStringWithMillis(), '- updating webpage title cache');
     this.localStorageService.setWebpageTitleCacheData(this.webpageTitleCache);
   }
 }

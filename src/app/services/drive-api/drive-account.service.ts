@@ -8,6 +8,7 @@ import {GoogleApiService} from './google-api.service';
 import {DriveStorageService} from './drive-storage.service';
 import {ChromePermissionsService} from '../chrome-permissions.service';
 import {take} from 'rxjs/operators';
+import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -32,19 +33,35 @@ export class DriveAccountService {
   }
 
   private setLoginStatus(loginStatus: DriveLoginStatus) {
-    console.log(new Date().toTimeString().substring(0, 8), '- refreshing drive login status');
+    console.log(getCurrentTimeStringWithMillis(), '- refreshing drive login status');
     this.loginStatus.next(loginStatus);
+  }
+
+  getLoginStatus(): Promise<DriveLoginStatus> {
+    return this.loginStatus$.pipe(take(1)).toPromise();
   }
 
   performInteractiveLogin(): Promise<string> {
     return this.oAuth2Service.getAuthToken({interactive: true});
   }
 
-  loadDataFromDrive(): Promise<any> {
-    return this.requestLoginStatus().then(loginStatus => {
+  enableSync(): Promise<any> {
+    return this.messagePassingService.requestLoadDriveFileData().then(() => {
+      return this.googleApiService.requestUserAccountInformation().then(accountInfo => {
+        return this.updateLoginStatus({
+          isLoggedIn: true,
+          syncEnabled: true,
+          syncInProgress: false,
+          userAccountInfo: accountInfo.user
+        });
+      });
+    });
+  }
+
+  disableSync(): Promise<void> {
+    return this.getLoginStatus().then(loginStatus => {
+      loginStatus.syncEnabled = false;
       return this.updateLoginStatus(loginStatus);
-    }).then(() => {
-      return this.messagePassingService.requestLoadDriveFileData();
     });
   }
 
@@ -57,29 +74,15 @@ export class DriveAccountService {
   }
 
   setSyncInProgress(syncInProgress: boolean): Promise<void> {
-    return this.loginStatus$.pipe(take(1)).toPromise().then(loginStatus => {
+    return this.getLoginStatus().then(loginStatus => {
       loginStatus.syncInProgress = syncInProgress;
       return this.updateLoginStatus(loginStatus);
     });
   }
 
   private updateLoginStatus(loginStatus: DriveLoginStatus): Promise<void> {
-    console.log(new Date().toTimeString().substring(0, 8), '- updating drive login status');
+    console.log(getCurrentTimeStringWithMillis(), '- updating drive login status');
     this.loginStatus.next(loginStatus);
     return this.driveStorageService.setLoginStatus(loginStatus);
-  }
-
-  private requestLoginStatus(): Promise<DriveLoginStatus> {
-    return this.googleApiService.requestUserAccountInformation().then(accountInfo => {
-      return {
-        isLoggedIn: true,
-        syncInProgress: false,
-        userAccountInfo: {
-          displayName: accountInfo.user.displayName,
-          photoLink: accountInfo.user.photoLink,
-          emailAddress: accountInfo.user.emailAddress
-        }
-      };
-    });
   }
 }

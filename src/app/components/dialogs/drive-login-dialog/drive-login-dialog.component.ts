@@ -129,9 +129,9 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
       },
       [StepperStateId.PREPARING_DRIVE_DATA]: {
         disableDialogClose: true,
-        onInitialize: () => this.driveAccountService.loadDataFromDrive().then(() => {
-          return this.preferencesService.setSyncSavedWindows(true);
-        }).then(() => this.advanceStepperState()),
+        onInitialize: () => this.driveAccountService.enableSync().then(() => {
+          this.advanceStepperState();
+        }),
         getNextState: () => Promise.resolve(StepperStateId.FINISHED)
       },
       [StepperStateId.FINISHED]: {

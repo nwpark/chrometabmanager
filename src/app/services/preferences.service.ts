@@ -5,6 +5,7 @@ import {modifiesState} from '../decorators/modifies-state';
 import {take} from 'rxjs/operators';
 import {SyncStorageService} from './storage/sync-storage.service';
 import {MessageReceiverService} from './messaging/message-receiver.service';
+import {getCurrentTimeStringWithMillis} from '../utils/date-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -74,7 +75,7 @@ export class PreferencesService {
   }
 
   onStateModified() {
-    console.log(new Date().toTimeString().substring(0, 8), '- updating preferences');
+    console.log(getCurrentTimeStringWithMillis(), '- updating preferences');
     this.preferencesUpdated.next(this.preferences);
     this.syncStorageService.setPreferences(this.preferences);
   }

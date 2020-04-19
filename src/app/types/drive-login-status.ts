@@ -1,5 +1,6 @@
 export interface DriveLoginStatus {
   isLoggedIn: boolean;
+  syncEnabled: boolean;
   syncInProgress: boolean;
   userAccountInfo?: UserAccountInfo;
 }
@@ -12,7 +13,8 @@ interface UserAccountInfo {
 
 export function createDefaultDriveLoginStatus(): DriveLoginStatus {
   return {
-    syncInProgress: false,
-    isLoggedIn: false
+    isLoggedIn: false,
+    syncEnabled: false,
+    syncInProgress: false
   };
 }

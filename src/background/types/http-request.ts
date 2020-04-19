@@ -1,13 +1,15 @@
+import {getCurrentTimeStringWithMillis} from '../../app/utils/date-utils';
+
 export class HttpRequest {
   constructor(private xmlHttpRequest: XMLHttpRequest,
               private method: string,
               private url: string) {}
 
   send(body?): Promise<any> {
-    console.log(`${new Date().toTimeString().substring(0, 8)} - Sending http request: ${this.method} ${this.url}`);
+    console.log(`${getCurrentTimeStringWithMillis()} - Sending http request: ${this.method} ${this.url}`);
     return new Promise<any>(resolve => {
       this.xmlHttpRequest.onload = () => {
-        console.log(`${new Date().toTimeString().substring(0, 8)} - Received http response: ${this.xmlHttpRequest.status} ${this.xmlHttpRequest.responseURL}`);
+        console.log(`${getCurrentTimeStringWithMillis()} - Received http response: ${this.xmlHttpRequest.status} ${this.xmlHttpRequest.responseURL}`);
         resolve(this.xmlHttpRequest.response);
       };
       this.xmlHttpRequest.send(body);

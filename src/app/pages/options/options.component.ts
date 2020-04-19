@@ -101,9 +101,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
 
   disableSync() {
     // todo: open sign out dialog
-    this.driveAccountService.logout().then(() => {
-      this.preferencesService.setSyncSavedWindows(false);
-    });
+    this.driveAccountService.disableSync();
   }
 
   private copySavedSessions(copyToSync: boolean) {

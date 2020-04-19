@@ -64,6 +64,7 @@ export class DriveFileDataManager {
   private loadSavedSessions(): Promise<any> {
     return this.googleApiService.requestJSONFileContent(this.savedSessionsFileId).then(sessionListStateData => {
       const sessionListState = SessionListState.fromSessionListState(sessionListStateData);
+      // todo: check if value is already up to date
       return this.driveStorageService.setSavedWindowsState(sessionListState, {writeThrough: false});
     });
   }

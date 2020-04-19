@@ -13,6 +13,7 @@ import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {ErrorDialogService} from '../error-dialog.service';
 import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
 import MoveProperties = chrome.tabs.MoveProperties;
+import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -43,7 +44,7 @@ export class ChromeTabsService implements TabsService {
   }
 
   private setSessionListState(sessionListState: SessionListState) {
-    console.log(new Date().toTimeString().substring(0, 8), '- refreshing active windows');
+    console.log(getCurrentTimeStringWithMillis(), '- refreshing active windows');
     this.sessionListState = sessionListState;
     this.sessionStateUpdated.next(this.sessionListState);
   }
@@ -154,7 +155,7 @@ export class ChromeTabsService implements TabsService {
   }
 
   onStateModified(params?: StateModifierParams) {
-    console.log(new Date().toTimeString().substring(0, 8), '- updating active windows');
+    console.log(getCurrentTimeStringWithMillis(), '- updating active windows');
     this.sessionStateUpdated.next(this.sessionListState);
     if (params.storeResult) {
       this.localStorageService.setActiveWindowsState(this.sessionListState);

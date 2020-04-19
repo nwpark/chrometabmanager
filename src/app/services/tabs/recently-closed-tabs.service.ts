@@ -11,6 +11,7 @@ import {SessionState} from '../../types/session/session-state';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {ErrorDialogService} from '../error-dialog.service';
 import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
+import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +40,7 @@ export class RecentlyClosedTabsService implements TabsService {
   }
 
   private setSessionListState(sessionListState: SessionListState) {
-    console.log(new Date().toTimeString().substring(0, 8), '- refreshing recently closed windows');
+    console.log(getCurrentTimeStringWithMillis(), '- refreshing recently closed windows');
     this.sessionListState = sessionListState;
     this.sessionStateUpdated.next(this.sessionListState);
   }
@@ -94,7 +95,7 @@ export class RecentlyClosedTabsService implements TabsService {
   setSessionTitle(index: number, title: string) { /* do nothing */ }
 
   onStateModified() {
-    console.log(new Date().toTimeString().substring(0, 8), '- updating recently closed windows');
+    console.log(getCurrentTimeStringWithMillis(), '- updating recently closed windows');
     this.sessionStateUpdated.next(this.sessionListState);
     this.localStorageService.setRecentlyClosedSessionsState(this.sessionListState);
   }

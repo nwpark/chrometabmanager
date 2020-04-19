@@ -15,6 +15,7 @@ import {SessionState} from '../../types/session/session-state';
 import {ErrorDialogService} from '../error-dialog.service';
 import {StorageWriteError} from '../../types/errors/storage-write-error';
 import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
+import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -33,20 +34,13 @@ export class SavedTabsService implements TabsService {
     this.sessionStateUpdated = new BehaviorSubject(SessionListState.empty());
     this.sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
     this.sessionListState = this.sessionStateUpdated.getValue();
-    this.initializeStateFromStorage();
-    this.storageService.savedSessionStateUpdated$().subscribe(sessionListState => {
+    this.storageService.savedSessionState$().subscribe(sessionListState => {
       ngZone.run(() => this.setSessionListState(sessionListState));
     });
   }
 
-  private initializeStateFromStorage() {
-    this.storageService.getSavedWindowsState().then(sessionListState => {
-      this.setSessionListState(sessionListState);
-    }, error => this.handleStorageReadError(error));
-  }
-
   private setSessionListState(sessionListState: SessionListState) {
-    console.log(new Date().toTimeString().substring(0, 8), '- refreshing saved windows');
+    console.log(getCurrentTimeStringWithMillis(), '- refreshing saved windows');
     this.sessionListState = sessionListState;
     this.sessionStateUpdated.next(this.sessionListState);
   }
@@ -131,7 +125,7 @@ export class SavedTabsService implements TabsService {
 
   // Called by @modifiesState decorator
   onStateModified(params?: StateModifierParams) {
-    console.log(new Date().toTimeString().substring(0, 8), '- updating saved windows');
+    console.log(getCurrentTimeStringWithMillis(), '- updating saved windows');
     this.sessionStateUpdated.next(this.sessionListState);
     if (params.storeResult) {
       this.storageService.setSavedWindowsState(this.sessionListState).catch(error => {
@@ -150,6 +144,6 @@ export class SavedTabsService implements TabsService {
   handleStorageWriteError(error: StorageWriteError) {
     const dialogData = ErrorDialogDataFactory.couldNotStoreModifiedData(error);
     this.errorDialogService.showError(dialogData);
-    this.initializeStateFromStorage();
+    this.storageService.reloadSavedSessionState();
   }
 }

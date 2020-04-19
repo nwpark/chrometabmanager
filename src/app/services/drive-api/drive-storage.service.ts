@@ -26,9 +26,9 @@ export class DriveStorageService {
       if (cacheEntryIsValid) {
         return cachedLoginStatus;
       } else {
-        const defaultLoginStatus = createDefaultDriveLoginStatus();
-        return this.setLoginStatus(defaultLoginStatus).then(() => {
-          return defaultLoginStatus;
+        cachedLoginStatus.isLoggedIn = false;
+        return this.setLoginStatus(cachedLoginStatus).then(() => {
+          return cachedLoginStatus;
         });
       }
     });
@@ -41,7 +41,8 @@ export class DriveStorageService {
   }
 
   getSavedWindowsState(): Promise<SessionListState> {
-    // todo: asynchronously check for cache miss + prevent further writes until complete
+    // Check for cache miss asynchronously (this prevents further writes until it completes)
+    this.messagePassingService.requestLoadDriveFileData();
     return this.readSavedWindowsStateFromCache();
   }
 
