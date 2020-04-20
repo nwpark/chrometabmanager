@@ -34,27 +34,51 @@ export class DriveStorageService {
     });
   }
 
+  private readLoginStatusFromCache(): Promise<DriveLoginStatus> {
+    return new Promise<DriveLoginStatus>(resolve => {
+      chrome.storage.local.get({
+        [StorageKeys.DriveLoginStatus]: createDefaultDriveLoginStatus()
+      }, data => {
+        resolve(data[StorageKeys.DriveLoginStatus]);
+      });
+    });
+  }
+
   setLoginStatus(loginStatus: DriveLoginStatus): Promise<void> {
     return this.writeLoginStatusToCache(loginStatus).then(() => {
       this.messagePassingService.broadcastDriveLoginStatus(loginStatus);
     });
   }
 
-  getSavedWindowsState(): Promise<SessionListState> {
-    // Check for cache miss asynchronously (this prevents further writes until it completes)
-    this.messagePassingService.requestLoadDriveFileData();
-    return this.readSavedWindowsStateFromCache();
+  getSavedWindowsState(options: CacheAccessOptions = {skipCache: false}): Promise<SessionListState> {
+    return this.readSavedWindowsStateFromCache().then(cachedSessionListState => {
+      // todo: block writes
+      // Further writes will be blocked until this resolves
+      const sessionListState = this.checkForSessionListStateCacheMiss(cachedSessionListState);
+      return options.skipCache
+        ? sessionListState
+        : cachedSessionListState;
+    });
   }
 
-  setSavedWindowsState(sessionListState: SessionListState, options: CacheAccessOptions = {writeThrough: true}): Promise<void> {
-    return this.writeSavedWindowsStateToCache(sessionListState).then(() => {
-      this.messagePassingService.broadcastSavedSessionsSync(sessionListState);
-      if (options.writeThrough) {
-        return this.messagePassingService.requestUpdateDriveSavedSessions(sessionListState).then(res => {
-          // todo: remove
-          console.log(res);
+  private checkForSessionListStateCacheMiss(cachedSessionListState: SessionListState): Promise<SessionListState> {
+    return this.messagePassingService.requestLoadDriveFileData().then(sessionListState => {
+      if (cachedSessionListState.equals(sessionListState)) {
+        return cachedSessionListState;
+      } else {
+        return this.writeSavedWindowsStateToCache(sessionListState).then(() => {
+          return sessionListState;
         });
       }
+    });
+  }
+
+  setSavedWindowsState(sessionListState: SessionListState): Promise<void> {
+    return this.writeSavedWindowsStateToCache(sessionListState).then(() => {
+      return this.messagePassingService.requestUpdateDriveSavedSessions(sessionListState).then(res => {
+        // todo: remove
+        console.log(res);
+      });
     });
   }
 
@@ -62,12 +86,14 @@ export class DriveStorageService {
     return this.writeSavedWindowsStateToCache(SessionListState.empty());
   }
 
-  private readLoginStatusFromCache(): Promise<DriveLoginStatus> {
-    return new Promise<DriveLoginStatus>(resolve => {
-      chrome.storage.local.get({
-        [StorageKeys.DriveLoginStatus]: createDefaultDriveLoginStatus()
-      }, data => {
-        resolve(data[StorageKeys.DriveLoginStatus]);
+  private writeSavedWindowsStateToCache(sessionListState: SessionListState): Promise<void> {
+    return new Promise<void>(resolve => {
+      chrome.storage.local.set({
+        [StorageKeys.DriveCacheSavedWindows]: sessionListState.getSessionMap(),
+        [StorageKeys.DriveCacheSavedWindowsLayoutState]: sessionListState.getLayoutState()
+      }, () => {
+        this.messagePassingService.broadcastSavedSessionsSync(sessionListState);
+        resolve();
       });
     });
   }
@@ -104,19 +130,9 @@ export class DriveStorageService {
       });
     });
   }
-
-  private writeSavedWindowsStateToCache(sessionListState: SessionListState): Promise<void> {
-    return new Promise<void>(resolve => {
-      chrome.storage.local.set({
-        [StorageKeys.DriveCacheSavedWindows]: sessionListState.getSessionMap(),
-        [StorageKeys.DriveCacheSavedWindowsLayoutState]: sessionListState.getLayoutState()
-      }, () => {
-        resolve();
-      });
-    });
-  }
 }
 
 interface CacheAccessOptions {
   writeThrough?: boolean;
+  skipCache?: boolean;
 }

@@ -33,10 +33,11 @@ export class DriveFileDataManager {
     });
   }
 
-  loadFileData(): Promise<any> {
+  @performsSynchronization()
+  loadFileData(): Promise<SessionListState> {
     return this.requestSavedSessionsFileId().then(fileId => {
       this.savedSessionsFileId = fileId;
-      return this.loadSavedSessions();
+      return this.googleApiService.requestJSONFileContent(this.savedSessionsFileId);
     });
   }
 
@@ -57,15 +58,6 @@ export class DriveFileDataManager {
     const sessionListState = SessionListState.empty();
     return this.googleApiService.postJSONAppDataFile(this.SAVED_SESSIONS_FILE_NAME, sessionListState).then(fileMetadata => {
       return fileMetadata.id;
-    });
-  }
-
-  @performsSynchronization()
-  private loadSavedSessions(): Promise<any> {
-    return this.googleApiService.requestJSONFileContent(this.savedSessionsFileId).then(sessionListStateData => {
-      const sessionListState = SessionListState.fromSessionListState(sessionListStateData);
-      // todo: check if value is already up to date
-      return this.driveStorageService.setSavedWindowsState(sessionListState, {writeThrough: false});
     });
   }
 }

@@ -25,7 +25,7 @@ export class MessageReceiverService {
   private driveLoginStatusUpdated = new SimpleMessageReceiver<DriveLoginStatus>();
   private onInstanceIdRequest = new RespondableMessageReceiver<void, string>();
   private onUpdateDriveSavedSessionsRequest = new RespondableMessageReceiver<SessionListState, any>();
-  private onLoadDriveFileDataRequest = new RespondableMessageReceiver<void, any>();
+  private onLoadDriveFileDataRequest = new RespondableMessageReceiver<void, SessionListState>();
   private onInsertChromeWindowRequest = new SimpleMessageReceiver<InsertWindowMessageData>();
 
   savedSessionStateUpdated$ = this.savedSessionStateUpdated.asObservable();

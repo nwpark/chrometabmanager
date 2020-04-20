@@ -34,7 +34,7 @@ export class StorageService {
   }
 
   @requiresSubjectInitialization()
-  savedSessionState$(): Observable<SessionListState> {
+  savedSessionListState$(): Observable<SessionListState> {
     return this.driveAccountService.loginStatus$.pipe(
       map(loginStatus => this.shouldUseSyncStorage(loginStatus)),
       distinctUntilChanged(),
@@ -47,6 +47,10 @@ export class StorageService {
     );
   }
 
+  private shouldUseSyncStorage(loginStatus: DriveLoginStatus): boolean {
+    return loginStatus.isLoggedIn && loginStatus.syncEnabled;
+  }
+
   @requiresSubjectInitialization()
   reloadSavedSessionState() {
     this.driveStorageService.getSavedWindowsState().then(sessionListState => {
@@ -57,8 +61,20 @@ export class StorageService {
     });
   }
 
-  private shouldUseSyncStorage(loginStatus: DriveLoginStatus): boolean {
-    return loginStatus.isLoggedIn && loginStatus.syncEnabled;
+  copySavedSessions(storageCopyDirection: StorageCopyDirection): Promise<void> {
+    return Promise.all([
+      this.driveStorageService.getSavedWindowsState({skipCache: true}),
+      this.localStorageService.getSavedWindowsState()
+    ]).then(res => {
+      const [savedSessionStateSync, savedSessionStateLocal] = res;
+      if (storageCopyDirection === StorageCopyDirection.FromLocalToSync) {
+        savedSessionStateSync.addAll(savedSessionStateLocal);
+        return this.driveStorageService.setSavedWindowsState(savedSessionStateSync);
+      } else {
+        savedSessionStateLocal.addAll(savedSessionStateSync);
+        return this.localStorageService.setSavedWindowsState(savedSessionStateLocal);
+      }
+    });
   }
 
   private initStorageSubjects() {
@@ -78,7 +94,6 @@ export class StorageService {
   }
 
   clearStorage() {
-    // todo: split into clear for each section
     chrome.storage.local.clear();
     chrome.storage.sync.clear();
     chrome.runtime.reload();
@@ -98,4 +113,9 @@ function requiresSubjectInitialization(): MethodDecorator {
 
     return descriptor;
   };
+}
+
+export enum StorageCopyDirection {
+  FromLocalToSync,
+  FromSyncToLocal
 }

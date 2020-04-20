@@ -4,6 +4,7 @@ import {SessionListState} from '../../types/session/session-list-state';
 import {WebpageTitleCache} from '../../types/webpage-title-cache';
 import {DebouncedMessageSender, RespondableMessageSender, SimpleMessageSender} from './message-sender';
 import {DriveLoginStatus} from '../../types/drive-login-status';
+import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,7 @@ export class MessagePassingService {
   private closedSessionMessageSender = new DebouncedMessageSender(MessagePassingService.CLOSED_SESSION_MESSAGE, MessagePassingService.MESSAGE_DEBOUNCE_TIME);
   private instanceIdRequestSender = new RespondableMessageSender<void, string>(MessagePassingService.INSTANCE_ID_REQUEST);
   private updateDriveSavedSessionsRequestSender = new RespondableMessageSender<SessionListState, any>(MessagePassingService.UPDATE_DRIVE_SAVED_SESSIONS_REQUEST);
-  private loadDriveFileDataRequestSender = new RespondableMessageSender<void, any>(MessagePassingService.LOAD_DRIVE_FILE_DATA_REQUEST);
+  private loadDriveFileDataRequestSender = new RespondableMessageSender<void, SessionListState>(MessagePassingService.LOAD_DRIVE_FILE_DATA_REQUEST);
   private insertChromeWindowRequestSender = new SimpleMessageSender<InsertWindowMessageData>(MessagePassingService.INSERT_WINDOW_REQUEST);
 
   constructor() {}
@@ -42,10 +43,12 @@ export class MessagePassingService {
   }
 
   broadcastSavedSessions(sessionListState: SessionListState) {
+    console.log(getCurrentTimeStringWithMillis(), '- updating local saved windows');
     this.savedSessionMessageSender.broadcast(sessionListState);
   }
 
   broadcastSavedSessionsSync(sessionListState: SessionListState) {
+    console.log(getCurrentTimeStringWithMillis(), '- updating sync saved windows');
     this.savedSessionSyncMessageSender.broadcast(sessionListState);
   }
 
@@ -78,8 +81,10 @@ export class MessagePassingService {
     return this.updateDriveSavedSessionsRequestSender.sendRequest(sessionListState);
   }
 
-  requestLoadDriveFileData(): Promise<void> {
-    return this.loadDriveFileDataRequestSender.sendRequest();
+  requestLoadDriveFileData(): Promise<SessionListState> {
+    return this.loadDriveFileDataRequestSender.sendRequest().then(sessionListStateData => {
+      return SessionListState.fromSessionListState(sessionListStateData);
+    });
   }
 }
 

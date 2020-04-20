@@ -34,7 +34,7 @@ export class SavedTabsService implements TabsService {
     this.sessionStateUpdated = new BehaviorSubject(SessionListState.empty());
     this.sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
     this.sessionListState = this.sessionStateUpdated.getValue();
-    this.storageService.savedSessionState$().subscribe(sessionListState => {
+    this.storageService.savedSessionListState$().subscribe(sessionListState => {
       ngZone.run(() => this.setSessionListState(sessionListState));
     });
   }
@@ -125,7 +125,6 @@ export class SavedTabsService implements TabsService {
 
   // Called by @modifiesState decorator
   onStateModified(params?: StateModifierParams) {
-    console.log(getCurrentTimeStringWithMillis(), '- updating saved windows');
     this.sessionStateUpdated.next(this.sessionListState);
     if (params.storeResult) {
       this.storageService.setSavedWindowsState(this.sessionListState).catch(error => {

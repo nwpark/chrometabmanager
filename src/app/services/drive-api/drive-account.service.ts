@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {createDefaultDriveLoginStatus, DriveLoginStatus} from '../../types/drive-login-status';
 import {ReplaySubject} from 'rxjs';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
-import {MessagePassingService} from '../messaging/message-passing.service';
 import {OAuth2Service} from './o-auth-2.service';
 import {GoogleApiService} from './google-api.service';
 import {DriveStorageService} from './drive-storage.service';
@@ -22,8 +21,7 @@ export class DriveAccountService {
               private oAuth2Service: OAuth2Service,
               private googleApiService: GoogleApiService,
               private chromePermissionsService: ChromePermissionsService,
-              private messageReceiverService: MessageReceiverService,
-              private messagePassingService: MessagePassingService) {
+              private messageReceiverService: MessageReceiverService) {
     this.driveStorageService.getLoginStatus().then(loginStatus => {
       this.setLoginStatus(loginStatus);
     });
@@ -46,14 +44,12 @@ export class DriveAccountService {
   }
 
   enableSync(): Promise<any> {
-    return this.messagePassingService.requestLoadDriveFileData().then(() => {
-      return this.googleApiService.requestUserAccountInformation().then(accountInfo => {
-        return this.updateLoginStatus({
-          isLoggedIn: true,
-          syncEnabled: true,
-          syncInProgress: false,
-          userAccountInfo: accountInfo.user
-        });
+    return this.googleApiService.requestUserAccountInformation().then(accountInfo => {
+      return this.updateLoginStatus({
+        isLoggedIn: true,
+        syncEnabled: true,
+        syncInProgress: false,
+        userAccountInfo: accountInfo.user
       });
     });
   }

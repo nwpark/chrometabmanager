@@ -7,6 +7,7 @@ import {Subject} from 'rxjs';
 import {DriveLoginStatus} from '../../../types/drive-login-status';
 import {ChromePermissionsService} from '../../../services/chrome-permissions.service';
 import {OAuth2Service} from '../../../services/drive-api/o-auth-2.service';
+import {StorageCopyDirection, StorageService} from '../../../services/storage/storage.service';
 
 @Component({
   selector: 'app-drive-login-dialog',
@@ -28,6 +29,7 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
               private preferencesService: PreferencesService,
               private chromePermissionsService: ChromePermissionsService,
               private oAuth2Service: OAuth2Service,
+              private storageService: StorageService,
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
@@ -129,7 +131,9 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
       },
       [StepperStateId.PREPARING_DRIVE_DATA]: {
         disableDialogClose: true,
-        onInitialize: () => this.driveAccountService.enableSync().then(() => {
+        onInitialize: () => this.storageService.copySavedSessions(StorageCopyDirection.FromLocalToSync).then(() => {
+          return this.driveAccountService.enableSync();
+        }).then(() => {
           this.advanceStepperState();
         }),
         getNextState: () => Promise.resolve(StepperStateId.FINISHED)

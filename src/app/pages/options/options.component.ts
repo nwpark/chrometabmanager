@@ -86,15 +86,6 @@ export class OptionsComponent implements OnDestroy, OnInit {
     this.preferencesService.setDarkThemeEnabled(event.checked);
   }
 
-  // todo: move method to sign in dialog
-  setSyncSavedWindows(event: MatSlideToggleChange) {
-    this.copySavedSessions(event.checked).then(() => {
-      this.preferencesService.setSyncSavedWindows(event.checked);
-    }).catch(() => {
-      event.source.checked = !event.checked;
-    });
-  }
-
   enableSync() {
     this.matDialogService.open(DriveLoginDialogComponent);
   }
@@ -102,46 +93,6 @@ export class OptionsComponent implements OnDestroy, OnInit {
   disableSync() {
     // todo: open sign out dialog
     this.driveAccountService.disableSync();
-  }
-
-  private copySavedSessions(copyToSync: boolean) {
-    return Promise.all([
-      this.getSavedSessionStateSync(),
-      this.getSavedSessionStateLocal()
-    ]).then(res => {
-      const sessionListState: SessionListState = res[0];
-      sessionListState.addAll(res[1]);
-      return this.storeCopiedSessionState(sessionListState, copyToSync);
-    });
-  }
-
-  private getSavedSessionStateSync(): Promise<SessionListState> {
-    return this.driveStorageService.getSavedWindowsState().catch(error => {
-      const dialogData = ErrorDialogDataFactory.couldNotRetrieveSyncSavedSessions(error, () =>
-        this.driveStorageService.setSavedWindowsState(SessionListState.empty())
-      );
-      this.errorDialogService.showActionableError(dialogData);
-      throw error;
-    });
-  }
-
-  private getSavedSessionStateLocal(): Promise<SessionListState> {
-    return this.localStorageService.getSavedWindowsState().catch(error => {
-      const dialogData = ErrorDialogDataFactory.couldNotRetrieveLocalSavedSessions(error, () =>
-        this.localStorageService.setSavedWindowsState(SessionListState.empty())
-      );
-      this.errorDialogService.showActionableError(dialogData);
-      throw error;
-    });
-  }
-
-  private storeCopiedSessionState(sessionListState: SessionListState, copyToSync: boolean): Promise<void> {
-    const storageService = copyToSync ? this.driveStorageService : this.localStorageService;
-    return storageService.setSavedWindowsState(sessionListState).catch(error => {
-      const dialogData = ErrorDialogDataFactory.couldNotStoreCopiedData(error);
-      this.errorDialogService.showError(dialogData);
-      throw error;
-    });
   }
 
   showVersionHistoryDialog() {
