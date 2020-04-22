@@ -5,7 +5,7 @@
     <mat-card-header>
       <mat-card-title>Preferences</mat-card-title>
     </mat-card-header>
-    <mat-divider [inset]="true"></mat-divider>
+    <mat-divider></mat-divider>
     <mat-card-content>
       <mat-list>
         <mat-list-item>
@@ -42,7 +42,7 @@
     <mat-card-header>
       <mat-card-title>Sync Options</mat-card-title>
     </mat-card-header>
-    <mat-divider [inset]="true"></mat-divider>
+    <mat-divider></mat-divider>
     <mat-card-content>
       <mat-list>
 <!--        <mat-list-item *ngIf="!(driveAuthenticationStatus$ | async)?.isLoggedIn">-->
@@ -75,12 +75,18 @@
             </button>
           </div>
         </mat-list-item>
-        <mat-list-item *ngIf="driveLoginStatus?.syncEnabled">
+        <mat-list-item *ngIf="driveLoginStatus?.syncEnabled && driveLoginStatus?.isLoggedIn">
           <div style="width: 100%">
             <div style="float: left">
               <img
+                *ngIf="driveLoginStatus?.userAccountInfo.photoLink"
                 src="{{driveLoginStatus?.userAccountInfo.photoLink}}"
-                style="width: 35px; height: 35px; border-radius: 50%; display: inline-block; vertical-align: bottom">
+                class="profile-image-35">
+              <mat-icon
+                *ngIf="!driveLoginStatus?.userAccountInfo.photoLink"
+                class="icon-35">
+                sync
+              </mat-icon>
               <div style="display: inline-block; margin-left: 10px">
                 <div>{{driveLoginStatus?.userAccountInfo.displayName}}</div>
                 <div class="options-settings-card-sub-text">
@@ -97,6 +103,35 @@
             </button>
           </div>
         </mat-list-item>
+        <mat-list-item *ngIf="driveLoginStatus?.syncEnabled && !driveLoginStatus?.isLoggedIn">
+          <div style="width: 100%">
+            <div style="float: left">
+              <mat-icon class="icon-35">
+                sync_problem
+              </mat-icon>
+              <div style="display: inline-block; margin-left: 10px">
+                <div>Sign in required</div>
+                <div class="options-settings-card-sub-text">
+                  Sync is currently enabled, but you are not signed in
+                </div>
+              </div>
+            </div>
+            <button
+              mat-stroked-button
+              style="float: right; margin-left: 10px"
+              color="primary"
+              (click)="disableSync()">
+              Turn off
+            </button>
+            <button
+              mat-stroked-button
+              style="float: right"
+              color="primary"
+              (click)="enableSync()">
+              Sign in
+            </button>
+          </div>
+        </mat-list-item>
       </mat-list>
     </mat-card-content>
   </mat-card>
@@ -106,7 +141,7 @@
     <mat-card-header>
       <mat-card-title>General Management</mat-card-title>
     </mat-card-header>
-    <mat-divider [inset]="true"></mat-divider>
+    <mat-divider></mat-divider>
     <mat-card-content>
       <mat-list>
         <mat-list-item>
@@ -170,7 +205,7 @@
     <mat-card-header>
       <mat-card-title>Developer Options</mat-card-title>
     </mat-card-header>
-    <mat-divider [inset]="true"></mat-divider>
+    <mat-divider></mat-divider>
     <mat-card-content>
       <mat-list>
         <mat-list-item>
