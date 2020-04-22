@@ -3,15 +3,15 @@ import {MessageReceiverService} from '../../app/services/messaging/message-recei
 import {GoogleApiService} from '../../app/services/drive-api/google-api.service';
 import {DriveStorageService} from '../../app/services/drive-api/drive-storage.service';
 import {DriveAccountService} from '../../app/services/drive-api/drive-account.service';
-import {performsSynchronization} from '../../app/decorators/performs-synchronization';
+import {fetchesSynchronizedData} from '../../app/decorators/fetches-synchronized-data';
+import {patchesSynchronizedData} from '../../app/decorators/patches-synchronized-data';
 
 export class DriveFileDataManager {
-
-  // todo: manage concurrent requests
 
   private readonly SAVED_SESSIONS_FILE_NAME = 'saved-session-list-state-d9cb74be.json';
 
   private savedSessionsFileId;
+  private requestsInFlight = 0;
 
   constructor(private googleApiService: GoogleApiService,
               private driveStorageService: DriveStorageService,
@@ -27,17 +27,23 @@ export class DriveFileDataManager {
         .then(request.sendResponse);
     });
     this.messageReceiverService.onUpdateDriveSavedSessionsRequest$.subscribe(request => {
-      this.requestSavedSessionsFileId().then(fileId => {
-        return this.googleApiService.patchJSONFileContent(fileId, request.messageData);
-      }).then(request.sendResponse);
+      this.patchSessionListStateFile(request.messageData)
+        .then(request.sendResponse);
     });
   }
 
-  @performsSynchronization()
-  loadFileData(): Promise<SessionListState> {
+  @fetchesSynchronizedData()
+  private loadFileData(): Promise<SessionListState> {
     return this.requestSavedSessionsFileId().then(fileId => {
       this.savedSessionsFileId = fileId;
       return this.googleApiService.requestJSONFileContent(this.savedSessionsFileId);
+    });
+  }
+
+  @patchesSynchronizedData()
+  private patchSessionListStateFile(sessionListState: SessionListState): Promise<any> {
+    return this.requestSavedSessionsFileId().then(fileId => {
+      return this.googleApiService.patchJSONFileContent(fileId, sessionListState);
     });
   }
 
