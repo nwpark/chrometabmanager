@@ -55,9 +55,9 @@ const driveFileDataManager = new DriveFileDataManager(
   messageReceiverService
 );
 
-const instanceId = uuid();
+const instanceId: string = uuid();
 messageReceiverService.onInstanceIdRequest$.subscribe(request => {
-  request.sendResponse(instanceId);
+  request.sendResponse(Promise.resolve(instanceId));
 });
 
 chromeWindowUpdateEvents.forEach(windowEvent => {

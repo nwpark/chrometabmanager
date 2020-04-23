@@ -23,12 +23,10 @@ export class DriveFileDataManager {
       }
     });
     this.messageReceiverService.onLoadDriveFileDataRequest$.subscribe(request => {
-      this.loadFileData()
-        .then(request.sendResponse);
+      request.sendResponse(this.loadFileData());
     });
     this.messageReceiverService.onUpdateDriveSavedSessionsRequest$.subscribe(request => {
-      this.patchSessionListStateFile(request.messageData)
-        .then(request.sendResponse);
+      request.sendResponse(this.patchSessionListStateFile(request.messageData));
     });
   }
 

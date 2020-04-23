@@ -29,7 +29,20 @@ export class RespondableMessageReceiver<T, R> extends MessageReceiver<T, R, Mess
   mightSendResponse = true;
 
   next(messageData: T, sendResponse: MessageResponseCallback<R>) {
-    this.subject.next({messageData, sendResponse});
+    this.subject.next({
+      messageData,
+      sendResponse: (responsePromise: Promise<R>) => {
+        this.getResponse(responsePromise).then(sendResponse);
+      }
+    });
+  }
+
+  private getResponse(responsePromise: Promise<R>): Promise<MessageResponse<R>> {
+    return responsePromise.then(responseData => {
+      return {responseData};
+    }).catch(errorReason => {
+      return {errorReason};
+    });
   }
 
   asObservable(): Observable<MessageRequest<T, R>> {
@@ -39,7 +52,12 @@ export class RespondableMessageReceiver<T, R> extends MessageReceiver<T, R, Mess
 
 interface MessageRequest<T, R> {
   messageData: T;
-  sendResponse: MessageResponseCallback<R>;
+  sendResponse: (responsePromise: Promise<R>) => void;
 }
 
-type MessageResponseCallback<T> = (response: T) => void;
+export interface MessageResponse<T> {
+  responseData?: T;
+  errorReason?: string;
+}
+
+type MessageResponseCallback<T> = (response: MessageResponse<T>) => void;

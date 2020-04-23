@@ -127,22 +127,7 @@ export class SavedTabsService implements TabsService {
   onStateModified(params?: StateModifierParams) {
     this.sessionStateUpdated.next(this.sessionListState);
     if (params.storeResult) {
-      this.storageService.setSavedWindowsState(this.sessionListState).catch(error => {
-        this.handleStorageWriteError(error);
-      });
+      this.storageService.setSavedWindowsState(this.sessionListState);
     }
-  }
-
-  handleStorageReadError(error: Error) {
-    const dialogData = ErrorDialogDataFactory.couldNotRetrieveSavedSessions(error, () =>
-      this.storageService.setSavedWindowsState(SessionListState.empty())
-    );
-    this.errorDialogService.showActionableError(dialogData);
-  }
-
-  handleStorageWriteError(error: StorageWriteError) {
-    const dialogData = ErrorDialogDataFactory.couldNotStoreModifiedData(error);
-    this.errorDialogService.showError(dialogData);
-    this.storageService.reloadSavedSessionState();
   }
 }

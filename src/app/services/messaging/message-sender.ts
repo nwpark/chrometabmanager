@@ -1,6 +1,7 @@
 import {Subject} from 'rxjs';
 import {SessionListState} from '../../types/session/session-list-state';
 import {debounceTime} from 'rxjs/operators';
+import {MessageResponse} from './message-receiver';
 
 export class SimpleMessageSender<T> {
   constructor(private messageId: string) { }
@@ -38,9 +39,13 @@ export class DebouncedMessageSender {
 }
 
 function sendRespondableMessage(message: MessageData<any>): Promise<any> {
-  return new Promise<any>(resolve => {
-    chrome.runtime.sendMessage(message, response => {
-      resolve(response);
+  return new Promise<any>((resolve, reject) => {
+    chrome.runtime.sendMessage(message, (response: MessageResponse<any>) => {
+      if (response.errorReason) {
+        reject(response.errorReason);
+      } else {
+        resolve(response.responseData);
+      }
     });
   });
 }
