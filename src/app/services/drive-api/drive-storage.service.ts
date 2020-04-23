@@ -7,6 +7,8 @@ import {StorageKeys} from '../storage/storage-keys';
 import {validateSessionMap} from '../../types/session/session-map';
 import {validateSessionListLayoutState} from '../../types/session/session-list-layout-state';
 import {UndefinedObjectError} from '../../types/errors/UndefinedObjectError';
+import {Observable} from 'rxjs';
+import {last} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -50,24 +52,35 @@ export class DriveStorageService {
     });
   }
 
-  getSavedWindowsState(options: CacheAccessOptions = {skipCache: false}): Promise<SessionListState> {
-    return this.readSavedWindowsStateFromCache().then(cachedSessionListState => {
-      // todo: block writes
-      // Further writes will be blocked until this resolves
-      const sessionListState = this.checkForSessionListStateCacheMiss(cachedSessionListState);
-      return options.skipCache
-        ? sessionListState
-        : cachedSessionListState;
+  getSavedWindowsStateSkipCache(): Promise<SessionListState> {
+    return this.getSavedWindowsState()
+      .pipe(last<SessionListState>())
+      .toPromise();
+  }
+
+  getSavedWindowsState(): Observable<SessionListState> {
+    return new Observable<SessionListState>(observer => {
+      this.readSavedWindowsStateFromCache().then(cachedSessionListState => {
+        observer.next(cachedSessionListState);
+        // Writes will be blocked until this resolves
+        return this.checkForSessionListStateCacheMiss(cachedSessionListState).then(cacheAccessStatus => {
+          if (cacheAccessStatus.cacheMissOccurred) {
+            observer.next(cacheAccessStatus.data);
+          }
+        });
+      }).finally(() => {
+        observer.complete();
+      });
     });
   }
 
-  private checkForSessionListStateCacheMiss(cachedSessionListState: SessionListState): Promise<SessionListState> {
+  private checkForSessionListStateCacheMiss(cachedSessionListState: SessionListState): Promise<CacheAccessStatus<SessionListState>> {
     return this.messagePassingService.requestLoadDriveFileData().then(sessionListState => {
       if (cachedSessionListState.equals(sessionListState)) {
-        return cachedSessionListState;
+        return {cacheMissOccurred: false, data: cachedSessionListState};
       } else {
         return this.writeSavedWindowsStateToCache(sessionListState).then(() => {
-          return sessionListState;
+          return {cacheMissOccurred: true, data: sessionListState};
         });
       }
     });
@@ -132,7 +145,7 @@ export class DriveStorageService {
   }
 }
 
-interface CacheAccessOptions {
-  writeThrough?: boolean;
-  skipCache?: boolean;
+interface CacheAccessStatus<T> {
+  cacheMissOccurred: boolean;
+  data: T;
 }

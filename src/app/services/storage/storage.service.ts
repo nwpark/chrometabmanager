@@ -53,7 +53,7 @@ export class StorageService {
 
   @requiresSubjectInitialization()
   reloadSavedSessionState() {
-    this.driveStorageService.getSavedWindowsState().then(sessionListState => {
+    this.driveStorageService.getSavedWindowsState().subscribe(sessionListState => {
       this.savedSessionStateSync.next(sessionListState);
     });
     this.localStorageService.getSavedWindowsState().then(sessionListState => {
@@ -63,7 +63,7 @@ export class StorageService {
 
   copySavedSessions(storageCopyDirection: StorageCopyDirection): Promise<void> {
     return Promise.all([
-      this.driveStorageService.getSavedWindowsState({skipCache: true}),
+      this.driveStorageService.getSavedWindowsStateSkipCache(),
       this.localStorageService.getSavedWindowsState()
     ]).then(res => {
       const [savedSessionStateSync, savedSessionStateLocal] = res;
