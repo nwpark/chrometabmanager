@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {ErrorHandler, NgModule} from '@angular/core';
 
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -19,6 +19,7 @@ import {ActionableErrorDialogComponent} from './components/dialogs/actionable-er
 import { RuntimeErrorDialogComponent } from './components/dialogs/runtime-error-dialog/runtime-error-dialog.component';
 import { BasicDialogComponent } from './components/dialogs/basic-dialog/basic-dialog.component';
 import { DriveLoginDialogComponent } from './components/dialogs/drive-login-dialog/drive-login-dialog.component';
+import {RuntimeErrorHandler} from './runtime-error-handler';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,9 @@ import { DriveLoginDialogComponent } from './components/dialogs/drive-login-dial
     BasicDialogComponent,
     DriveLoginDialogComponent
   ],
-  providers: [],
+  providers: [
+    {provide: ErrorHandler, useClass: RuntimeErrorHandler}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -68,6 +68,8 @@ export class DriveStorageService {
             observer.next(cacheAccessStatus.data);
           }
         });
+      }).catch(error => {
+        observer.error(error);
       }).finally(() => {
         observer.complete();
       });

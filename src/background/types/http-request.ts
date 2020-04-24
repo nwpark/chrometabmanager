@@ -1,4 +1,7 @@
 import {getCurrentTimeStringWithMillis} from '../../app/utils/date-utils';
+import {ErrorCode} from '../../app/types/errors/error-code';
+import {XHRError} from '../../app/types/errors/runtime-error';
+import {environment} from '../../environments/environment';
 
 export class HttpRequest {
   constructor(private xmlHttpRequest: XMLHttpRequest,
@@ -7,10 +10,20 @@ export class HttpRequest {
 
   send(body?): Promise<any> {
     console.log(`${getCurrentTimeStringWithMillis()} - Sending http request: ${this.method} ${this.url}`);
-    return new Promise<any>(resolve => {
+    return new Promise<any>((resolve, reject) => {
       this.xmlHttpRequest.onload = () => {
         console.log(`${getCurrentTimeStringWithMillis()} - Received http response: ${this.xmlHttpRequest.status} ${this.xmlHttpRequest.responseURL}`);
-        resolve(this.xmlHttpRequest.response);
+        if (this.xmlHttpRequest.status >= 400) {
+          reject(new XHRError(ErrorCode.HttpRequestError, this.xmlHttpRequest));
+        } else {
+          resolve(this.xmlHttpRequest.response);
+        }
+      };
+      this.xmlHttpRequest.onerror = () => {
+        reject(new XHRError(ErrorCode.HttpRequestUnknownError, this.xmlHttpRequest));
+      };
+      this.xmlHttpRequest.ontimeout = () => {
+        reject(new XHRError(ErrorCode.HttpRequestTimeout, this.xmlHttpRequest));
       };
       this.xmlHttpRequest.send(body);
     });
@@ -37,6 +50,7 @@ export class HttpRequestBuilder {
     if (this._responseType) {
       xmlHttpRequest.responseType = this._responseType;
     }
+    xmlHttpRequest.timeout = environment.httpRequestTimeoutMillis;
     return new HttpRequest(xmlHttpRequest, this.method, this.url);
   }
 
