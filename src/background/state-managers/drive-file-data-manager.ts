@@ -1,7 +1,6 @@
 import {SessionListState} from '../../app/types/session/session-list-state';
 import {MessageReceiverService} from '../../app/services/messaging/message-receiver.service';
 import {GoogleApiService} from '../../app/services/drive-api/google-api.service';
-import {DriveStorageService} from '../../app/services/drive-api/drive-storage.service';
 import {DriveAccountService} from '../../app/services/drive-api/drive-account.service';
 import {fetchesSynchronizedData} from '../../app/decorators/fetches-synchronized-data';
 import {patchesSynchronizedData} from '../../app/decorators/patches-synchronized-data';
@@ -10,14 +9,12 @@ export class DriveFileDataManager {
 
   private readonly SAVED_SESSIONS_FILE_NAME = 'saved-session-list-state-d9cb74be.json';
 
-  private savedSessionsFileId;
   private requestsInFlight = 0;
 
   constructor(private googleApiService: GoogleApiService,
-              private driveStorageService: DriveStorageService,
               private driveAccountService: DriveAccountService,
               private messageReceiverService: MessageReceiverService) {
-    this.driveStorageService.getLoginStatus().then(loginStatus => {
+    this.driveAccountService.getLoginStatus().then(loginStatus => {
       if (loginStatus.isLoggedIn) {
         this.loadFileData();
       }
@@ -33,8 +30,7 @@ export class DriveFileDataManager {
   @fetchesSynchronizedData()
   private loadFileData(): Promise<SessionListState> {
     return this.requestSavedSessionsFileId().then(fileId => {
-      this.savedSessionsFileId = fileId;
-      return this.googleApiService.requestJSONFileContent(this.savedSessionsFileId);
+      return this.googleApiService.requestJSONFileContent(fileId);
     });
   }
 
@@ -46,9 +42,18 @@ export class DriveFileDataManager {
   }
 
   private requestSavedSessionsFileId(): Promise<string> {
-    if (this.savedSessionsFileId) {
-      return Promise.resolve(this.savedSessionsFileId);
-    }
+    return this.driveAccountService.getSavedSessionsFileId().then(cachedFileId => {
+      if (cachedFileId) {
+        return cachedFileId;
+      }
+      return this.requestSavedSessionsFileIdFallback().then(fileId => {
+        this.driveAccountService.setSavedSessionsFileId(fileId);
+        return fileId;
+      });
+    });
+  }
+
+  private requestSavedSessionsFileIdFallback(): Promise<string> {
     return this.googleApiService.searchAppDataFiles(this.SAVED_SESSIONS_FILE_NAME).then(fileMetadata => {
       if (fileMetadata) {
         return fileMetadata.id;

@@ -50,7 +50,6 @@ const chromePermissionsService = new ChromePermissionsService();
 const driveAccountService = new DriveAccountService(driveStorageService, oAuth2Service, googleApiService, chromePermissionsService, messageReceiverService);
 const driveFileDataManager = new DriveFileDataManager(
   googleApiService,
-  driveStorageService,
   driveAccountService,
   messageReceiverService
 );

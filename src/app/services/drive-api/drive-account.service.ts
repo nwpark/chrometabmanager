@@ -76,6 +76,19 @@ export class DriveAccountService {
     });
   }
 
+  getSavedSessionsFileId(): Promise<string> {
+    return this.getLoginStatus().then(loginStatus => {
+      return loginStatus.savedSessionsFileId;
+    });
+  }
+
+  setSavedSessionsFileId(fileId: string): Promise<void> {
+    return this.getLoginStatus().then(loginStatus => {
+      loginStatus.savedSessionsFileId = fileId;
+      return this.updateLoginStatus(loginStatus);
+    });
+  }
+
   private updateLoginStatus(loginStatus: DriveLoginStatus): Promise<void> {
     console.log(getCurrentTimeStringWithMillis(), '- updating drive login status');
     this.loginStatus.next(loginStatus);

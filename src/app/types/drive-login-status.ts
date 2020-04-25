@@ -2,6 +2,7 @@ export interface DriveLoginStatus {
   isLoggedIn: boolean;
   syncEnabled: boolean;
   syncInProgress: boolean;
+  savedSessionsFileId?: string;
   userAccountInfo?: UserAccountInfo;
 }
 
