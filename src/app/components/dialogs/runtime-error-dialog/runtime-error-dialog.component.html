@@ -1,26 +1,38 @@
 <div style="width: 380px">
   <div mat-dialog-title>
     <mat-icon class="dialog-title-icon">error_outline</mat-icon>
-    <span *ngIf="data.title">{{data.title}}</span>
-    <span *ngIf="!data.title">An error occurred...</span>
+    An error occurred..
   </div>
   <div mat-dialog-content>
-    <h3 class="dialog-emphasised-content">{{data.errorMessage}}</h3>
+    <p>{{data.errorMessage}}</p>
+    <button
+      *ngIf="preferences?.enableDebugging && !showErrorDetails"
+      mat-button
+      color="accent"
+      (click)="enableShowErrorDetails()">
+      Show error details
+    </button>
+    <p
+      *ngIf="showErrorDetails"
+      style="white-space: pre-line; word-wrap: break-word">
+      {{runtimeErrorString}}
+    </p>
   </div>
-  <div *ngIf="data.descriptionHTML" [innerHTML]="data.descriptionHTML"></div>
   <div mat-dialog-actions>
     <button
       mat-stroked-button
+      cdkFocusInitial
+      matTooltip="Error reports do not include any of your personal browsing data. You will be able to review exactly what information is being sent before submitting."
       color="primary"
-      *ngFor="let action of data.actions"
-      (click)="action.callback()">
-      {{action.buttonText}}
+      (click)="sendErrorReport()">
+      <mat-icon class="inline-icon-17">email</mat-icon>
+      Send error report
     </button>
     <button
       mat-stroked-button
-      matDialogClose
-      color="primary">
-      Close
+      color="primary"
+      (click)="reloadPage()">
+      Reload page
     </button>
   </div>
 </div>

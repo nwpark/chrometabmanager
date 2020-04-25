@@ -1,24 +1,40 @@
 import {ErrorCode} from './error-code';
+import {HttpRequest} from '../../../background/types/http-request';
 
-export class RuntimeError extends Error {
+export interface RuntimeError {
   readonly errorCode: ErrorCode;
-  readonly debugMessage: string;
-
-  constructor(errorCode: ErrorCode, debugMessage: string, ...params) {
-    super(...params);
-    this.name = 'RuntimeError';
-    this.errorCode = errorCode;
-    this.debugMessage = debugMessage;
-  }
+  readonly details?: any;
+  readonly cause?: RuntimeError;
 }
 
-export class XHRError extends RuntimeError {
-  readonly httpStatus: number;
+export function runtimeErrorFromXHR(errorCode: ErrorCode, httpRequest: HttpRequest): RuntimeError {
+  return {
+    errorCode,
+    details: {
+      url: httpRequest.url,
+      method: httpRequest.method,
+      status: httpRequest.xmlHttpRequest.status,
+      response: httpRequest.xmlHttpRequest.response,
+      responseURL: httpRequest.xmlHttpRequest.responseURL
+    }
+  };
+}
 
-  constructor(errorCode: ErrorCode, xhr: XMLHttpRequest, ...params) {
-    const debugMessage = `${xhr.responseURL} ${xhr.status}`;
-    super(errorCode, debugMessage, ...params);
-    this.name = 'XHRError';
-    this.httpStatus = xhr.status;
-  }
+export function mapToRuntimeError(errorCode: ErrorCode): (error: any) => Promise<any> {
+  return (error: any) => {
+    if (!isRuntimeError(error)) {
+      error = {
+        errorCode: ErrorCode.UnknownError,
+        details: error.toString()
+      };
+    }
+    return Promise.reject({
+      errorCode,
+      cause: error
+    });
+  };
+}
+
+export function isRuntimeError(runtimeError: any): runtimeError is RuntimeError {
+  return runtimeError.errorCode && Object.values(ErrorCode).includes(runtimeError.errorCode);
 }

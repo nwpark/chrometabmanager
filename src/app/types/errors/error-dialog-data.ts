@@ -1,7 +1,8 @@
+import {RuntimeError} from './runtime-error';
+
 export interface ErrorDialogData {
-  title?: string;
   errorMessage: string;
-  descriptionHTML?: string;
+  runtimeError: RuntimeError;
   actions?: ErrorDialogAction[];
 }
 

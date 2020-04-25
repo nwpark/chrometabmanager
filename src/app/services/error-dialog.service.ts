@@ -14,7 +14,7 @@ export class ErrorDialogService {
 
   constructor(private matDialogService: MatDialog) { }
 
-  showError(dialogData: ErrorDialogData) {
+  showRuntimeError(dialogData: ErrorDialogData) {
     this.matDialogService.open(RuntimeErrorDialogComponent, {data: dialogData});
   }
 

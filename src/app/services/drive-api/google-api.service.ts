@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HTTPMethod, HttpRequestBuilder} from '../../../background/types/http-request';
 import {UrlBuilder} from '../../../background/types/url-builder';
 import {OAuth2Service} from './o-auth-2.service';
+import {mapToRuntimeError} from '../../types/errors/runtime-error';
+import {ErrorCode} from '../../types/errors/error-code';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +14,7 @@ export class GoogleApiService {
   private readonly DRIVE_API_FILE_GET_MEDIA = 'https://www.googleapis.com/drive/v3/files/fileId?alt=media';
   private readonly DRIVE_API_FILE_LIST = 'https://www.googleapis.com/drive/v3/files?fields=files&spaces=appDataFolder&q=name%20%3D%20\'fileName\'';
   private readonly DRIVE_API_FILE_POST_MULTIPART = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id';
-  private readonly DRIVE_API_FILE_PATCH_MEDIA = 'https://www.googleapis.com/upload/drive/v3/files/fileId?uploadType=media';
+  private readonly DRIVE_API_FILE_PATCH_MEDIA = 'https://www.googleapis.com/upload/drive/v3/files/fileId?uploadType=meda';
 
   constructor(private oAuth2Service: OAuth2Service) { }
 
@@ -23,7 +25,8 @@ export class GoogleApiService {
         .responseTypeJSON()
         .build();
 
-      return httpRequest.send();
+      return httpRequest.send()
+        .catch(mapToRuntimeError(ErrorCode.RequestUserAccountInfoError));
     });
   }
 
@@ -35,7 +38,8 @@ export class GoogleApiService {
         .responseTypeJSON()
         .build();
 
-      return httpRequest.send().then(res => res.files[0]);
+      return httpRequest.send().then(res => res.files[0])
+        .catch(mapToRuntimeError(ErrorCode.SearchAppDataFilesError));
     });
   }
 
@@ -48,7 +52,8 @@ export class GoogleApiService {
         .responseTypeJSON()
         .build();
 
-      return httpRequest.send();
+      return httpRequest.send()
+        .catch(mapToRuntimeError(ErrorCode.RequestJSONFileContentError));
     });
   }
 
@@ -63,7 +68,8 @@ export class GoogleApiService {
         .responseTypeJSON()
         .build();
 
-      return httpRequest.send(JSON.stringify(fileContent));
+      return httpRequest.send(JSON.stringify(fileContent))
+        .catch(mapToRuntimeError(ErrorCode.PatchJSONFileContentError));
     });
   }
 
@@ -81,7 +87,7 @@ export class GoogleApiService {
       const body = this.createAppDataRequestBody(fileName, fileContent);
 
       return httpRequest.send(body)
-        .then(response => response);
+        .catch(mapToRuntimeError(ErrorCode.PostJSONFileContentError));
     });
   }
 
