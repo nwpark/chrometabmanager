@@ -1,27 +1,35 @@
 import {Injectable} from '@angular/core';
 import {MessagePassingService} from '../messaging/message-passing.service';
-import {Subject} from 'rxjs';
 import {StorageKeys} from './storage-keys';
 import {Preferences, PreferenceUtils} from '../../types/preferences';
 
 @Injectable({
   providedIn: 'root'
 })
+export class SyncStorageConfig {
+  deviceId: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
 export class SyncStorageService {
 
-  private instanceId: string;
-  private onChanged = new Subject<void>();
-  onChanged$ = this.onChanged.asObservable();
+  private deviceId: string;
 
-  constructor(private messagePassingService: MessagePassingService) {
-    this.messagePassingService.requestInstanceId().then(instanceId => {
-      this.instanceId = instanceId;
-    });
+  constructor(private messagePassingService: MessagePassingService,
+              config: SyncStorageConfig) {
+    if (config.deviceId) {
+      this.deviceId = config.deviceId;
+    } else {
+      this.messagePassingService.requestDeviceId().then(deviceId => {
+        this.deviceId = deviceId;
+      });
+    }
     // @ts-ignore
     chrome.storage.sync.onChanged.addListener(() => {
-      this.onChanged.next();
       this.getLastModifierId().then(lastModifierId => {
-        if (lastModifierId !== this.instanceId) {
+        if (lastModifierId !== this.deviceId) {
           // todo: if sync toggled then copy data
           window.location.reload();
         }
@@ -33,14 +41,6 @@ export class SyncStorageService {
     return new Promise<string>(resolve => {
       chrome.storage.sync.get(StorageKeys.LastModifiedBy, data => {
         resolve(data[StorageKeys.LastModifiedBy]);
-      });
-    });
-  }
-
-  getBytesInUse(): Promise<number> {
-    return new Promise<number>(resolve => {
-      chrome.storage.sync.getBytesInUse(bytesInUse => {
-        resolve(bytesInUse);
       });
     });
   }
@@ -57,10 +57,17 @@ export class SyncStorageService {
 
   setPreferences(preferences: Preferences) {
     chrome.storage.sync.set({
-      [StorageKeys.LastModifiedBy]: this.instanceId,
+      [StorageKeys.LastModifiedBy]: this.deviceId,
       [StorageKeys.Preferences]: preferences
     }, () => {
       this.messagePassingService.broadcastPreferencesUpdated();
+    });
+  }
+
+  notifyOtherDevices() {
+    chrome.storage.sync.set({
+      [StorageKeys.LastModifiedBy]: this.deviceId,
+      [StorageKeys.LastNotified]: Date.now()
     });
   }
 }

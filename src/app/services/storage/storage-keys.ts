@@ -10,5 +10,6 @@ export enum StorageKeys {
   Preferences = 'preferencesStorage_166b6914',
   LastModifiedBy = 'lastModifiedBy_1266a87e',
   WebpageTitleCache = 'webpageTitleCache_c0d63a5d',
-  DriveLoginStatus = 'driveLoginStatus_6c82e731'
+  DriveLoginStatus = 'driveLoginStatus_6c82e731',
+  LastNotified = 'lastNotified_b4b3a9da'
 }

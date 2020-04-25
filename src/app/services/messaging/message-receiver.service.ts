@@ -23,7 +23,7 @@ export class MessageReceiverService {
   private preferencesUpdated = new SimpleMessageReceiver<void>();
   private webpageTitleCacheUpdated = new SimpleMessageReceiver<WebpageTitleCache>();
   private driveLoginStatusUpdated = new SimpleMessageReceiver<DriveLoginStatus>();
-  private onInstanceIdRequest = new RespondableMessageReceiver<void, string>();
+  private onDeviceIdRequest = new RespondableMessageReceiver<void, string>();
   private onUpdateDriveSavedSessionsRequest = new RespondableMessageReceiver<SessionListState, any>();
   private onLoadDriveFileDataRequest = new RespondableMessageReceiver<void, SessionListState>();
   private onInsertChromeWindowRequest = new SimpleMessageReceiver<InsertWindowMessageData>();
@@ -35,7 +35,7 @@ export class MessageReceiverService {
   preferencesUpdated$ = this.preferencesUpdated.asObservable();
   webpageTitleCacheUpdated$ = this.webpageTitleCacheUpdated.asObservable();
   driveLoginStatusUpdated$ = this.driveLoginStatusUpdated.asObservable();
-  onInstanceIdRequest$ = this.onInstanceIdRequest.asObservable();
+  onDeviceIdRequest$ = this.onDeviceIdRequest.asObservable();
   onUpdateDriveSavedSessionsRequest$ = this.onUpdateDriveSavedSessionsRequest.asObservable();
   onLoadDriveFileDataRequest$ = this.onLoadDriveFileDataRequest.asObservable();
   onInsertChromeWindowRequest$ = this.onInsertChromeWindowRequest.asObservable();
@@ -64,8 +64,8 @@ export class MessageReceiverService {
         return this.preferencesUpdated;
       case MessagePassingService.WEBPAGE_TITLE_CACHE_UPDATED:
         return this.webpageTitleCacheUpdated;
-      case MessagePassingService.INSTANCE_ID_REQUEST:
-        return this.onInstanceIdRequest;
+      case MessagePassingService.DEVICE_ID_REQUEST:
+        return this.onDeviceIdRequest;
       case MessagePassingService.UPDATE_DRIVE_SAVED_SESSIONS_REQUEST:
         return this.onUpdateDriveSavedSessionsRequest;
       case MessagePassingService.INSERT_WINDOW_REQUEST:

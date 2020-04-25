@@ -13,6 +13,7 @@ import {GoogleApiService} from '../app/services/drive-api/google-api.service';
 import {DriveStorageService} from '../app/services/drive-api/drive-storage.service';
 import {DriveAccountService} from '../app/services/drive-api/drive-account.service';
 import {ChromePermissionsService} from '../app/services/chrome-permissions.service';
+import {SyncStorageService} from '../app/services/storage/sync-storage.service';
 
 const head = document.getElementsByTagName('head')[0];
 const script = document.createElement('script');
@@ -36,10 +37,12 @@ const chromeWindowUpdateEvents = [
 ];
 
 const ignoredTabUrls = ['chrome://newtab/'];
+const deviceId: string = uuid();
 
 const messagePassingService = new MessagePassingService();
 const messageReceiverService = new MessageReceiverService();
 const localStorageService = new LocalStorageService(messagePassingService);
+const syncStorageService = new SyncStorageService(messagePassingService, {deviceId});
 const webpageTitleCacheService = new WebpageTitleCacheService(localStorageService, messageReceiverService);
 const activeWindowStateManager = new ActiveWindowStateManager(localStorageService, messageReceiverService, webpageTitleCacheService);
 const closedSessionStateManager = new ClosedSessionStateManager(localStorageService);
@@ -51,12 +54,12 @@ const driveAccountService = new DriveAccountService(driveStorageService, oAuth2S
 const driveFileDataManager = new DriveFileDataManager(
   googleApiService,
   driveAccountService,
-  messageReceiverService
+  messageReceiverService,
+  syncStorageService
 );
 
-const instanceId: string = uuid();
-messageReceiverService.onInstanceIdRequest$.subscribe(request => {
-  request.sendResponse(Promise.resolve(instanceId));
+messageReceiverService.onDeviceIdRequest$.subscribe(request => {
+  request.sendResponse(Promise.resolve(deviceId));
 });
 
 chromeWindowUpdateEvents.forEach(windowEvent => {

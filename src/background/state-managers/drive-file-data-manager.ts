@@ -4,6 +4,7 @@ import {GoogleApiService} from '../../app/services/drive-api/google-api.service'
 import {DriveAccountService} from '../../app/services/drive-api/drive-account.service';
 import {fetchesSynchronizedData} from '../../app/decorators/fetches-synchronized-data';
 import {patchesSynchronizedData} from '../../app/decorators/patches-synchronized-data';
+import {SyncStorageService} from '../../app/services/storage/sync-storage.service';
 
 export class DriveFileDataManager {
 
@@ -13,7 +14,8 @@ export class DriveFileDataManager {
 
   constructor(private googleApiService: GoogleApiService,
               private driveAccountService: DriveAccountService,
-              private messageReceiverService: MessageReceiverService) {
+              private messageReceiverService: MessageReceiverService,
+              private syncStorageService: SyncStorageService) {
     this.driveAccountService.getLoginStatus().then(loginStatus => {
       if (loginStatus.isLoggedIn) {
         this.loadFileData();

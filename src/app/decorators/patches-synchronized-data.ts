@@ -11,6 +11,9 @@ export function patchesSynchronizedData(): MethodDecorator {
         } else {
           return originalMethod.apply(this, args);
         }
+      }).then(result => {
+        this.syncStorageService.notifyOtherDevices();
+        return result;
       });
     };
 

@@ -19,7 +19,7 @@ export class MessagePassingService {
   static readonly WEBPAGE_TITLE_CACHE_UPDATED = 'webpageTitleCacheUpdated_b79e54ea';
   static readonly DRIVE_LOGIN_STATUS_UPDATED = 'driveLoginStatusUpdated_6e910629';
   static readonly INSERT_WINDOW_REQUEST = 'insertWindowRequest_de10f744';
-  static readonly INSTANCE_ID_REQUEST = 'instanceIdRequest_7f5604d5';
+  static readonly DEVICE_ID_REQUEST = 'deviceIdRequest_7f5604d5';
   static readonly UPDATE_DRIVE_SAVED_SESSIONS_REQUEST = 'updateDriveSavedSessionsRequest_46c18270';
   static readonly LOAD_DRIVE_FILE_DATA_REQUEST = 'loadDriveFileDataRequest_31e2491f';
   static readonly MESSAGE_DEBOUNCE_TIME = 400;
@@ -31,7 +31,7 @@ export class MessagePassingService {
   private savedSessionMessageSender = new DebouncedMessageSender(MessagePassingService.SAVED_SESSION_MESSAGE, MessagePassingService.MESSAGE_DEBOUNCE_TIME);
   private savedSessionSyncMessageSender = new DebouncedMessageSender(MessagePassingService.SAVED_SESSION_SYNC_MESSAGE, MessagePassingService.MESSAGE_DEBOUNCE_TIME);
   private closedSessionMessageSender = new DebouncedMessageSender(MessagePassingService.CLOSED_SESSION_MESSAGE, MessagePassingService.MESSAGE_DEBOUNCE_TIME);
-  private instanceIdRequestSender = new RespondableMessageSender<void, string>(MessagePassingService.INSTANCE_ID_REQUEST);
+  private deviceIdRequestSender = new RespondableMessageSender<void, string>(MessagePassingService.DEVICE_ID_REQUEST);
   private updateDriveSavedSessionsRequestSender = new RespondableMessageSender<SessionListState, any>(MessagePassingService.UPDATE_DRIVE_SAVED_SESSIONS_REQUEST);
   private loadDriveFileDataRequestSender = new RespondableMessageSender<void, SessionListState>(MessagePassingService.LOAD_DRIVE_FILE_DATA_REQUEST);
   private insertChromeWindowRequestSender = new SimpleMessageSender<InsertWindowMessageData>(MessagePassingService.INSERT_WINDOW_REQUEST);
@@ -73,8 +73,8 @@ export class MessagePassingService {
     this.insertChromeWindowRequestSender.broadcast(message);
   }
 
-  requestInstanceId(): Promise<string> {
-    return this.instanceIdRequestSender.sendRequest();
+  requestDeviceId(): Promise<string> {
+    return this.deviceIdRequestSender.sendRequest();
   }
 
   requestUpdateDriveSavedSessions(sessionListState: SessionListState): Promise<any> {
