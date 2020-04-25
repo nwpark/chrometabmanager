@@ -4,6 +4,7 @@ import {ErrorDialogData} from '../../../types/errors/error-dialog-data';
 import {environment} from '../../../../environments/environment';
 import {PreferencesService} from '../../../services/preferences.service';
 import {Preferences} from '../../../types/preferences';
+import {reloadWindow} from '../../../utils/common';
 
 @Component({
   selector: 'app-runtime-error-dialog',
@@ -36,7 +37,7 @@ export class RuntimeErrorDialogComponent implements OnInit {
   }
 
   reloadPage() {
-    window.location.reload();
+    reloadWindow();
   }
 
   sendErrorReport() {

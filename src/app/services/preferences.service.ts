@@ -6,6 +6,7 @@ import {take} from 'rxjs/operators';
 import {SyncStorageService} from './storage/sync-storage.service';
 import {MessageReceiverService} from './messaging/message-receiver.service';
 import {getCurrentTimeStringWithMillis} from '../utils/date-utils';
+import {reloadWindow} from '../utils/common';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class PreferencesService {
   constructor(private syncStorageService: SyncStorageService,
               private messageReceiverService: MessageReceiverService) {
     this.messageReceiverService.preferencesUpdated$.subscribe(() => {
-      window.location.reload();
+      reloadWindow();
     });
     this.syncStorageService.getPreferences().then(preferences => {
       this.setPreferences(preferences);

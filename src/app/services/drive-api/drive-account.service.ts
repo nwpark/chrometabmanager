@@ -8,6 +8,7 @@ import {DriveStorageService} from './drive-storage.service';
 import {ChromePermissionsService} from '../chrome-permissions.service';
 import {take} from 'rxjs/operators';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
+import {PreferencesService} from '../preferences.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,8 @@ export class DriveAccountService {
               private oAuth2Service: OAuth2Service,
               private googleApiService: GoogleApiService,
               private chromePermissionsService: ChromePermissionsService,
-              private messageReceiverService: MessageReceiverService) {
+              private messageReceiverService: MessageReceiverService,
+              private preferencesService: PreferencesService) {
     this.driveStorageService.getLoginStatus().then(loginStatus => {
       this.setLoginStatus(loginStatus);
     });
@@ -45,19 +47,14 @@ export class DriveAccountService {
 
   enableSync(): Promise<any> {
     return this.googleApiService.requestUserAccountInformation().then(accountInfo => {
-      return this.updateLoginStatus({
-        isLoggedIn: true,
-        syncEnabled: true,
-        syncInProgress: false,
-        userAccountInfo: accountInfo.user
-      });
-    });
-  }
-
-  disableSync(): Promise<void> {
-    return this.getLoginStatus().then(loginStatus => {
-      loginStatus.syncEnabled = false;
-      return this.updateLoginStatus(loginStatus);
+      return Promise.all([
+        this.updateLoginStatus({
+          isLoggedIn: true,
+          syncInProgress: false,
+          userAccountInfo: accountInfo.user
+        }),
+        this.preferencesService.setSyncSavedWindows(true)
+      ]);
     });
   }
 

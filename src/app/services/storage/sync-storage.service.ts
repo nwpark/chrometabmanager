@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {StorageKeys} from './storage-keys';
 import {Preferences, PreferenceUtils} from '../../types/preferences';
+import {reloadWindow} from '../../utils/common';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +32,7 @@ export class SyncStorageService {
       this.getLastModifierId().then(lastModifierId => {
         if (lastModifierId !== this.deviceId) {
           // todo: if sync toggled then copy data
-          window.location.reload();
+          reloadWindow();
         }
       });
     });

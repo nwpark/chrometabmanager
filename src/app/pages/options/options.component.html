@@ -58,7 +58,7 @@
 <!--            </div>-->
 <!--          </mat-slide-toggle>-->
 <!--        </mat-list-item>-->
-        <mat-list-item *ngIf="!driveLoginStatus?.syncEnabled">
+        <mat-list-item *ngIf="!preferences?.syncSavedWindows">
           <div style="width: 100%">
             <div style="float: left">
               <div>Enable sync</div>
@@ -75,7 +75,7 @@
             </button>
           </div>
         </mat-list-item>
-        <mat-list-item *ngIf="driveLoginStatus?.syncEnabled && driveLoginStatus?.isLoggedIn">
+        <mat-list-item *ngIf="preferences?.syncSavedWindows && driveLoginStatus?.isLoggedIn">
           <div style="width: 100%">
             <div style="float: left">
               <img
@@ -103,7 +103,7 @@
             </button>
           </div>
         </mat-list-item>
-        <mat-list-item *ngIf="driveLoginStatus?.syncEnabled && !driveLoginStatus?.isLoggedIn">
+        <mat-list-item *ngIf="preferences?.syncSavedWindows && !driveLoginStatus?.isLoggedIn">
           <div style="width: 100%">
             <div style="float: left">
               <mat-icon class="icon-35">

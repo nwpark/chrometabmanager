@@ -4,10 +4,9 @@ import {PreferencesService} from '../preferences.service';
 import {LocalStorageService} from './local-storage.service';
 import {merge, Observable, ReplaySubject} from 'rxjs';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
-import {distinctUntilChanged, map, switchMap} from 'rxjs/operators';
+import {distinctUntilChanged, switchMap} from 'rxjs/operators';
 import {DriveStorageService} from '../drive-api/drive-storage.service';
 import {DriveAccountService} from '../drive-api/drive-account.service';
-import {DriveLoginStatus} from '../../types/drive-login-status';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 
 @Injectable({
@@ -26,8 +25,8 @@ export class StorageService {
               private messageReceiverService: MessageReceiverService) { }
 
   setSavedWindowsState(sessionListState: SessionListState): Promise<void> {
-    return this.driveAccountService.getLoginStatus().then(loginStatus => {
-      return this.shouldUseSyncStorage(loginStatus)
+    return this.shouldUseSyncStorage().then(shouldUseSyncStorage => {
+      return shouldUseSyncStorage
         ? this.driveStorageService.setSavedWindowsState(sessionListState)
         : this.localStorageService.setSavedWindowsState(sessionListState);
     });
@@ -35,9 +34,7 @@ export class StorageService {
 
   @requiresSubjectInitialization()
   savedSessionListState$(): Observable<SessionListState> {
-    return this.driveAccountService.loginStatus$.pipe(
-      map(loginStatus => this.shouldUseSyncStorage(loginStatus)),
-      distinctUntilChanged(),
+    return this.shouldUseSyncStorage$().pipe(
       switchMap(shouldUseSyncStorage => {
         console.log(`${getCurrentTimeStringWithMillis()} - switching saved sessions source (sync = ${shouldUseSyncStorage})`);
         return shouldUseSyncStorage
@@ -47,8 +44,21 @@ export class StorageService {
     );
   }
 
-  private shouldUseSyncStorage(loginStatus: DriveLoginStatus): boolean {
-    return loginStatus.isLoggedIn && loginStatus.syncEnabled;
+  private shouldUseSyncStorage$(): Observable<boolean> {
+    return merge(this.driveAccountService.loginStatus$, this.preferencesService.preferences$).pipe(
+      switchMap(() => this.shouldUseSyncStorage()),
+      distinctUntilChanged()
+    );
+  }
+
+  private shouldUseSyncStorage(): Promise<boolean> {
+    return Promise.all([
+      this.driveAccountService.getLoginStatus(),
+      this.preferencesService.getPreferences()
+    ]).then(res => {
+      const [loginStatus, preferences] = res;
+      return loginStatus.isLoggedIn && preferences.syncSavedWindows;
+    });
   }
 
   @requiresSubjectInitialization()

@@ -91,8 +91,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
   }
 
   disableSync() {
-    // todo: open sign out dialog
-    this.driveAccountService.disableSync();
+    this.preferencesService.setSyncSavedWindows(false);
   }
 
   showVersionHistoryDialog() {

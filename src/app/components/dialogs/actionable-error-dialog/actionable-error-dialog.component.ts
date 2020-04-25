@@ -2,6 +2,7 @@ import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {environment} from '../../../../environments/environment';
 import {MatDialog, MatDialogRef} from '@angular/material';
 import {ActionableError} from '../../../types/errors/ActionableError';
+import {reloadWindow} from '../../../utils/common';
 
 @Component({
   selector: 'app-actionable-error-dialog',
@@ -67,7 +68,7 @@ export class ActionableErrorDialogComponent implements OnInit {
     if (applicationReloadRequired) {
       chrome.runtime.reload();
     } else {
-      window.location.reload();
+      reloadWindow();
     }
   }
 
