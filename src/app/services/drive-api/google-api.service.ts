@@ -4,23 +4,18 @@ import {UrlBuilder} from '../../../background/types/url-builder';
 import {OAuth2Service} from './o-auth-2.service';
 import {mapToRuntimeError} from '../../types/errors/runtime-error';
 import {ErrorCode} from '../../types/errors/error-code';
+import {environment} from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GoogleApiService {
 
-  private readonly DRIVE_API_ABOUT_GET = 'https://www.googleapis.com/drive/v3/about?fields=user';
-  private readonly DRIVE_API_FILE_GET_MEDIA = 'https://www.googleapis.com/drive/v3/files/fileId?alt=media';
-  private readonly DRIVE_API_FILE_LIST = 'https://www.googleapis.com/drive/v3/files?fields=files&spaces=appDataFolder&q=name%20%3D%20\'fileName\'';
-  private readonly DRIVE_API_FILE_POST_MULTIPART = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id';
-  private readonly DRIVE_API_FILE_PATCH_MEDIA = 'https://www.googleapis.com/upload/drive/v3/files/fileId?uploadType=meda';
-
   constructor(private oAuth2Service: OAuth2Service) { }
 
   requestUserAccountInformation(): Promise<any> {
     return this.oAuth2Service.getAuthToken().then(token => {
-      const httpRequest = new HttpRequestBuilder(HTTPMethod.GET, this.DRIVE_API_ABOUT_GET)
+      const httpRequest = new HttpRequestBuilder(HTTPMethod.GET, environment.driveApiGetAccountInfoUrl)
         .authorizationHeader(`Bearer ${token}`)
         .responseTypeJSON()
         .build();
@@ -32,7 +27,7 @@ export class GoogleApiService {
 
   searchAppDataFiles(fileName: string): Promise<any> {
     return this.oAuth2Service.getAuthToken().then(token => {
-      const url = this.DRIVE_API_FILE_LIST.replace('fileName', fileName);
+      const url = environment.driveApiGetFileListUrl.replace('fileName', fileName);
       const httpRequest = new HttpRequestBuilder(HTTPMethod.GET, url)
         .authorizationHeader(`Bearer ${token}`)
         .responseTypeJSON()
@@ -45,7 +40,7 @@ export class GoogleApiService {
 
   requestJSONFileContent(fileId: string): Promise<any> {
     return this.oAuth2Service.getAuthToken().then(token => {
-      const url = this.DRIVE_API_FILE_GET_MEDIA.replace('fileId', fileId);
+      const url = environment.driveApiGetFileContentUrl.replace('fileId', fileId);
 
       const httpRequest = new HttpRequestBuilder(HTTPMethod.GET, url)
         .authorizationHeader(`Bearer ${token}`)
@@ -59,7 +54,7 @@ export class GoogleApiService {
 
   patchJSONFileContent(fileId: string, fileContent: any): Promise<any> {
     return this.oAuth2Service.getAuthToken().then(token => {
-      const url = new UrlBuilder(this.DRIVE_API_FILE_PATCH_MEDIA.replace('fileId', fileId))
+      const url = new UrlBuilder(environment.driveApiPatchFileContentUrl.replace('fileId', fileId))
         .queryParam('access_token', token)
         .build();
 
@@ -76,7 +71,7 @@ export class GoogleApiService {
   // Returns metadata for newly created file
   postJSONAppDataFile(fileName: string, fileContent: any): Promise<any> {
     return this.oAuth2Service.getAuthToken().then(token => {
-      const url = new UrlBuilder(this.DRIVE_API_FILE_POST_MULTIPART)
+      const url = new UrlBuilder(environment.driveApiPostFileContentUrl)
         .queryParam('access_token', token)
         .build();
 

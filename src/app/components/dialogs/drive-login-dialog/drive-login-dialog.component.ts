@@ -8,6 +8,7 @@ import {DriveLoginStatus} from '../../../types/drive-login-status';
 import {ChromePermissionsService} from '../../../services/chrome-permissions.service';
 import {OAuth2Service} from '../../../services/drive-api/o-auth-2.service';
 import {StorageCopyDirection, StorageService} from '../../../services/storage/storage.service';
+import {environment} from '../../../../environments/environment';
 
 @Component({
   selector: 'app-drive-login-dialog',
@@ -15,8 +16,6 @@ import {StorageCopyDirection, StorageService} from '../../../services/storage/st
   styleUrls: ['./drive-login-dialog.component.scss']
 })
 export class DriveLoginDialogComponent implements OnDestroy, OnInit {
-
-  private readonly CHROME_LOGIN_URL = 'https://accounts.google.com/';
 
   private ngUnsubscribe = new Subject();
   private stepperStateMap: StepperStateMap;
@@ -109,7 +108,7 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
       },
       [StepperStateId.AWAITING_CHROME_LOGIN]: {
         disableDialogClose: false,
-        onInitialize: () => chrome.tabs.create({url: this.CHROME_LOGIN_URL}),
+        onInitialize: () => chrome.tabs.create({url: environment.chromeLoginUrl}),
         getNextState: () => {
           return this.oAuth2Service.chromeSignInRequired().then(chromeSignInRequired => {
             return chromeSignInRequired
