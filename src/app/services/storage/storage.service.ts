@@ -2,12 +2,13 @@ import {Injectable} from '@angular/core';
 import {SessionListState} from '../../types/session/session-list-state';
 import {PreferencesService} from '../preferences.service';
 import {LocalStorageService} from './local-storage.service';
-import {combineLatest, merge, Observable, ReplaySubject} from 'rxjs';
+import {merge, Observable, ReplaySubject} from 'rxjs';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {distinctUntilChanged, map, switchMap, take} from 'rxjs/operators';
 import {DriveStorageService} from '../drive-api/drive-storage.service';
 import {DriveAccountService} from '../drive-api/drive-account.service';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
+import {getSyncStatusMetaInfo} from '../../types/sync-status';
 
 @Injectable({
   providedIn: 'root'
@@ -49,12 +50,9 @@ export class StorageService {
   }
 
   private shouldUseSyncStorage$(): Observable<boolean> {
-    return combineLatest(
-      this.driveAccountService.loginStatus$,
-      this.preferencesService.preferences$
-    ).pipe(
-      map(([loginStatus, preferences]) => {
-        return loginStatus.isLoggedIn && preferences.syncSavedWindows;
+    return this.driveAccountService.getSyncStatus$().pipe(
+      map(syncStatus => {
+        return getSyncStatusMetaInfo(syncStatus).shouldUseSyncStorage;
       }),
       distinctUntilChanged()
     );

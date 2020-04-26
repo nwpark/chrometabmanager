@@ -1,14 +1,15 @@
 import {Injectable} from '@angular/core';
 import {createDefaultDriveLoginStatus, DriveLoginStatus} from '../../types/drive-login-status';
-import {ReplaySubject} from 'rxjs';
+import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {OAuth2Service} from './o-auth-2.service';
 import {GoogleApiService} from './google-api.service';
 import {DriveStorageService} from './drive-storage.service';
 import {ChromePermissionsService} from '../chrome-permissions.service';
-import {take} from 'rxjs/operators';
+import {distinctUntilChanged, map, take} from 'rxjs/operators';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {PreferencesService} from '../preferences.service';
+import {getSyncStatus, SyncStatus} from '../../types/sync-status';
 
 @Injectable({
   providedIn: 'root'
@@ -45,16 +46,27 @@ export class DriveAccountService {
     return this.oAuth2Service.getAuthToken({interactive: true});
   }
 
-  enableSync(): Promise<any> {
+  getSyncStatus$(): Observable<SyncStatus> {
+    return combineLatest(
+      this.loginStatus$,
+      this.preferencesService.preferences$
+    ).pipe(
+      map(([loginStatus, preferences]) => {
+        return getSyncStatus(loginStatus, preferences);
+      }),
+      distinctUntilChanged()
+    );
+  }
+
+  enableSync(): Promise<void> {
     return this.googleApiService.requestUserAccountInformation().then(accountInfo => {
-      return Promise.all([
-        this.updateLoginStatus({
-          isLoggedIn: true,
-          syncInProgress: false,
-          userAccountInfo: accountInfo.user
-        }),
-        this.preferencesService.setSyncSavedWindows(true)
-      ]);
+      return this.updateLoginStatus({
+        isLoggedIn: true,
+        syncInProgress: false,
+        userAccountInfo: accountInfo.user
+      });
+    }).then(() => {
+      return this.preferencesService.setSyncSavedWindows(true);
     });
   }
 

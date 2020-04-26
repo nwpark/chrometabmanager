@@ -10,6 +10,8 @@ import {ActionBarService} from '../../../services/action-bar.service';
 import {ListActionButtonFactory} from '../../../utils/action-bar/list-action-button-factory';
 import {takeUntil} from 'rxjs/operators';
 import {SessionListComponent} from '../session-list/session-list.component';
+import {DriveAccountService} from '../../../services/drive-api/drive-account.service';
+import {getSyncStatusMetaInfo, SyncStatus} from '../../../types/sync-status';
 
 @Component({
   selector: 'app-saved-sessions-list',
@@ -26,10 +28,14 @@ export class SavedSessionsListComponent implements OnDestroy, OnInit {
 
   actionButtons: ListActionButton[];
   preferences: Preferences;
+  syncStatusIcon: string;
+  syncInProgress: boolean;
+  notSignedIn: boolean;
 
   constructor(private dragDropService: DragDropService,
               private preferencesService: PreferencesService,
               private actionBarService: ActionBarService,
+              private driveAccountService: DriveAccountService,
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
@@ -37,12 +43,24 @@ export class SavedSessionsListComponent implements OnDestroy, OnInit {
       ...this.actionBarService.createListActionButtons(this.props.sessionListId),
       ListActionButtonFactory.createMinimizeButton(() => this.sessionListComponent.toggleDisplay())
     ];
+    this.driveAccountService.getSyncStatus$().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(syncStatus => {
+      this.setSyncStatus(syncStatus);
+      this.changeDetectorRef.detectChanges();
+    });
     this.preferencesService.preferences$.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(preferences => {
       this.preferences = preferences;
       this.changeDetectorRef.detectChanges();
     });
+  }
+
+  private setSyncStatus(syncStatus: SyncStatus) {
+    this.syncStatusIcon = getSyncStatusMetaInfo(syncStatus).syncStatusIcon;
+    this.syncInProgress = (syncStatus === SyncStatus.SyncInProgress);
+    this.notSignedIn = (syncStatus === SyncStatus.NotSignedIn);
   }
 
   debug() {

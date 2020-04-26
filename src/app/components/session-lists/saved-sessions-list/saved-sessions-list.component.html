@@ -2,7 +2,7 @@
   appMouseOver
   #headerDiv=app-mouse-over
   class="column-header">
-  <span style="float: right">
+  <div style="float: right">
     <button
       mat-icon-button
       matTooltip="Debug"
@@ -21,14 +21,22 @@
         <mat-icon class="action-icon-24">{{sessionListState.isHidden() ? button.iconWhenHidden || button.icon : button.icon}}</mat-icon>
       </button>
     </ng-container>
-  </span>
-  <span class="column-title-text">
+  </div>
+  <mat-icon [ngClass]="{'sync-icon': true, 'spin': syncInProgress}">
+    {{syncStatusIcon}}
+  </mat-icon>
+  <div class="column-title-text" style="float: left">
     Saved
     <span *ngIf="sessionListState.isHidden()"> ({{sessionListState.size()}})</span>
-  </span>
+  </div>
 </div>
 
 <app-session-list
+  *ngIf="!notSignedIn"
   [props]="props"
   [sessionListState]="sessionListState">
 </app-session-list>
+
+<div *ngIf="notSignedIn">
+  Sync is enabled, but you are not signed in.
+</div>
