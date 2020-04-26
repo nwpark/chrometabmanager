@@ -43,7 +43,7 @@
   <button
     class="chrome-window-action-bar action-button-30"
     mat-icon-button
-    *ngIf="headerDiv.mouseOver && (debugModeEnabled$ | async)"
+    *ngIf="headerDiv.mouseOver && preferences?.enableDebugging"
     matTooltip="Debug"
     matTooltipClass="tooltip-reduced-margin"
     (click)="debug()">

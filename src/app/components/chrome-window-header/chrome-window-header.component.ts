@@ -1,4 +1,15 @@
-import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+  ViewEncapsulation
+} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {PreferencesService} from '../../services/preferences.service';
@@ -10,6 +21,9 @@ import {SessionLayoutState} from '../../types/session/session-layout-state';
 import {SessionActionButton} from '../../types/action-bar/session-action-button';
 import {SessionMenuItem} from '../../types/action-bar/session-menu-item';
 import {ActionButtonFactory} from '../../utils/action-bar/action-button-factory';
+import {Subject} from 'rxjs';
+import {Preferences} from '../../types/preferences';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-chrome-window-header',
@@ -17,7 +31,9 @@ import {ActionButtonFactory} from '../../utils/action-bar/action-button-factory'
   styleUrls: ['./chrome-window-header.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class ChromeWindowHeaderComponent implements OnInit {
+export class ChromeWindowHeaderComponent implements OnDestroy, OnInit {
+
+  private ngUnsubscribe = new Subject();
 
   @Input() sessionState: SessionState;
   @Input() props: SessionComponentProps;
@@ -29,7 +45,7 @@ export class ChromeWindowHeaderComponent implements OnInit {
   layoutState: SessionLayoutState;
   actionButtons: SessionActionButton[];
   actionMenuItems: SessionMenuItem[];
-  debugModeEnabled$: Promise<boolean>;
+  preferences: Preferences;
   lastModified: string;
   menuOpen = false;
 
@@ -53,7 +69,12 @@ export class ChromeWindowHeaderComponent implements OnInit {
     if (this.sessionState.session.lastModified) {
       this.lastModified = getTimeStampString(this.sessionState.session.lastModified);
     }
-    this.debugModeEnabled$ = this.preferencesService.isDebugModeEnabled();
+    this.preferencesService.preferences$.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(preferences => {
+      this.preferences = preferences;
+      this.changeDetectorRef.detectChanges();
+    });
   }
 
   // todo: dragdrop service
@@ -79,5 +100,12 @@ export class ChromeWindowHeaderComponent implements OnInit {
     this.menuOpen = menuOpen;
   }
 
-  debug() { console.log(this); }
+  debug() {
+    console.log(this);
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
 }

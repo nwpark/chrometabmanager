@@ -31,7 +31,6 @@ export class SyncStorageService {
     chrome.storage.sync.onChanged.addListener(() => {
       this.getLastModifierId().then(lastModifierId => {
         if (lastModifierId !== this.deviceId) {
-          // todo: if sync toggled then copy data
           reloadWindow();
         }
       });
@@ -56,12 +55,15 @@ export class SyncStorageService {
     });
   }
 
-  setPreferences(preferences: Preferences) {
-    chrome.storage.sync.set({
-      [StorageKeys.LastModifiedBy]: this.deviceId,
-      [StorageKeys.Preferences]: preferences
-    }, () => {
-      this.messagePassingService.broadcastPreferencesUpdated();
+  setPreferences(preferences: Preferences): Promise<void> {
+    return new Promise<void>(resolve => {
+      chrome.storage.sync.set({
+        [StorageKeys.LastModifiedBy]: this.deviceId,
+        [StorageKeys.Preferences]: preferences
+      }, () => {
+        this.messagePassingService.broadcastPreferencesUpdated(preferences);
+        resolve();
+      });
     });
   }
 

@@ -5,6 +5,7 @@ import {WebpageTitleCache} from '../../types/webpage-title-cache';
 import {DebouncedMessageSender, RespondableMessageSender, SimpleMessageSender} from './message-sender';
 import {DriveLoginStatus} from '../../types/drive-login-status';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
+import {Preferences} from '../../types/preferences';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,7 @@ export class MessagePassingService {
   static readonly LOAD_DRIVE_FILE_DATA_REQUEST = 'loadDriveFileDataRequest_31e2491f';
   static readonly MESSAGE_DEBOUNCE_TIME = 400;
 
-  private preferencesMessageSender = new SimpleMessageSender<void>(MessagePassingService.PREFERENCES_UPDATED);
+  private preferencesMessageSender = new SimpleMessageSender<Preferences>(MessagePassingService.PREFERENCES_UPDATED);
   private webpageTitleCacheMessageSender = new SimpleMessageSender<WebpageTitleCache>(MessagePassingService.WEBPAGE_TITLE_CACHE_UPDATED);
   private driveLoginStatusSender = new SimpleMessageSender<DriveLoginStatus>(MessagePassingService.DRIVE_LOGIN_STATUS_UPDATED);
   private activeSessionMessageSender = new DebouncedMessageSender(MessagePassingService.ACTIVE_SESSION_MESSAGE, MessagePassingService.MESSAGE_DEBOUNCE_TIME);
@@ -56,8 +57,8 @@ export class MessagePassingService {
     this.closedSessionMessageSender.broadcast(sessionListState);
   }
 
-  broadcastPreferencesUpdated() {
-    this.preferencesMessageSender.broadcast();
+  broadcastPreferencesUpdated(preferences: Preferences) {
+    this.preferencesMessageSender.broadcast(preferences);
   }
 
   broadcastWebpageTitleCache(webpageTitleCache: WebpageTitleCache) {

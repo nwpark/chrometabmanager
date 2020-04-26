@@ -1,27 +1,23 @@
 import {Injectable} from '@angular/core';
 import {Preferences} from '../types/preferences';
 import {ReplaySubject} from 'rxjs';
-import {modifiesState} from '../decorators/modifies-state';
 import {take} from 'rxjs/operators';
 import {SyncStorageService} from './storage/sync-storage.service';
 import {MessageReceiverService} from './messaging/message-receiver.service';
 import {getCurrentTimeStringWithMillis} from '../utils/date-utils';
-import {reloadWindow} from '../utils/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PreferencesService {
 
-  private preferences: Preferences;
-
-  private preferencesUpdated = new ReplaySubject<Preferences>(1);
-  preferences$ = this.preferencesUpdated.asObservable();
+  private preferences = new ReplaySubject<Preferences>(1);
+  preferences$ = this.preferences.asObservable();
 
   constructor(private syncStorageService: SyncStorageService,
               private messageReceiverService: MessageReceiverService) {
-    this.messageReceiverService.preferencesUpdated$.subscribe(() => {
-      reloadWindow();
+    this.messageReceiverService.preferencesUpdated$.subscribe(preferences => {
+      this.setPreferences(preferences);
     });
     this.syncStorageService.getPreferences().then(preferences => {
       this.setPreferences(preferences);
@@ -29,14 +25,11 @@ export class PreferencesService {
   }
 
   private setPreferences(preferences: Preferences) {
-    this.preferences = preferences;
-    this.preferencesUpdated.next(this.preferences);
+    console.log(getCurrentTimeStringWithMillis(), '- refreshing preferences');
+    this.preferences.next(preferences);
   }
 
   getPreferences(): Promise<Preferences> {
-    if (this.preferences) {
-      return Promise.resolve(this.preferences);
-    }
     return this.preferences$.pipe(take(1)).toPromise();
   }
 
@@ -45,39 +38,44 @@ export class PreferencesService {
       .then(preferences => preferences.closeWindowOnSave);
   }
 
-  isDebugModeEnabled(): Promise<boolean> {
-    return this.getPreferences()
-      .then(preferences => preferences.enableDebugging);
+  setCloseWindowOnSave(closeWindowOnSave: boolean): Promise<void> {
+    return this.getPreferences().then(preferences => {
+      preferences.closeWindowOnSave = closeWindowOnSave;
+      return this.updatePreferences(preferences);
+    });
   }
 
-  @modifiesState()
-  setCloseWindowOnSave(closeWindowOnSave: boolean) {
-    this.preferences.closeWindowOnSave = closeWindowOnSave;
+  setEnableDebugging(enableDebugging: boolean): Promise<void> {
+    return this.getPreferences().then(preferences => {
+      preferences.enableDebugging = enableDebugging;
+      return this.updatePreferences(preferences);
+    });
   }
 
-  @modifiesState()
-  setEnableDebugging(enableDebugging: boolean) {
-    this.preferences.enableDebugging = enableDebugging;
+  setSyncSavedWindows(syncSavedWindows: boolean): Promise<void> {
+    return this.getPreferences().then(preferences => {
+      preferences.syncSavedWindows = syncSavedWindows;
+      return this.updatePreferences(preferences);
+    });
   }
 
-  @modifiesState()
-  setSyncSavedWindows(syncSavedWindows: boolean) {
-    this.preferences.syncSavedWindows = syncSavedWindows;
+  setDarkThemeEnabled(enableDarkTheme: boolean): Promise<void> {
+    return this.getPreferences().then(preferences => {
+      preferences.enableDarkTheme = enableDarkTheme;
+      return this.updatePreferences(preferences);
+    });
   }
 
-  @modifiesState()
-  setDarkThemeEnabled(enableDarkTheme: boolean) {
-    this.preferences.enableDarkTheme = enableDarkTheme;
+  setShowReleaseNotesOnStartup(showReleaseNotesOnStartup: boolean): Promise<void> {
+    return this.getPreferences().then(preferences => {
+      preferences.showReleaseNotesOnStartup = showReleaseNotesOnStartup;
+      return this.updatePreferences(preferences);
+    });
   }
 
-  @modifiesState()
-  setShowReleaseNotesOnStartup(showReleaseNotesOnStartup: boolean) {
-    this.preferences.showReleaseNotesOnStartup = showReleaseNotesOnStartup;
-  }
-
-  onStateModified() {
+  private updatePreferences(preferences: Preferences): Promise<void> {
     console.log(getCurrentTimeStringWithMillis(), '- updating preferences');
-    this.preferencesUpdated.next(this.preferences);
-    this.syncStorageService.setPreferences(this.preferences);
+    this.preferences.next(preferences);
+    return this.syncStorageService.setPreferences(preferences);
   }
 }

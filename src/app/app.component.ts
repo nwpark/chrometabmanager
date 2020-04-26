@@ -1,19 +1,22 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {PreferencesService} from './services/preferences.service';
 import {MatDialog} from '@angular/material';
 import {BasicDialogComponent} from './components/dialogs/basic-dialog/basic-dialog.component';
 import {BasicDialogData} from './types/errors/basic-dialog-data';
 import {DialogDataFactory} from './utils/dialog-data-factory';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnDestroy, OnInit {
 
   private readonly DARK_THEME = 'dark-theme';
+  private ngUnsubscribe = new Subject();
 
   pageTitle: string;
 
@@ -22,7 +25,9 @@ export class AppComponent implements OnInit {
               private preferencesService: PreferencesService) { }
 
   ngOnInit() {
-    this.preferencesService.preferences$.subscribe(preferences => {
+    this.preferencesService.preferences$.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(preferences => {
       this.initializeAppTheme(preferences.enableDarkTheme);
       if (preferences.showReleaseNotesOnStartup) {
         this.showVersionHistoryDialog();
@@ -55,4 +60,8 @@ export class AppComponent implements OnInit {
     return this.pageTitle === 'Options';
   }
 
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
 }

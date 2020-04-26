@@ -10,6 +10,7 @@ import {
 } from './message-receiver';
 import {MessageData} from './message-sender';
 import {DriveLoginStatus} from '../../types/drive-login-status';
+import {Preferences} from '../../types/preferences';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class MessageReceiverService {
   private savedSessionStateSyncUpdated = new SessionListMessageReceiver();
   private activeSessionStateUpdated = new SessionListMessageReceiver();
   private closedSessionStateUpdated = new SessionListMessageReceiver();
-  private preferencesUpdated = new SimpleMessageReceiver<void>();
+  private preferencesUpdated = new SimpleMessageReceiver<Preferences>();
   private webpageTitleCacheUpdated = new SimpleMessageReceiver<WebpageTitleCache>();
   private driveLoginStatusUpdated = new SimpleMessageReceiver<DriveLoginStatus>();
   private onDeviceIdRequest = new RespondableMessageReceiver<void, string>();

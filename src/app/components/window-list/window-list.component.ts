@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DragDropService} from '../../services/drag-drop.service';
 import {PreferencesService} from '../../services/preferences.service';
@@ -16,6 +16,9 @@ import {SessionListState} from '../../types/session/session-list-state';
 import {SessionState} from '../../types/session/session-state';
 import {ListActionButton} from '../../types/action-bar/list-action-button';
 import {ListActionButtonFactory} from '../../utils/action-bar/list-action-button-factory';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+import {Preferences} from '../../types/preferences';
 
 @Component({
   selector: 'app-window-list',
@@ -32,7 +35,9 @@ import {ListActionButtonFactory} from '../../utils/action-bar/list-action-button
     ])
   ]
 })
-export class WindowListComponent implements OnInit {
+export class WindowListComponent implements OnDestroy, OnInit {
+
+  private ngUnsubscribe = new Subject();
 
   @Input() title: string;
   @Input() props: SessionComponentProps;
@@ -41,7 +46,7 @@ export class WindowListComponent implements OnInit {
   connectedWindowListIds = DragDropService.CONNECTED_WINDOW_LIST_IDS;
   actionButtons: ListActionButton[];
   animationState = AnimationState.Complete;
-  debugModeEnabled$: Promise<boolean>;
+  preferences: Preferences;
 
   constructor(private dragDropService: DragDropService,
               private preferencesService: PreferencesService,
@@ -53,7 +58,12 @@ export class WindowListComponent implements OnInit {
       ...this.actionBarService.createListActionButtons(this.props.sessionListId),
       ListActionButtonFactory.createMinimizeButton(() => this.toggleDisplay())
     ];
-    this.debugModeEnabled$ = this.preferencesService.isDebugModeEnabled();
+    this.preferencesService.preferences$.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(preferences => {
+      this.preferences = preferences;
+      this.changeDetectorRef.detectChanges();
+    });
   }
 
   // todo: result can be stored
@@ -103,5 +113,12 @@ export class WindowListComponent implements OnInit {
     }
   }
 
-  debug() { console.log(this); }
+  debug() {
+    console.log(this);
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
 }
