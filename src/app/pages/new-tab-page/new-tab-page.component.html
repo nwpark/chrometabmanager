@@ -15,21 +15,19 @@
     </mat-grid-tile>
 
     <mat-grid-tile>
-      <app-window-list
+      <app-active-sessions-list
         class="full-height-column"
-        [title]="'Active'"
         [sessionListState]="activeSessionState$ | async"
         [props]="activeSessionProps">
-      </app-window-list>
+      </app-active-sessions-list>
     </mat-grid-tile>
 
     <mat-grid-tile *ngIf="cols > 2">
-      <app-window-list
+      <app-closed-sessions-list
         class="full-height-column"
-        [title]="'Recently Closed'"
         [sessionListState]="closedSessionState$ | async"
         [props]="recentlyClosedSessionProps">
-      </app-window-list>
+      </app-closed-sessions-list>
     </mat-grid-tile>
   </mat-grid-list>
 </div>

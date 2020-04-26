@@ -1,0 +1,34 @@
+<div
+  appMouseOver
+  #headerDiv=app-mouse-over
+  class="column-header">
+  <span style="float: right">
+    <button
+      mat-icon-button
+      matTooltip="Debug"
+      matTooltipClass="tooltip-reduced-margin"
+      *ngIf="headerDiv.mouseOver && preferences?.enableDebugging"
+      (click)="debug()">
+      <mat-icon class="action-icon-24">bug_report</mat-icon>
+    </button>
+    <ng-container *ngFor="let button of actionButtons">
+      <button
+        mat-icon-button
+        [matTooltip]="sessionListState.isHidden() ? button.titleWhenHidden || button.title : button.title"
+        matTooltipClass="tooltip-reduced-margin"
+        *ngIf="!button.requiresMouseover || headerDiv.mouseOver"
+        (click)="button.callback()">
+        <mat-icon class="action-icon-24">{{sessionListState.isHidden() ? button.iconWhenHidden || button.icon : button.icon}}</mat-icon>
+      </button>
+    </ng-container>
+  </span>
+  <span class="column-title-text">
+    Recently Closed
+    <span *ngIf="sessionListState.isHidden()"> ({{sessionListState.size()}})</span>
+  </span>
+</div>
+
+<app-session-list
+  [props]="props"
+  [sessionListState]="sessionListState">
+</app-session-list>

@@ -1,22 +1,22 @@
 import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Subject} from 'rxjs';
-import {SessionComponentProps} from '../../types/chrome-window-component-data';
-import {SessionListState} from '../../types/session/session-list-state';
-import {DragDropService} from '../../services/drag-drop.service';
-import {ListActionButton} from '../../types/action-bar/list-action-button';
-import {Preferences} from '../../types/preferences';
-import {PreferencesService} from '../../services/preferences.service';
-import {ActionBarService} from '../../services/action-bar.service';
-import {ListActionButtonFactory} from '../../utils/action-bar/list-action-button-factory';
-import {takeUntil} from 'rxjs/operators';
+import {SessionComponentProps} from '../../../types/chrome-window-component-data';
+import {SessionListState} from '../../../types/session/session-list-state';
 import {SessionListComponent} from '../session-list/session-list.component';
+import {ListActionButton} from '../../../types/action-bar/list-action-button';
+import {Preferences} from '../../../types/preferences';
+import {DragDropService} from '../../../services/drag-drop.service';
+import {PreferencesService} from '../../../services/preferences.service';
+import {ActionBarService} from '../../../services/action-bar.service';
+import {ListActionButtonFactory} from '../../../utils/action-bar/list-action-button-factory';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
-  selector: 'app-saved-sessions-list',
-  templateUrl: './saved-sessions-list.component.html',
-  styleUrls: ['./saved-sessions-list.component.scss']
+  selector: 'app-closed-sessions-list',
+  templateUrl: './closed-sessions-list.component.html',
+  styleUrls: ['./closed-sessions-list.component.scss']
 })
-export class SavedSessionsListComponent implements OnDestroy, OnInit {
+export class ClosedSessionsListComponent implements OnDestroy, OnInit {
 
   private ngUnsubscribe = new Subject();
 

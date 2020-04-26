@@ -12,16 +12,17 @@ import {MouseOverDirective} from './directives/mouse-over.directive';
 import {ChromeWindowHeaderComponent} from './components/chrome-window-header/chrome-window-header.component';
 import {OptionsComponent} from './pages/options/options.component';
 import {NewTabPageComponent} from './pages/new-tab-page/new-tab-page.component';
-import {WindowListComponent} from './components/window-list/window-list.component';
 import {ChromeWindowContainerComponent} from './components/chrome-window-container/chrome-window-container.component';
 import {DetachedChromeTabComponent} from './components/detached-chrome-tab/detached-chrome-tab.component';
 import {ActionableErrorDialogComponent} from './components/dialogs/actionable-error-dialog/actionable-error-dialog.component';
-import { RuntimeErrorDialogComponent } from './components/dialogs/runtime-error-dialog/runtime-error-dialog.component';
-import { BasicDialogComponent } from './components/dialogs/basic-dialog/basic-dialog.component';
-import { DriveLoginDialogComponent } from './components/dialogs/drive-login-dialog/drive-login-dialog.component';
+import {RuntimeErrorDialogComponent} from './components/dialogs/runtime-error-dialog/runtime-error-dialog.component';
+import {BasicDialogComponent} from './components/dialogs/basic-dialog/basic-dialog.component';
+import {DriveLoginDialogComponent} from './components/dialogs/drive-login-dialog/drive-login-dialog.component';
 import {RuntimeErrorHandler} from './runtime-error-handler';
-import { SavedSessionsListComponent } from './components/saved-sessions-list/saved-sessions-list.component';
-import { SessionListComponent } from './components/session-list/session-list.component';
+import {SavedSessionsListComponent} from './components/session-lists/saved-sessions-list/saved-sessions-list.component';
+import {SessionListComponent} from './components/session-lists/session-list/session-list.component';
+import {ActiveSessionsListComponent} from './components/session-lists/active-sessions-list/active-sessions-list.component';
+import {ClosedSessionsListComponent} from './components/session-lists/closed-sessions-list/closed-sessions-list.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,6 @@ import { SessionListComponent } from './components/session-list/session-list.com
     ChromeWindowHeaderComponent,
     OptionsComponent,
     NewTabPageComponent,
-    WindowListComponent,
     ChromeWindowContainerComponent,
     DetachedChromeTabComponent,
     ActionableErrorDialogComponent,
@@ -41,7 +41,9 @@ import { SessionListComponent } from './components/session-list/session-list.com
     BasicDialogComponent,
     DriveLoginDialogComponent,
     SavedSessionsListComponent,
-    SessionListComponent
+    SessionListComponent,
+    ActiveSessionsListComponent,
+    ClosedSessionsListComponent
   ],
   imports: [
     BrowserModule,
