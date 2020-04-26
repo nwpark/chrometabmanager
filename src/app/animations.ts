@@ -7,12 +7,27 @@ export enum AnimationState {
   Complete = 'complete'
 }
 
+const animationStateMetaInfoMap: AnimationStateMetaInfoMap = {
+  [AnimationState.Closing]: {isTerminal: false},
+  [AnimationState.Collapsing]: {isTerminal: false},
+  [AnimationState.Expanding]: {isTerminal: false},
+  [AnimationState.Complete]: {isTerminal: true},
+};
+
+type AnimationStateMetaInfoMap = {
+  [animationState in AnimationState]: {isTerminal: boolean};
+};
+
 export function getAnimationForToggleDisplay(isCollapsed: boolean): AnimationState {
   return isCollapsed ? AnimationState.Expanding : AnimationState.Collapsing;
 }
 
 export function isToggleDisplayState(animationState: string) {
   return animationState === AnimationState.Collapsing || animationState === AnimationState.Expanding;
+}
+
+export function isTerminalAnimationState(animationState: AnimationState) {
+  return animationStateMetaInfoMap[animationState].isTerminal;
 }
 
 export const closeWindowAnimation = animation([

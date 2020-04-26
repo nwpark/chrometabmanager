@@ -20,6 +20,8 @@ import { RuntimeErrorDialogComponent } from './components/dialogs/runtime-error-
 import { BasicDialogComponent } from './components/dialogs/basic-dialog/basic-dialog.component';
 import { DriveLoginDialogComponent } from './components/dialogs/drive-login-dialog/drive-login-dialog.component';
 import {RuntimeErrorHandler} from './runtime-error-handler';
+import { SavedSessionsListComponent } from './components/saved-sessions-list/saved-sessions-list.component';
+import { SessionListComponent } from './components/session-list/session-list.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +39,9 @@ import {RuntimeErrorHandler} from './runtime-error-handler';
     ActionableErrorDialogComponent,
     RuntimeErrorDialogComponent,
     BasicDialogComponent,
-    DriveLoginDialogComponent
+    DriveLoginDialogComponent,
+    SavedSessionsListComponent,
+    SessionListComponent
   ],
   imports: [
     BrowserModule,
