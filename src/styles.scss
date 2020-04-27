@@ -1,6 +1,10 @@
 @mixin styles-theme($theme) {
   $foreground-palette: map-get($theme, foreground);
 
+  .primary-text {
+    color: map-get($foreground-palette, text);
+  }
+
   .secondary-text {
     color: map-get($foreground-palette, secondary-text);
   }
@@ -14,6 +18,17 @@ body {
 
 .mat-grid-tile .mat-figure {
   align-items: flex-start !important;
+}
+
+.tooltip-reduced-margin {
+  margin: 5px !important;
+}
+
+/**************************************** Images / Icons *************************************************/
+.inline-image-17px {
+  height: 17px;
+  width: 17px;
+  margin-right: 5px;
 }
 
 .mat-icon-button {
@@ -46,10 +61,6 @@ body {
   .action-icon-18:hover, .action-icon-18-black:hover, .action-icon-24:hover {
     font-weight: bold;
   }
-}
-
-.tooltip-reduced-margin {
-  margin: 5px !important;
 }
 
 /**************************************** Chrome Window List ********************************************/

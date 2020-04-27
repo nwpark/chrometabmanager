@@ -22,7 +22,7 @@
       </button>
     </ng-container>
   </div>
-  <mat-icon [ngClass]="{'sync-icon': true, 'spin': syncInProgress}">
+  <mat-icon [ngClass]="{'sync-status-icon': true, 'spin': syncInProgress}">
     {{syncStatusIcon}}
   </mat-icon>
   <div class="column-title-text" style="float: left">
@@ -38,5 +38,30 @@
 </app-session-list>
 
 <div *ngIf="notSignedIn">
-  Sync is enabled, but you are not signed in.
+  <div class="chrome-window-header">
+    <div class="chrome-window-title" style="text-align: center">
+      <div>Sign in required</div>
+    </div>
+  </div>
+  <div class="chrome-window-body" style="padding: 0 10px 10px 10px">
+    <div class="sync-status-info-text primary-text">
+      Sync is enabled, but you are not currently signed in.
+    </div>
+    <mat-divider style="padding-bottom: 10px"></mat-divider>
+    <button
+      style="width: calc(50% - 5px); float: left"
+      mat-stroked-button
+      color="primary"
+      (click)="disableSync()">
+      Disable sync
+    </button>
+    <button
+      style="width: calc(50% - 5px); float: right"
+      mat-stroked-button
+      color="primary"
+      (click)="enableSync()">
+      <img src="assets/google-logo32.png" class="inline-image-17px" alt="Google logo">
+      Sign in with Google
+    </button>
+  </div>
 </div>

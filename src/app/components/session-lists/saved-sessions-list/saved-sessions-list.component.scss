@@ -1,8 +1,15 @@
-.sync-icon {
+.sync-status-icon {
   height: 40px;
   line-height: 40px;
   float: left;
   margin-right: 10px;
+}
+
+.sync-status-info-text {
+  line-height: 40px;
+  font-size: small;
+  text-align: center;
+  width: 100%;
 }
 
 .spin {

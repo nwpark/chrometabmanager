@@ -39,7 +39,13 @@ export class DriveAccountService {
   }
 
   getLoginStatus(): Promise<DriveLoginStatus> {
-    return this.loginStatus$.pipe(take(1)).toPromise();
+    return Promise.all([
+      this.loginStatus$.pipe(take(1)).toPromise(),
+      this.oAuth2Service.hasValidAuthToken()
+    ]).then(([loginStatus, hasValidAuthToken]) => {
+      loginStatus.isLoggedIn = hasValidAuthToken;
+      return loginStatus;
+    });
   }
 
   performInteractiveLogin(): Promise<string> {

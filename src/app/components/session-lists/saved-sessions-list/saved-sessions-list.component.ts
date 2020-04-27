@@ -12,6 +12,8 @@ import {takeUntil} from 'rxjs/operators';
 import {SessionListComponent} from '../session-list/session-list.component';
 import {DriveAccountService} from '../../../services/drive-api/drive-account.service';
 import {getSyncStatusMetaInfo, SyncStatus} from '../../../types/sync-status';
+import {MatDialog} from '@angular/material';
+import {DriveLoginDialogComponent} from '../../dialogs/drive-login-dialog/drive-login-dialog.component';
 
 @Component({
   selector: 'app-saved-sessions-list',
@@ -36,6 +38,7 @@ export class SavedSessionsListComponent implements OnDestroy, OnInit {
               private preferencesService: PreferencesService,
               private actionBarService: ActionBarService,
               private driveAccountService: DriveAccountService,
+              private matDialogService: MatDialog,
               private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
@@ -61,6 +64,14 @@ export class SavedSessionsListComponent implements OnDestroy, OnInit {
     this.syncStatusIcon = getSyncStatusMetaInfo(syncStatus).syncStatusIcon;
     this.syncInProgress = (syncStatus === SyncStatus.SyncInProgress);
     this.notSignedIn = (syncStatus === SyncStatus.NotSignedIn);
+  }
+
+  enableSync() {
+    this.matDialogService.open(DriveLoginDialogComponent);
+  }
+
+  disableSync() {
+    this.preferencesService.setSyncSavedWindows(false);
   }
 
   debug() {
