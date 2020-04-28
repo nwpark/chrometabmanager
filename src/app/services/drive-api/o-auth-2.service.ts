@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
 import {isNullOrUndefined} from 'util';
-import {HTTPMethod, HttpRequestBuilder} from '../../../background/types/http-request';
 import {ChromeRuntimeErrorMessage} from '../../types/errors/chrome-runtime-error-message';
-import {environment} from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -23,10 +21,11 @@ export class OAuth2Service {
     });
   }
 
-  revokeAuthToken(): Promise<any> {
+  refreshAuthToken(): Promise<string> {
     return this.getAuthToken().then(authToken => {
       return this.removeCachedAuthToken(authToken).then(() => {
-        return this.requestRevokeAuthToken(authToken);
+        // todo: update login status if this fails
+        return this.getAuthToken();
       });
     });
   }
@@ -45,13 +44,6 @@ export class OAuth2Service {
     }).catch(errorMessage => {
       return errorMessage === ChromeRuntimeErrorMessage.UserNotSignedIn;
     });
-  }
-
-  private requestRevokeAuthToken(authToken: string): Promise<any> {
-    const url = environment.accountsApiRevokeTokenUrl.replace('AUTH_TOKEN', authToken);
-    const httpRequest = new HttpRequestBuilder(HTTPMethod.POST, url).build();
-
-    return httpRequest.send();
   }
 
   private removeCachedAuthToken(authToken: string): Promise<void> {

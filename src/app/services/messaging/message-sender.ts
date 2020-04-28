@@ -17,6 +17,7 @@ export class RespondableMessageSender<T, R> {
 
   sendRequest(messageData: T): Promise<R> {
     const message: MessageData<T> = {messageId: this.messageId, data: messageData};
+    // todo: catch + map to runtime error
     return sendRespondableMessage(message);
   }
 }

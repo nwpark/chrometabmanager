@@ -41,6 +41,9 @@ export class RespondableMessageReceiver<T, R> extends MessageReceiver<T, R, Mess
     return responsePromise.then(responseData => {
       return {responseData};
     }).catch(errorReason => {
+      if (errorReason instanceof Error) {
+        errorReason = errorReason.toString();
+      }
       return {errorReason};
     });
   }

@@ -43,6 +43,7 @@ export class DriveAccountService {
       this.loginStatus$.pipe(take(1)).toPromise(),
       this.oAuth2Service.hasValidAuthToken()
     ]).then(([loginStatus, hasValidAuthToken]) => {
+      // todo: update loginStatus if it changed
       loginStatus.isLoggedIn = hasValidAuthToken;
       return loginStatus;
     });
@@ -73,14 +74,6 @@ export class DriveAccountService {
       });
     }).then(() => {
       return this.preferencesService.setSyncSavedWindows(true);
-    });
-  }
-
-  logout(): Promise<any> {
-    return this.oAuth2Service.revokeAuthToken().then(() => {
-      const updateLoginStatusPromise = this.updateLoginStatus(createDefaultDriveLoginStatus());
-      const clearCacheDataPromise = this.driveStorageService.clearCacheData();
-      return Promise.all([updateLoginStatusPromise, clearCacheDataPromise]);
     });
   }
 

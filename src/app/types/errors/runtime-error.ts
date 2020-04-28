@@ -1,15 +1,18 @@
-import {ErrorCode} from './error-code';
+import {ErrorCode, ErrorType} from './error-code';
 import {HttpRequest} from '../../../background/types/http-request';
+import {isNullOrUndefined} from 'util';
 
 export interface RuntimeError {
   readonly errorCode: ErrorCode;
   readonly details?: any;
   readonly cause?: RuntimeError;
+  readonly type?: ErrorType;
 }
 
 export function runtimeErrorFromXHR(errorCode: ErrorCode, httpRequest: HttpRequest): RuntimeError {
   return {
     errorCode,
+    type: ErrorType.Http,
     details: {
       url: httpRequest.url,
       method: httpRequest.method,
@@ -36,5 +39,18 @@ export function mapToRuntimeError(errorCode: ErrorCode): (error: any) => Promise
 }
 
 export function isRuntimeError(runtimeError: any): runtimeError is RuntimeError {
-  return runtimeError.errorCode && Object.values(ErrorCode).includes(runtimeError.errorCode);
+  return !isNullOrUndefined(runtimeError)
+    && runtimeError.errorCode
+    && Object.values(ErrorCode).includes(runtimeError.errorCode);
+}
+
+export function causedByHttp401(runtimeError: RuntimeError): boolean {
+  if (!isRuntimeError(runtimeError)) {
+    return false;
+  }
+  if (runtimeError.type === ErrorType.Http
+        && runtimeError.details.status === 401) {
+    return true;
+  }
+  return causedByHttp401(runtimeError.cause);
 }

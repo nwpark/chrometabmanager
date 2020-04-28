@@ -11,6 +11,10 @@ export enum ErrorCode {
   PostJSONFileContentError = '46ce96a2',
 }
 
+export enum ErrorType {
+  Http = '3426413a'
+}
+
 export function getErrorMessageFromCode(errorCode: ErrorCode): string {
   return errorCodeMessageMap[errorCode];
 }

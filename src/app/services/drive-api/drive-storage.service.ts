@@ -25,6 +25,7 @@ export class DriveStorageService {
     return Promise.all([cachedLoginStatusPromise, hasValidAuthTokenPromise]).then(res => {
       const [cachedLoginStatus, hasValidAuthToken] = res;
       const cacheEntryIsValid = hasValidAuthToken || !cachedLoginStatus.isLoggedIn;
+      // todo: clean up this method
       if (cacheEntryIsValid) {
         return cachedLoginStatus;
       } else {
