@@ -15,6 +15,7 @@ import {DriveAccountService} from '../app/services/drive-api/drive-account.servi
 import {ChromePermissionsService} from '../app/services/chrome-permissions.service';
 import {SyncStorageService} from '../app/services/storage/sync-storage.service';
 import {PreferencesService} from '../app/services/preferences.service';
+import {IdentityStateManager} from './state-managers/identity-state-manager';
 
 const head = document.getElementsByTagName('head')[0];
 const script = document.createElement('script');
@@ -52,6 +53,7 @@ const googleApiService = new GoogleApiService(oAuth2Service);
 const driveStorageService = new DriveStorageService(messagePassingService);
 const chromePermissionsService = new ChromePermissionsService();
 const preferencesService = new PreferencesService(syncStorageService, messageReceiverService);
+const identityStateManager = new IdentityStateManager(oAuth2Service);
 const driveAccountService = new DriveAccountService(driveStorageService, oAuth2Service, googleApiService, chromePermissionsService, messageReceiverService, preferencesService);
 const driveFileDataManager = new DriveFileDataManager(
   googleApiService,

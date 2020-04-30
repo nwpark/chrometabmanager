@@ -59,6 +59,8 @@ export class OAuth2Service {
       return new Promise<void>(resolve => {
         chrome.identity.removeCachedAuthToken({token: authToken}, resolve);
       });
+    }).finally(() => {
+      return this.getTokenAndUpdateStatus();
     });
   }
 
