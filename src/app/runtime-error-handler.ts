@@ -1,6 +1,6 @@
 import {ErrorHandler, NgZone} from '@angular/core';
 import {ErrorDialogService} from './services/error-dialog.service';
-import {getErrorMessageFromCode} from './types/errors/error-code';
+import {getErrorDetailsFromCode} from './types/errors/error-code';
 import {isRuntimeError, RuntimeError} from './types/errors/runtime-error';
 
 export class RuntimeErrorHandler implements ErrorHandler {
@@ -8,18 +8,23 @@ export class RuntimeErrorHandler implements ErrorHandler {
   constructor(private errorDialogService: ErrorDialogService,
               private ngZone: NgZone) { }
 
-  handleError(runtimeError: any): void {
-    runtimeError = runtimeError.rejection || runtimeError;
-    console.error(runtimeError);
-    if (isRuntimeError(runtimeError)) {
+  handleError(error: any): void {
+    error = error.rejection || error;
+    console.error(error);
+    if (isRuntimeError(error)) {
       this.ngZone.run(() => {
-        this.displayError(runtimeError);
+        this.handleRuntimeError(error);
       });
     }
   }
 
-  displayError(runtimeError: RuntimeError) {
-    const errorMessage = getErrorMessageFromCode(runtimeError.errorCode);
-    this.errorDialogService.showRuntimeError({errorMessage, runtimeError});
+  handleRuntimeError(runtimeError: RuntimeError) {
+    const errorDetails = getErrorDetailsFromCode(runtimeError.errorCode);
+    if (errorDetails.shouldDisplayDialog) {
+      this.errorDialogService.showRuntimeError({
+        errorMessage: errorDetails.userFriendlyMessage,
+        runtimeError
+      });
+    }
   }
 }

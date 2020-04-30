@@ -4,7 +4,9 @@
     An error occurred..
   </div>
   <div mat-dialog-content>
-    <p>{{data.errorMessage}}</p>
+    <p style="white-space: pre-line">
+      {{data.errorMessage}}
+    </p>
     <button
       *ngIf="preferences?.enableDebugging && !showErrorDetails"
       mat-button

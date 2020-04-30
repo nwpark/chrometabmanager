@@ -19,8 +19,8 @@ export class RespondableMessageSender<T, R> {
 
   sendRequest(messageData: T): Promise<R> {
     const message: MessageData<T> = {messageId: this.messageId, data: messageData};
-    return sendRespondableMessage(message);
-      // todo: .catch(mapToRuntimeError(ErrorCode.UnknownError, this.messageId));
+    return sendRespondableMessage(message)
+      .catch(mapToRuntimeError(ErrorCode.MessageResponseError, this.messageId));
   }
 }
 
