@@ -4,13 +4,10 @@ import {Preferences} from '../../types/preferences';
 import {MatDialog, MatSlideToggleChange} from '@angular/material';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {SyncStorageService} from '../../services/storage/sync-storage.service';
 import {StorageService} from '../../services/storage/storage.service';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {ErrorDialogService} from '../../services/error-dialog.service';
-import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
-import {SessionListState} from '../../types/session/session-list-state';
 import {LocalStorageService} from '../../services/storage/local-storage.service';
 import {ImageData} from '../../types/image-data';
 import {environment} from '../../../environments/environment';
@@ -21,6 +18,7 @@ import {DriveLoginStatus} from '../../types/drive-login-status';
 import {DriveAccountService} from '../../services/drive-api/drive-account.service';
 import {DriveStorageService} from '../../services/drive-api/drive-storage.service';
 import {DriveLoginDialogComponent} from '../../components/dialogs/drive-login-dialog/drive-login-dialog.component';
+import {OAuth2Service} from '../../services/drive-api/o-auth-2.service';
 
 @Component({
   selector: 'app-options',
@@ -45,12 +43,14 @@ export class OptionsComponent implements OnDestroy, OnInit {
   backgroundPhoto: ImageData;
   applicationVersion: string;
   driveLoginStatus: DriveLoginStatus;
+  authStatus: boolean;
 
   constructor(private preferencesService: PreferencesService,
               private storageService: StorageService,
               private localStorageService: LocalStorageService,
               private driveAccountService: DriveAccountService,
               private driveStorageService: DriveStorageService,
+              private oAuth2Service: OAuth2Service,
               private changeDetectorRef: ChangeDetectorRef,
               private domSanitizer: DomSanitizer,
               private errorDialogService: ErrorDialogService,
@@ -67,6 +67,12 @@ export class OptionsComponent implements OnDestroy, OnInit {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(loginStatus => {
       this.driveLoginStatus = loginStatus;
+      this.changeDetectorRef.detectChanges();
+    });
+    this.oAuth2Service.authStatus$.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(authStatus => {
+      this.authStatus = authStatus;
       this.changeDetectorRef.detectChanges();
     });
     this.downloadJsonHref = this.generateDownloadJsonUri();

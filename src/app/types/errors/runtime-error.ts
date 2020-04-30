@@ -23,7 +23,7 @@ export function runtimeErrorFromXHR(errorCode: ErrorCode, httpRequest: HttpReque
   };
 }
 
-export function mapToRuntimeError(errorCode: ErrorCode): (error: any) => Promise<any> {
+export function mapToRuntimeError(errorCode: ErrorCode, details?: any): (error: any) => Promise<any> {
   return (error: any) => {
     if (!isRuntimeError(error)) {
       error = {
@@ -33,6 +33,7 @@ export function mapToRuntimeError(errorCode: ErrorCode): (error: any) => Promise
     }
     return Promise.reject({
       errorCode,
+      details,
       cause: error
     });
   };

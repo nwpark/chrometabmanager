@@ -123,7 +123,7 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
       },
       [StepperStateId.AWAITING_OAUTH_LOGIN]: {
         disableDialogClose: true,
-        onInitialize: () => this.driveAccountService.performInteractiveLogin().then(() => {
+        onInitialize: () => this.oAuth2Service.performInteractiveLogin().then(() => {
           this.advanceStepperState();
         }),
         getNextState: () => Promise.resolve(StepperStateId.PREPARING_DRIVE_DATA)

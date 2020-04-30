@@ -2,6 +2,8 @@ import {Subject} from 'rxjs';
 import {SessionListState} from '../../types/session/session-list-state';
 import {debounceTime} from 'rxjs/operators';
 import {MessageResponse} from './message-receiver';
+import {mapToRuntimeError} from '../../types/errors/runtime-error';
+import {ErrorCode} from '../../types/errors/error-code';
 
 export class SimpleMessageSender<T> {
   constructor(private messageId: string) { }
@@ -17,8 +19,8 @@ export class RespondableMessageSender<T, R> {
 
   sendRequest(messageData: T): Promise<R> {
     const message: MessageData<T> = {messageId: this.messageId, data: messageData};
-    // todo: catch + map to runtime error
     return sendRespondableMessage(message);
+      // todo: .catch(mapToRuntimeError(ErrorCode.UnknownError, this.messageId));
   }
 }
 

@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {createDefaultDriveLoginStatus, DriveLoginStatus} from '../../types/drive-login-status';
 import {SessionListState} from '../../types/session/session-list-state';
-import {OAuth2Service} from './o-auth-2.service';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {StorageKeys} from '../storage/storage-keys';
 import {validateSessionMap} from '../../types/session/session-map';
@@ -15,29 +14,9 @@ import {last} from 'rxjs/operators';
 })
 export class DriveStorageService {
 
-  constructor(private oAuth2Service: OAuth2Service,
-              private messagePassingService: MessagePassingService) { }
+  constructor(private messagePassingService: MessagePassingService) { }
 
   getLoginStatus(): Promise<DriveLoginStatus> {
-    const cachedLoginStatusPromise = this.readLoginStatusFromCache();
-    const hasValidAuthTokenPromise = this.oAuth2Service.hasValidAuthToken();
-
-    return Promise.all([cachedLoginStatusPromise, hasValidAuthTokenPromise]).then(res => {
-      const [cachedLoginStatus, hasValidAuthToken] = res;
-      const cacheEntryIsValid = hasValidAuthToken || !cachedLoginStatus.isLoggedIn;
-      // todo: clean up this method
-      if (cacheEntryIsValid) {
-        return cachedLoginStatus;
-      } else {
-        cachedLoginStatus.isLoggedIn = false;
-        return this.setLoginStatus(cachedLoginStatus).then(() => {
-          return cachedLoginStatus;
-        });
-      }
-    });
-  }
-
-  private readLoginStatusFromCache(): Promise<DriveLoginStatus> {
     return new Promise<DriveLoginStatus>(resolve => {
       chrome.storage.local.get({
         [StorageKeys.DriveLoginStatus]: createDefaultDriveLoginStatus()

@@ -47,14 +47,15 @@ const syncStorageService = new SyncStorageService(messagePassingService, {device
 const webpageTitleCacheService = new WebpageTitleCacheService(localStorageService, messageReceiverService);
 const activeWindowStateManager = new ActiveWindowStateManager(localStorageService, messageReceiverService, webpageTitleCacheService);
 const closedSessionStateManager = new ClosedSessionStateManager(localStorageService);
-const oAuth2Service = new OAuth2Service();
+const oAuth2Service = new OAuth2Service(messagePassingService, messageReceiverService);
 const googleApiService = new GoogleApiService(oAuth2Service);
-const driveStorageService = new DriveStorageService(oAuth2Service, messagePassingService);
+const driveStorageService = new DriveStorageService(messagePassingService);
 const chromePermissionsService = new ChromePermissionsService();
 const preferencesService = new PreferencesService(syncStorageService, messageReceiverService);
 const driveAccountService = new DriveAccountService(driveStorageService, oAuth2Service, googleApiService, chromePermissionsService, messageReceiverService, preferencesService);
 const driveFileDataManager = new DriveFileDataManager(
   googleApiService,
+  oAuth2Service,
   driveAccountService,
   messageReceiverService,
   syncStorageService

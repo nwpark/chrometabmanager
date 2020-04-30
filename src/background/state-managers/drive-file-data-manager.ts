@@ -5,6 +5,7 @@ import {DriveAccountService} from '../../app/services/drive-api/drive-account.se
 import {fetchesSynchronizedData} from '../../app/decorators/fetches-synchronized-data';
 import {patchesSynchronizedData} from '../../app/decorators/patches-synchronized-data';
 import {SyncStorageService} from '../../app/services/storage/sync-storage.service';
+import {OAuth2Service} from '../../app/services/drive-api/o-auth-2.service';
 
 export class DriveFileDataManager {
 
@@ -13,14 +14,11 @@ export class DriveFileDataManager {
   private requestsInFlight = 0;
 
   constructor(private googleApiService: GoogleApiService,
+              private oAuth2Service: OAuth2Service,
               private driveAccountService: DriveAccountService,
               private messageReceiverService: MessageReceiverService,
               private syncStorageService: SyncStorageService) {
-    this.driveAccountService.getLoginStatus().then(loginStatus => {
-      if (loginStatus.isLoggedIn) {
-        this.loadFileData();
-      }
-    });
+    this.loadFileData();
     this.messageReceiverService.onLoadDriveFileDataRequest$.subscribe(request => {
       request.sendResponse(this.loadFileData());
     });

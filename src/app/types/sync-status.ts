@@ -34,11 +34,11 @@ type SyncStatusMetaInfoMap = {
   }
 };
 
-export function getSyncStatus(driveLoginStatus: DriveLoginStatus, preferences: Preferences): SyncStatus {
+export function getSyncStatus(driveLoginStatus: DriveLoginStatus, preferences: Preferences, authStatus: boolean): SyncStatus {
   if (!preferences.syncSavedWindows) {
     return SyncStatus.Disabled;
   }
-  if (!driveLoginStatus.isLoggedIn) {
+  if (!authStatus) {
     return SyncStatus.NotSignedIn;
   }
   if (driveLoginStatus.syncInProgress) {

@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HTTPMethod, HttpRequestBuilder} from '../../../background/types/http-request';
 import {UrlBuilder} from '../../../background/types/url-builder';
-import {OAuth2Service} from './o-auth-2.service';
 import {causedByHttp401, mapToRuntimeError} from '../../types/errors/runtime-error';
 import {ErrorCode} from '../../types/errors/error-code';
 import {environment} from '../../../environments/environment';
+import {OAuth2Service} from './o-auth-2.service';
 
 @Injectable({
   providedIn: 'root'
@@ -112,7 +112,7 @@ function retryOnError(): MethodDecorator {
       return Promise.resolve(originalMethod.apply(this, args)).catch(error => {
         if (causedByHttp401(error)) {
           console.warn('AUTHENTICATION ERROR OCCURRED. RETRYING.');
-          return this.oAuth2Service.refreshAuthToken().then(() => {
+          return this.oAuth2Service.removeCachedAuthToken().then(() => {
             return originalMethod.apply(this, args);
           });
         }

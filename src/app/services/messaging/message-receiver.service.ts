@@ -28,6 +28,7 @@ export class MessageReceiverService {
   private onUpdateDriveSavedSessionsRequest = new RespondableMessageReceiver<SessionListState, any>();
   private onLoadDriveFileDataRequest = new RespondableMessageReceiver<void, SessionListState>();
   private onInsertChromeWindowRequest = new SimpleMessageReceiver<InsertWindowMessageData>();
+  private authStatusUpdated = new SimpleMessageReceiver<boolean>();
 
   savedSessionStateUpdated$ = this.savedSessionStateUpdated.asObservable();
   savedSessionStateSyncUpdated$ = this.savedSessionStateSyncUpdated.asObservable();
@@ -40,6 +41,7 @@ export class MessageReceiverService {
   onUpdateDriveSavedSessionsRequest$ = this.onUpdateDriveSavedSessionsRequest.asObservable();
   onLoadDriveFileDataRequest$ = this.onLoadDriveFileDataRequest.asObservable();
   onInsertChromeWindowRequest$ = this.onInsertChromeWindowRequest.asObservable();
+  authStatusUpdated$ = this.authStatusUpdated.asObservable();
 
   constructor() {
     chrome.runtime.onMessage.addListener((message: MessageData<any>, sender, sendResponse) => {
@@ -75,6 +77,8 @@ export class MessageReceiverService {
         return this.driveLoginStatusUpdated;
       case MessagePassingService.LOAD_DRIVE_FILE_DATA_REQUEST:
         return this.onLoadDriveFileDataRequest;
+      case MessagePassingService.AUTH_STATUS_MESSAGE:
+        return this.authStatusUpdated;
     }
   }
 }

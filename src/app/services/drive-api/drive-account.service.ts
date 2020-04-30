@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {createDefaultDriveLoginStatus, DriveLoginStatus} from '../../types/drive-login-status';
+import {DriveLoginStatus} from '../../types/drive-login-status';
 import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
-import {OAuth2Service} from './o-auth-2.service';
 import {GoogleApiService} from './google-api.service';
 import {DriveStorageService} from './drive-storage.service';
 import {ChromePermissionsService} from '../chrome-permissions.service';
@@ -10,6 +9,7 @@ import {distinctUntilChanged, map, take} from 'rxjs/operators';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {PreferencesService} from '../preferences.service';
 import {getSyncStatus, SyncStatus} from '../../types/sync-status';
+import {OAuth2Service} from './o-auth-2.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,40 +26,30 @@ export class DriveAccountService {
               private messageReceiverService: MessageReceiverService,
               private preferencesService: PreferencesService) {
     this.driveStorageService.getLoginStatus().then(loginStatus => {
-      this.setLoginStatus(loginStatus);
+      this.hydrateLoginStatus(loginStatus);
     });
     this.messageReceiverService.driveLoginStatusUpdated$.subscribe(loginStatus => {
-      this.setLoginStatus(loginStatus);
+      this.hydrateLoginStatus(loginStatus);
     });
   }
 
-  private setLoginStatus(loginStatus: DriveLoginStatus) {
+  private hydrateLoginStatus(loginStatus: DriveLoginStatus) {
     console.log(getCurrentTimeStringWithMillis(), '- refreshing drive login status');
     this.loginStatus.next(loginStatus);
   }
 
   getLoginStatus(): Promise<DriveLoginStatus> {
-    return Promise.all([
-      this.loginStatus$.pipe(take(1)).toPromise(),
-      this.oAuth2Service.hasValidAuthToken()
-    ]).then(([loginStatus, hasValidAuthToken]) => {
-      // todo: update loginStatus if it changed
-      loginStatus.isLoggedIn = hasValidAuthToken;
-      return loginStatus;
-    });
-  }
-
-  performInteractiveLogin(): Promise<string> {
-    return this.oAuth2Service.getAuthToken({interactive: true});
+    return this.loginStatus$.pipe(take(1)).toPromise();
   }
 
   getSyncStatus$(): Observable<SyncStatus> {
     return combineLatest(
       this.loginStatus$,
-      this.preferencesService.preferences$
+      this.preferencesService.preferences$,
+      this.oAuth2Service.authStatus$,
     ).pipe(
-      map(([loginStatus, preferences]) => {
-        return getSyncStatus(loginStatus, preferences);
+      map(([loginStatus, preferences, authStatus]) => {
+        return getSyncStatus(loginStatus, preferences, authStatus);
       }),
       distinctUntilChanged()
     );
@@ -68,7 +58,6 @@ export class DriveAccountService {
   enableSync(): Promise<void> {
     return this.googleApiService.requestUserAccountInformation().then(accountInfo => {
       return this.updateLoginStatus({
-        isLoggedIn: true,
         syncInProgress: false,
         userAccountInfo: accountInfo.user
       });

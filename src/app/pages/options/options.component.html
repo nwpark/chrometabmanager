@@ -75,7 +75,7 @@
             </button>
           </div>
         </mat-list-item>
-        <mat-list-item *ngIf="preferences?.syncSavedWindows && driveLoginStatus?.isLoggedIn">
+        <mat-list-item *ngIf="preferences?.syncSavedWindows && authStatus">
           <div style="width: 100%">
             <div style="float: left">
               <img
@@ -103,7 +103,7 @@
             </button>
           </div>
         </mat-list-item>
-        <mat-list-item *ngIf="preferences?.syncSavedWindows && !driveLoginStatus?.isLoggedIn">
+        <mat-list-item *ngIf="preferences?.syncSavedWindows && !authStatus">
           <div style="width: 100%">
             <div style="float: left">
               <mat-icon class="icon-35">

@@ -23,6 +23,7 @@ export class MessagePassingService {
   static readonly DEVICE_ID_REQUEST = 'deviceIdRequest_7f5604d5';
   static readonly UPDATE_DRIVE_SAVED_SESSIONS_REQUEST = 'updateDriveSavedSessionsRequest_46c18270';
   static readonly LOAD_DRIVE_FILE_DATA_REQUEST = 'loadDriveFileDataRequest_31e2491f';
+  static readonly AUTH_STATUS_MESSAGE = 'authStatus_41f2fc2d';
   static readonly MESSAGE_DEBOUNCE_TIME = 400;
 
   private preferencesMessageSender = new SimpleMessageSender<Preferences>(MessagePassingService.PREFERENCES_UPDATED);
@@ -36,6 +37,7 @@ export class MessagePassingService {
   private updateDriveSavedSessionsRequestSender = new RespondableMessageSender<SessionListState, any>(MessagePassingService.UPDATE_DRIVE_SAVED_SESSIONS_REQUEST);
   private loadDriveFileDataRequestSender = new RespondableMessageSender<void, SessionListState>(MessagePassingService.LOAD_DRIVE_FILE_DATA_REQUEST);
   private insertChromeWindowRequestSender = new SimpleMessageSender<InsertWindowMessageData>(MessagePassingService.INSERT_WINDOW_REQUEST);
+  private authStatusMessageSender = new SimpleMessageSender<boolean>(MessagePassingService.AUTH_STATUS_MESSAGE);
 
   constructor() {}
 
@@ -67,6 +69,10 @@ export class MessagePassingService {
 
   broadcastDriveLoginStatus(driveLoginStatus: DriveLoginStatus) {
     this.driveLoginStatusSender.broadcast(driveLoginStatus);
+  }
+
+  broadcastAuthStatus(authenticationStatus: boolean) {
+    this.authStatusMessageSender.broadcast(authenticationStatus);
   }
 
   requestInsertChromeWindow(sessionState: SessionState, index: number) {
