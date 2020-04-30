@@ -141,7 +141,7 @@ export class SessionListState {
   }
 
   addAll(other: SessionListState) {
-    this.removeAll(other);
+    other.removeAll(this);
     this.sessionStates.push(...other);
   }
 
