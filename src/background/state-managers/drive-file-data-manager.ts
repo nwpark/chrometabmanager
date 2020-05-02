@@ -2,22 +2,27 @@ import {SessionListState} from '../../app/types/session/session-list-state';
 import {MessageReceiverService} from '../../app/services/messaging/message-receiver.service';
 import {GoogleApiService} from '../../app/services/drive-api/google-api.service';
 import {DriveAccountService} from '../../app/services/drive-api/drive-account.service';
-import {fetchesSynchronizedData} from '../../app/decorators/fetches-synchronized-data';
-import {patchesSynchronizedData} from '../../app/decorators/patches-synchronized-data';
 import {SyncStorageService} from '../../app/services/storage/sync-storage.service';
 import {OAuth2Service} from '../../app/services/drive-api/o-auth-2.service';
+import {DriveFileContentRequestHandler} from './drive-file-data-manager/drive-file-content-request-handler';
+import {DriveFilePatchRequestHandler} from './drive-file-data-manager/drive-file-patch-request-handler';
+import {FileMutex} from '../types/file-mutex';
 
 export class DriveFileDataManager {
 
   private readonly SAVED_SESSIONS_FILE_NAME = 'saved-session-list-state-d9cb74be.json';
 
-  private requestsInFlight = 0;
+  private readonly filePatchRequestHandler: DriveFilePatchRequestHandler;
+  private readonly fileContentRequestHandler: DriveFileContentRequestHandler;
 
   constructor(private googleApiService: GoogleApiService,
               private oAuth2Service: OAuth2Service,
               private driveAccountService: DriveAccountService,
               private messageReceiverService: MessageReceiverService,
               private syncStorageService: SyncStorageService) {
+    const fileMutex = new FileMutex();
+    this.filePatchRequestHandler = new DriveFilePatchRequestHandler(googleApiService, syncStorageService, fileMutex);
+    this.fileContentRequestHandler = new DriveFileContentRequestHandler(googleApiService, driveAccountService, this.filePatchRequestHandler, fileMutex);
     this.loadFileData();
     this.messageReceiverService.onLoadDriveFileDataRequest$.subscribe(request => {
       request.sendResponse(this.loadFileData());
@@ -27,17 +32,15 @@ export class DriveFileDataManager {
     });
   }
 
-  @fetchesSynchronizedData()
   private loadFileData(): Promise<SessionListState> {
     return this.requestSavedSessionsFileId().then(fileId => {
-      return this.googleApiService.requestJSONFileContent(fileId);
+      return this.fileContentRequestHandler.request(fileId);
     });
   }
 
-  @patchesSynchronizedData()
   private patchSessionListStateFile(sessionListState: SessionListState): Promise<any> {
     return this.requestSavedSessionsFileId().then(fileId => {
-      return this.googleApiService.patchJSONFileContent(fileId, sessionListState);
+      return this.filePatchRequestHandler.patch(fileId, sessionListState);
     });
   }
 
