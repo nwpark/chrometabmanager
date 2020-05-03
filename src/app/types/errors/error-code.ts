@@ -38,7 +38,7 @@ const errorCodeDetailsMap: ErrorCodeDetailsMap = {
     shouldDisplayDialog: true
   },
   [ErrorCode.AttemptedPatchDuringSync]: {
-    userFriendlyMessage: `Attempted to upload data to the server while synchronization was in progress.\n\nPlease try again in 30 seconds.`,
+    userFriendlyMessage: `Attempted to upload data to the server while synchronization was in progress.\n\nPlease wait a moment then try again.`,
     shouldDisplayDialog: true
   },
   [ErrorCode.RequestUserAccountInfoError]: {
