@@ -4,6 +4,7 @@ import {SyncStorageService} from '../../../app/services/storage/sync-storage.ser
 import {ErrorCode} from '../../../app/types/errors/error-code';
 import {FileMutex} from '../../types/file-mutex';
 import {FutureTask} from '../../types/future-task';
+import {runtimeError} from '../../../app/types/errors/runtime-error';
 
 export class DriveFilePatchRequestHandler {
   private requestQueue: FutureTask<any>[] = [];
@@ -15,7 +16,7 @@ export class DriveFilePatchRequestHandler {
 
   patch(fileId: string, sessionListState: SessionListState): Promise<any> {
     if (this.fileMutex.isReadLocked()) {
-      return Promise.reject(ErrorCode.AttemptedPatchDuringSync);
+      return Promise.reject(runtimeError(ErrorCode.AttemptedPatchDuringSync));
     }
     this.latestValue = sessionListState;
     const patchRequestTask = this.createPatchRequestTask(fileId, sessionListState);

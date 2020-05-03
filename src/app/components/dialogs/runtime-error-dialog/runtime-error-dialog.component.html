@@ -1,27 +1,23 @@
 <div style="width: 380px">
   <div mat-dialog-title>
     <mat-icon class="dialog-title-icon">error_outline</mat-icon>
-    An error occurred..
+    <span *ngIf="errorDetails.title">{{errorDetails.title}}</span>
+    <span *ngIf="!errorDetails.title">An error occurred..</span>
   </div>
   <div mat-dialog-content>
     <p style="white-space: pre-line">
-      {{data.errorMessage}}
+      {{errorDetails.userFriendlyMessage}}
     </p>
-    <button
-      *ngIf="preferences?.enableDebugging && !showErrorDetails"
-      mat-button
-      color="accent"
-      (click)="enableShowErrorDetails()">
-      Show error details
-    </button>
-    <p
-      *ngIf="showErrorDetails"
-      style="white-space: pre-line; word-wrap: break-word">
-      {{runtimeErrorString}}
-    </p>
+    <div *ngIf="preferences?.enableDebugging">
+      <mat-divider></mat-divider>
+      <p style="white-space: pre-line; word-wrap: break-word">
+        {{debugInfo}}
+      </p>
+    </div>
   </div>
   <div mat-dialog-actions>
     <button
+      *ngIf="errorDetails.shouldSendErrorReport"
       mat-stroked-button
       cdkFocusInitial
       matTooltip="Error reports do not include any of your personal browsing data. You will be able to review exactly what information is being sent before submitting."
@@ -31,10 +27,18 @@
       Send error report
     </button>
     <button
+      *ngIf="errorDetails.requiresReload"
       mat-stroked-button
       color="primary"
       (click)="reloadPage()">
       Reload page
+    </button>
+    <button
+      *ngIf="!errorDetails.requiresReload"
+      mat-stroked-button
+      mat-dialog-close
+      color="primary">
+      Close
     </button>
   </div>
 </div>

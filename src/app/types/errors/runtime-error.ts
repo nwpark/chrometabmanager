@@ -9,6 +9,10 @@ export interface RuntimeError {
   readonly type?: ErrorType;
 }
 
+export function runtimeError(errorCode: ErrorCode): RuntimeError {
+  return {errorCode};
+}
+
 export function runtimeErrorFromXHR(errorCode: ErrorCode, httpRequest: HttpRequest): RuntimeError {
   return {
     errorCode,

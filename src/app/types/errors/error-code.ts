@@ -27,39 +27,56 @@ const errorCodeDetailsMap: ErrorCodeDetailsMap = {
   },
   [ErrorCode.HttpRequestTimeout]: {
     userFriendlyMessage: `The server took too long to respond.\n\nPlease try again in 30 seconds.`,
-    shouldDisplayDialog: true
+    shouldDisplayDialog: true,
+    shouldSendErrorReport: true,
+    requiresReload: true
   },
   [ErrorCode.HttpRequestError]: {
     userFriendlyMessage: `An error occurred while communicating with the server.\n\nPlease try again in 30 seconds.`,
-    shouldDisplayDialog: true
+    shouldDisplayDialog: true,
+    shouldSendErrorReport: true,
+    requiresReload: true
   },
   [ErrorCode.HttpRequestUnknownError]: {
     userFriendlyMessage: `An error occurred while communicating with the server.\n\nPlease try again in 30 seconds.`,
-    shouldDisplayDialog: true
+    shouldDisplayDialog: true,
+    shouldSendErrorReport: true,
+    requiresReload: true
   },
   [ErrorCode.AttemptedPatchDuringSync]: {
-    userFriendlyMessage: `Attempted to upload data to the server while synchronization was in progress.\n\nPlease wait a moment then try again.`,
+    title: 'Oops..',
+    userFriendlyMessage: `You attempted to modify your saved tabs while synchronization was in progress.\n\nPlease wait a moment then try again :)`,
     shouldDisplayDialog: true
   },
   [ErrorCode.RequestUserAccountInfoError]: {
     userFriendlyMessage: `An error occurred while fetching your account information from the server.\n\nPlease try again in 30 seconds.`,
-    shouldDisplayDialog: true
+    shouldDisplayDialog: true,
+    shouldSendErrorReport: true,
+    requiresReload: true
   },
   [ErrorCode.SearchAppDataFilesError]: {
     userFriendlyMessage: `An error occurred while fetching your saved tabs from the server.\n\nPlease try again in 30 seconds.`,
-    shouldDisplayDialog: true
+    shouldDisplayDialog: true,
+    shouldSendErrorReport: true,
+    requiresReload: true
   },
   [ErrorCode.RequestJSONFileContentError]: {
     userFriendlyMessage: `An error occurred while fetching your saved tabs from the server.\n\nPlease try again in 30 seconds.`,
-    shouldDisplayDialog: true
+    shouldDisplayDialog: true,
+    shouldSendErrorReport: true,
+    requiresReload: true
   },
   [ErrorCode.PatchJSONFileContentError]: {
     userFriendlyMessage: `An error occurred while uploading your saved tabs to the server.\n\nPlease try again in 30 seconds.`,
-    shouldDisplayDialog: true
+    shouldDisplayDialog: true,
+    shouldSendErrorReport: true,
+    requiresReload: true
   },
   [ErrorCode.PostJSONFileContentError]: {
     userFriendlyMessage: `An error occurred while uploading your saved tabs to the server.\n\nPlease try again in 30 seconds.`,
-    shouldDisplayDialog: true
+    shouldDisplayDialog: true,
+    shouldSendErrorReport: true,
+    requiresReload: true
   },
   [ErrorCode.MessageResponseError]: {
     shouldDisplayDialog: false
@@ -70,7 +87,10 @@ type ErrorCodeDetailsMap = {
   [errorCode in ErrorCode]: ErrorDetails;
 };
 
-interface ErrorDetails {
+export interface ErrorDetails {
+  title?: string;
   userFriendlyMessage?: string;
+  requiresReload?: boolean;
+  shouldSendErrorReport?: boolean;
   shouldDisplayDialog: boolean;
 }
