@@ -17,13 +17,6 @@ import {SyncStorageService} from '../app/services/storage/sync-storage.service';
 import {PreferencesService} from '../app/services/preferences.service';
 import {IdentityStateManager} from './state-managers/identity-state-manager';
 
-const head = document.getElementsByTagName('head')[0];
-const script = document.createElement('script');
-script.type = 'text/javascript';
-// script.src = 'https://apis.google.com/js/client.js';
-script.src = 'https://apis.google.com/js/api.js';
-head.appendChild(script);
-
 addOnInstalledListener();
 
 const chromeWindowUpdateEvents = [
