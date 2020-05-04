@@ -22,8 +22,11 @@
       </button>
     </ng-container>
   </div>
-  <mat-icon [ngClass]="{'sync-status-icon': true, 'spin': syncInProgress}">
-    {{syncStatusIcon}}
+  <mat-icon
+    [ngClass]="{'sync-status-icon': true, 'spin': syncInProgress}"
+    [matTooltip]="syncStatusDetails?.matIconTooltip"
+    matTooltipClass="tooltip-reduced-margin">
+    {{syncStatusDetails?.matIcon}}
   </mat-icon>
   <div class="column-title-text" style="float: left">
     Saved
@@ -32,12 +35,12 @@
 </div>
 
 <app-session-list
-  *ngIf="!notSignedIn"
+  *ngIf="!signInRequired"
   [props]="props"
   [sessionListState]="sessionListState">
 </app-session-list>
 
-<div *ngIf="notSignedIn">
+<div *ngIf="signInRequired">
   <div class="chrome-window-header">
     <div class="chrome-window-title" style="text-align: center">
       <div>Sign in required</div>

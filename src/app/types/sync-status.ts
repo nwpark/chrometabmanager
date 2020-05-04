@@ -5,33 +5,30 @@ export enum SyncStatus {
   Enabled,
   SyncInProgress,
   Disabled,
-  NotSignedIn
+  SignInRequired
 }
 
-const syncStatusMetaInfoMap = {
+const syncStatusMetaInfoMap: SyncStatusDetailsMap = {
   [SyncStatus.Enabled]: {
     shouldUseSyncStorage: true,
-    syncStatusIcon: 'sync'
+    matIcon: 'sync',
+    matIconTooltip: 'Sync is enabled'
   },
   [SyncStatus.SyncInProgress]: {
     shouldUseSyncStorage: true,
-    syncStatusIcon: 'sync'
+    matIcon: 'sync',
+    matIconTooltip: 'Sync in progress'
   },
   [SyncStatus.Disabled]: {
     shouldUseSyncStorage: false,
-    syncStatusIcon: 'sync_disabled'
+    matIcon: 'sync_disabled',
+    matIconTooltip: 'Sync is not enabled'
   },
-  [SyncStatus.NotSignedIn]: {
+  [SyncStatus.SignInRequired]: {
     shouldUseSyncStorage: false,
-    syncStatusIcon: 'sync_problem'
+    matIcon: 'sync_problem',
+    matIconTooltip: 'Sign in required'
   },
-};
-
-type SyncStatusMetaInfoMap = {
-  [syncStatus in SyncStatus]: {
-    shouldUseSyncStorage: boolean;
-    syncStatusMatIcon: string;
-  }
 };
 
 export function getSyncStatus(driveLoginStatus: DriveLoginStatus, preferences: Preferences, authStatus: boolean): SyncStatus {
@@ -39,7 +36,7 @@ export function getSyncStatus(driveLoginStatus: DriveLoginStatus, preferences: P
     return SyncStatus.Disabled;
   }
   if (!authStatus) {
-    return SyncStatus.NotSignedIn;
+    return SyncStatus.SignInRequired;
   }
   if (driveLoginStatus.syncInProgress) {
     return SyncStatus.SyncInProgress;
@@ -47,6 +44,16 @@ export function getSyncStatus(driveLoginStatus: DriveLoginStatus, preferences: P
   return SyncStatus.Enabled;
 }
 
-export function getSyncStatusMetaInfo(syncStatus: SyncStatus) {
+export function getSyncStatusDetails(syncStatus: SyncStatus) {
   return syncStatusMetaInfoMap[syncStatus];
+}
+
+type SyncStatusDetailsMap = {
+  [syncStatus in SyncStatus]: SyncStatusDetails
+};
+
+export interface SyncStatusDetails {
+  shouldUseSyncStorage: boolean;
+  matIcon: string;
+  matIconTooltip: string;
 }

@@ -11,7 +11,7 @@ import {ListActionButtonFactory} from '../../../utils/action-bar/list-action-but
 import {takeUntil} from 'rxjs/operators';
 import {SessionListComponent} from '../session-list/session-list.component';
 import {DriveAccountService} from '../../../services/drive-api/drive-account.service';
-import {getSyncStatusMetaInfo, SyncStatus} from '../../../types/sync-status';
+import {getSyncStatusDetails, SyncStatus, SyncStatusDetails} from '../../../types/sync-status';
 import {MatDialog} from '@angular/material';
 import {DriveLoginDialogComponent} from '../../dialogs/drive-login-dialog/drive-login-dialog.component';
 
@@ -30,9 +30,9 @@ export class SavedSessionsListComponent implements OnDestroy, OnInit {
 
   actionButtons: ListActionButton[];
   preferences: Preferences;
-  syncStatusIcon: string;
+  syncStatusDetails: SyncStatusDetails;
   syncInProgress: boolean;
-  notSignedIn: boolean;
+  signInRequired: boolean;
 
   constructor(private dragDropService: DragDropService,
               private preferencesService: PreferencesService,
@@ -61,9 +61,9 @@ export class SavedSessionsListComponent implements OnDestroy, OnInit {
   }
 
   private setSyncStatus(syncStatus: SyncStatus) {
-    this.syncStatusIcon = getSyncStatusMetaInfo(syncStatus).syncStatusIcon;
+    this.syncStatusDetails = getSyncStatusDetails(syncStatus);
     this.syncInProgress = (syncStatus === SyncStatus.SyncInProgress);
-    this.notSignedIn = (syncStatus === SyncStatus.NotSignedIn);
+    this.signInRequired = (syncStatus === SyncStatus.SignInRequired);
   }
 
   enableSync() {

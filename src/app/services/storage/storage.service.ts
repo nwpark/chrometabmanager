@@ -8,7 +8,7 @@ import {distinctUntilChanged, map, switchMap, take} from 'rxjs/operators';
 import {DriveStorageService} from '../drive-api/drive-storage.service';
 import {DriveAccountService} from '../drive-api/drive-account.service';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
-import {getSyncStatusMetaInfo} from '../../types/sync-status';
+import {getSyncStatusDetails} from '../../types/sync-status';
 
 @Injectable({
   providedIn: 'root'
@@ -52,7 +52,7 @@ export class StorageService {
   private shouldUseSyncStorage$(): Observable<boolean> {
     return this.driveAccountService.getSyncStatus$().pipe(
       map(syncStatus => {
-        return getSyncStatusMetaInfo(syncStatus).shouldUseSyncStorage;
+        return getSyncStatusDetails(syncStatus).shouldUseSyncStorage;
       }),
       distinctUntilChanged()
     );
