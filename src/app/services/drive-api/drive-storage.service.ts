@@ -8,6 +8,7 @@ import {validateSessionListLayoutState} from '../../types/session/session-list-l
 import {UndefinedObjectError} from '../../types/errors/UndefinedObjectError';
 import {Observable} from 'rxjs';
 import {last} from 'rxjs/operators';
+import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -71,8 +72,7 @@ export class DriveStorageService {
   setSavedWindowsState(sessionListState: SessionListState): Promise<void> {
     return this.writeSavedWindowsStateToCache(sessionListState).then(() => {
       return this.messagePassingService.requestUpdateDriveSavedSessions(sessionListState).then(res => {
-        // todo: remove
-        console.log(res);
+        console.log(getCurrentTimeStringWithMillis(), '- received response from patch request:', res);
       });
     });
   }

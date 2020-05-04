@@ -10,6 +10,7 @@ export enum ErrorCode {
   PatchJSONFileContentError = 'PatchJSONFileContentError_4e745e7e',
   PostJSONFileContentError = 'PostJSONFileContentError_46ce96a2',
   MessageResponseError = 'MessageResponseError_b3ca2a0d',
+  RequestIsObsolete = 'RequestIsObsolete_d30dc5b9'
 }
 
 export enum ErrorType {
@@ -78,9 +79,8 @@ const errorCodeDetailsMap: ErrorCodeDetailsMap = {
     shouldSendErrorReport: true,
     requiresReload: true
   },
-  [ErrorCode.MessageResponseError]: {
-    shouldDisplayDialog: false
-  }
+  [ErrorCode.MessageResponseError]: { shouldDisplayDialog: false },
+  [ErrorCode.RequestIsObsolete]: { shouldDisplayDialog: false }
 };
 
 type ErrorCodeDetailsMap = {

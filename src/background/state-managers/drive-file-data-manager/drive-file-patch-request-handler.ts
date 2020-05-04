@@ -4,7 +4,7 @@ import {SyncStorageService} from '../../../app/services/storage/sync-storage.ser
 import {ErrorCode} from '../../../app/types/errors/error-code';
 import {FileMutex} from '../../types/file-mutex';
 import {FutureTask} from '../../types/future-task';
-import {runtimeError} from '../../../app/types/errors/runtime-error';
+import {isRuntimeError, runtimeError} from '../../../app/types/errors/runtime-error';
 
 export class DriveFilePatchRequestHandler {
   private requestQueue: FutureTask<any>[] = [];
@@ -21,7 +21,13 @@ export class DriveFilePatchRequestHandler {
     this.latestValue = sessionListState;
     const patchRequestTask = this.createPatchRequestTask(fileId, sessionListState);
     this.enqueuePatchRequest(patchRequestTask);
-    return patchRequestTask.toPromise();
+    return patchRequestTask.toPromise().catch(error => {
+      if (isRuntimeError(error) && error.errorCode === ErrorCode.RequestIsObsolete) {
+        return Promise.resolve('Request was skipped.');
+      } else {
+        return Promise.reject(error);
+      }
+    });
   }
 
   private createPatchRequestTask(fileId: string, sessionListState: SessionListState): FutureTask<any> {
@@ -40,7 +46,7 @@ export class DriveFilePatchRequestHandler {
   private processQueuedRequests() {
     this.fileMutex.runExclusiveWrite(() => {
       while (this.requestQueue.length > 1) {
-        this.requestQueue.shift().cancel('Request is obsolete.');
+        this.requestQueue.shift().cancel(ErrorCode.RequestIsObsolete);
       }
       if (this.requestQueue.length !== 0) {
         return this.requestQueue.shift().run();
