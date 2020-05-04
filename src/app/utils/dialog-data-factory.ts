@@ -20,7 +20,7 @@ export class DialogDataFactory {
     return {
       width: 550,
       title: `Welcome to Version ${version}-alpha!`,
-      titleIcon: 'info',
+      titleIcon: 'info_outlined',
       contentHTML: getFormattedVersionHistoryHTML(),
       actions: [
         {buttonText: 'Got it!', callback, closeDialog: true}

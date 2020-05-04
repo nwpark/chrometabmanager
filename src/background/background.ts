@@ -5,8 +5,7 @@ import {MessageReceiverService} from '../app/services/messaging/message-receiver
 import {LocalStorageService} from '../app/services/storage/local-storage.service';
 import {MessagePassingService} from '../app/services/messaging/message-passing.service';
 import {WebpageTitleCacheService} from '../app/services/webpage-title-cache.service';
-import {releasedVersions, versionUpdateScripts} from '../versioning/released-versions';
-import {InstallationScript} from '../versioning/installation-scripts';
+import {getInstallationScripts, InstallationScript} from '../versioning/released-versions';
 import {DriveFileDataManager} from './state-managers/drive-file-data-manager';
 import {OAuth2Service} from '../app/services/drive-api/o-auth-2.service';
 import {GoogleApiService} from '../app/services/drive-api/google-api.service';
@@ -88,9 +87,7 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
 function addOnInstalledListener() {
   chrome.runtime.onInstalled.addListener(details => {
     if (details.reason === 'update' && details.previousVersion !== chrome.runtime.getManifest().version) {
-      const previousVersionIndex = releasedVersions.indexOf(details.previousVersion);
-      const versionsToInstall = releasedVersions.slice(previousVersionIndex + 1);
-      const installationScripts = versionsToInstall.map(versionNumber => versionUpdateScripts[versionNumber]);
+      const installationScripts = getInstallationScripts(details.previousVersion);
       installUpdates(installationScripts).then(() => {
         chrome.runtime.reload();
       });
@@ -98,7 +95,7 @@ function addOnInstalledListener() {
   });
 }
 
-function installUpdates(installationScripts: InstallationScript[]) {
+function installUpdates(installationScripts: InstallationScript[]): Promise<void> {
   return installationScripts.reduce((installComplete$, nextScript) => {
     return installComplete$.then(nextScript);
   }, Promise.resolve());
