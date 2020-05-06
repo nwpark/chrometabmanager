@@ -6,8 +6,6 @@ import {StorageKeys} from '../storage/storage-keys';
 import {validateSessionMap} from '../../types/session/session-map';
 import {validateSessionListLayoutState} from '../../types/session/session-list-layout-state';
 import {UndefinedObjectError} from '../../types/errors/UndefinedObjectError';
-import {Observable} from 'rxjs';
-import {last} from 'rxjs/operators';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 
 @Injectable({
@@ -33,39 +31,9 @@ export class DriveStorageService {
     });
   }
 
-  getSavedWindowsStateSkipCache(): Promise<SessionListState> {
-    return this.getSavedWindowsState()
-      .pipe(last<SessionListState>())
-      .toPromise();
-  }
-
-  getSavedWindowsState(): Observable<SessionListState> {
-    return new Observable<SessionListState>(observer => {
-      this.readSavedWindowsStateFromCache().then(cachedSessionListState => {
-        observer.next(cachedSessionListState);
-        // Writes will be blocked until this resolves
-        return this.checkForSessionListStateCacheMiss(cachedSessionListState).then(cacheAccessStatus => {
-          if (cacheAccessStatus.cacheMissOccurred) {
-            observer.next(cacheAccessStatus.data);
-          }
-        });
-      }).catch(error => {
-        observer.error(error);
-      }).finally(() => {
-        observer.complete();
-      });
-    });
-  }
-
-  private checkForSessionListStateCacheMiss(cachedSessionListState: SessionListState): Promise<CacheAccessStatus<SessionListState>> {
+  getSavedWindowsStateFromDrive(): Promise<SessionListState> {
     return this.messagePassingService.requestLoadDriveFileData().then(sessionListState => {
-      if (cachedSessionListState.equals(sessionListState)) {
-        return {cacheMissOccurred: false, data: cachedSessionListState};
-      } else {
-        return this.writeSavedWindowsStateToCache(sessionListState).then(() => {
-          return {cacheMissOccurred: true, data: sessionListState};
-        });
-      }
+      return this.writeSavedWindowsStateToCache(sessionListState);
     });
   }
 
@@ -77,18 +45,14 @@ export class DriveStorageService {
     });
   }
 
-  clearCacheData(): Promise<void> {
-    return this.writeSavedWindowsStateToCache(SessionListState.empty());
-  }
-
-  private writeSavedWindowsStateToCache(sessionListState: SessionListState): Promise<void> {
-    return new Promise<void>(resolve => {
+  private writeSavedWindowsStateToCache(sessionListState: SessionListState): Promise<SessionListState> {
+    return new Promise<SessionListState>(resolve => {
       chrome.storage.local.set({
         [StorageKeys.DriveCacheSavedWindows]: sessionListState.getSessionMap(),
         [StorageKeys.DriveCacheSavedWindowsLayoutState]: sessionListState.getLayoutState()
       }, () => {
         this.messagePassingService.broadcastSavedSessionsSync(sessionListState);
-        resolve();
+        resolve(sessionListState);
       });
     });
   }
@@ -103,7 +67,7 @@ export class DriveStorageService {
     });
   }
 
-  private readSavedWindowsStateFromCache(): Promise<SessionListState> {
+  readSavedWindowsStateFromCache(): Promise<SessionListState> {
     return new Promise<SessionListState>((resolve, reject) => {
       chrome.storage.local.get([
         StorageKeys.DriveCacheSavedWindows,
@@ -125,9 +89,4 @@ export class DriveStorageService {
       });
     });
   }
-}
-
-interface CacheAccessStatus<T> {
-  cacheMissOccurred: boolean;
-  data: T;
 }

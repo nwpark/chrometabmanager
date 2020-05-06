@@ -35,7 +35,9 @@ export class SavedTabsService implements TabsService {
     this.sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
     this.sessionListState = this.sessionStateUpdated.getValue();
     this.storageService.savedSessionListState$().subscribe(sessionListState => {
-      ngZone.run(() => this.setSessionListState(sessionListState));
+      if (!sessionListState.equals(this.sessionListState)) {
+        ngZone.run(() => this.setSessionListState(sessionListState));
+      }
     });
   }
 

@@ -15,7 +15,6 @@ import {getSyncStatusDetails} from '../../types/sync-status';
 })
 export class StorageService {
 
-  private storageSubjectsInitialized = false;
   private savedSessionStateSync = new ReplaySubject<SessionListState>(1);
   private savedSessionStateLocal = new ReplaySubject<SessionListState>(1);
 
@@ -23,7 +22,23 @@ export class StorageService {
               private localStorageService: LocalStorageService,
               private driveStorageService: DriveStorageService,
               private driveAccountService: DriveAccountService,
-              private messageReceiverService: MessageReceiverService) { }
+              private messageReceiverService: MessageReceiverService) {
+    merge(this.driveStorageService.readSavedWindowsStateFromCache(),
+        this.messageReceiverService.savedSessionStateSyncUpdated$).subscribe(sessionListState => {
+      this.savedSessionStateSync.next(sessionListState);
+    });
+    merge(this.localStorageService.getSavedWindowsState(),
+        this.messageReceiverService.savedSessionStateUpdated$).subscribe(sessionListState => {
+      this.savedSessionStateLocal.next(sessionListState);
+    });
+    this.shouldUseSyncStorage().then(shouldUseSyncStorage => {
+      if (shouldUseSyncStorage) {
+        this.driveStorageService.getSavedWindowsStateFromDrive().then(sessionListState => {
+          this.savedSessionStateSync.next(sessionListState);
+        });
+      }
+    });
+  }
 
   setSavedWindowsState(sessionListState: SessionListState): Promise<void> {
     return this.shouldUseSyncStorage().then(shouldUseSyncStorage => {
@@ -33,7 +48,6 @@ export class StorageService {
     });
   }
 
-  @requiresSubjectInitialization()
   savedSessionListState$(): Observable<SessionListState> {
     return this.shouldUseSyncStorage$().pipe(
       switchMap(shouldUseSyncStorage => {
@@ -58,19 +72,9 @@ export class StorageService {
     );
   }
 
-  @requiresSubjectInitialization()
-  reloadSavedSessionState() {
-    this.driveStorageService.getSavedWindowsState().subscribe(sessionListState => {
-      this.savedSessionStateSync.next(sessionListState);
-    });
-    this.localStorageService.getSavedWindowsState().then(sessionListState => {
-      this.savedSessionStateLocal.next(sessionListState);
-    });
-  }
-
   copySavedSessions(storageCopyDirection: StorageCopyDirection): Promise<void> {
     return Promise.all([
-      this.driveStorageService.getSavedWindowsStateSkipCache(),
+      this.driveStorageService.getSavedWindowsStateFromDrive(),
       this.localStorageService.getSavedWindowsState()
     ]).then(res => {
       const [savedSessionStateSync, savedSessionStateLocal] = res;
@@ -83,42 +87,11 @@ export class StorageService {
     });
   }
 
-  private initStorageSubjects() {
-    merge(
-      this.driveStorageService.getSavedWindowsState(),
-      this.messageReceiverService.savedSessionStateSyncUpdated$
-    ).subscribe(sessionListState => {
-      this.savedSessionStateSync.next(sessionListState);
-    });
-    merge(
-      this.localStorageService.getSavedWindowsState(),
-      this.messageReceiverService.savedSessionStateUpdated$
-    ).subscribe(sessionListState => {
-      this.savedSessionStateLocal.next(sessionListState);
-    });
-    this.storageSubjectsInitialized = true;
-  }
-
   clearStorage() {
     chrome.storage.local.clear();
     chrome.storage.sync.clear();
     chrome.runtime.reload();
   }
-}
-
-function requiresSubjectInitialization(): MethodDecorator {
-  return (target: () => void, key: string, descriptor: any) => {
-    const originalMethod = descriptor.value;
-
-    descriptor.value =  function(...args: any[]) {
-      if (!this.storageSubjectsInitialized) {
-        this.initStorageSubjects();
-      }
-      return originalMethod.apply(this, args);
-    };
-
-    return descriptor;
-  };
 }
 
 export enum StorageCopyDirection {
