@@ -1,11 +1,13 @@
 import {Injectable} from '@angular/core';
 import {ChromeRuntimeErrorMessage} from '../../types/errors/chrome-runtime-error-message';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, noop} from 'rxjs';
 import {distinctUntilChanged, filter} from 'rxjs/operators';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {isNotNullOrUndefined} from 'codelyzer/util/isNotNullOrUndefined';
+import {isRuntimeError, runtimeError} from '../../types/errors/runtime-error';
+import {ErrorCode} from '../../types/errors/error-code';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +22,7 @@ export class OAuth2Service {
     this.messageReceiverService.authStatusUpdated$.subscribe(authStatus => {
       this.hydrateAuthStatus(authStatus);
     });
-    this.getTokenAndUpdateStatus();
+    this.getTokenAndUpdateStatus().catch(noop);
   }
 
   private hydrateAuthStatus(authenticationStatus: boolean) {
@@ -49,8 +51,9 @@ export class OAuth2Service {
   chromeSignInRequired(): Promise<boolean> {
     return this.getAuthTokenSilently().then(() => {
       return false;
-    }).catch(errorMessage => {
-      return errorMessage === ChromeRuntimeErrorMessage.UserNotSignedIn;
+    }).catch(error => {
+      return isRuntimeError(error)
+        && error.details === ChromeRuntimeErrorMessage.UserNotSignedIn;
     });
   }
 
@@ -66,9 +69,13 @@ export class OAuth2Service {
 
   private getAuthTokenSilently(details = {interactive: false}): Promise<string> {
     return new Promise<string>((resolve, reject) => {
+      if (!chrome.identity) {
+        reject(runtimeError(ErrorCode.AuthTokenNotGranted, 'Chrome identity permissions not granted.'));
+        return;
+      }
       chrome.identity.getAuthToken(details, token => {
         if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError.message);
+          reject(runtimeError(ErrorCode.AuthTokenNotGranted, chrome.runtime.lastError.message));
         } else {
           resolve(token);
         }

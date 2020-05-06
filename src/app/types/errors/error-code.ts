@@ -10,7 +10,8 @@ export enum ErrorCode {
   PatchJSONFileContentError = 'PatchJSONFileContentError_4e745e7e',
   PostJSONFileContentError = 'PostJSONFileContentError_46ce96a2',
   MessageResponseError = 'MessageResponseError_b3ca2a0d',
-  RequestIsObsolete = 'RequestIsObsolete_d30dc5b9'
+  RequestIsObsolete = 'RequestIsObsolete_d30dc5b9',
+  AuthTokenNotGranted = 'AuthTokenNotGranted_5af3e91a'
 }
 
 export enum ErrorType {
@@ -80,7 +81,12 @@ const errorCodeDetailsMap: ErrorCodeDetailsMap = {
     requiresReload: true
   },
   [ErrorCode.MessageResponseError]: { shouldDisplayDialog: false },
-  [ErrorCode.RequestIsObsolete]: { shouldDisplayDialog: false }
+  [ErrorCode.RequestIsObsolete]: { shouldDisplayDialog: false },
+  [ErrorCode.AuthTokenNotGranted]: {
+    userFriendlyMessage: `Authentication token could not be obtained.`,
+    shouldDisplayDialog: true,
+    shouldSendErrorReport: true
+  }
 };
 
 type ErrorCodeDetailsMap = {

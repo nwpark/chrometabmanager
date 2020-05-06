@@ -9,8 +9,8 @@ export interface RuntimeError {
   readonly type?: ErrorType;
 }
 
-export function runtimeError(errorCode: ErrorCode): RuntimeError {
-  return {errorCode};
+export function runtimeError(errorCode: ErrorCode, details?: string): RuntimeError {
+  return {errorCode, details};
 }
 
 export function runtimeErrorFromXHR(errorCode: ErrorCode, httpRequest: HttpRequest): RuntimeError {
@@ -43,19 +43,19 @@ export function mapToRuntimeError(errorCode: ErrorCode, details?: any): (error: 
   };
 }
 
-export function isRuntimeError(runtimeError: any): runtimeError is RuntimeError {
-  return !isNullOrUndefined(runtimeError)
-    && runtimeError.errorCode
-    && Object.values(ErrorCode).includes(runtimeError.errorCode);
+export function isRuntimeError(error: any): error is RuntimeError {
+  return !isNullOrUndefined(error)
+    && error.errorCode
+    && Object.values(ErrorCode).includes(error.errorCode);
 }
 
-export function causedByHttp401(runtimeError: RuntimeError): boolean {
-  if (!isRuntimeError(runtimeError)) {
+export function causedByHttp401(error: RuntimeError): boolean {
+  if (!isRuntimeError(error)) {
     return false;
   }
-  if (runtimeError.type === ErrorType.Http
-        && runtimeError.details.status === 401) {
+  if (error.type === ErrorType.Http
+        && error.details.status === 401) {
     return true;
   }
-  return causedByHttp401(runtimeError.cause);
+  return causedByHttp401(error.cause);
 }
