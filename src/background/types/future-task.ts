@@ -1,7 +1,7 @@
 import {Subject} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {ErrorCode} from '../../app/types/errors/error-code';
-import {runtimeError} from '../../app/types/errors/runtime-error';
+import {createRuntimeError} from '../../app/types/errors/runtime-error';
 
 export class FutureTask<T> {
   private result = new Subject<T>();
@@ -17,7 +17,7 @@ export class FutureTask<T> {
   }
 
   cancel(errorCode: ErrorCode) {
-    this.result.error(runtimeError(errorCode));
+    this.result.error(createRuntimeError(errorCode));
     this.result.complete();
   }
 

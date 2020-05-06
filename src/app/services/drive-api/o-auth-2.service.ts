@@ -6,7 +6,7 @@ import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {isNotNullOrUndefined} from 'codelyzer/util/isNotNullOrUndefined';
-import {isRuntimeError, runtimeError} from '../../types/errors/runtime-error';
+import {isRuntimeError, createRuntimeError} from '../../types/errors/runtime-error';
 import {ErrorCode} from '../../types/errors/error-code';
 
 @Injectable({
@@ -70,12 +70,12 @@ export class OAuth2Service {
   private getAuthTokenSilently(details = {interactive: false}): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       if (!chrome.identity) {
-        reject(runtimeError(ErrorCode.AuthTokenNotGranted, 'Chrome identity permissions not granted.'));
+        reject(createRuntimeError(ErrorCode.AuthTokenNotGranted, 'Chrome identity permissions not granted.'));
         return;
       }
       chrome.identity.getAuthToken(details, token => {
         if (chrome.runtime.lastError) {
-          reject(runtimeError(ErrorCode.AuthTokenNotGranted, chrome.runtime.lastError.message));
+          reject(createRuntimeError(ErrorCode.AuthTokenNotGranted, chrome.runtime.lastError.message));
         } else {
           resolve(token);
         }

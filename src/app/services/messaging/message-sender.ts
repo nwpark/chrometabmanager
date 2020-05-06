@@ -2,8 +2,7 @@ import {Subject} from 'rxjs';
 import {SessionListState} from '../../types/session/session-list-state';
 import {debounceTime} from 'rxjs/operators';
 import {MessageResponse} from './message-receiver';
-import {mapToRuntimeError} from '../../types/errors/runtime-error';
-import {ErrorCode} from '../../types/errors/error-code';
+import {addErrorTrace} from '../../types/errors/runtime-error';
 
 export class SimpleMessageSender<T> {
   constructor(private messageId: string) { }
@@ -19,8 +18,8 @@ export class RespondableMessageSender<T, R> {
 
   sendRequest(messageData: T): Promise<R> {
     const message: MessageData<T> = {messageId: this.messageId, data: messageData};
-    return sendRespondableMessage(message)
-      .catch(mapToRuntimeError(ErrorCode.MessageResponseError, this.messageId));
+    return sendRespondableMessage(message, this.messageId)
+      .catch(addErrorTrace(this.messageId));
   }
 }
 
@@ -41,10 +40,12 @@ export class DebouncedMessageSender {
   }
 }
 
-function sendRespondableMessage(message: MessageData<any>): Promise<any> {
+function sendRespondableMessage(message: MessageData<any>, messageId: string): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     chrome.runtime.sendMessage(message, (response: MessageResponse<any>) => {
-      if (response.errorReason) {
+      if (chrome.runtime.lastError) {
+        reject(`${messageId} ${chrome.runtime.lastError.message}`);
+      } else if (response.errorReason) {
         reject(response.errorReason);
       } else {
         resolve(response.responseData);

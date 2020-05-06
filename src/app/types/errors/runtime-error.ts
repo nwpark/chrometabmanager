@@ -7,9 +7,10 @@ export interface RuntimeError {
   readonly details?: any;
   readonly cause?: RuntimeError;
   readonly type?: ErrorType;
+  trace?: any[];
 }
 
-export function runtimeError(errorCode: ErrorCode, details?: string): RuntimeError {
+export function createRuntimeError(errorCode: ErrorCode, details?: string): RuntimeError {
   return {errorCode, details};
 }
 
@@ -27,20 +28,27 @@ export function runtimeErrorFromXHR(errorCode: ErrorCode, httpRequest: HttpReque
   };
 }
 
+export function addErrorTrace(trace: any): (error: any) => Promise<any> {
+  return (error: any) => {
+    const runtimeError: RuntimeError = convertToRuntimeError(error);
+    runtimeError.trace = runtimeError.trace || [];
+    runtimeError.trace.unshift(trace);
+    return Promise.reject(runtimeError);
+  };
+}
+
 export function mapToRuntimeError(errorCode: ErrorCode, details?: any): (error: any) => Promise<any> {
   return (error: any) => {
-    if (!isRuntimeError(error)) {
-      error = {
-        errorCode: ErrorCode.UnknownError,
-        details: error.toString()
-      };
-    }
-    return Promise.reject({
-      errorCode,
-      details,
-      cause: error
-    });
+    const runtimeError: RuntimeError = {errorCode, details, cause: convertToRuntimeError(error)};
+    return Promise.reject(runtimeError);
   };
+}
+
+function convertToRuntimeError(error: any): RuntimeError {
+  if (isRuntimeError(error)) {
+    return error;
+  }
+  return {errorCode: ErrorCode.UnknownError, details: error.toString()};
 }
 
 export function isRuntimeError(error: any): error is RuntimeError {
