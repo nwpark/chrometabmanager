@@ -23,7 +23,6 @@ export class DriveFileDataManager {
     const fileMutex = new FileMutex();
     this.filePatchRequestHandler = new DriveFilePatchRequestHandler(googleApiService, syncStorageService, fileMutex);
     this.fileContentRequestHandler = new DriveFileContentRequestHandler(googleApiService, driveAccountService, this.filePatchRequestHandler, fileMutex);
-    this.loadFileData();
     this.messageReceiverService.onLoadDriveFileDataRequest$.subscribe(request => {
       request.sendResponse(this.loadFileData());
     });
