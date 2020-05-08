@@ -22,12 +22,16 @@ export class OAuth2Service {
     this.messageReceiverService.authStatusUpdated$.subscribe(authStatus => {
       this.hydrateAuthStatus(authStatus);
     });
-    this.getTokenAndUpdateStatus().catch(noop);
+    this.refreshAuthStatus();
   }
 
   private hydrateAuthStatus(authenticationStatus: boolean) {
     console.log(getCurrentTimeStringWithMillis(), '- refreshing authentication status');
     this.authStatusSubject.next(authenticationStatus);
+  }
+
+  refreshAuthStatus(): Promise<any> {
+    return this.getTokenAndUpdateStatus().catch(noop);
   }
 
   getAuthToken(): Promise<string> {
@@ -62,8 +66,10 @@ export class OAuth2Service {
       return new Promise<void>(resolve => {
         chrome.identity.removeCachedAuthToken({token: authToken}, resolve);
       });
+    }).catch((error) => {
+      console.log(`${getCurrentTimeStringWithMillis()} - could not remove cached auth token: `, error);
     }).finally(() => {
-      return this.getTokenAndUpdateStatus();
+      return this.refreshAuthStatus();
     });
   }
 
