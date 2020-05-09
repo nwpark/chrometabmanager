@@ -5,6 +5,7 @@ import {ErrorCode} from '../../../app/types/errors/error-code';
 import {FileMutex} from '../../types/file-mutex';
 import {FutureTask} from '../../types/future-task';
 import {isRuntimeError, createRuntimeError} from '../../../app/types/errors/runtime-error';
+import {DriveAccountService} from '../../../app/services/drive-api/drive-account.service';
 
 export class DriveFilePatchRequestHandler {
   private requestQueue: FutureTask<any>[] = [];
@@ -12,6 +13,7 @@ export class DriveFilePatchRequestHandler {
 
   constructor(private googleApiService: GoogleApiService,
               private syncStorageService: SyncStorageService,
+              private driveAccountService: DriveAccountService,
               private fileMutex: FileMutex) {}
 
   patch(fileId: string, sessionListState: SessionListState): Promise<any> {
@@ -32,8 +34,11 @@ export class DriveFilePatchRequestHandler {
 
   private createPatchRequestTask(fileId: string, sessionListState: SessionListState): FutureTask<any> {
     return new FutureTask<any>(() => {
-      return this.googleApiService.patchJSONFileContent(fileId, sessionListState).finally(() => {
+      return this.driveAccountService.setSyncInProgress(true).then(() => {
+        return this.googleApiService.patchJSONFileContent(fileId, sessionListState);
+      }).finally(() => {
         this.syncStorageService.notifyOtherDevices();
+        return this.driveAccountService.setSyncInProgress(false);
       });
     });
   }

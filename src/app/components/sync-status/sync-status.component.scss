@@ -23,7 +23,6 @@ $button-height: 36px;
   justify-content: center;
   font-size: small;
   line-height: 30px;
-  border-bottom: 1px solid dimgrey;
   background-color: lightgrey;
   min-width: 200px;
 }
@@ -34,6 +33,7 @@ $button-height: 36px;
 }
 
 .sync-status-content {
+  border-top: 1px solid dimgrey;
   padding: 10px;
   display: flex;
 }
