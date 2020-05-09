@@ -1,0 +1,85 @@
+<div class="sync-status-header">
+  <mat-icon
+    [inline]="true"
+    class="sync-status-header-icon material-icons-outlined">
+    {{syncStatusDetails?.matIcon}}
+  </mat-icon>
+  {{syncStatusDetails?.statusMessage}}
+</div>
+
+<div
+  *ngIf="syncStatus === SyncStatus.Disabled"
+  class="sync-status-content">
+  <div class="sync-status-text-grid">
+    <div class="sync-status-text primary-text">
+      Enable sync
+    </div>
+    <div class="sync-status-text secondary-text">
+      Synchronize saved windows between devices
+    </div>
+  </div>
+  <button
+    mat-stroked-button
+    style="margin-left: 30px"
+    color="primary"
+    (click)="enableSync()">
+    Enable Sync
+  </button>
+</div>
+<div
+  *ngIf="syncStatus === SyncStatus.Enabled"
+  class="sync-status-content">
+  <img
+    *ngIf="driveLoginStatus?.userAccountInfo?.photoLink"
+    src="{{driveLoginStatus?.userAccountInfo?.photoLink}}"
+    class="profile-image">
+  <div
+    *ngIf="!driveLoginStatus?.userAccountInfo?.photoLink"
+    class="sync-status-photo-placeholder">
+    {{driveLoginStatus?.userAccountInfo?.displayName[0]}}
+  </div>
+  <div class="sync-status-text-grid" style="margin-left: 10px">
+    <div class="sync-status-text primary-text">
+      {{driveLoginStatus?.userAccountInfo?.displayName}}
+    </div>
+    <div class="sync-status-text secondary-text">
+      Syncing to {{driveLoginStatus?.userAccountInfo?.emailAddress}}
+    </div>
+  </div>
+  <button
+    mat-stroked-button
+    style="margin-left: 30px"
+    color="primary"
+    (click)="disableSync()">
+    Turn off
+  </button>
+</div>
+<div
+  *ngIf="syncStatus === SyncStatus.SignInRequired"
+  class="sync-status-content">
+  <mat-icon class="sync-status-content-icon">
+    sync_problem
+  </mat-icon>
+  <div class="sync-status-text-grid" style="margin-left: 10px">
+    <div class="sync-status-text primary-text">
+      Sign in required
+    </div>
+    <div class="sync-status-text secondary-text">
+      Sync is currently enabled, but you are not signed in
+    </div>
+  </div>
+  <button
+    mat-stroked-button
+    style="margin-left: 30px"
+    color="primary"
+    (click)="enableSync()">
+    Sign in
+  </button>
+  <button
+    mat-stroked-button
+    style="margin-left: 10px"
+    color="primary"
+    (click)="disableSync()">
+    Turn off
+  </button>
+</div>

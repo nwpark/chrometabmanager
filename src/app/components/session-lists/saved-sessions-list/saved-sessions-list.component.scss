@@ -1,8 +1,5 @@
-.sync-status-icon {
-  height: 40px;
-  line-height: 40px;
-  float: left;
-  margin-right: 10px;
+::ng-deep .mat-menu-panel {
+  max-width: none !important;
 }
 
 .sync-status-info-text {

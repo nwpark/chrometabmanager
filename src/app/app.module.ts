@@ -23,6 +23,7 @@ import {SavedSessionsListComponent} from './components/session-lists/saved-sessi
 import {SessionListComponent} from './components/session-lists/session-list/session-list.component';
 import {ActiveSessionsListComponent} from './components/session-lists/active-sessions-list/active-sessions-list.component';
 import {ClosedSessionsListComponent} from './components/session-lists/closed-sessions-list/closed-sessions-list.component';
+import {SyncStatusComponent} from './components/sync-status/sync-status.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import {ClosedSessionsListComponent} from './components/session-lists/closed-ses
     SavedSessionsListComponent,
     SessionListComponent,
     ActiveSessionsListComponent,
-    ClosedSessionsListComponent
+    ClosedSessionsListComponent,
+    SyncStatusComponent
   ],
   imports: [
     BrowserModule,

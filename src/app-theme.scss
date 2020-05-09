@@ -3,6 +3,7 @@
 @import 'app/components/draggable-chrome-tab/draggable-chrome-tab.component';
 @import 'app/components/detached-chrome-tab/detached-chrome-tab.component';
 @import 'app/pages/options/options.component';
+@import 'app/components/sync-status/sync-status.component';
 
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
@@ -27,6 +28,7 @@ $app-dark-theme:mat-dark-theme($app-dark-primary, $app-dark-accent, $app-dark-wa
 @include detached-chrome-tab-theme($app-default-theme);
 @include icons-theme($app-default-theme);
 @include options-theme($app-default-theme);
+@include sync-status-theme($app-default-theme);
 
 .dark-theme {
   @include angular-material-theme($app-dark-theme);
@@ -37,4 +39,5 @@ $app-dark-theme:mat-dark-theme($app-dark-primary, $app-dark-accent, $app-dark-wa
   @include detached-chrome-tab-theme($app-dark-theme);
   @include icons-theme($app-dark-theme);
   @include options-theme($app-dark-theme);
+  @include sync-status-theme($app-dark-theme);
 }

@@ -5,11 +5,22 @@
   <div style="float: right">
     <button
       mat-icon-button
+      matTooltip="See sync status"
+      matTooltipClass="tooltip-reduced-margin"
+      [matMenuTriggerFor]="syncStatus">
+      <mat-icon [ngClass]="{'action-icon-24': true, 'material-icons-outlined': true, 'spin': syncInProgress}">
+        {{syncStatusDetails?.matIcon}}
+      </mat-icon>
+    </button>
+    <button
+      mat-icon-button
       matTooltip="Debug"
       matTooltipClass="tooltip-reduced-margin"
       *ngIf="headerDiv.mouseOver && preferences?.enableDebugging"
       (click)="debug()">
-      <mat-icon class="action-icon-24">bug_report</mat-icon>
+      <mat-icon class="action-icon-24">
+        bug_report
+      </mat-icon>
     </button>
     <ng-container *ngFor="let button of actionButtons">
       <button
@@ -18,16 +29,12 @@
         matTooltipClass="tooltip-reduced-margin"
         *ngIf="!button.requiresMouseover || headerDiv.mouseOver"
         (click)="button.callback()">
-        <mat-icon class="action-icon-24">{{sessionListState.isHidden() ? button.iconWhenHidden || button.icon : button.icon}}</mat-icon>
+        <mat-icon class="action-icon-24">
+          {{sessionListState.isHidden() ? button.iconWhenHidden || button.icon : button.icon}}
+        </mat-icon>
       </button>
     </ng-container>
   </div>
-  <mat-icon
-    [ngClass]="{'sync-status-icon': true, 'spin': syncInProgress}"
-    [matTooltip]="syncStatusDetails?.matIconTooltip"
-    matTooltipClass="tooltip-reduced-margin">
-    {{syncStatusDetails?.matIcon}}
-  </mat-icon>
   <div class="column-title-text" style="float: left">
     Saved
     <span *ngIf="sessionListState.isHidden()"> ({{sessionListState.size()}})</span>
@@ -68,3 +75,7 @@
     </button>
   </div>
 </div>
+
+<mat-menu #syncStatus="matMenu">
+  <app-sync-status></app-sync-status>
+</mat-menu>

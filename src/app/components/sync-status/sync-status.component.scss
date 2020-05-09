@@ -1,0 +1,63 @@
+$button-height: 36px;
+
+@mixin sync-status-theme($theme) {
+  $background-palette: map-get($theme, background);
+  $foreground-palette: map-get($theme, foreground);
+
+  .sync-status-photo-placeholder {
+    color: map-get($foreground-palette, text);
+    background: map-get($background-palette, background);
+    width: $button-height;
+    height: $button-height;
+    border-radius: 50%;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    font-size: large;
+    border: 1px solid rgba(169,169,169,0.2);
+  }
+}
+
+.sync-status-header {
+  display: flex;
+  justify-content: center;
+  font-size: small;
+  line-height: 30px;
+  border-bottom: 1px solid dimgrey;
+  background-color: lightgrey;
+  min-width: 200px;
+}
+
+.sync-status-header-icon {
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.sync-status-content {
+  padding: 10px;
+  display: flex;
+}
+
+.sync-status-text-grid {
+  display: grid;
+}
+
+.sync-status-text {
+  font-size: small;
+  display: flex;
+  align-items: center;
+}
+
+.sync-status-content-icon {
+  font-size: $button-height;
+  width: $button-height;
+  height: $button-height;
+}
+
+.profile-image {
+  width: $button-height;
+  height: $button-height;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: bottom;
+}

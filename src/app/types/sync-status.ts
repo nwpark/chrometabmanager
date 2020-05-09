@@ -11,21 +11,25 @@ export enum SyncStatus {
 const syncStatusMetaInfoMap: SyncStatusDetailsMap = {
   [SyncStatus.Enabled]: {
     shouldUseSyncStorage: true,
-    matIcon: 'sync',
+    statusMessage: 'All changes saved to Drive',
+    matIcon: 'cloud_done',
     matIconTooltip: 'Sync is enabled'
   },
   [SyncStatus.SyncInProgress]: {
     shouldUseSyncStorage: true,
+    statusMessage: 'Sync in progress',
     matIcon: 'sync',
     matIconTooltip: 'Sync in progress'
   },
   [SyncStatus.Disabled]: {
     shouldUseSyncStorage: false,
-    matIcon: 'sync_disabled',
+    statusMessage: 'Sync is not currently enabled',
+    matIcon: 'cloud_off',
     matIconTooltip: 'Sync is not enabled'
   },
   [SyncStatus.SignInRequired]: {
     shouldUseSyncStorage: false,
+    statusMessage: 'Sign in required',
     matIcon: 'sync_problem',
     matIconTooltip: 'Sign in required'
   },
@@ -54,6 +58,7 @@ type SyncStatusDetailsMap = {
 
 export interface SyncStatusDetails {
   shouldUseSyncStorage: boolean;
+  statusMessage: string;
   matIcon: string;
   matIconTooltip: string;
 }
