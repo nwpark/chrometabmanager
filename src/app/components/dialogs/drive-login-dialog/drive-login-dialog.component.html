@@ -1,5 +1,5 @@
 <div style="width: 400px" [ngSwitch]="currentStepperStateId">
-  <div *ngSwitchCase="'requiresChromePermissions'">
+  <div *ngSwitchCase="StepperStateId.REQUIRES_CHROME_PERMISSIONS">
     <div mat-dialog-title>
       Enable Sync
     </div>
@@ -22,7 +22,8 @@
       </button>
     </div>
   </div>
-  <div *ngSwitchCase="'awaitingChromePermissions'">
+
+  <div *ngSwitchCase="StepperStateId.AWAITING_CHROME_PERMISSIONS">
     <div mat-dialog-title>
       Waiting for permissions...
     </div>
@@ -38,7 +39,8 @@
       </button>
     </div>
   </div>
-  <div *ngSwitchCase="'requiresChromeLogin'">
+
+  <div *ngSwitchCase="StepperStateId.REQUIRES_CHROME_LOGIN">
     <div mat-dialog-title>
       Sign in to Chrome
     </div>
@@ -61,7 +63,8 @@
       </button>
     </div>
   </div>
-  <div *ngSwitchCase="'awaitingChromeLogin'">
+
+  <div *ngSwitchCase="StepperStateId.AWAITING_CHROME_LOGIN">
     <div mat-dialog-title>
       Signing into Chrome...
     </div>
@@ -85,7 +88,8 @@
       </button>
     </div>
   </div>
-  <div *ngSwitchCase="'requiresOAuthLogin'">
+
+  <div *ngSwitchCase="StepperStateId.REQUIRES_OAUTH_LOGIN">
     <div mat-dialog-title>
       Enable Sync
     </div>
@@ -110,7 +114,8 @@
       </button>
     </div>
   </div>
-  <div *ngSwitchCase="'awaitingOAuthLogin'">
+
+  <div *ngSwitchCase="StepperStateId.AWAITING_OAUTH_LOGIN">
     <div mat-dialog-title>
       Waiting for sign in...
     </div>
@@ -127,7 +132,38 @@
       </button>
     </div>
   </div>
-  <div *ngSwitchCase="'preparingDriveData'">
+
+  <div *ngSwitchCase="StepperStateId.CONFIRM_ENABLE_SYNC">
+    <div mat-dialog-title>
+      Enable Sync
+    </div>
+    <div mat-dialog-content>
+      <h4>Would you like to copy your saved tabs to Drive storage?</h4>
+      <mat-checkbox
+        style="display: block; margin: 15px 0"
+        [(ngModel)]="shouldCopySavedSessions"
+        [color]="'primary'">
+        Copy saved tabs to Drive storage
+      </mat-checkbox>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-button
+        color="primary"
+        (click)="closeDialog()">
+        Cancel
+      </button>
+      <button
+        mat-stroked-button
+        cdkFocusInitial
+        color="primary"
+        (click)="advanceStepperState()">
+        Enable Sync
+      </button>
+    </div>
+  </div>
+
+  <div *ngSwitchCase="StepperStateId.PREPARING_DRIVE_DATA">
     <div mat-dialog-title>
       <img src="assets/google-drive-logo32.png" class="inline-image-24px" alt="Google drive logo">
       Preparing your files
@@ -145,7 +181,8 @@
       </button>
     </div>
   </div>
-  <div *ngSwitchCase="'complete'">
+
+  <div *ngSwitchCase="StepperStateId.FINISHED">
     <div mat-dialog-title style="text-align: center">
       Welcome, {{driveLoginStatus?.userAccountInfo.displayName}}
     </div>

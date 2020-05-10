@@ -1,13 +1,15 @@
-<div style="width: 300px">
+<div style="width: 400px">
   <div mat-dialog-title>
     Turn off Sync
   </div>
   <div mat-dialog-content>
-    <div
-      *ngIf="!actionInProgress"
-      style="margin: 10px 0">
-      <mat-checkbox [(ngModel)]="shouldCopySavedTabs">
-        Would you like to copy your saved tabs back to local storage?
+    <div *ngIf="!actionInProgress">
+      <h4>Would you like to copy your saved tabs back to local storage?</h4>
+      <mat-checkbox
+        style="display: block; margin: 15px 0"
+        [(ngModel)]="shouldCopySavedTabs"
+        [color]="'primary'">
+        Copy saved tabs to local storage
       </mat-checkbox>
     </div>
 

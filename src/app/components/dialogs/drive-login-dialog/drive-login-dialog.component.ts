@@ -20,8 +20,10 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
   private ngUnsubscribe = new Subject();
   private stepperStateMap: StepperStateMap;
 
+  StepperStateId = StepperStateId;
   currentStepperStateId: StepperStateId;
   driveLoginStatus: DriveLoginStatus;
+  shouldCopySavedSessions = true;
 
   constructor(private dialogRef: MatDialogRef<DriveLoginDialogComponent>,
               private driveAccountService: DriveAccountService,
@@ -126,15 +128,24 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
         onInitialize: () => this.oAuth2Service.performInteractiveLogin().then(() => {
           this.advanceStepperState();
         }),
+        getNextState: () => Promise.resolve(StepperStateId.CONFIRM_ENABLE_SYNC)
+      },
+      [StepperStateId.CONFIRM_ENABLE_SYNC]: {
+        disableDialogClose: false,
         getNextState: () => Promise.resolve(StepperStateId.PREPARING_DRIVE_DATA)
       },
       [StepperStateId.PREPARING_DRIVE_DATA]: {
         disableDialogClose: true,
-        onInitialize: () => this.storageService.copySavedSessions(StorageCopyDirection.FromLocalToSync).then(() => {
-          return this.driveAccountService.enableSync();
-        }).then(() => {
-          this.advanceStepperState();
-        }),
+        onInitialize: () => {
+          Promise.resolve(this.shouldCopySavedSessions
+            ? this.storageService.copySavedSessions(StorageCopyDirection.FromLocalToSync)
+            : this.storageService.reloadSavedSessionsSync()
+          ).then(() => {
+            return this.driveAccountService.enableSync();
+          }).then(() => {
+            this.advanceStepperState();
+          });
+        },
         getNextState: () => Promise.resolve(StepperStateId.FINISHED)
       },
       [StepperStateId.FINISHED]: {
@@ -162,6 +173,7 @@ enum StepperStateId {
   AWAITING_CHROME_LOGIN = 'awaitingChromeLogin',
   REQUIRES_OAUTH_LOGIN = 'requiresOAuthLogin',
   AWAITING_OAUTH_LOGIN = 'awaitingOAuthLogin',
+  CONFIRM_ENABLE_SYNC = 'confirmEnableSync',
   PREPARING_DRIVE_DATA = 'preparingDriveData',
   FINISHED = 'complete',
 }

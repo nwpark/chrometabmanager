@@ -72,6 +72,12 @@ export class StorageService {
     );
   }
 
+  reloadSavedSessionsSync(): Promise<void> {
+    return this.driveStorageService.getSavedWindowsStateFromDrive().then(sessionListState => {
+      this.savedSessionStateSync.next(sessionListState);
+    });
+  }
+
   copySavedSessions(storageCopyDirection: StorageCopyDirection): Promise<void> {
     return Promise.all([
       this.driveStorageService.getSavedWindowsStateFromDrive(),
