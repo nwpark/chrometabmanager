@@ -37,11 +37,11 @@ export class DriveStorageService {
     });
   }
 
-  setSavedWindowsState(sessionListState: SessionListState): Promise<void> {
-    return this.writeSavedWindowsStateToCache(sessionListState).then(() => {
-      return this.messagePassingService.requestUpdateDriveSavedSessions(sessionListState).then(res => {
-        console.log(getCurrentTimeStringWithMillis(), '- received response from patch request:', res);
-      });
+  setSavedWindowsState(sessionListState: SessionListState): Promise<any> {
+    return this.messagePassingService.requestUpdateDriveSavedSessions(sessionListState).then(res => {
+      console.log(getCurrentTimeStringWithMillis(), '- received response from patch request:', res);
+    }).then(() => {
+      return this.writeSavedWindowsStateToCache(sessionListState);
     });
   }
 
