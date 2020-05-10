@@ -1,0 +1,40 @@
+<div style="width: 300px">
+  <div mat-dialog-title>
+    Turn off Sync
+  </div>
+  <div mat-dialog-content>
+    <div
+      *ngIf="!actionInProgress"
+      style="margin: 10px 0">
+      <mat-checkbox [(ngModel)]="shouldCopySavedTabs">
+        Would you like to copy your saved tabs back to local storage?
+      </mat-checkbox>
+    </div>
+
+    <div *ngIf="actionInProgress">
+      <mat-spinner
+        [diameter]="64"
+        style="margin: 0 auto">
+      </mat-spinner>
+      <p style="text-align: center">
+        Turning off sync...
+      </p>
+    </div>
+  </div>
+  <div mat-dialog-actions>
+    <button
+      mat-button
+      mat-dialog-close
+      color="primary"
+      [disabled]="actionInProgress">
+      Cancel
+    </button>
+    <button
+      mat-stroked-button
+      color="primary"
+      [disabled]="actionInProgress"
+      (click)="disableSync()">
+      Turn off Sync
+    </button>
+  </div>
+</div>

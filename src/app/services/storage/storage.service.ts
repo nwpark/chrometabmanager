@@ -78,12 +78,13 @@ export class StorageService {
       this.localStorageService.getSavedWindowsState()
     ]).then(res => {
       const [savedSessionStateSync, savedSessionStateLocal] = res;
-      savedSessionStateSync.addAll(savedSessionStateLocal);
       if (storageCopyDirection === StorageCopyDirection.FromLocalToSync) {
-        return this.driveStorageService.setSavedWindowsState(savedSessionStateSync).then(() => {
-          this.savedSessionStateSync.next(savedSessionStateSync);
+        savedSessionStateLocal.addAll(savedSessionStateSync);
+        return this.driveStorageService.setSavedWindowsState(savedSessionStateLocal).then(() => {
+          this.savedSessionStateSync.next(savedSessionStateLocal);
         });
       } else {
+        savedSessionStateSync.addAll(savedSessionStateLocal);
         return this.localStorageService.setSavedWindowsState(savedSessionStateSync).then(() => {
           this.savedSessionStateLocal.next(savedSessionStateSync);
         });

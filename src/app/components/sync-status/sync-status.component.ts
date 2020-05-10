@@ -7,6 +7,7 @@ import {DriveLoginStatus} from '../../types/drive-login-status';
 import {DriveLoginDialogComponent} from '../dialogs/drive-login-dialog/drive-login-dialog.component';
 import {MatDialog} from '@angular/material';
 import {PreferencesService} from '../../services/preferences.service';
+import {DisableSyncDialogComponent} from '../dialogs/disable-sync-dialog/disable-sync-dialog.component';
 
 @Component({
   selector: 'app-sync-status',
@@ -48,7 +49,7 @@ export class SyncStatusComponent implements OnDestroy, OnInit {
   }
 
   disableSync() {
-    this.preferencesService.setSyncSavedWindows(false);
+    this.matDialogService.open(DisableSyncDialogComponent);
   }
 
   ngOnDestroy() {

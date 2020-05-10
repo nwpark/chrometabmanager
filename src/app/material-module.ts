@@ -3,6 +3,7 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {
   MatButtonModule,
   MatCardModule,
+  MatCheckboxModule,
   MatDialogModule,
   MatGridListModule,
   MatIconModule,
@@ -29,7 +30,8 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
     MatProgressBarModule,
     MatMenuModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    MatCheckboxModule
   ]
 })
 export class MaterialModule {}

@@ -1,0 +1,11 @@
+.mat-dialog-actions {
+  justify-content: flex-end;
+}
+
+::ng-deep .mat-checkbox-layout {
+  white-space: normal !important;
+}
+
+::ng-deep .mat-checkbox-label {
+  line-height: normal !important;
+}

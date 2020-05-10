@@ -19,6 +19,7 @@ import {DriveAccountService} from '../../services/drive-api/drive-account.servic
 import {DriveStorageService} from '../../services/drive-api/drive-storage.service';
 import {DriveLoginDialogComponent} from '../../components/dialogs/drive-login-dialog/drive-login-dialog.component';
 import {OAuth2Service} from '../../services/drive-api/o-auth-2.service';
+import {DisableSyncDialogComponent} from '../../components/dialogs/disable-sync-dialog/disable-sync-dialog.component';
 
 @Component({
   selector: 'app-options',
@@ -97,7 +98,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
   }
 
   disableSync() {
-    this.preferencesService.setSyncSavedWindows(false);
+    this.matDialogService.open(DisableSyncDialogComponent);
   }
 
   showVersionHistoryDialog() {
