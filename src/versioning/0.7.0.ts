@@ -2,11 +2,11 @@ import {ReleaseNotes} from './released-versions';
 
 // tslint:disable-next-line:variable-name
 export const releaseNotes_0_7_0: ReleaseNotes = {
-  releaseDate: new Date(2020, 4, 5),
+  releaseDate: new Date(2020, 4, 10),
   changes: [{
     title: 'New and improved sync storage!',
     details: [
-      'Sync storage has been reworked, and now uses Google Drive cloud services to keep your saved tabs synchronized between devices.',
+      'Sync storage has been reworked, and now uses Google Drive cloud services to keep your data synchronized between devices.',
       'If you previously had sync enabled, it has now been disabled and your saved tabs have been copied back to local storage. You will need to re-enable sync from the options page.'
     ]
   }, {
