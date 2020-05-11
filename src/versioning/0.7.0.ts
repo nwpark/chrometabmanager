@@ -6,14 +6,14 @@ export const releaseNotes_0_7_0: ReleaseNotes = {
   changes: [{
     title: 'New and improved sync storage!',
     details: [
-      'Sync storage now uses Google Drive cloud services to synchronize your saved data between devices.',
-      'If you had sync enabled, it has now been disabled and your saved tabs have been copied back to local storage. You will need to re-enable sync from the options page.'
+      'Sync storage has been reworked, and now uses Google Drive cloud services to keep your saved tabs synchronized between devices.',
+      'If you previously had sync enabled, it has now been disabled and your saved tabs have been copied back to local storage. You will need to re-enable sync from the options page.'
     ]
   }, {
     title: 'Why Google Drive?',
     details: [
-      'Increased storage quota - you can now store as many saved tabs as you want!',
-      'Improved reliability - sync storage was previously somewhat fragile.. it failed to work in certain environments and provided no information to aid troubleshooting. Drive storage is more robust, it is completely decoupled from the browsing environment and provides a proper diagnosis when something doesn\'t work.',
+      'Larger storage quota - You now have enough storage space to store approximately 40 million tabs!',
+      'Higher reliability - Sync storage was previously rather fragile.. It had harsh quota limits, failed to work in certain environments, and provided no information to aid troubleshooting. Contrarily, Drive storage is completely decoupled from the browsing environment, is more robust, and provides proper diagnoses for errors.',
       'Cross-browser support (not yet supported, but coming soon!) - Drive storage will eventually allow you to synchronize saved tabs between all browsers which support the extension.'
     ]
   }]

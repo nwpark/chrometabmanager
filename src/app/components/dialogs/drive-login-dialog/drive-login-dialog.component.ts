@@ -72,16 +72,19 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
   }
 
   private getInitialStepperState(): Promise<StepperStateId> {
-    return this.chromePermissionsService.hasDriveAPIPermissions().then(hasRequiredPermissions => {
+    return Promise.all([
+      this.chromePermissionsService.hasDriveAPIPermissions(),
+      this.oAuth2Service.chromeSignInRequired(),
+      this.oAuth2Service.getAuthStatus()
+    ]).then(([hasRequiredPermissions, chromeSignInRequired, authStatus]) => {
       if (!hasRequiredPermissions) {
-        return Promise.resolve(StepperStateId.REQUIRES_CHROME_PERMISSIONS);
-      } else {
-        return this.oAuth2Service.chromeSignInRequired().then(chromeSignInRequired => {
-          return chromeSignInRequired
-            ? StepperStateId.REQUIRES_CHROME_LOGIN
-            : StepperStateId.REQUIRES_OAUTH_LOGIN;
-        });
+        return StepperStateId.REQUIRES_CHROME_PERMISSIONS;
+      } else if (chromeSignInRequired) {
+        return StepperStateId.REQUIRES_CHROME_LOGIN;
+      } else if (!authStatus) {
+        return StepperStateId.REQUIRES_OAUTH_LOGIN;
       }
+      return StepperStateId.CONFIRM_ENABLE_SYNC;
     });
   }
 

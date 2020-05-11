@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, NgZone, OnInit} from '@angular/core';
 import {PreferencesService} from '../../../services/preferences.service';
 import {StorageCopyDirection, StorageService} from '../../../services/storage/storage.service';
 import {MatDialogRef} from '@angular/material';
@@ -15,7 +15,8 @@ export class DisableSyncDialogComponent implements OnInit {
 
   constructor(private storageService: StorageService,
               private preferencesService: PreferencesService,
-              private dialogRef: MatDialogRef<DisableSyncDialogComponent>) { }
+              private dialogRef: MatDialogRef<DisableSyncDialogComponent>,
+              private ngZone: NgZone) { }
 
   ngOnInit() { }
 
@@ -25,7 +26,7 @@ export class DisableSyncDialogComponent implements OnInit {
     this.copySavedTabsIfRequired().then(() => {
       return this.preferencesService.setSyncSavedWindows(false);
     }).finally(() => {
-      this.dialogRef.close();
+      this.ngZone.run(() => this.dialogRef.close());
     });
   }
 

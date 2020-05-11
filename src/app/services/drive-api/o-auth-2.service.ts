@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ChromeRuntimeErrorMessage} from '../../types/errors/chrome-runtime-error-message';
 import {BehaviorSubject, noop} from 'rxjs';
-import {distinctUntilChanged, filter} from 'rxjs/operators';
+import {distinctUntilChanged, filter, take} from 'rxjs/operators';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
@@ -28,6 +28,10 @@ export class OAuth2Service {
   private hydrateAuthStatus(authenticationStatus: boolean) {
     console.log(getCurrentTimeStringWithMillis(), '- refreshing authentication status');
     this.authStatusSubject.next(authenticationStatus);
+  }
+
+  getAuthStatus(): Promise<boolean> {
+    return this.authStatus$.pipe(take(1)).toPromise();
   }
 
   refreshAuthStatus(): Promise<any> {
