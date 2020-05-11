@@ -108,11 +108,15 @@ function getSavedSessionStateLocal(): Promise<any> {
     ], data => {
       const sessionMap = data['savedWindowsStorage_0a565f6f'];
       const listLayoutState = data['savedWindowsLayoutStateStorage_00adb476'];
-      const sessionStates = listLayoutState.sessionLayoutStates
-        .map(layoutState => {
-          return {session: sessionMap[layoutState.sessionId], layoutState};
-        });
-      resolve({sessionStates, hidden: listLayoutState.hidden});
+      if (sessionMap && listLayoutState) {
+        const sessionStates = listLayoutState.sessionLayoutStates
+          .map(layoutState => {
+            return {session: sessionMap[layoutState.sessionId], layoutState};
+          });
+        resolve({sessionStates, hidden: listLayoutState.hidden});
+      } else {
+        resolve({sessionStates: [], hidden: false});
+      }
     });
   });
 }
