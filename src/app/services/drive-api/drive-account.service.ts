@@ -9,7 +9,7 @@ import {distinctUntilChanged, map, take} from 'rxjs/operators';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {PreferencesService} from '../preferences.service';
 import {getSyncStatus, SyncStatus} from '../../types/sync-status';
-import {OAuth2Service} from './o-auth-2.service';
+import {OAuth2Service} from '../oauth2/o-auth-2.service';
 
 @Injectable({
   providedIn: 'root'

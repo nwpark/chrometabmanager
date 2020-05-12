@@ -7,7 +7,7 @@ import {MessagePassingService} from '../app/services/messaging/message-passing.s
 import {WebpageTitleCacheService} from '../app/services/webpage-title-cache.service';
 import {getInstallationScripts, InstallationScript} from '../versioning/released-versions';
 import {DriveFileDataManager} from './state-managers/drive-file-data-manager';
-import {OAuth2Service} from '../app/services/drive-api/o-auth-2.service';
+import {OAuth2Service} from '../app/services/oauth2/o-auth-2.service';
 import {GoogleApiService} from '../app/services/drive-api/google-api.service';
 import {DriveStorageService} from '../app/services/drive-api/drive-storage.service';
 import {DriveAccountService} from '../app/services/drive-api/drive-account.service';

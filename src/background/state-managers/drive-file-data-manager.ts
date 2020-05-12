@@ -3,7 +3,7 @@ import {MessageReceiverService} from '../../app/services/messaging/message-recei
 import {GoogleApiService} from '../../app/services/drive-api/google-api.service';
 import {DriveAccountService} from '../../app/services/drive-api/drive-account.service';
 import {SyncStorageService} from '../../app/services/storage/sync-storage.service';
-import {OAuth2Service} from '../../app/services/drive-api/o-auth-2.service';
+import {OAuth2Service} from '../../app/services/oauth2/o-auth-2.service';
 import {DriveFileContentRequestHandler} from './drive-file-data-manager/drive-file-content-request-handler';
 import {DriveFilePatchRequestHandler} from './drive-file-data-manager/drive-file-patch-request-handler';
 import {FileMutex} from '../types/file-mutex';

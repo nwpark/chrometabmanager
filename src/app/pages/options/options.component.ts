@@ -18,7 +18,7 @@ import {DriveLoginStatus} from '../../types/drive-login-status';
 import {DriveAccountService} from '../../services/drive-api/drive-account.service';
 import {DriveStorageService} from '../../services/drive-api/drive-storage.service';
 import {DriveLoginDialogComponent} from '../../components/dialogs/drive-login-dialog/drive-login-dialog.component';
-import {OAuth2Service} from '../../services/drive-api/o-auth-2.service';
+import {OAuth2Service} from '../../services/oauth2/o-auth-2.service';
 import {DisableSyncDialogComponent} from '../../components/dialogs/disable-sync-dialog/disable-sync-dialog.component';
 
 @Component({

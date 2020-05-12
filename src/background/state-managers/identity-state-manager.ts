@@ -1,4 +1,4 @@
-import {OAuth2Service} from '../../app/services/drive-api/o-auth-2.service';
+import {OAuth2Service} from '../../app/services/oauth2/o-auth-2.service';
 import {getCurrentTimeStringWithMillis} from '../../app/utils/date-utils';
 import {ChromePermissionsService} from '../../app/services/chrome-permissions.service';
 

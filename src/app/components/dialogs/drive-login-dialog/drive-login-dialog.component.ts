@@ -6,7 +6,7 @@ import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {DriveLoginStatus} from '../../../types/drive-login-status';
 import {ChromePermissionsService} from '../../../services/chrome-permissions.service';
-import {OAuth2Service} from '../../../services/drive-api/o-auth-2.service';
+import {OAuth2Service} from '../../../services/oauth2/o-auth-2.service';
 import {StorageCopyDirection, StorageService} from '../../../services/storage/storage.service';
 import {environment} from '../../../../environments/environment';
 

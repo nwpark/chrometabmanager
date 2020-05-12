@@ -4,7 +4,7 @@ import {UrlBuilder} from '../../../background/types/url-builder';
 import {causedByHttp401, mapToRuntimeError} from '../../types/errors/runtime-error';
 import {ErrorCode} from '../../types/errors/error-code';
 import {environment} from '../../../environments/environment';
-import {OAuth2Service} from './o-auth-2.service';
+import {OAuth2Service} from '../oauth2/o-auth-2.service';
 
 @Injectable({
   providedIn: 'root'
