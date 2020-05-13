@@ -155,7 +155,7 @@ export class LocalStorageService {
     });
   }
 
-  getOauth2TokenState(): Promise<OAuth2TokenState> {
+  getOAuth2TokenState(): Promise<OAuth2TokenState> {
     return new Promise<OAuth2TokenState>(resolve => {
       chrome.storage.local.get(StorageKeys.OAuth2TokenState, data => {
         if (data[StorageKeys.OAuth2TokenState]) {
@@ -167,11 +167,14 @@ export class LocalStorageService {
     });
   }
 
-  setOauth2TokenState(oAuth2TokenState: OAuth2TokenState) {
-    chrome.storage.local.set({
-      [StorageKeys.OAuth2TokenState]: oAuth2TokenState
-    }, () => {
-      this.messagePassingService.broadcastOAuth2TokenState(oAuth2TokenState);
+  setOAuth2TokenState(oAuth2TokenState: OAuth2TokenState): Promise<void> {
+    return new Promise<void>(resolve => {
+      chrome.storage.local.set({
+        [StorageKeys.OAuth2TokenState]: oAuth2TokenState
+      }, () => {
+        this.messagePassingService.broadcastOAuth2TokenState(oAuth2TokenState);
+        resolve();
+      });
     });
   }
 }
