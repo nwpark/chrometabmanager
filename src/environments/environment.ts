@@ -16,7 +16,9 @@ export const environment = {
   driveApiPostFileContentUrl: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
   driveApiPatchFileContentUrl: 'https://www.googleapis.com/upload/drive/v3/files/fileId?uploadType=media',
   chromeLoginUrl: 'https://accounts.google.com/',
-  accountsApiRevokeTokenUrl: 'https://oauth2.googleapis.com/revoke?token=AUTH_TOKEN' // Alternative url: https://accounts.google.com/o/oauth2/revoke?token=AUTH_TOKEN
+  accountsApiRevokeTokenUrl: 'https://oauth2.googleapis.com/revoke?token=AUTH_TOKEN',
+  oAuth2TokenUrl: 'https://oauth2.googleapis.com/token',
+  urlEncodedOAuth2ClientId: 'Y2xpZW50X2lkPTEwMDc3NTk5NzQ5MDAtZG5vMmxuOGdrZ3Vsdmg2azlvZjdnb2RqZjc3dWU5bG8uYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20mY2xpZW50X3NlY3JldD14TG1wbDA1eDBOWjJpSTNZRGc2Yk53Zm8='
 };
 
 /*

@@ -6,7 +6,7 @@ import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {isNotNullOrUndefined} from 'codelyzer/util/isNotNullOrUndefined';
-import {isRuntimeError, createRuntimeError} from '../../types/errors/runtime-error';
+import {createRuntimeError, isRuntimeError} from '../../types/errors/runtime-error';
 import {ErrorCode} from '../../types/errors/error-code';
 
 @Injectable({
