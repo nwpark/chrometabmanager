@@ -11,5 +11,6 @@ export enum StorageKeys {
   LastModifiedBy = 'lastModifiedBy_1266a87e',
   WebpageTitleCache = 'webpageTitleCache_c0d63a5d',
   DriveLoginStatus = 'driveLoginStatus_6c82e731',
-  LastNotified = 'lastNotified_b4b3a9da'
+  LastNotified = 'lastNotified_b4b3a9da',
+  OAuth2TokenState = 'oAuth2TokenState_86cc1be4'
 }
