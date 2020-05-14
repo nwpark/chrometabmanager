@@ -45,7 +45,7 @@ export class DriveAccountService {
     return combineLatest(
       this.loginStatus$,
       this.preferencesService.preferences$,
-      this.oAuth2Service.authStatus$,
+      this.oAuth2Service.getAuthStatus$(),
     ).pipe(
       map(([loginStatus, preferences, authStatus]) => {
         return getSyncStatus(loginStatus, preferences, authStatus);

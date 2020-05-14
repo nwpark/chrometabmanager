@@ -1,59 +1,65 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, noop} from 'rxjs';
-import {distinctUntilChanged, filter, take} from 'rxjs/operators';
-import {getCurrentTimeInSeconds, getCurrentTimeStringWithMillis} from '../../utils/date-utils';
+import {Observable, ReplaySubject} from 'rxjs';
+import {distinctUntilChanged, map, take} from 'rxjs/operators';
+import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
-import {isNotNullOrUndefined} from 'codelyzer/util/isNotNullOrUndefined';
 import {createRuntimeError} from '../../types/errors/runtime-error';
 import {ErrorCode} from '../../types/errors/error-code';
 import {LocalStorageService} from '../storage/local-storage.service';
 import {getAccessTokenFromAuthCode} from './o-auth-2-endpoints';
 import {getAuthCodeFromWebAuthResponseUrl, getOAuth2WebAuthFlowUrl} from './o-auth-2-utils';
+import {createOAuth2TokenState, OAuth2TokenState, oAuth2TokenStateIsValid} from '../../types/o-auth2-token-state';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OAuth2Service {
 
-  private authStatusSubject = new BehaviorSubject<boolean>(undefined);
-  authStatus$ = this.authStatusSubject.pipe(filter(isNotNullOrUndefined), distinctUntilChanged());
+  private oAuth2TokenState = new ReplaySubject<OAuth2TokenState>(1);
+  oAuth2TokenState$ = this.oAuth2TokenState.asObservable();
 
   constructor(private messagePassingService: MessagePassingService,
               private messageReceiverService: MessageReceiverService,
               private localStorageService: LocalStorageService) {
-    this.messageReceiverService.authStatusUpdated$.subscribe(authStatus => {
-      this.hydrateAuthStatus(authStatus);
+    this.localStorageService.getOAuth2TokenState().then(oAuth2TokenState => {
+      this.hydrateOAuth2TokenState(oAuth2TokenState);
     });
-    this.refreshAuthStatus();
+    this.messageReceiverService.oAuth2TokenStateUpdated$.subscribe(oAuth2TokenState => {
+      this.hydrateOAuth2TokenState(oAuth2TokenState);
+    });
   }
 
-  private hydrateAuthStatus(authenticationStatus: boolean) {
-    console.log(getCurrentTimeStringWithMillis(), '- refreshing authentication status');
-    this.authStatusSubject.next(authenticationStatus);
+  private hydrateOAuth2TokenState(oAuth2TokenState: OAuth2TokenState) {
+    console.log(getCurrentTimeStringWithMillis(), '- refreshing oAuth2TokenState');
+    this.oAuth2TokenState.next(oAuth2TokenState);
+  }
+
+  getAuthStatus$(): Observable<boolean> {
+    return this.oAuth2TokenState$.pipe(
+      map(oAuth2TokenStateIsValid),
+      distinctUntilChanged()
+    );
   }
 
   getAuthStatus(): Promise<boolean> {
-    return this.authStatus$.pipe(take(1)).toPromise();
-  }
-
-  refreshAuthStatus(): Promise<any> {
-    return this.getTokenAndUpdateStatus().catch(noop);
+    return this.getAuthStatus$().pipe(take(1)).toPromise();
   }
 
   getAuthToken(): Promise<string> {
-    return this.getTokenAndUpdateStatus();
+    return this.getOAuth2TokenState().then(oAuth2TokenState => oAuth2TokenState.accessToken);
+  }
+
+  private getOAuth2TokenState(): Promise<OAuth2TokenState> {
+    return this.oAuth2TokenState$.pipe(take(1)).toPromise();
   }
 
   performInteractiveLogin(): Promise<void> {
     return this.launchWebAuthFlow().then(authCode => {
       return getAccessTokenFromAuthCode(authCode);
     }).then(res => {
-      return this.localStorageService.setOAuth2TokenState({
-        accessToken: res.access_token,
-        refreshToken: res.refresh_token,
-        expirationTime: getCurrentTimeInSeconds() + res.expires_in
-      });
+      const oAuth2TokenState = createOAuth2TokenState(res.access_token, res.refresh_token, res.expires_in);
+      return this.updateOAuth2TokenState(oAuth2TokenState);
     });
   }
 
@@ -69,27 +75,16 @@ export class OAuth2Service {
     });
   }
 
-  private getTokenAndUpdateStatus(): Promise<string> {
-    return this.localStorageService.getOAuth2TokenState().then(oAuth2TokenState => {
-      if (oAuth2TokenState.accessToken) {
-        this.updateAuthStatus(true);
-        return oAuth2TokenState.accessToken;
-      }
-      this.updateAuthStatus(false);
-      return Promise.reject(createRuntimeError(ErrorCode.AuthTokenNotGranted));
-    });
-  }
-
   // todo
   removeCachedAuthToken(): Promise<void> {
     return Promise.resolve();
   }
 
-  private updateAuthStatus(authStatus: boolean) {
-    if (authStatus !== this.authStatusSubject.getValue()) {
-      console.log(getCurrentTimeStringWithMillis(), '- updating authentication status');
-      this.authStatusSubject.next(authStatus);
-      this.messagePassingService.broadcastAuthStatus(authStatus);
-    }
+  private updateOAuth2TokenState(oAuth2TokenState: OAuth2TokenState) {
+    console.log(getCurrentTimeStringWithMillis(), '- updating oAuth2TokenState');
+    this.oAuth2TokenState.next(oAuth2TokenState);
+    return this.localStorageService.setOAuth2TokenState(oAuth2TokenState).then(() => {
+      this.messagePassingService.broadcastOAuth2TokenState(oAuth2TokenState);
+    });
   }
 }

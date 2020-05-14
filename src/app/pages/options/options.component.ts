@@ -70,7 +70,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
       this.driveLoginStatus = loginStatus;
       this.changeDetectorRef.detectChanges();
     });
-    this.oAuth2Service.authStatus$.pipe(
+    this.oAuth2Service.getAuthStatus$().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(authStatus => {
       this.authStatus = authStatus;
