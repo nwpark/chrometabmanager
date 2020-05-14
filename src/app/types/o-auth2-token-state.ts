@@ -1,6 +1,6 @@
 export interface OAuth2TokenState {
   accessToken?: string;
-  expirationTime?: Date;
+  expirationTime?: number;
   refreshToken?: string;
 }
 

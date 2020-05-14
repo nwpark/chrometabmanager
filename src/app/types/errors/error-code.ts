@@ -11,7 +11,8 @@ export enum ErrorCode {
   PostJSONFileContentError = 'PostJSONFileContentError_46ce96a2',
   MessageResponseError = 'MessageResponseError_b3ca2a0d',
   RequestIsObsolete = 'RequestIsObsolete_d30dc5b9',
-  AuthTokenNotGranted = 'AuthTokenNotGranted_5af3e91a'
+  AuthTokenNotGranted = 'AuthTokenNotGranted_5af3e91a',
+  RequiredOAuth2ScopeNotGranted = 'RequiredOAuth2ScopeNotGranted_6faa0e30'
 }
 
 export enum ErrorType {
@@ -86,6 +87,10 @@ const errorCodeDetailsMap: ErrorCodeDetailsMap = {
     userFriendlyMessage: `Authentication token could not be obtained.`,
     shouldDisplayDialog: true,
     shouldSendErrorReport: true
+  },
+  [ErrorCode.RequiredOAuth2ScopeNotGranted]: {
+    userFriendlyMessage: 'The requested permission was not granted.',
+    shouldDisplayDialog: true
   }
 };
 

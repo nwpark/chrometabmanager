@@ -1,3 +1,6 @@
+const oAuth2ClientId = '1007759974900-dno2ln8gkgulvh6k9of7godjf77ue9lo.apps.googleusercontent.com';
+const driveAPIScopes = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
+
 export const environment = {
   production: true,
   backgroundPhoto: {
@@ -14,5 +17,7 @@ export const environment = {
   chromeLoginUrl: 'https://accounts.google.com/',
   accountsApiRevokeTokenUrl: 'https://oauth2.googleapis.com/revoke?token=AUTH_TOKEN',
   oAuth2TokenUrl: 'https://oauth2.googleapis.com/token',
-  urlEncodedOAuth2ClientId: 'Y2xpZW50X2lkPTEwMDc3NTk5NzQ5MDAtZG5vMmxuOGdrZ3Vsdmg2azlvZjdnb2RqZjc3dWU5bG8uYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20mY2xpZW50X3NlY3JldD14TG1wbDA1eDBOWjJpSTNZRGc2Yk53Zm8='
+  urlEncodedOAuth2ClientId: 'Y2xpZW50X2lkPTEwMDc3NTk5NzQ5MDAtZG5vMmxuOGdrZ3Vsdmg2azlvZjdnb2RqZjc3dWU5bG8uYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20mY2xpZW50X3NlY3JldD14TG1wbDA1eDBOWjJpSTNZRGc2Yk53Zm8=',
+  driveAPIScopes,
+  oAuth2WebAuthFlowUrl: `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&access_type=offline&prompt=consent&include_granted_scopes=true&client_id=${oAuth2ClientId}&scope=${driveAPIScopes}`
 };
