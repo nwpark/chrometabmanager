@@ -22,7 +22,6 @@ export class DriveAccountService {
   constructor(private driveStorageService: DriveStorageService,
               private oAuth2Service: OAuth2Service,
               private googleApiService: GoogleApiService,
-              private chromePermissionsService: ChromePermissionsService,
               private messageReceiverService: MessageReceiverService,
               private preferencesService: PreferencesService) {
     this.driveStorageService.getLoginStatus().then(loginStatus => {

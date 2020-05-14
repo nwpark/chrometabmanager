@@ -25,7 +25,6 @@ export class MessagePassingService {
   static readonly UPDATE_DRIVE_SAVED_SESSIONS_REQUEST = 'updateDriveSavedSessionsRequest_46c18270';
   static readonly LOAD_DRIVE_FILE_DATA_REQUEST = 'loadDriveFileDataRequest_31e2491f';
   static readonly AUTH_STATUS_MESSAGE = 'authStatus_41f2fc2d';
-  static readonly CHROME_PERMISSIONS_MESSAGE = 'chromePermissions_5f17c1cd';
   static readonly OAUTH2_TOKEN_STATE_MESSAGE = 'oAuth2TokenStateUpdated_5ee4ac97';
   static readonly MESSAGE_DEBOUNCE_TIME = 400;
 
@@ -41,8 +40,7 @@ export class MessagePassingService {
   private loadDriveFileDataRequestSender = new RespondableMessageSender<void, SessionListState>(MessagePassingService.LOAD_DRIVE_FILE_DATA_REQUEST);
   private insertChromeWindowRequestSender = new SimpleMessageSender<InsertWindowMessageData>(MessagePassingService.INSERT_WINDOW_REQUEST);
   private authStatusMessageSender = new SimpleMessageSender<boolean>(MessagePassingService.AUTH_STATUS_MESSAGE);
-  private chromePermissionsMessageSender = new SimpleMessageSender<void>(MessagePassingService.CHROME_PERMISSIONS_MESSAGE);
-  private oAuth2TokenStateMessageSender = new SimpleMessageSender<OAuth2TokenState>(MessagePassingService.CHROME_PERMISSIONS_MESSAGE);
+  private oAuth2TokenStateMessageSender = new SimpleMessageSender<OAuth2TokenState>(MessagePassingService.OAUTH2_TOKEN_STATE_MESSAGE);
 
   constructor() {}
 
@@ -78,10 +76,6 @@ export class MessagePassingService {
 
   broadcastAuthStatus(authenticationStatus: boolean) {
     this.authStatusMessageSender.broadcast(authenticationStatus);
-  }
-
-  broadcastChromePermissionsUpdated() {
-    this.chromePermissionsMessageSender.broadcast();
   }
 
   broadcastOAuth2TokenState(oAuth2TokenState: OAuth2TokenState) {

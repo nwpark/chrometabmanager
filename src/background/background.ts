@@ -43,10 +43,9 @@ const closedSessionStateManager = new ClosedSessionStateManager(localStorageServ
 const oAuth2Service = new OAuth2Service(messagePassingService, messageReceiverService, localStorageService);
 const googleApiService = new GoogleApiService(oAuth2Service);
 const driveStorageService = new DriveStorageService(messagePassingService);
-const chromePermissionsService = new ChromePermissionsService(messageReceiverService, messagePassingService);
 const preferencesService = new PreferencesService(syncStorageService, messageReceiverService);
-const identityStateManager = new IdentityStateManager(oAuth2Service, chromePermissionsService);
-const driveAccountService = new DriveAccountService(driveStorageService, oAuth2Service, googleApiService, chromePermissionsService, messageReceiverService, preferencesService);
+const identityStateManager = new IdentityStateManager(oAuth2Service);
+const driveAccountService = new DriveAccountService(driveStorageService, oAuth2Service, googleApiService, messageReceiverService, preferencesService);
 const driveFileDataManager = new DriveFileDataManager(
   googleApiService,
   oAuth2Service,
