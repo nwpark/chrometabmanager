@@ -1,13 +1,15 @@
 import {Injectable} from '@angular/core';
-import {ChromeRuntimeErrorMessage} from '../../types/errors/chrome-runtime-error-message';
 import {BehaviorSubject, noop} from 'rxjs';
 import {distinctUntilChanged, filter, take} from 'rxjs/operators';
-import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
+import {getCurrentTimeInSeconds, getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {MessagePassingService} from '../messaging/message-passing.service';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {isNotNullOrUndefined} from 'codelyzer/util/isNotNullOrUndefined';
-import {createRuntimeError, isRuntimeError} from '../../types/errors/runtime-error';
+import {createRuntimeError} from '../../types/errors/runtime-error';
 import {ErrorCode} from '../../types/errors/error-code';
+import {LocalStorageService} from '../storage/local-storage.service';
+import {getAccessTokenFromAuthCode} from './o-auth-2-endpoints';
+import {getAuthCodeFromWebAuthResponseUrl, getOAuth2WebAuthFlowUrl} from './o-auth-2-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +20,8 @@ export class OAuth2Service {
   authStatus$ = this.authStatusSubject.pipe(filter(isNotNullOrUndefined), distinctUntilChanged());
 
   constructor(private messagePassingService: MessagePassingService,
-              private messageReceiverService: MessageReceiverService) {
+              private messageReceiverService: MessageReceiverService,
+              private localStorageService: LocalStorageService) {
     this.messageReceiverService.authStatusUpdated$.subscribe(authStatus => {
       this.hydrateAuthStatus(authStatus);
     });
@@ -42,55 +45,49 @@ export class OAuth2Service {
     return this.getTokenAndUpdateStatus();
   }
 
-  performInteractiveLogin(): Promise<string> {
-    return this.getTokenAndUpdateStatus({interactive: true});
-  }
-
-  private getTokenAndUpdateStatus(details = {interactive: false}): Promise<string> {
-    return this.getAuthTokenSilently(details).then(authToken => {
-      this.updateAuthStatus(true);
-      return Promise.resolve(authToken);
-    }).catch(reason => {
-      this.updateAuthStatus(false);
-      return Promise.reject(reason);
-    });
-  }
-
-  chromeSignInRequired(): Promise<boolean> {
-    return this.getAuthTokenSilently().then(() => {
-      return false;
-    }).catch(error => {
-      return isRuntimeError(error)
-        && error.details === ChromeRuntimeErrorMessage.UserNotSignedIn;
-    });
-  }
-
-  removeCachedAuthToken(): Promise<void> {
-    return this.getAuthTokenSilently().then(authToken => {
-      return new Promise<void>(resolve => {
-        chrome.identity.removeCachedAuthToken({token: authToken}, resolve);
+  performInteractiveLogin(): Promise<void> {
+    return this.launchWebAuthFlow().then(authCode => {
+      return getAccessTokenFromAuthCode(authCode);
+    }).then(res => {
+      return this.localStorageService.setOAuth2TokenState({
+        accessToken: res.access_token,
+        refreshToken: res.refresh_token,
+        expirationTime: getCurrentTimeInSeconds() + res.expires_in
       });
-    }).catch((error) => {
-      console.log(`${getCurrentTimeStringWithMillis()} - could not remove cached auth token: `, error);
-    }).finally(() => {
-      return this.refreshAuthStatus();
     });
   }
 
-  private getAuthTokenSilently(details = {interactive: false}): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      if (!chrome.identity) {
-        reject(createRuntimeError(ErrorCode.AuthTokenNotGranted, 'Chrome identity permissions not granted.'));
-        return;
-      }
-      chrome.identity.getAuthToken(details, token => {
+  private launchWebAuthFlow(): Promise<string> {
+    return new Promise<any>((resolve, reject) => {
+      chrome.identity.launchWebAuthFlow({url: getOAuth2WebAuthFlowUrl(), interactive: true}, responseUrl => {
         if (chrome.runtime.lastError) {
           reject(createRuntimeError(ErrorCode.AuthTokenNotGranted, chrome.runtime.lastError.message));
         } else {
-          resolve(token);
+          resolve(getAuthCodeFromWebAuthResponseUrl(responseUrl));
         }
       });
     });
+  }
+
+  private getTokenAndUpdateStatus(): Promise<string> {
+    return this.localStorageService.getOAuth2TokenState().then(oAuth2TokenState => {
+      if (oAuth2TokenState.accessToken) {
+        this.updateAuthStatus(true);
+        return oAuth2TokenState.accessToken;
+      }
+      this.updateAuthStatus(false);
+      return Promise.reject(createRuntimeError(ErrorCode.AuthTokenNotGranted));
+    });
+  }
+
+  // deprecated
+  chromeSignInRequired(): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  // todo
+  removeCachedAuthToken(): Promise<void> {
+    return Promise.resolve();
   }
 
   private updateAuthStatus(authStatus: boolean) {

@@ -1,6 +1,5 @@
 import {environment} from '../../../environments/environment';
 import {HTTPMethod, HttpRequestBuilder} from '../../../background/types/http-request';
-import {UrlBuilder} from '../../../background/types/url-builder';
 
 export function getAccessTokenFromAuthCode(authCode: string): Promise<OAuth2TokenServerResponse> {
   const urlEncodedRequestBody = new URLSearchParams(atob(environment.urlEncodedOAuth2ClientId));
@@ -28,12 +27,6 @@ export function getAccessTokenFromRefreshToken(refreshToken: string): Promise<OA
     .build();
 
   return httpRequest.send(urlEncodedRequestBody.toString());
-}
-
-export function getOAuth2WebAuthFlowUrl(): string {
-  return new UrlBuilder(environment.oAuth2WebAuthFlowUrl)
-    .queryParam('redirect_uri', chrome.identity.getRedirectURL())
-    .build();
 }
 
 export enum OAuth2URLParam {

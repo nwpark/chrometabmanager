@@ -29,3 +29,7 @@ export function getCurrentTimeStringWithMillis(): string {
   const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
   return `${hours}:${minutes}:${seconds}.${milliseconds}`;
 }
+
+export function getCurrentTimeInSeconds(): number {
+  return Math.floor(Date.now() / 1000);
+}
