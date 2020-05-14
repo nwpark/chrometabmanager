@@ -80,11 +80,6 @@ export class OAuth2Service {
     });
   }
 
-  // deprecated
-  chromeSignInRequired(): Promise<boolean> {
-    return Promise.resolve(false);
-  }
-
   // todo
   removeCachedAuthToken(): Promise<void> {
     return Promise.resolve();

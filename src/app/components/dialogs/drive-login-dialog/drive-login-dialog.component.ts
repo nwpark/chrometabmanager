@@ -8,7 +8,6 @@ import {DriveLoginStatus} from '../../../types/drive-login-status';
 import {ChromePermissionsService} from '../../../services/chrome-permissions.service';
 import {OAuth2Service} from '../../../services/oauth2/o-auth-2.service';
 import {StorageCopyDirection, StorageService} from '../../../services/storage/storage.service';
-import {environment} from '../../../../environments/environment';
 
 @Component({
   selector: 'app-drive-login-dialog',
@@ -74,13 +73,10 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
   private getInitialStepperState(): Promise<StepperStateId> {
     return Promise.all([
       this.chromePermissionsService.hasDriveAPIPermissions(),
-      this.oAuth2Service.chromeSignInRequired(),
       this.oAuth2Service.getAuthStatus()
-    ]).then(([hasRequiredPermissions, chromeSignInRequired, authStatus]) => {
+    ]).then(([hasRequiredPermissions, authStatus]) => {
       if (!hasRequiredPermissions) {
         return StepperStateId.REQUIRES_CHROME_PERMISSIONS;
-      } else if (chromeSignInRequired) {
-        return StepperStateId.REQUIRES_CHROME_LOGIN;
       } else if (!authStatus) {
         return StepperStateId.REQUIRES_OAUTH_LOGIN;
       }
@@ -100,26 +96,7 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
           this.advanceStepperState();
         }),
         getNextState: () => {
-          return this.oAuth2Service.chromeSignInRequired().then(chromeSignInRequired => {
-            return chromeSignInRequired
-              ? StepperStateId.REQUIRES_CHROME_LOGIN
-              : StepperStateId.REQUIRES_OAUTH_LOGIN;
-          });
-        }
-      },
-      [StepperStateId.REQUIRES_CHROME_LOGIN]: {
-        disableDialogClose: false,
-        getNextState: () => Promise.resolve(StepperStateId.AWAITING_CHROME_LOGIN)
-      },
-      [StepperStateId.AWAITING_CHROME_LOGIN]: {
-        disableDialogClose: false,
-        onInitialize: () => chrome.tabs.create({url: environment.chromeLoginUrl}),
-        getNextState: () => {
-          return this.oAuth2Service.chromeSignInRequired().then(chromeSignInRequired => {
-            return chromeSignInRequired
-              ? StepperStateId.REQUIRES_CHROME_LOGIN
-              : StepperStateId.REQUIRES_OAUTH_LOGIN;
-          });
+          return Promise.resolve(StepperStateId.REQUIRES_OAUTH_LOGIN);
         }
       },
       [StepperStateId.REQUIRES_OAUTH_LOGIN]: {
@@ -172,8 +149,6 @@ interface StepperState {
 enum StepperStateId {
   REQUIRES_CHROME_PERMISSIONS = 'requiresChromePermissions',
   AWAITING_CHROME_PERMISSIONS = 'awaitingChromePermissions',
-  REQUIRES_CHROME_LOGIN = 'requiresChromeLogin',
-  AWAITING_CHROME_LOGIN = 'awaitingChromeLogin',
   REQUIRES_OAUTH_LOGIN = 'requiresOAuthLogin',
   AWAITING_OAUTH_LOGIN = 'awaitingOAuthLogin',
   CONFIRM_ENABLE_SYNC = 'confirmEnableSync',

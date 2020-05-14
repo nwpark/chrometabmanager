@@ -40,55 +40,6 @@
     </div>
   </div>
 
-  <div *ngSwitchCase="StepperStateId.REQUIRES_CHROME_LOGIN">
-    <div mat-dialog-title>
-      Sign in to Chrome
-    </div>
-    <div mat-dialog-content>
-      <p>You are not currently signed into Google Chrome. To enable sync, you need to be signed in.</p>
-    </div>
-    <div mat-dialog-actions>
-      <button
-        mat-button
-        color="primary"
-        (click)="closeDialog()">
-        Cancel
-      </button>
-      <button
-        mat-stroked-button
-        cdkFocusInitial
-        color="primary"
-        (click)="advanceStepperState()">
-        Sign in to Chrome
-      </button>
-    </div>
-  </div>
-
-  <div *ngSwitchCase="StepperStateId.AWAITING_CHROME_LOGIN">
-    <div mat-dialog-title>
-      Signing into Chrome...
-    </div>
-    <div mat-dialog-content>
-      <p>A popup window will appear in a moment.</p>
-      <p>Please follow the instructions in the popup window to complete sign in, then press continue to proceed.</p>
-    </div>
-    <div mat-dialog-actions>
-      <button
-        mat-button
-        color="primary"
-        (click)="closeDialog()">
-        Cancel
-      </button>
-      <button
-        mat-stroked-button
-        cdkFocusInitial
-        color="primary"
-        (click)="advanceStepperState()">
-        Continue
-      </button>
-    </div>
-  </div>
-
   <div *ngSwitchCase="StepperStateId.REQUIRES_OAUTH_LOGIN">
     <div mat-dialog-title>
       Enable Sync
