@@ -10,6 +10,7 @@ import {LocalStorageService} from '../storage/local-storage.service';
 import {getAccessTokenFromAuthCode} from './o-auth-2-endpoints';
 import {getAuthCodeFromWebAuthResponseUrl, getOAuth2WebAuthFlowUrl} from './o-auth-2-utils';
 import {createOAuth2TokenState, OAuth2TokenState, oAuth2TokenStateIsValid} from '../../types/o-auth2-token-state';
+import {Mutator} from '../../types/mutator';
 
 @Injectable({
   providedIn: 'root'
@@ -75,12 +76,20 @@ export class OAuth2Service {
     });
   }
 
-  // todo
-  removeCachedAuthToken(): Promise<void> {
-    return Promise.resolve();
+  invalidateAuthToken(): Promise<void> {
+    return this.modifyOAuth2TokenState(oAuth2TokenState => {
+      oAuth2TokenState.accessToken = undefined;
+      return oAuth2TokenState;
+    });
   }
 
-  private updateOAuth2TokenState(oAuth2TokenState: OAuth2TokenState) {
+  private modifyOAuth2TokenState(mutate: Mutator<OAuth2TokenState>): Promise<void> {
+    return this.getOAuth2TokenState().then(oAuth2TokenState => {
+      return this.updateOAuth2TokenState(mutate(oAuth2TokenState));
+    });
+  }
+
+  private updateOAuth2TokenState(oAuth2TokenState: OAuth2TokenState): Promise<void> {
     console.log(getCurrentTimeStringWithMillis(), '- updating oAuth2TokenState');
     this.oAuth2TokenState.next(oAuth2TokenState);
     return this.localStorageService.setOAuth2TokenState(oAuth2TokenState).then(() => {
