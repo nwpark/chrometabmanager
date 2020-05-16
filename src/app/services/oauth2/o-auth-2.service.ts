@@ -7,10 +7,16 @@ import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {createRuntimeError} from '../../types/errors/runtime-error';
 import {ErrorCode} from '../../types/errors/error-code';
 import {LocalStorageService} from '../storage/local-storage.service';
-import {getAccessTokenFromAuthCode} from './o-auth-2-endpoints';
+import {getAccessTokenFromAuthCode, getAccessTokenFromRefreshToken} from './o-auth-2-endpoints';
 import {getAuthCodeFromWebAuthResponseUrl, getOAuth2WebAuthFlowUrl} from './o-auth-2-utils';
-import {createOAuth2TokenState, OAuth2TokenState, oAuth2TokenStateIsValid} from '../../types/o-auth2-token-state';
+import {
+  createDefaultOAuth2TokenState,
+  createOAuth2TokenState,
+  OAuth2TokenState,
+  oAuth2TokenStateIsValid
+} from '../../types/o-auth2-token-state';
 import {Mutator} from '../../types/mutator';
+import {isNullOrUndefined} from 'util';
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +44,7 @@ export class OAuth2Service {
 
   getAuthStatus$(): Observable<boolean> {
     return this.oAuth2TokenState$.pipe(
-      map(oAuth2TokenStateIsValid),
+      map(oAuth2TokenState => !isNullOrUndefined(oAuth2TokenState.accessToken)),
       distinctUntilChanged()
     );
   }
@@ -48,11 +54,30 @@ export class OAuth2Service {
   }
 
   getAuthToken(): Promise<string> {
-    return this.getOAuth2TokenState().then(oAuth2TokenState => oAuth2TokenState.accessToken);
+    return this.getOAuth2TokenState().then(oAuth2TokenState => {
+      if (oAuth2TokenStateIsValid(oAuth2TokenState)) {
+        return oAuth2TokenState.accessToken;
+      }
+      return this.acquireNewAuthToken(oAuth2TokenState.refreshToken);
+    });
   }
 
   private getOAuth2TokenState(): Promise<OAuth2TokenState> {
     return this.oAuth2TokenState$.pipe(take(1)).toPromise();
+  }
+
+  private acquireNewAuthToken(refreshToken: string): Promise<string> {
+    console.log(getCurrentTimeStringWithMillis(), '- acquiring new oauth2 access token');
+    return getAccessTokenFromRefreshToken(refreshToken).then(res => {
+      const oAuth2TokenState = createOAuth2TokenState(res.access_token, refreshToken, res.expires_in);
+      return this.updateOAuth2TokenState(oAuth2TokenState).then(() => {
+        return oAuth2TokenState.accessToken;
+      });
+    }).catch(error => {
+      return this.updateOAuth2TokenState(createDefaultOAuth2TokenState()).then(() => {
+        return Promise.reject(createRuntimeError(ErrorCode.FailedToRefreshOAuth2Token, undefined, error));
+      });
+    });
   }
 
   performInteractiveLogin(): Promise<void> {

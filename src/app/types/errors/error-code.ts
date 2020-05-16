@@ -12,7 +12,8 @@ export enum ErrorCode {
   MessageResponseError = 'MessageResponseError_b3ca2a0d',
   RequestIsObsolete = 'RequestIsObsolete_d30dc5b9',
   AuthTokenNotGranted = 'AuthTokenNotGranted_5af3e91a',
-  RequiredOAuth2ScopeNotGranted = 'RequiredOAuth2ScopeNotGranted_6faa0e30'
+  RequiredOAuth2ScopeNotGranted = 'RequiredOAuth2ScopeNotGranted_6faa0e30',
+  FailedToRefreshOAuth2Token = 'FailedToRefreshOAuth2Token_6a529de8'
 }
 
 export enum ErrorType {
@@ -89,9 +90,10 @@ const errorCodeDetailsMap: ErrorCodeDetailsMap = {
     shouldSendErrorReport: true
   },
   [ErrorCode.RequiredOAuth2ScopeNotGranted]: {
-    userFriendlyMessage: 'The requested permission was not granted.',
+    userFriendlyMessage: 'The requested permissions were not granted.',
     shouldDisplayDialog: true
-  }
+  },
+  [ErrorCode.FailedToRefreshOAuth2Token]: { shouldDisplayDialog: false }
 };
 
 type ErrorCodeDetailsMap = {
