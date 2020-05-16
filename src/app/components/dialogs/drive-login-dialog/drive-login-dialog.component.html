@@ -1,4 +1,34 @@
 <div style="width: 400px" [ngSwitch]="currentStepperStateId">
+  <div *ngSwitchCase="StepperStateId.CONFIRM_ENABLE_SYNC">
+    <div mat-dialog-title>
+      Enable Sync
+    </div>
+    <div mat-dialog-content>
+      <h4>Would you like to copy your current set of saved tabs to Drive storage?</h4>
+      <mat-checkbox
+        style="display: block; margin: 15px 0"
+        [(ngModel)]="shouldCopySavedSessions"
+        [color]="'primary'">
+        Copy saved tabs to Drive storage
+      </mat-checkbox>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-button
+        color="primary"
+        (click)="closeDialog()">
+        Cancel
+      </button>
+      <button
+        mat-stroked-button
+        cdkFocusInitial
+        color="primary"
+        (click)="advanceStepperState()">
+        Enable Sync
+      </button>
+    </div>
+  </div>
+
   <div *ngSwitchCase="StepperStateId.REQUIRES_CHROME_PERMISSIONS">
     <div mat-dialog-title>
       Enable Sync
@@ -80,36 +110,6 @@
         color="primary"
         (click)="closeDialog()">
         Cancel
-      </button>
-    </div>
-  </div>
-
-  <div *ngSwitchCase="StepperStateId.CONFIRM_ENABLE_SYNC">
-    <div mat-dialog-title>
-      Enable Sync
-    </div>
-    <div mat-dialog-content>
-      <h4>Would you like to copy your current set of saved tabs to Drive storage?</h4>
-      <mat-checkbox
-        style="display: block; margin: 15px 0"
-        [(ngModel)]="shouldCopySavedSessions"
-        [color]="'primary'">
-        Copy saved tabs to Drive storage
-      </mat-checkbox>
-    </div>
-    <div mat-dialog-actions>
-      <button
-        mat-button
-        color="primary"
-        (click)="closeDialog()">
-        Cancel
-      </button>
-      <button
-        mat-stroked-button
-        cdkFocusInitial
-        color="primary"
-        (click)="advanceStepperState()">
-        Enable Sync
       </button>
     </div>
   </div>

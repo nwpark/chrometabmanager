@@ -13,7 +13,7 @@ import {SessionListComponent} from '../session-list/session-list.component';
 import {DriveAccountService} from '../../../services/drive-api/drive-account.service';
 import {getSyncStatusDetails, SyncStatus, SyncStatusDetails} from '../../../types/sync-status';
 import {MatDialog} from '@angular/material';
-import {DriveLoginDialogComponent} from '../../dialogs/drive-login-dialog/drive-login-dialog.component';
+import {DriveLoginDialogComponent, DriveLoginDialogConfig} from '../../dialogs/drive-login-dialog/drive-login-dialog.component';
 
 @Component({
   selector: 'app-saved-sessions-list',
@@ -66,8 +66,8 @@ export class SavedSessionsListComponent implements OnDestroy, OnInit {
     this.signInRequired = (syncStatus === SyncStatus.SignInRequired);
   }
 
-  enableSync() {
-    this.matDialogService.open(DriveLoginDialogComponent);
+  signInToDrive() {
+    this.matDialogService.open(DriveLoginDialogComponent, DriveLoginDialogConfig.SIGN_IN_ONLY);
   }
 
   disableSync() {

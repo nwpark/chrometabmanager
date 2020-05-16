@@ -10,3 +10,7 @@ export function ignoreChromeRuntimeErrors() {
 export function ignoreErrors<T>(promise: Promise<T>): Promise<T | void> {
   return promise.catch(noop);
 }
+
+export function promiseResolvedWithoutErrors(promise: Promise<any>): Promise<boolean> {
+  return promise.then(() => true).catch(() => false);
+}

@@ -17,6 +17,7 @@ import {
 } from '../../types/o-auth2-token-state';
 import {Mutator} from '../../types/mutator';
 import {isNullOrUndefined} from 'util';
+import {promiseResolvedWithoutErrors} from '../../utils/error-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -55,8 +56,8 @@ export class OAuth2Service {
     });
   }
 
-  getAuthStatus(): Promise<boolean> {
-    return this.getAuthStatus$().pipe(take(1)).toPromise();
+  hasValidAuthToken(): Promise<boolean> {
+    return promiseResolvedWithoutErrors(this.getAuthToken());
   }
 
   getAuthStatus$(): Observable<boolean> {
