@@ -11,7 +11,10 @@ export interface RuntimeError {
 }
 
 export function createRuntimeError(errorCode: ErrorCode, details?: string, cause?: any): RuntimeError {
-  return {errorCode, details, cause: convertToRuntimeError(cause)};
+  if (cause) {
+    cause = convertToRuntimeError(cause);
+  }
+  return {errorCode, details, cause};
 }
 
 export function runtimeErrorFromXHR(errorCode: ErrorCode, httpRequest: HttpRequest): RuntimeError {

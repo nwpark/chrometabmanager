@@ -42,15 +42,8 @@ export class OAuth2Service {
     this.oAuth2TokenState.next(oAuth2TokenState);
   }
 
-  getAuthStatus$(): Observable<boolean> {
-    return this.oAuth2TokenState$.pipe(
-      map(oAuth2TokenState => !isNullOrUndefined(oAuth2TokenState.accessToken)),
-      distinctUntilChanged()
-    );
-  }
-
-  getAuthStatus(): Promise<boolean> {
-    return this.getAuthStatus$().pipe(take(1)).toPromise();
+  private getOAuth2TokenState(): Promise<OAuth2TokenState> {
+    return this.oAuth2TokenState$.pipe(take(1)).toPromise();
   }
 
   getAuthToken(): Promise<string> {
@@ -62,8 +55,15 @@ export class OAuth2Service {
     });
   }
 
-  private getOAuth2TokenState(): Promise<OAuth2TokenState> {
-    return this.oAuth2TokenState$.pipe(take(1)).toPromise();
+  getAuthStatus(): Promise<boolean> {
+    return this.getAuthStatus$().pipe(take(1)).toPromise();
+  }
+
+  getAuthStatus$(): Observable<boolean> {
+    return this.oAuth2TokenState$.pipe(
+      map(oAuth2TokenState => !isNullOrUndefined(oAuth2TokenState.accessToken)),
+      distinctUntilChanged()
+    );
   }
 
   private acquireNewAuthToken(refreshToken: string): Promise<string> {
@@ -75,7 +75,7 @@ export class OAuth2Service {
       });
     }).catch(error => {
       return this.updateOAuth2TokenState(createDefaultOAuth2TokenState()).then(() => {
-        return Promise.reject(createRuntimeError(ErrorCode.FailedToRefreshOAuth2Token, undefined, error));
+        return Promise.reject(createRuntimeError(ErrorCode.GoogleOAuth2RefreshTokenFailure, undefined, error));
       });
     });
   }
@@ -93,7 +93,7 @@ export class OAuth2Service {
     return new Promise<any>((resolve, reject) => {
       chrome.identity.launchWebAuthFlow({url: getOAuth2WebAuthFlowUrl(), interactive: true}, responseUrl => {
         if (chrome.runtime.lastError) {
-          reject(createRuntimeError(ErrorCode.AuthTokenNotGranted, chrome.runtime.lastError.message));
+          reject(createRuntimeError(ErrorCode.GoogleOAuth2AccessTokenNotGranted, chrome.runtime.lastError.message));
         } else {
           resolve(getAuthCodeFromWebAuthResponseUrl(responseUrl));
         }

@@ -14,9 +14,9 @@ export function getAuthCodeFromWebAuthResponseUrl(responseUrl: string): Promise<
   return new Promise<string>((resolve, reject) => {
     const responseUrlParams = new URL(responseUrl).searchParams;
     if (responseUrlParams.get(OAuth2URLParam.Error)) {
-      reject(createRuntimeError(ErrorCode.AuthTokenNotGranted, responseUrlParams.get(OAuth2URLParam.Error)));
+      reject(createRuntimeError(ErrorCode.GoogleOAuth2AccessTokenNotGranted, responseUrlParams.get(OAuth2URLParam.Error)));
     } else if (responseUrlParams.get(OAuth2URLParam.Scope) !== environment.driveAPIScopes) {
-      reject(createRuntimeError(ErrorCode.RequiredOAuth2ScopeNotGranted));
+      reject(createRuntimeError(ErrorCode.GoogleOAuth2RequiredScopeNotGranted));
     } else {
       resolve(responseUrlParams.get(OAuth2URLParam.AuthCode));
     }

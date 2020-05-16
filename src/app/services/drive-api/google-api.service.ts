@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HTTPMethod, HttpRequestBuilder} from '../../../background/types/http-request';
 import {UrlBuilder} from '../../../background/types/url-builder';
-import {causedByHttp401, mapToRuntimeError} from '../../types/errors/runtime-error';
+import {causedByHttp401, createRuntimeError, mapToRuntimeError} from '../../types/errors/runtime-error';
 import {ErrorCode} from '../../types/errors/error-code';
 import {environment} from '../../../environments/environment';
 import {OAuth2Service} from '../oauth2/o-auth-2.service';
@@ -112,7 +112,7 @@ function handleHttpError(): MethodDecorator {
       return Promise.resolve(originalMethod.apply(this, args)).catch(error => {
         if (causedByHttp401(error)) {
           return this.oAuth2Service.invalidateAuthToken().then(() => {
-            return Promise.reject(error);
+            return Promise.reject(createRuntimeError(ErrorCode.GoogleOAuth2AccessTokenInvalid, undefined, error));
           });
         }
         return Promise.reject(error);
