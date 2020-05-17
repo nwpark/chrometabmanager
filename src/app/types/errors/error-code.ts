@@ -11,6 +11,7 @@ export enum ErrorCode {
   PostJSONFileContentError = 'PostJSONFileContentError_46ce96a2',
   MessageResponseError = 'MessageResponseError_b3ca2a0d',
   PatchRequestIsObsolete = 'PatchRequestIsObsolete_d30dc5b9',
+  GoogleOAuth2AccessTokenNotPresent = 'GoogleOAuth2AccessTokenNotPresent_6c307c0e',
   GoogleOAuth2AccessTokenNotGranted = 'GoogleOAuth2AccessTokenNotGranted_5af3e91a',
   GoogleOAuth2RequiredScopeNotGranted = 'GoogleOAuth2RequiredScopeNotGranted_6faa0e30',
   GoogleOAuth2RefreshTokenFailure = 'GoogleOAuth2RefreshTokenFailure_6a529de8',
@@ -103,7 +104,8 @@ const errorCodeDetailsMap: ErrorCodeDetailsMap = {
     userFriendlyMessage: `You have been logged out of your Google account.\n\nYou will need to log back in to continue using sync.`,
     shouldDisplayDialog: true,
     shouldSendErrorReport: true
-  }
+  },
+  [ErrorCode.GoogleOAuth2AccessTokenNotPresent]: { shouldDisplayDialog: false }
 };
 
 type ErrorCodeDetailsMap = {

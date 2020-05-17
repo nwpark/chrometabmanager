@@ -51,9 +51,10 @@ export class OAuth2Service {
     return this.getOAuth2TokenState().then(oAuth2TokenState => {
       if (oAuth2TokenStateIsValid(oAuth2TokenState)) {
         return oAuth2TokenState.accessToken;
+      } else if (oAuth2TokenState.refreshToken) {
+        return this.acquireNewAuthToken(oAuth2TokenState.refreshToken);
       }
-      // todo: check if refreshToken exists
-      return this.acquireNewAuthToken(oAuth2TokenState.refreshToken);
+      return Promise.reject(createRuntimeError(ErrorCode.GoogleOAuth2AccessTokenNotPresent));
     });
   }
 
