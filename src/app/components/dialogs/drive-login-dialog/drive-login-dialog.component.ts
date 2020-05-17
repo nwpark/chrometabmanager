@@ -120,10 +120,11 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
       [StepperStateId.PREPARING_DRIVE_DATA]: {
         disableDialogClose: true,
         onInitialize: () => {
-          Promise.resolve(this.shouldCopySavedSessions
-            ? this.storageService.copySavedSessions(StorageCopyDirection.FromLocalToSync)
-            : this.storageService.reloadSavedSessionsSync()
-          ).then(() => {
+          this.driveAccountService.clearLoginStatus().then(() => {
+            return this.shouldCopySavedSessions
+              ? this.storageService.copySavedSessions(StorageCopyDirection.FromLocalToSync)
+              : this.storageService.reloadSavedSessionsSync();
+          }).then(() => {
             return this.driveAccountService.enableSync();
           }).then(() => {
             this.advanceStepperState();

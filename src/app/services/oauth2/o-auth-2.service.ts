@@ -52,6 +52,7 @@ export class OAuth2Service {
       if (oAuth2TokenStateIsValid(oAuth2TokenState)) {
         return oAuth2TokenState.accessToken;
       }
+      // todo: check if refreshToken exists
       return this.acquireNewAuthToken(oAuth2TokenState.refreshToken);
     });
   }
@@ -82,7 +83,9 @@ export class OAuth2Service {
   }
 
   performInteractiveLogin(): Promise<void> {
-    return this.launchWebAuthFlow().then(authCode => {
+    return getOAuth2WebAuthFlowUrl().then(url => {
+      return this.launchWebAuthFlow(url);
+    }).then(authCode => {
       return getAccessTokenFromAuthCode(authCode);
     }).then(res => {
       const oAuth2TokenState = createOAuth2TokenState(res.access_token, res.refresh_token, res.expires_in);
@@ -90,9 +93,9 @@ export class OAuth2Service {
     });
   }
 
-  private launchWebAuthFlow(): Promise<string> {
+  private launchWebAuthFlow(url: string): Promise<string> {
     return new Promise<any>((resolve, reject) => {
-      chrome.identity.launchWebAuthFlow({url: getOAuth2WebAuthFlowUrl(), interactive: true}, responseUrl => {
+      chrome.identity.launchWebAuthFlow({url, interactive: true}, responseUrl => {
         if (chrome.runtime.lastError) {
           reject(createRuntimeError(ErrorCode.GoogleOAuth2AccessTokenNotGranted, chrome.runtime.lastError.message));
         } else {

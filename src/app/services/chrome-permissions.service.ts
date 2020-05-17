@@ -6,7 +6,7 @@ import {Injectable} from '@angular/core';
 export class ChromePermissionsService {
 
   private readonly DRIVE_API_PERMISSIONS = {
-    permissions: ['identity'],
+    permissions: ['identity', 'identity.email'],
     origins: ['https://www.googleapis.com/*']
   };
 

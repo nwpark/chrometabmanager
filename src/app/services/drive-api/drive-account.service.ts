@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
-import {DriveLoginStatus} from '../../types/drive-login-status';
+import {createDefaultDriveLoginStatus, DriveLoginStatus} from '../../types/drive-login-status';
 import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {GoogleApiService} from './google-api.service';
 import {DriveStorageService} from './drive-storage.service';
-import {ChromePermissionsService} from '../chrome-permissions.service';
 import {distinctUntilChanged, map, take} from 'rxjs/operators';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {PreferencesService} from '../preferences.service';
@@ -83,6 +82,10 @@ export class DriveAccountService {
       loginStatus.savedSessionsFileId = fileId;
       return this.updateLoginStatus(loginStatus);
     });
+  }
+
+  clearLoginStatus(): Promise<void> {
+    return this.updateLoginStatus(createDefaultDriveLoginStatus());
   }
 
   private updateLoginStatus(loginStatus: DriveLoginStatus): Promise<void> {

@@ -35,7 +35,8 @@ export enum OAuth2URLParam {
   RefreshToken = 'refresh_token',
   Scope = 'scope',
   Error = 'error',
-  AuthCode = 'code'
+  AuthCode = 'code',
+  LoginHint = 'login_hint'
 }
 
 enum OAuth2URLParamValue {
