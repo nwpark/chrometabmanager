@@ -1,4 +1,4 @@
-const oAuth2ClientId = '1007759974900-dno2ln8gkgulvh6k9of7godjf77ue9lo.apps.googleusercontent.com';
+const oAuth2ClientId = '187114739506-rv69kn16rk779jh75ul2pmv1c006d1bi.apps.googleusercontent.com';
 const driveAPIScopes = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
 
 export const environment = {
@@ -23,7 +23,7 @@ export const environment = {
   driveApiPatchFileContentUrl: 'https://www.googleapis.com/upload/drive/v3/files/fileId?uploadType=media',
 
   oAuth2TokenUrl: 'https://oauth2.googleapis.com/token',
-  urlEncodedOAuth2ClientId: 'Y2xpZW50X2lkPTEwMDc3NTk5NzQ5MDAtZG5vMmxuOGdrZ3Vsdmg2azlvZjdnb2RqZjc3dWU5bG8uYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20mY2xpZW50X3NlY3JldD14TG1wbDA1eDBOWjJpSTNZRGc2Yk53Zm8=',
+  urlEncodedOAuth2ClientId: 'Y2xpZW50X2lkPTE4NzExNDczOTUwNi1ydjY5a24xNnJrNzc5amg3NXVsMnBtdjFjMDA2ZDFiaS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSZjbGllbnRfc2VjcmV0PS1XblRwMXhZaFk1cWhnQkcyY1Ywc19VVQ==',
   driveAPIScopes,
   oAuth2WebAuthFlowUrl: `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&access_type=offline&prompt=consent&include_granted_scopes=true&client_id=${oAuth2ClientId}&scope=${driveAPIScopes}`
 };

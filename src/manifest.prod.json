@@ -41,13 +41,5 @@
     "newtab": "index.html"
   },
 
-  "oauth2": {
-    "client_id": "187114739506-1cd6plmklmpik0rs9ng7rrgo12fs561e.apps.googleusercontent.com",
-    "scopes": [
-      "https://www.googleapis.com/auth/drive.appdata",
-      "https://www.googleapis.com/auth/drive.file"
-    ]
-  },
-
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq36SSPSofdT8ZZjiqpmzY8aUw5F8I2/xxMUWBDmfUwYtgflUV12pLuPQOsbbzKYszFZveohK9IX/8rIzoX0WLh+i2X8fJbs+k+u3+0dRImzOoebteTVuo5rKlyXACoiA3OGp7cRkqIYyYJrya1y+h8RGrC4qGdYeSQ/AntZBk+2OcLVgJG2DDS8RGTIpJIHtMh8IGyoidnlVP/+A2iD4s5ZarP4GBQ1TZZ/pL3RnSFQFCoaXuAFa5TjSQtlkvq3TAIsNY77bnNO/pV36vsdSvypr7TerHH3XzOJvGzRsk9oMSgfCdhUmWEp+NwQixhOEHJX9yjoMOIN/3gzFtmrypQIDAQAB"
 }
