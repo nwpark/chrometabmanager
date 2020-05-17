@@ -9,7 +9,6 @@ export interface ChromeAPITabState {
   url: string;
   pendingUrl?: string;
   title: string;
-  favIconUrl?: string;
   status: string;
   active?: boolean;
   discarded?: boolean;
@@ -31,8 +30,7 @@ export function chromeAPITabStateEquals(a: ChromeAPITabState, b: ChromeAPITabSta
   if (isNullOrUndefined(a) || isNullOrUndefined(b)) {
     return a === b;
   }
-  return a.favIconUrl === b.favIconUrl
-    && a.url === b.url
+  return a.url === b.url
     && a.id === b.id
     && a.status === b.status
     && a.windowId === b.windowId

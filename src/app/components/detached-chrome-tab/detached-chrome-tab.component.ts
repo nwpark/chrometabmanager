@@ -6,6 +6,7 @@ import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {getTimeStampString} from '../../utils/date-utils';
 import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
 import {SessionState} from '../../types/session/session-state';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-detached-chrome-tab',
@@ -44,16 +45,13 @@ export class DetachedChromeTabComponent implements OnInit {
     this.title = this.chromeAPITab.title.length > 0
       ? this.chromeAPITab.title
       : this.chromeAPITab.url;
-    this.faviconIconUrl = this.domSanitizer.bypassSecurityTrustUrl(this.getFaviconIconUrl());
+    this.faviconIconUrl = this.getFavIconUrl();
     this.lastModified = getTimeStampString(this.sessionState.session.lastModified);
   }
 
-  private getFaviconIconUrl() {
-    if (this.chromeAPITab.favIconUrl) {
-      return this.chromeAPITab.favIconUrl;
-    } else {
-      return `chrome://favicon/size/16/${this.chromeAPITab.url}`;
-    }
+  private getFavIconUrl(): SafeUrl {
+    const favIconUrl = environment.favIconUrl + this.chromeAPITab.url;
+    return this.domSanitizer.bypassSecurityTrustUrl(favIconUrl);
   }
 
   private setAnimationState(animationState: AnimationState) {

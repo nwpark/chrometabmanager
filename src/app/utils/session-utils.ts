@@ -41,8 +41,8 @@ export class WindowStateUtils {
   }
 
   static convertToSavedTab(chromeTab: ChromeAPITabState): ChromeAPITabState {
-    const {url, title, favIconUrl} = chromeTab;
-    return {id: uuid(), status: 'complete', url, title, favIconUrl};
+    const {url, title} = chromeTab;
+    return {id: uuid(), status: 'complete', url, title};
   }
 
   static convertToActiveWindow(chromeWindow: ChromeAPIWindowState): ChromeAPIWindowState {
