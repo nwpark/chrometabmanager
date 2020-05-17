@@ -1,14 +1,13 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {MatDialogRef} from '@angular/material';
+import {ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {DriveAccountService} from '../../../services/drive-api/drive-account.service';
 import {PreferencesService} from '../../../services/preferences.service';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {DriveLoginStatus} from '../../../types/drive-login-status';
 import {ChromePermissionsService} from '../../../services/chrome-permissions.service';
-import {OAuth2Service} from '../../../services/drive-api/o-auth-2.service';
+import {OAuth2Service} from '../../../services/oauth2/o-auth-2.service';
 import {StorageCopyDirection, StorageService} from '../../../services/storage/storage.service';
-import {environment} from '../../../../environments/environment';
 
 @Component({
   selector: 'app-drive-login-dialog',
@@ -25,7 +24,8 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
   driveLoginStatus: DriveLoginStatus;
   shouldCopySavedSessions = true;
 
-  constructor(private dialogRef: MatDialogRef<DriveLoginDialogComponent>,
+  constructor(@Inject(MAT_DIALOG_DATA) private options: DriveLoginDialogConfig,
+              private dialogRef: MatDialogRef<DriveLoginDialogComponent>,
               private driveAccountService: DriveAccountService,
               private preferencesService: PreferencesService,
               private chromePermissionsService: ChromePermissionsService,
@@ -72,24 +72,27 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
   }
 
   private getInitialStepperState(): Promise<StepperStateId> {
-    return Promise.all([
-      this.chromePermissionsService.hasDriveAPIPermissions(),
-      this.oAuth2Service.chromeSignInRequired(),
-      this.oAuth2Service.getAuthStatus()
-    ]).then(([hasRequiredPermissions, chromeSignInRequired, authStatus]) => {
-      if (!hasRequiredPermissions) {
-        return StepperStateId.REQUIRES_CHROME_PERMISSIONS;
-      } else if (chromeSignInRequired) {
-        return StepperStateId.REQUIRES_CHROME_LOGIN;
-      } else if (!authStatus) {
-        return StepperStateId.REQUIRES_OAUTH_LOGIN;
-      }
-      return StepperStateId.CONFIRM_ENABLE_SYNC;
-    });
+    return this.options.skipConfirmationStep
+      ? this.stepperStateMap[StepperStateId.CONFIRM_ENABLE_SYNC].getNextState()
+      : Promise.resolve(StepperStateId.CONFIRM_ENABLE_SYNC);
   }
 
   private initStepperStateMap() {
     this.stepperStateMap = {
+      [StepperStateId.CONFIRM_ENABLE_SYNC]: {
+        disableDialogClose: false,
+        getNextState: () => Promise.all([
+          this.chromePermissionsService.hasDriveAPIPermissions(),
+          this.oAuth2Service.hasValidAuthToken()
+        ]).then(([hasRequiredPermissions, hasValidAuthToken]) => {
+          if (!hasRequiredPermissions) {
+            return StepperStateId.REQUIRES_CHROME_PERMISSIONS;
+          } else if (!hasValidAuthToken) {
+            return StepperStateId.REQUIRES_OAUTH_LOGIN;
+          }
+          return StepperStateId.PREPARING_DRIVE_DATA;
+        })
+      },
       [StepperStateId.REQUIRES_CHROME_PERMISSIONS]: {
         disableDialogClose: false,
         getNextState: () => Promise.resolve(StepperStateId.AWAITING_CHROME_PERMISSIONS)
@@ -100,26 +103,7 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
           this.advanceStepperState();
         }),
         getNextState: () => {
-          return this.oAuth2Service.chromeSignInRequired().then(chromeSignInRequired => {
-            return chromeSignInRequired
-              ? StepperStateId.REQUIRES_CHROME_LOGIN
-              : StepperStateId.REQUIRES_OAUTH_LOGIN;
-          });
-        }
-      },
-      [StepperStateId.REQUIRES_CHROME_LOGIN]: {
-        disableDialogClose: false,
-        getNextState: () => Promise.resolve(StepperStateId.AWAITING_CHROME_LOGIN)
-      },
-      [StepperStateId.AWAITING_CHROME_LOGIN]: {
-        disableDialogClose: false,
-        onInitialize: () => chrome.tabs.create({url: environment.chromeLoginUrl}),
-        getNextState: () => {
-          return this.oAuth2Service.chromeSignInRequired().then(chromeSignInRequired => {
-            return chromeSignInRequired
-              ? StepperStateId.REQUIRES_CHROME_LOGIN
-              : StepperStateId.REQUIRES_OAUTH_LOGIN;
-          });
+          return Promise.resolve(StepperStateId.REQUIRES_OAUTH_LOGIN);
         }
       },
       [StepperStateId.REQUIRES_OAUTH_LOGIN]: {
@@ -131,19 +115,16 @@ export class DriveLoginDialogComponent implements OnDestroy, OnInit {
         onInitialize: () => this.oAuth2Service.performInteractiveLogin().then(() => {
           this.advanceStepperState();
         }),
-        getNextState: () => Promise.resolve(StepperStateId.CONFIRM_ENABLE_SYNC)
-      },
-      [StepperStateId.CONFIRM_ENABLE_SYNC]: {
-        disableDialogClose: false,
         getNextState: () => Promise.resolve(StepperStateId.PREPARING_DRIVE_DATA)
       },
       [StepperStateId.PREPARING_DRIVE_DATA]: {
         disableDialogClose: true,
         onInitialize: () => {
-          Promise.resolve(this.shouldCopySavedSessions
-            ? this.storageService.copySavedSessions(StorageCopyDirection.FromLocalToSync)
-            : this.storageService.reloadSavedSessionsSync()
-          ).then(() => {
+          this.driveAccountService.clearLoginStatus().then(() => {
+            return this.shouldCopySavedSessions
+              ? this.storageService.copySavedSessions(StorageCopyDirection.FromLocalToSync)
+              : this.storageService.reloadSavedSessionsSync();
+          }).then(() => {
             return this.driveAccountService.enableSync();
           }).then(() => {
             this.advanceStepperState();
@@ -170,13 +151,21 @@ interface StepperState {
 }
 
 enum StepperStateId {
-  REQUIRES_CHROME_PERMISSIONS = 'requiresChromePermissions',
-  AWAITING_CHROME_PERMISSIONS = 'awaitingChromePermissions',
-  REQUIRES_CHROME_LOGIN = 'requiresChromeLogin',
-  AWAITING_CHROME_LOGIN = 'awaitingChromeLogin',
-  REQUIRES_OAUTH_LOGIN = 'requiresOAuthLogin',
-  AWAITING_OAUTH_LOGIN = 'awaitingOAuthLogin',
-  CONFIRM_ENABLE_SYNC = 'confirmEnableSync',
-  PREPARING_DRIVE_DATA = 'preparingDriveData',
-  FINISHED = 'complete',
+  REQUIRES_CHROME_PERMISSIONS,
+  AWAITING_CHROME_PERMISSIONS,
+  REQUIRES_OAUTH_LOGIN,
+  AWAITING_OAUTH_LOGIN,
+  CONFIRM_ENABLE_SYNC,
+  PREPARING_DRIVE_DATA,
+  FINISHED,
+}
+
+export class DriveLoginDialogConfig {
+  public static readonly DEFAULT: MatDialogConfig<DriveLoginDialogConfig> = {
+    data: { skipConfirmationStep: false }
+  };
+  public static readonly SIGN_IN_ONLY: MatDialogConfig<DriveLoginDialogConfig> = {
+    data: { skipConfirmationStep: true }
+  };
+  skipConfirmationStep: boolean;
 }

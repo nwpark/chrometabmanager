@@ -5,6 +5,7 @@ import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {ChromeAPITabState, getUrl, hasTitle} from '../../types/chrome-api/chrome-api-tab-state';
 import {WebpageTitleCacheService} from '../../services/webpage-title-cache.service';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-draggable-chrome-tab',
@@ -36,15 +37,12 @@ export class DraggableChromeTabComponent implements OnInit {
     this.title = hasTitle(this.chromeTab)
       ? this.chromeTab.title
       : this.webpageTitleCacheService.getTitleForUrl(getUrl(this.chromeTab));
-    this.faviconIconUrl = this.domSanitizer.bypassSecurityTrustUrl(this.getFaviconIconUrl());
+    this.faviconIconUrl = this.getFavIconUrl();
   }
 
-  private getFaviconIconUrl() {
-    if (this.chromeTab.favIconUrl) {
-      return this.chromeTab.favIconUrl;
-    } else {
-      return `chrome://favicon/size/16/${this.chromeTab.url}`;
-    }
+  private getFavIconUrl(): SafeUrl {
+    const favIconUrl = environment.favIconUrl + this.chromeTab.url;
+    return this.domSanitizer.bypassSecurityTrustUrl(favIconUrl);
   }
 
   private setAnimationState(animationState: AnimationState) {

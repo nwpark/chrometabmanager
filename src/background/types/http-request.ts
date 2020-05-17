@@ -65,6 +65,11 @@ export class HttpRequestBuilder {
     return this;
   }
 
+  contentTypeFormURLEncoded(): HttpRequestBuilder {
+    this._contentType = 'application/x-www-form-urlencoded';
+    return this;
+  }
+
   responseTypeJSON(): HttpRequestBuilder {
     this._responseType = 'json';
     return this;

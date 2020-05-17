@@ -4,7 +4,7 @@ import {getSyncStatusDetails, SyncStatus, SyncStatusDetails} from '../../types/s
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {DriveLoginStatus} from '../../types/drive-login-status';
-import {DriveLoginDialogComponent} from '../dialogs/drive-login-dialog/drive-login-dialog.component';
+import {DriveLoginDialogComponent, DriveLoginDialogConfig} from '../dialogs/drive-login-dialog/drive-login-dialog.component';
 import {MatDialog} from '@angular/material';
 import {PreferencesService} from '../../services/preferences.service';
 import {DisableSyncDialogComponent} from '../dialogs/disable-sync-dialog/disable-sync-dialog.component';
@@ -44,8 +44,12 @@ export class SyncStatusComponent implements OnDestroy, OnInit {
     });
   }
 
+  signInToDrive() {
+    this.matDialogService.open(DriveLoginDialogComponent, DriveLoginDialogConfig.SIGN_IN_ONLY);
+  }
+
   enableSync() {
-    this.matDialogService.open(DriveLoginDialogComponent);
+    this.matDialogService.open(DriveLoginDialogComponent, DriveLoginDialogConfig.DEFAULT);
   }
 
   disableSync() {

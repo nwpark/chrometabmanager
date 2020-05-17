@@ -25,8 +25,6 @@ export class RuntimeErrorHandler implements ErrorHandler {
         errorMessage: errorDetails.userFriendlyMessage,
         runtimeError
       });
-    } else if (runtimeError.cause) {
-      this.handleRuntimeError(runtimeError.cause);
     }
   }
 }

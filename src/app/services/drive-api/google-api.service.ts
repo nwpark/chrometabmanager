@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HTTPMethod, HttpRequestBuilder} from '../../../background/types/http-request';
 import {UrlBuilder} from '../../../background/types/url-builder';
-import {causedByHttp401, mapToRuntimeError} from '../../types/errors/runtime-error';
+import {causedByHttp401, createRuntimeError, mapToRuntimeError} from '../../types/errors/runtime-error';
 import {ErrorCode} from '../../types/errors/error-code';
 import {environment} from '../../../environments/environment';
-import {OAuth2Service} from './o-auth-2.service';
+import {OAuth2Service} from '../oauth2/o-auth-2.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class GoogleApiService {
 
   constructor(private oAuth2Service: OAuth2Service) { }
 
-  @retryOnError()
+  @handleHttpError()
   requestUserAccountInformation(): Promise<any> {
     return this.oAuth2Service.getAuthToken().then(token => {
       const httpRequest = new HttpRequestBuilder(HTTPMethod.GET, environment.driveApiGetAccountInfoUrl)
@@ -26,7 +26,7 @@ export class GoogleApiService {
     });
   }
 
-  @retryOnError()
+  @handleHttpError()
   searchAppDataFiles(fileName: string): Promise<any> {
     return this.oAuth2Service.getAuthToken().then(token => {
       const url = environment.driveApiGetFileListUrl.replace('fileName', fileName);
@@ -40,7 +40,7 @@ export class GoogleApiService {
     });
   }
 
-  @retryOnError()
+  @handleHttpError()
   requestJSONFileContent(fileId: string): Promise<any> {
     return this.oAuth2Service.getAuthToken().then(token => {
       const url = environment.driveApiGetFileContentUrl.replace('fileId', fileId);
@@ -55,7 +55,7 @@ export class GoogleApiService {
     });
   }
 
-  @retryOnError()
+  @handleHttpError()
   patchJSONFileContent(fileId: string, fileContent: any): Promise<any> {
     return this.oAuth2Service.getAuthToken().then(token => {
       const url = new UrlBuilder(environment.driveApiPatchFileContentUrl.replace('fileId', fileId))
@@ -73,7 +73,7 @@ export class GoogleApiService {
   }
 
   // Returns metadata for newly created file
-  @retryOnError()
+  @handleHttpError()
   postJSONAppDataFile(fileName: string, fileContent: any): Promise<any> {
     return this.oAuth2Service.getAuthToken().then(token => {
       const url = new UrlBuilder(environment.driveApiPostFileContentUrl)
@@ -104,16 +104,15 @@ export class GoogleApiService {
   }
 }
 
-function retryOnError(): MethodDecorator {
+function handleHttpError(): MethodDecorator {
   return (target: () => void, key: string, descriptor: any) => {
     const originalMethod = descriptor.value;
 
     descriptor.value =  function(...args: any[]) {
       return Promise.resolve(originalMethod.apply(this, args)).catch(error => {
         if (causedByHttp401(error)) {
-          console.warn('AUTHENTICATION ERROR OCCURRED. RETRYING.');
-          return this.oAuth2Service.removeCachedAuthToken().then(() => {
-            return originalMethod.apply(this, args);
+          return this.oAuth2Service.invalidateAuthToken().then(() => {
+            return Promise.reject(createRuntimeError(ErrorCode.GoogleOAuth2AccessTokenInvalid, undefined, error));
           });
         }
         return Promise.reject(error);

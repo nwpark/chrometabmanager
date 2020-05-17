@@ -1,15 +1,15 @@
 import {Injectable} from '@angular/core';
-import {DriveLoginStatus} from '../../types/drive-login-status';
+import {createDefaultDriveLoginStatus, DriveLoginStatus} from '../../types/drive-login-status';
 import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {GoogleApiService} from './google-api.service';
 import {DriveStorageService} from './drive-storage.service';
-import {ChromePermissionsService} from '../chrome-permissions.service';
 import {distinctUntilChanged, map, take} from 'rxjs/operators';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {PreferencesService} from '../preferences.service';
 import {getSyncStatus, SyncStatus} from '../../types/sync-status';
-import {OAuth2Service} from './o-auth-2.service';
+import {OAuth2Service} from '../oauth2/o-auth-2.service';
+import {Mutator} from '../../types/mutator';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +22,6 @@ export class DriveAccountService {
   constructor(private driveStorageService: DriveStorageService,
               private oAuth2Service: OAuth2Service,
               private googleApiService: GoogleApiService,
-              private chromePermissionsService: ChromePermissionsService,
               private messageReceiverService: MessageReceiverService,
               private preferencesService: PreferencesService) {
     this.driveStorageService.getLoginStatus().then(loginStatus => {
@@ -46,7 +45,7 @@ export class DriveAccountService {
     return combineLatest(
       this.loginStatus$,
       this.preferencesService.preferences$,
-      this.oAuth2Service.authStatus$,
+      this.oAuth2Service.getAuthStatus$(),
     ).pipe(
       map(([loginStatus, preferences, authStatus]) => {
         return getSyncStatus(loginStatus, preferences, authStatus);
@@ -67,9 +66,9 @@ export class DriveAccountService {
   }
 
   setSyncInProgress(syncInProgress: boolean): Promise<void> {
-    return this.getLoginStatus().then(loginStatus => {
+    return this.modifyLoginStatus(loginStatus => {
       loginStatus.syncInProgress = syncInProgress;
-      return this.updateLoginStatus(loginStatus);
+      return loginStatus;
     });
   }
 
@@ -80,9 +79,19 @@ export class DriveAccountService {
   }
 
   setSavedSessionsFileId(fileId: string): Promise<void> {
-    return this.getLoginStatus().then(loginStatus => {
+    return this.modifyLoginStatus(loginStatus => {
       loginStatus.savedSessionsFileId = fileId;
-      return this.updateLoginStatus(loginStatus);
+      return loginStatus;
+    });
+  }
+
+  clearLoginStatus(): Promise<void> {
+    return this.updateLoginStatus(createDefaultDriveLoginStatus());
+  }
+
+  private modifyLoginStatus(mutate: Mutator<DriveLoginStatus>): Promise<void> {
+    return this.getLoginStatus().then(loginStatus => {
+      return this.updateLoginStatus(mutate(loginStatus));
     });
   }
 

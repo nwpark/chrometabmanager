@@ -6,6 +6,7 @@ import {MessageReceiver, RespondableMessageReceiver, SessionListMessageReceiver,
 import {MessageData} from './message-sender';
 import {DriveLoginStatus} from '../../types/drive-login-status';
 import {Preferences} from '../../types/preferences';
+import {OAuth2TokenState} from '../../types/o-auth2-token-state';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,7 @@ export class MessageReceiverService {
   private onLoadDriveFileDataRequest = new RespondableMessageReceiver<void, SessionListState>();
   private onInsertChromeWindowRequest = new SimpleMessageReceiver<InsertWindowMessageData>();
   private authStatusUpdated = new SimpleMessageReceiver<boolean>();
-  private chromePermissionsUpdated = new SimpleMessageReceiver<void>();
+  private oAuth2TokenStateUpdated = new SimpleMessageReceiver<OAuth2TokenState>();
 
   savedSessionStateUpdated$ = this.savedSessionStateUpdated.asObservable();
   savedSessionStateSyncUpdated$ = this.savedSessionStateSyncUpdated.asObservable();
@@ -38,7 +39,7 @@ export class MessageReceiverService {
   onLoadDriveFileDataRequest$ = this.onLoadDriveFileDataRequest.asObservable();
   onInsertChromeWindowRequest$ = this.onInsertChromeWindowRequest.asObservable();
   authStatusUpdated$ = this.authStatusUpdated.asObservable();
-  chromePermissionsUpdated$ = this.chromePermissionsUpdated.asObservable();
+  oAuth2TokenStateUpdated$ = this.oAuth2TokenStateUpdated.asObservable();
 
   constructor() {
     chrome.runtime.onMessage.addListener((message: MessageData<any>, sender, sendResponse) => {
@@ -76,8 +77,8 @@ export class MessageReceiverService {
         return this.onLoadDriveFileDataRequest;
       case MessagePassingService.AUTH_STATUS_MESSAGE:
         return this.authStatusUpdated;
-      case MessagePassingService.CHROME_PERMISSIONS_MESSAGE:
-        return this.chromePermissionsUpdated;
+      case MessagePassingService.OAUTH2_TOKEN_STATE_MESSAGE:
+        return this.oAuth2TokenStateUpdated;
     }
   }
 }

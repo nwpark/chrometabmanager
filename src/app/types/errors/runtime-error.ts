@@ -10,8 +10,11 @@ export interface RuntimeError {
   trace?: any[];
 }
 
-export function createRuntimeError(errorCode: ErrorCode, details?: string): RuntimeError {
-  return {errorCode, details};
+export function createRuntimeError(errorCode: ErrorCode, details?: string, cause?: any): RuntimeError {
+  if (cause) {
+    cause = convertToRuntimeError(cause);
+  }
+  return {errorCode, details, cause};
 }
 
 export function runtimeErrorFromXHR(errorCode: ErrorCode, httpRequest: HttpRequest): RuntimeError {

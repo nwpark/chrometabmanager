@@ -10,8 +10,12 @@ export enum ErrorCode {
   PatchJSONFileContentError = 'PatchJSONFileContentError_4e745e7e',
   PostJSONFileContentError = 'PostJSONFileContentError_46ce96a2',
   MessageResponseError = 'MessageResponseError_b3ca2a0d',
-  RequestIsObsolete = 'RequestIsObsolete_d30dc5b9',
-  AuthTokenNotGranted = 'AuthTokenNotGranted_5af3e91a'
+  PatchRequestIsObsolete = 'PatchRequestIsObsolete_d30dc5b9',
+  GoogleOAuth2AccessTokenNotPresent = 'GoogleOAuth2AccessTokenNotPresent_6c307c0e',
+  GoogleOAuth2AccessTokenNotGranted = 'GoogleOAuth2AccessTokenNotGranted_5af3e91a',
+  GoogleOAuth2RequiredScopeNotGranted = 'GoogleOAuth2RequiredScopeNotGranted_6faa0e30',
+  GoogleOAuth2RefreshTokenFailure = 'GoogleOAuth2RefreshTokenFailure_6a529de8',
+  GoogleOAuth2AccessTokenInvalid = 'GoogleOAuth2AccessTokenInvalid_2c4482c2'
 }
 
 export enum ErrorType {
@@ -81,12 +85,27 @@ const errorCodeDetailsMap: ErrorCodeDetailsMap = {
     requiresReload: true
   },
   [ErrorCode.MessageResponseError]: { shouldDisplayDialog: false },
-  [ErrorCode.RequestIsObsolete]: { shouldDisplayDialog: false },
-  [ErrorCode.AuthTokenNotGranted]: {
+  [ErrorCode.PatchRequestIsObsolete]: { shouldDisplayDialog: false },
+  [ErrorCode.GoogleOAuth2AccessTokenNotGranted]: {
     userFriendlyMessage: `Authentication token could not be obtained.`,
     shouldDisplayDialog: true,
     shouldSendErrorReport: true
-  }
+  },
+  [ErrorCode.GoogleOAuth2RequiredScopeNotGranted]: {
+    userFriendlyMessage: 'The requested permissions were not granted.',
+    shouldDisplayDialog: true
+  },
+  [ErrorCode.GoogleOAuth2RefreshTokenFailure]: {
+    userFriendlyMessage: `You have been logged out of your Google account.\n\nYou will need to sign back in to continue using sync.`,
+    shouldDisplayDialog: true,
+    shouldSendErrorReport: true
+  },
+  [ErrorCode.GoogleOAuth2AccessTokenInvalid]: {
+    userFriendlyMessage: `You have been logged out of your Google account.\n\nYou will need to log back in to continue using sync.`,
+    shouldDisplayDialog: true,
+    shouldSendErrorReport: true
+  },
+  [ErrorCode.GoogleOAuth2AccessTokenNotPresent]: { shouldDisplayDialog: false }
 };
 
 type ErrorCodeDetailsMap = {

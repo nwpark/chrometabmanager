@@ -6,6 +6,7 @@ import {SessionListLayoutState, validateSessionListLayoutState} from '../../type
 import {validateSessionMap} from '../../types/session/session-map';
 import {UndefinedObjectError} from '../../types/errors/UndefinedObjectError';
 import {WebpageTitleCache} from '../../types/webpage-title-cache';
+import {createDefaultOAuth2TokenState, OAuth2TokenState} from '../../types/o-auth2-token-state';
 
 @Injectable({
   providedIn: 'root'
@@ -151,6 +152,29 @@ export class LocalStorageService {
       [StorageKeys.WebpageTitleCache]: webpageTitleCache
     }, () => {
       this.messagePassingService.broadcastWebpageTitleCache(webpageTitleCache);
+    });
+  }
+
+  getOAuth2TokenState(): Promise<OAuth2TokenState> {
+    return new Promise<OAuth2TokenState>(resolve => {
+      chrome.storage.local.get(StorageKeys.OAuth2TokenState, data => {
+        if (data[StorageKeys.OAuth2TokenState]) {
+          resolve(data[StorageKeys.OAuth2TokenState]);
+        } else {
+          resolve(createDefaultOAuth2TokenState());
+        }
+      });
+    });
+  }
+
+  setOAuth2TokenState(oAuth2TokenState: OAuth2TokenState): Promise<void> {
+    return new Promise<void>(resolve => {
+      chrome.storage.local.set({
+        [StorageKeys.OAuth2TokenState]: oAuth2TokenState
+      }, () => {
+        this.messagePassingService.broadcastOAuth2TokenState(oAuth2TokenState);
+        resolve();
+      });
     });
   }
 }

@@ -17,8 +17,8 @@ import {DialogDataFactory} from '../../utils/dialog-data-factory';
 import {DriveLoginStatus} from '../../types/drive-login-status';
 import {DriveAccountService} from '../../services/drive-api/drive-account.service';
 import {DriveStorageService} from '../../services/drive-api/drive-storage.service';
-import {DriveLoginDialogComponent} from '../../components/dialogs/drive-login-dialog/drive-login-dialog.component';
-import {OAuth2Service} from '../../services/drive-api/o-auth-2.service';
+import {DriveLoginDialogComponent, DriveLoginDialogConfig} from '../../components/dialogs/drive-login-dialog/drive-login-dialog.component';
+import {OAuth2Service} from '../../services/oauth2/o-auth-2.service';
 import {DisableSyncDialogComponent} from '../../components/dialogs/disable-sync-dialog/disable-sync-dialog.component';
 
 @Component({
@@ -70,7 +70,7 @@ export class OptionsComponent implements OnDestroy, OnInit {
       this.driveLoginStatus = loginStatus;
       this.changeDetectorRef.detectChanges();
     });
-    this.oAuth2Service.authStatus$.pipe(
+    this.oAuth2Service.getAuthStatus$().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(authStatus => {
       this.authStatus = authStatus;
@@ -93,8 +93,12 @@ export class OptionsComponent implements OnDestroy, OnInit {
     this.preferencesService.setDarkThemeEnabled(event.checked);
   }
 
+  signInToDrive() {
+    this.matDialogService.open(DriveLoginDialogComponent, DriveLoginDialogConfig.SIGN_IN_ONLY);
+  }
+
   enableSync() {
-    this.matDialogService.open(DriveLoginDialogComponent);
+    this.matDialogService.open(DriveLoginDialogComponent, DriveLoginDialogConfig.DEFAULT);
   }
 
   disableSync() {
