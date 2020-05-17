@@ -9,6 +9,7 @@ import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {PreferencesService} from '../preferences.service';
 import {getSyncStatus, SyncStatus} from '../../types/sync-status';
 import {OAuth2Service} from '../oauth2/o-auth-2.service';
+import {Mutator} from '../../types/mutator';
 
 @Injectable({
   providedIn: 'root'
@@ -65,9 +66,9 @@ export class DriveAccountService {
   }
 
   setSyncInProgress(syncInProgress: boolean): Promise<void> {
-    return this.getLoginStatus().then(loginStatus => {
+    return this.modifyLoginStatus(loginStatus => {
       loginStatus.syncInProgress = syncInProgress;
-      return this.updateLoginStatus(loginStatus);
+      return loginStatus;
     });
   }
 
@@ -78,14 +79,20 @@ export class DriveAccountService {
   }
 
   setSavedSessionsFileId(fileId: string): Promise<void> {
-    return this.getLoginStatus().then(loginStatus => {
+    return this.modifyLoginStatus(loginStatus => {
       loginStatus.savedSessionsFileId = fileId;
-      return this.updateLoginStatus(loginStatus);
+      return loginStatus;
     });
   }
 
   clearLoginStatus(): Promise<void> {
     return this.updateLoginStatus(createDefaultDriveLoginStatus());
+  }
+
+  private modifyLoginStatus(mutate: Mutator<DriveLoginStatus>): Promise<void> {
+    return this.getLoginStatus().then(loginStatus => {
+      return this.updateLoginStatus(mutate(loginStatus));
+    });
   }
 
   private updateLoginStatus(loginStatus: DriveLoginStatus): Promise<void> {
