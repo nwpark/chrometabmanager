@@ -13,7 +13,7 @@ export const releaseNotes_0_7_0: ReleaseNotes = {
     title: 'Why Google Drive?',
     details: [
       'Larger storage quota - You now have enough storage space to store approximately 40 million tabs!',
-      'Higher reliability - Sync storage was previously rather fragile.. It had harsh quota limits, failed to work in certain environments, and provided no information to aid troubleshooting. Contrarily, Drive storage is completely decoupled from the browsing environment, is more robust, and provides proper diagnoses for errors.',
+      'Higher reliability - Sync storage was previously rather fragile... It had harsh quota limits, failed to work in certain environments, and provided no information to aid troubleshooting. Contrarily, Drive storage is completely decoupled from the browsing environment, is more robust, and provides proper diagnoses for errors.',
       'Cross-browser support (not yet supported, but coming soon!) - Drive storage will eventually allow you to synchronize saved tabs between all browsers which support the extension.'
     ]
   }]

@@ -1,17 +1,20 @@
 import {isNullOrUndefined} from 'util';
 import {releaseNotes_0_7_0, versionUpdateScript_0_7_0} from './0.7.0';
 import {releaseNotes_0_6_3, versionUpdateScript_0_6_3} from './0.6.3';
+import {releaseNotes_0_7_2, versionUpdateScript_0_7_2} from './0.7.2';
 
-const releasedVersions = ['0.6.2', '0.6.3', '0.7.0', '0.7.1'];
+const releasedVersions = ['0.6.2', '0.6.3', '0.7.0', '0.7.1', '0.7.2'];
 
 const versionHistory: VersionHistory = {
   '0.6.3': releaseNotes_0_6_3,
-  '0.7.0': releaseNotes_0_7_0
+  '0.7.0': releaseNotes_0_7_0,
+  '0.7.2': releaseNotes_0_7_2
 };
 
 const versionUpdateScripts: InstallationScripts = {
   '0.6.3': versionUpdateScript_0_6_3,
-  '0.7.0': versionUpdateScript_0_7_0
+  '0.7.0': versionUpdateScript_0_7_0,
+  '0.7.2': versionUpdateScript_0_7_2
 };
 
 export function getInstallationScripts(previousVersion: string): InstallationScript[] {
