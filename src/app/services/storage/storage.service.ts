@@ -45,7 +45,7 @@ export class StorageService {
     return this.shouldUseSyncStorage().then(shouldUseSyncStorage => {
       return shouldUseSyncStorage
         ? this.driveStorageService.setSavedWindowsState(sessionListState, previousValueChecksum)
-        : this.localStorageService.setSavedWindowsState(sessionListState);
+        : this.localStorageService.setSavedWindowsState(sessionListState, previousValueChecksum);
     });
   }
 
@@ -92,8 +92,9 @@ export class StorageService {
           this.savedSessionStateSync.next(savedSessionStateLocal);
         });
       } else {
+        const previousValueChecksum = md5Checksum(savedSessionStateLocal);
         savedSessionStateSync.addAll(savedSessionStateLocal);
-        return this.localStorageService.setSavedWindowsState(savedSessionStateSync).then(() => {
+        return this.localStorageService.setSavedWindowsState(savedSessionStateSync, previousValueChecksum).then(() => {
           this.savedSessionStateLocal.next(savedSessionStateSync);
         });
       }
