@@ -14,6 +14,7 @@ import {SessionState} from '../../types/session/session-state';
 import {ErrorDialogService} from '../error-dialog.service';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {Mutator} from '../../types/mutator';
+import {md5Checksum} from '../../utils/hash-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -136,8 +137,9 @@ export class SavedTabsService implements TabsService {
   }
 
   modifySessionListState(mutate: Mutator<SessionListState>) {
+    const previousValueChecksum = md5Checksum(this.sessionListState);
     mutate(this.sessionListState);
     this.sessionStateUpdated.next(this.sessionListState);
-    this.storageService.setSavedWindowsState(this.sessionListState);
+    this.storageService.setSavedWindowsState(this.sessionListState, previousValueChecksum);
   }
 }

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {SessionListState} from '../../types/session/session-list-state';
-import {InsertWindowMessageData, MessagePassingService} from './message-passing.service';
+import {InsertWindowMessageData, MessagePassingService, PatchRequestData} from './message-passing.service';
 import {WebpageTitleCache} from '../../types/webpage-title-cache';
 import {MessageReceiver, RespondableMessageReceiver, SessionListMessageReceiver, SimpleMessageReceiver} from './message-receiver';
 import {MessageData} from './message-sender';
@@ -21,7 +21,7 @@ export class MessageReceiverService {
   private webpageTitleCacheUpdated = new SimpleMessageReceiver<WebpageTitleCache>();
   private driveLoginStatusUpdated = new SimpleMessageReceiver<DriveLoginStatus>();
   private onDeviceIdRequest = new RespondableMessageReceiver<void, string>();
-  private onUpdateDriveSavedSessionsRequest = new RespondableMessageReceiver<SessionListState, any>();
+  private onUpdateDriveSavedSessionsRequest = new RespondableMessageReceiver<PatchRequestData, any>();
   private onLoadDriveFileDataRequest = new RespondableMessageReceiver<void, SessionListState>();
   private onInsertChromeWindowRequest = new SimpleMessageReceiver<InsertWindowMessageData>();
   private authStatusUpdated = new SimpleMessageReceiver<boolean>();

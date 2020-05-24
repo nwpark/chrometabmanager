@@ -11,6 +11,7 @@ export enum ErrorCode {
   PostJSONFileContentError = 'PostJSONFileContentError_46ce96a2',
   MessageResponseError = 'MessageResponseError_b3ca2a0d',
   PatchRequestIsObsolete = 'PatchRequestIsObsolete_d30dc5b9',
+  PatchRequestDataNotCoherent = 'PatchRequestDataNotCoherent_13e644f4',
   GoogleOAuth2AccessTokenNotPresent = 'GoogleOAuth2AccessTokenNotPresent_6c307c0e',
   GoogleOAuth2AccessTokenNotGranted = 'GoogleOAuth2AccessTokenNotGranted_5af3e91a',
   GoogleOAuth2RequiredScopeNotGranted = 'GoogleOAuth2RequiredScopeNotGranted_6faa0e30',
@@ -86,6 +87,13 @@ const errorCodeDetailsMap: ErrorCodeDetailsMap = {
   },
   [ErrorCode.MessageResponseError]: { shouldDisplayDialog: false },
   [ErrorCode.PatchRequestIsObsolete]: { shouldDisplayDialog: false },
+  [ErrorCode.PatchRequestDataNotCoherent]: {
+    title: 'Oops...',
+    userFriendlyMessage: 'Your data was out of sync with the server!\n\nPlease refresh and try again.',
+    shouldDisplayDialog: true,
+    shouldSendErrorReport: true,
+    requiresReload: true
+  },
   [ErrorCode.GoogleOAuth2AccessTokenNotGranted]: {
     userFriendlyMessage: `Authentication token could not be obtained.`,
     shouldDisplayDialog: true,

@@ -109,13 +109,13 @@ export class OAuth2Service {
   invalidateAuthToken(): Promise<void> {
     return this.modifyOAuth2TokenState(oAuth2TokenState => {
       oAuth2TokenState.accessToken = undefined;
-      return oAuth2TokenState;
     });
   }
 
   private modifyOAuth2TokenState(mutate: Mutator<OAuth2TokenState>): Promise<void> {
     return this.getOAuth2TokenState().then(oAuth2TokenState => {
-      return this.updateOAuth2TokenState(mutate(oAuth2TokenState));
+      mutate(oAuth2TokenState);
+      return this.updateOAuth2TokenState(oAuth2TokenState);
     });
   }
 

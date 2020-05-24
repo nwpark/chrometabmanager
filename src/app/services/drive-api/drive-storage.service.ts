@@ -37,8 +37,9 @@ export class DriveStorageService {
     });
   }
 
-  setSavedWindowsState(sessionListState: SessionListState): Promise<any> {
-    return this.messagePassingService.requestUpdateDriveSavedSessions(sessionListState).then(res => {
+  setSavedWindowsState(sessionListState: SessionListState, previousValueChecksum: string): Promise<any> {
+    const requestData = {sessionListState, previousValueChecksum};
+    return this.messagePassingService.requestUpdateDriveSavedSessions(requestData).then(res => {
       console.log(getCurrentTimeStringWithMillis(), '- received response from patch request:', res);
     }).then(() => {
       return this.writeSavedWindowsStateToCache(sessionListState);

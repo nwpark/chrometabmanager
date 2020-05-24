@@ -3,68 +3,47 @@ import {GoogleApiService} from '../../../app/services/drive-api/google-api.servi
 import {SyncStorageService} from '../../../app/services/storage/sync-storage.service';
 import {ErrorCode} from '../../../app/types/errors/error-code';
 import {FileMutex} from '../../types/file-mutex';
-import {FutureTask} from '../../types/future-task';
-import {createRuntimeError, isRuntimeError} from '../../../app/types/errors/runtime-error';
+import {createRuntimeError, handleRuntimeError} from '../../../app/types/errors/runtime-error';
 import {DriveAccountService} from '../../../app/services/drive-api/drive-account.service';
-import {ignoreErrors} from '../../../app/utils/error-utils';
+import {PatchRequestData} from '../../../app/services/messaging/message-passing.service';
+import {DriveFilePatchRequestDispatcher, PatchRequestTask} from './drive-file-patch-request-dispatcher';
+import {isNullOrUndefined} from 'util';
 
 export class DriveFilePatchRequestHandler {
-  private requestQueue: FutureTask<any>[] = [];
-  private latestValue: SessionListState = undefined;
+  private requestDispatcher: DriveFilePatchRequestDispatcher;
+  private inFlightValue: SessionListState;
 
   constructor(private googleApiService: GoogleApiService,
               private syncStorageService: SyncStorageService,
               private driveAccountService: DriveAccountService,
-              private fileMutex: FileMutex) {}
+              private fileMutex: FileMutex) {
+    this.requestDispatcher = new DriveFilePatchRequestDispatcher(googleApiService, syncStorageService, driveAccountService, fileMutex);
+  }
 
-  patch(fileId: string, sessionListState: SessionListState): Promise<any> {
+  patch(fileId: string, requestData: PatchRequestData): Promise<any> {
     if (this.fileMutex.isReadLocked()) {
       return Promise.reject(createRuntimeError(ErrorCode.AttemptedPatchDuringSync));
     }
-    this.latestValue = sessionListState;
-    const patchRequestTask = this.createPatchRequestTask(fileId, sessionListState);
-    this.enqueuePatchRequest(patchRequestTask);
-    return patchRequestTask.toPromise().catch(error => {
-      if (isRuntimeError(error) && error.errorCode === ErrorCode.PatchRequestIsObsolete) {
-        return Promise.resolve('Request was skipped.');
-      } else {
-        return Promise.reject(error);
-      }
-    });
+    const patchRequestTask = this.createPatchRequestTask(fileId, requestData);
+    this.requestDispatcher.enqueuePatchRequest(fileId, patchRequestTask);
+    return patchRequestTask.toPromise()
+      .catch(handleRuntimeError(ErrorCode.PatchRequestIsObsolete, () => 'Request was skipped.'));
   }
 
-  private createPatchRequestTask(fileId: string, sessionListState: SessionListState): FutureTask<any> {
-    return new FutureTask<any>(() => {
-      return this.driveAccountService.setSyncInProgress(true).then(() => {
-        return this.googleApiService.patchJSONFileContent(fileId, sessionListState);
-      }).finally(() => {
-        this.syncStorageService.notifyOtherDevices();
-        return this.driveAccountService.setSyncInProgress(false);
+  private createPatchRequestTask(fileId: string, requestData: PatchRequestData) {
+    return new PatchRequestTask(requestData, () => {
+      this.inFlightValue = requestData.sessionListState;
+      return this.googleApiService.patchJSONFileContent(fileId, requestData.sessionListState).finally(() => {
+        this.inFlightValue = undefined;
       });
     });
   }
 
-  private enqueuePatchRequest(patchRequestTask: FutureTask<any>) {
-    this.requestQueue.push(patchRequestTask);
-    this.processQueuedRequests();
-  }
-
-  private processQueuedRequests() {
-    this.fileMutex.runExclusiveWrite(() => {
-      if (this.requestQueue.length > 0) {
-        this.requestQueue.splice(0, this.requestQueue.length - 1).forEach(obsoleteRequest => {
-          obsoleteRequest.cancel(ErrorCode.PatchRequestIsObsolete);
-        });
-        return ignoreErrors(this.requestQueue.pop().run());
-      }
-    });
-  }
-
   hasPendingRequest(): boolean {
-    return this.fileMutex.isWriteLocked();
+    return !isNullOrUndefined(this.inFlightValue);
   }
 
   getLatestValue(): Promise<SessionListState> {
-    return Promise.resolve(this.latestValue);
+    return Promise.resolve(this.inFlightValue);
   }
 }
