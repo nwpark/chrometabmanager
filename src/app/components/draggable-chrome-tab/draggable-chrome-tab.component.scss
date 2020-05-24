@@ -3,7 +3,10 @@
   $foreground-palette: map-get($theme, foreground);
 
   .draggable-chrome-tab {
+    display: flex;
+    justify-content: space-between;
     height: 30px; /* TAB_HEIGHT */
+    line-height: 30px; /* TAB_HEIGHT */
     background: map-get($background-palette, background);
     cursor: pointer;
     user-select: none;
@@ -15,8 +18,6 @@
 }
 
 .chrome-tab-title {
-  width: 368px;
-  line-height: 30px; /* TAB_HEIGHT */
   font-size: small;
   overflow: hidden;
   text-overflow: ellipsis;

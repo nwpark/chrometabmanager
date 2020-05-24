@@ -5,14 +5,6 @@
   [title]="chromeTab.url"
   [@close-tab]="animationState"
   (@close-tab.done)="completeCloseAnimation($event)">
-  <button
-    mat-icon-button
-    class="action-button-30"
-    style="float: right"
-    title="Close tab"
-    (click)="closeTab()">
-    <mat-icon class="action-icon-18" *ngIf="tabContainer.mouseOver">close</mat-icon>
-  </button>
   <div
     class="chrome-tab-title"
     [ngStyle]="{opacity: chromeTab.discarded ? 0.5 : 1}"
@@ -29,4 +21,11 @@
     <span *ngIf="!chromeTab.discarded">{{title}}</span>
     <em *ngIf="chromeTab.discarded">(suspended) {{title}}</em>
   </div>
+  <button
+    mat-icon-button
+    class="action-button-30"
+    title="Close tab"
+    (click)="closeTab()">
+    <mat-icon class="action-icon-18" *ngIf="tabContainer.mouseOver">close</mat-icon>
+  </button>
 </div>

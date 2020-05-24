@@ -4,6 +4,7 @@
 
   .detached-chrome-tab {
     height: 30px; /* TAB_HEIGHT */
+    line-height: 30px; /* TAB_HEIGHT */
     background: map-get($background-palette, background);
     cursor: pointer;
     user-select: none;
@@ -13,6 +14,10 @@
     color: map-get($foreground-palette, text);
   }
 
+  .detached-chrome-tab-inner {
+    display: flex;
+    justify-content: space-between;
+  }
   .detached-chrome-tab-inner:hover {
     background: map-get($background-palette, hover);
   }
@@ -38,8 +43,6 @@
 }
 
 .chrome-tab-title {
-  width: 368px;
-  line-height: 30px; /* TAB_HEIGHT */
   font-size: small;
   overflow: hidden;
   text-overflow: ellipsis;
