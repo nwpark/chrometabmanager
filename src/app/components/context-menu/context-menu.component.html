@@ -1,0 +1,30 @@
+<div
+  style="visibility: hidden; position: fixed"
+  [style.left]="contextMenuPositionX"
+  [style.top]="contextMenuPositionY"
+  [matMenuTriggerFor]="contextMenu"
+  [matMenuTriggerRestoreFocus]="false">
+</div>
+
+<mat-menu
+  #contextMenu="matMenu"
+  [hasBackdrop]="false">
+  <div #contextMenuContent>
+    <div mat-menu-item style="width: 0; height: 0">
+      <!-- Empty menu item (workaround for https://github.com/angular/material/issues/3352) -->
+    </div>
+    <button
+      *ngFor="let menuItem of menuItems"
+      mat-menu-item
+      class="menu-item"
+      matTooltipPosition="after"
+      matTooltipClass="tooltip-reduced-margin"
+      [matTooltip]="menuItem.tooltip"
+      (click)="menuItem.callback()">
+      <mat-icon class="menu-item-icon">
+        {{menuItem.icon}}
+      </mat-icon>
+      <span>{{menuItem.title}}</span>
+    </button>
+  </div>
+</mat-menu>

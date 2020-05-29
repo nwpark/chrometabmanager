@@ -186,6 +186,32 @@ body {
   border-left: 5px solid grey;
 }
 
+/**************************************** Menus *************************************************/
+.mat-menu-content {
+  padding: 0 !important;
+}
+
+.mat-menu-panel {
+  min-height: 0 !important;
+  border: 1px solid dimgrey;
+  margin-top: -5px;
+}
+
+.menu-item {
+  height: 30px !important;
+  line-height: 30px !important;
+  font-size: 13px !important;
+  vertical-align: middle !important;
+}
+
+.menu-item-icon {
+  font-size: 18px !important;
+  margin-right: 5px !important;
+  vertical-align: middle !important;
+  height: 18px !important;
+  margin-bottom: 3px !important;
+}
+
 /**************************************** Background Photo *************************************************/
 @keyframes fadein {
   from { opacity: 0; }
