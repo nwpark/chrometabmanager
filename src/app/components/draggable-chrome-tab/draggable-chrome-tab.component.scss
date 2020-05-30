@@ -1,10 +1,17 @@
+:host {
+  --favicon-icon-size: 16px;
+  --favicon-icon-v-padding: calc((var(--chrome-tab-height) - var(--favicon-icon-size)) / 2);
+  --favicon-icon-h-padding: 10px;
+  --favicon-icon-width: calc(var(--favicon-icon-size) + (var(--favicon-icon-h-padding) * 2));
+  --chrome-tab-title-width: calc(var(--chrome-tab-width) - var(--favicon-icon-width) - 32px);
+}
+
 @mixin draggable-chrome-tab-theme($theme) {
   $background-palette: map-get($theme, background);
   $foreground-palette: map-get($theme, foreground);
 
   .draggable-chrome-tab {
     display: flex;
-    justify-content: space-between;
     height: 30px; /* TAB_HEIGHT */
     line-height: 30px; /* TAB_HEIGHT */
     background: map-get($background-palette, background);
@@ -17,19 +24,18 @@
   }
 }
 
-.chrome-tab-title {
+.draggable-chrome-tab-title {
+  width: var(--chrome-tab-title-width);
   font-size: small;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.favicon-icon {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  vertical-align: middle;
-  padding: 0 10px;
+.draggable-chrome-tab-favicon-icon {
+  width: var(--favicon-icon-size);
+  height: var(--favicon-icon-size);
+  padding: var(--favicon-icon-v-padding) var(--favicon-icon-h-padding);
   color: rgba(0, 0, 0, 0.65);
-  font-size: 16px;
+  font-size: var(--favicon-icon-size);
 }

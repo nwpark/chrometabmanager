@@ -24,6 +24,12 @@ body {
   margin: 5px !important;
 }
 
+/********************************** Application wide variables *******************************************/
+:root {
+  --chrome-tab-width: 400px;
+  --chrome-tab-height: 30px;
+}
+
 /**************************************** Images / Icons *************************************************/
 .inline-image-17px {
   height: 17px;
