@@ -1,0 +1,27 @@
+<ng-content *ngIf="!isEditing">
+</ng-content>
+
+<form
+  *ngIf="isEditing"
+  (click)="$event.stopImmediatePropagation()"
+  (mousedown)="$event.stopImmediatePropagation()"
+  (ngSubmit)="_submitForm()">
+  <input
+    #textInput
+    type="text"
+    [formControl]="_formControl"
+    (blur)="_submitForm()"
+    (keydown.enter)="_submitForm()"
+    (keydown.escape)="_cancelEditForm()">
+  <button
+    mat-icon-button
+    class="action-button-30"
+    type="submit"
+    matTooltip="Save"
+    matTooltipClass="tooltip-reduced-margin"
+    matTooltipPosition="right">
+    <mat-icon class="action-icon-18-black">
+      save_alt
+    </mat-icon>
+  </button>
+</form>
