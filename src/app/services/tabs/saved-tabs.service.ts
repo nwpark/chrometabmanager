@@ -109,6 +109,12 @@ export class SavedTabsService implements TabsService {
     });
   }
 
+  setTabTitle(windowIndex: number, tabIndex: number, title: string) {
+    this.modifySessionListState(sessionListState => {
+      sessionListState.setTabTitle(windowIndex, tabIndex, title);
+    });
+  }
+
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean) {
     if (openInNewTab) {
       this.chromeTabsService.openUrlInNewTab(chromeTab.url);

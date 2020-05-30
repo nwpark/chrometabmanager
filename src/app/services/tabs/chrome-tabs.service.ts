@@ -154,6 +154,8 @@ export class ChromeTabsService implements TabsService {
     });
   }
 
+  setTabTitle(windowIndex: number, tabIndex: number, title: string) { /* do nothing */ }
+
   onStateModified(params?: StateModifierParams) {
     console.log(getCurrentTimeStringWithMillis(), '- updating active windows');
     this.sessionStateUpdated.next(this.sessionListState);

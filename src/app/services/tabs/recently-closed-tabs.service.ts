@@ -94,6 +94,8 @@ export class RecentlyClosedTabsService implements TabsService {
 
   setSessionTitle(index: number, title: string) { /* do nothing */ }
 
+  setTabTitle(windowIndex: number, tabIndex: number, title: string) { /* do nothing */ }
+
   onStateModified() {
     console.log(getCurrentTimeStringWithMillis(), '- updating recently closed windows');
     this.sessionStateUpdated.next(this.sessionListState);

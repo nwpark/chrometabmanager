@@ -27,6 +27,7 @@ export class DraggableChromeTabComponent implements OnInit {
   @Input() chromeTab: ChromeAPITabState;
   @Input() props: SessionComponentProps;
   @Input() parentIndex: number;
+  @Input() index: number;
 
   @ViewChild(EditableTextComponent, {static: false}) titleTextComponent: EditableTextComponent;
 
@@ -78,7 +79,7 @@ export class DraggableChromeTabComponent implements OnInit {
   }
 
   setTitle(title: string) {
-    // todo
+    this.props.tabsService.setTabTitle(this.parentIndex, this.index, title);
   }
 
   showEditTitleForm() {

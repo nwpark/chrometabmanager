@@ -125,6 +125,10 @@ export class SessionListState {
     this.sessionStates[index].layoutState.title = title;
   }
 
+  setTabTitle(windowIndex: number, tabIndex: number, title: string) {
+    this.sessionStates[windowIndex].session.window.tabs[tabIndex].title = title;
+  }
+
   removeExpiredSessions(maxSessionCount: number) {
     while (this.sessionStates.length > maxSessionCount) {
       this.sessionStates.pop();

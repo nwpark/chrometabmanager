@@ -19,6 +19,8 @@ export interface TabsService {
 
   removeTab(windowIndex: number, tabId: SessionId);
 
+  setTabTitle(windowIndex: number, tabIndex: number, title: string);
+
   removeSession(index: number);
 
   toggleSessionListDisplay();
