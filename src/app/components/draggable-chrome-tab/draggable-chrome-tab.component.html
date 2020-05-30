@@ -8,7 +8,8 @@
   <div
     style="display: flex"
     [ngStyle]="{opacity: chromeTab.discarded ? 0.5 : 1}"
-    (click)="setTabActive($event)">
+    (click)="setTabActive($event.ctrlKey)"
+    (contextmenu)="openContextMenu($event)">
     <img
       class="draggable-chrome-tab-favicon-icon"
       [src]="faviconIconUrl"
@@ -18,10 +19,15 @@
       *ngIf="isLoading()">
       <mat-spinner [diameter]="16"></mat-spinner>
     </div>
-    <div class="draggable-chrome-tab-title">
-      <span *ngIf="!chromeTab.discarded">{{title}}</span>
-      <em *ngIf="chromeTab.discarded">(suspended) {{title}}</em>
-    </div>
+    <app-editable-text
+      class="draggable-chrome-tab-title"
+      [value]="title"
+      (valueUpdated)="setTitle($event)">
+      <div class="draggable-chrome-tab-title">
+        <span *ngIf="!chromeTab.discarded">{{title}}</span>
+        <em *ngIf="chromeTab.discarded">(suspended) {{title}}</em>
+      </div>
+    </app-editable-text>
   </div>
   <button
     mat-icon-button
