@@ -196,6 +196,10 @@ export class SessionListState {
     return this.sessionStates[sessionIndex].session.window.tabs;
   }
 
+  deepCopy(): SessionListState {
+    return SessionListState.fromSessionListState(JSON.parse(JSON.stringify(this)));
+  }
+
   equals(other: SessionListState): boolean {
     if (isNullOrUndefined(other)) {
       return false;

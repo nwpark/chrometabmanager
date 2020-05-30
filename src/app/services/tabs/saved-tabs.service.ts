@@ -21,20 +21,17 @@ import {md5Checksum} from '../../utils/hash-utils';
 })
 export class SavedTabsService implements TabsService {
 
-  sessionListState: SessionListState;
-
-  private sessionStateUpdated: BehaviorSubject<SessionListState>;
+  private sessionListStateSubject: BehaviorSubject<SessionListState>;
   public sessionStateUpdated$: Observable<SessionListState>;
 
   constructor(private chromeTabsService: ChromeTabsService,
               private storageService: StorageService,
               private errorDialogService: ErrorDialogService,
               private ngZone: NgZone) {
-    this.sessionStateUpdated = new BehaviorSubject(SessionListState.empty());
-    this.sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
-    this.sessionListState = this.sessionStateUpdated.getValue();
+    this.sessionListStateSubject = new BehaviorSubject(SessionListState.empty());
+    this.sessionStateUpdated$ = this.sessionListStateSubject.asObservable();
     this.storageService.savedSessionListState$().subscribe(sessionListState => {
-      if (!sessionListState.equals(this.sessionListState)) {
+      if (!sessionListState.equals(this.sessionListStateSubject.getValue())) {
         ngZone.run(() => this.setSessionListState(sessionListState));
       }
     });
@@ -42,12 +39,11 @@ export class SavedTabsService implements TabsService {
 
   private setSessionListState(sessionListState: SessionListState) {
     console.log(getCurrentTimeStringWithMillis(), '- refreshing saved windows');
-    this.sessionListState = sessionListState;
-    this.sessionStateUpdated.next(this.sessionListState);
+    this.sessionListStateSubject.next(sessionListState);
   }
 
   getSessionListState(): SessionListState {
-    return this.sessionListState;
+    return this.sessionListStateSubject.getValue();
   }
 
   createNewWindow() {
@@ -143,9 +139,10 @@ export class SavedTabsService implements TabsService {
   }
 
   modifySessionListState(mutate: Mutator<SessionListState>) {
-    const previousValueChecksum = md5Checksum(this.sessionListState);
-    mutate(this.sessionListState);
-    this.sessionStateUpdated.next(this.sessionListState);
-    this.storageService.setSavedWindowsState(this.sessionListState, previousValueChecksum);
+    const sessionListState = this.sessionListStateSubject.getValue().deepCopy();
+    const previousValueChecksum = md5Checksum(sessionListState);
+    mutate(sessionListState);
+    this.sessionListStateSubject.next(sessionListState);
+    this.storageService.setSavedWindowsState(sessionListState, previousValueChecksum);
   }
 }
