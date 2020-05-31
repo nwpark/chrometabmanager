@@ -51,14 +51,16 @@
   </button>
 
   <!--Title text-->
-  <div class="chrome-window-title">
+  <app-editable-text
+    class="chrome-window-title"
+    [value]="title"
+    (valueUpdated)="setTitle($event)">
     <div
       style="display: inline-block"
       appMouseOver
       #titleTextDiv=app-mouse-over
       matTooltip="Edit title"
       matTooltipClass="tooltip-reduced-margin"
-      *ngIf="!showEditForm"
       (click)="editTitle()">
       {{lastModified || title}}
       <span *ngIf="isHidden"> ({{chromeAPIWindow.tabs.length}} tabs)</span>
@@ -70,23 +72,5 @@
         </mat-icon>
       </div>
     </div>
-
-    <form *ngIf="showEditForm" (ngSubmit)="submitTitleForm()">
-      <input
-        #titleInput
-        type="text"
-        [formControl]="titleFormControl"
-        (blur)="submitTitleForm()"
-        (keydown.enter)="submitTitleForm()"
-        (keydown.escape)="cancelTitleFormEdit()">
-      <button
-        mat-icon-button
-        class="action-button-30"
-        type="submit"
-        matTooltip="Save title"
-        matTooltipClass="tooltip-reduced-margin">
-        <mat-icon class="action-icon-18-black">save_alt</mat-icon>
-      </button>
-    </form>
-  </div>
+  </app-editable-text>
 </div>

@@ -23,6 +23,7 @@ export class EditableTextComponent implements OnInit {
   }
 
   showEditForm() {
+    // todo: dragdrop service
     this.isEditing = true;
     this.changeDetectorRef.detectChanges();
     this.textInput.nativeElement.focus();
