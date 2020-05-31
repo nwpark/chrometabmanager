@@ -42,12 +42,13 @@ export class ChromeWindowHeaderComponent implements OnDestroy, OnInit {
   @Output() chromeWindowToggleDisplay = new EventEmitter();
 
   chromeAPIWindow: ChromeAPIWindowState;
-  layoutState: SessionLayoutState;
   actionButtons: SessionActionButton[];
   actionMenuItems: SessionMenuItem[];
   preferences: Preferences;
   lastModified: string;
   menuOpen = false;
+  title: string;
+  isHidden: boolean;
 
   @ViewChild('titleInput', {static: false}) titleInput: ElementRef;
   titleFormControl: FormControl;
@@ -59,13 +60,17 @@ export class ChromeWindowHeaderComponent implements OnDestroy, OnInit {
 
   ngOnInit() {
     this.chromeAPIWindow = this.sessionState.session.window;
-    this.layoutState = this.sessionState.layoutState;
+    this.title = this.sessionState.layoutState.title;
+    this.isHidden = this.sessionState.layoutState.hidden;
     this.actionMenuItems = this.actionBarService.createSessionMenuItems(this.props.sessionListId);
     this.actionButtons = [
-      ActionButtonFactory.createMinimizeButton(() => this.chromeWindowToggleDisplay.emit()),
+      ActionButtonFactory.createMinimizeButton(() => {
+        this.isHidden = !this.isHidden;
+        this.chromeWindowToggleDisplay.emit();
+      }),
       ActionButtonFactory.createCloseButton(() => this.chromeWindowClose.emit())
     ];
-    this.titleFormControl = new FormControl(this.layoutState.title);
+    this.titleFormControl = new FormControl(this.title);
     if (this.sessionState.session.lastModified) {
       this.lastModified = getTimeStampString(this.sessionState.session.lastModified);
     }
@@ -91,7 +96,7 @@ export class ChromeWindowHeaderComponent implements OnDestroy, OnInit {
   }
 
   cancelTitleFormEdit() {
-    this.titleFormControl.setValue(this.layoutState.title);
+    this.titleFormControl.setValue(this.title);
     this.showEditForm = false;
   }
 

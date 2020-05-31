@@ -64,12 +64,12 @@ export class ChromeWindowContainerComponent implements OnInit {
   toggleWindowDisplay() {
     const animationState = getAnimationForToggleDisplay(this.layoutState.hidden);
     this.setAnimationState(animationState);
-    this.props.tabsService.toggleSessionDisplay(this.index);
   }
 
   completeToggleWindowDisplay(event: AnimationEvent) {
     if (isToggleDisplayState(event.toState)) {
       this.setAnimationState(AnimationState.Complete);
+      this.props.tabsService.toggleSessionDisplay(this.index);
     }
   }
 
