@@ -32,4 +32,6 @@ export interface TabsService {
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean);
 
   insertWindow(sessionState: SessionState, index: number);
+
+  suspendTab(windowIndex: number, tabIndex: number);
 }

@@ -129,6 +129,10 @@ export class SessionListState {
     this.sessionStates[windowIndex].session.window.tabs[tabIndex].title = title;
   }
 
+  setTabSuspended(windowIndex: number, tabIndex: number) {
+    this.sessionStates[windowIndex].session.window.tabs[tabIndex].discarded = true;
+  }
+
   removeExpiredSessions(maxSessionCount: number) {
     while (this.sessionStates.length > maxSessionCount) {
       this.sessionStates.pop();

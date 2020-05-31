@@ -138,6 +138,8 @@ export class SavedTabsService implements TabsService {
     });
   }
 
+  suspendTab(windowIndex: number, tabIndex: number) { /* do nothing */ }
+
   modifySessionListState(mutate: Mutator<SessionListState>) {
     const sessionListState = this.sessionListStateSubject.getValue().deepCopy();
     const previousValueChecksum = md5Checksum(sessionListState);

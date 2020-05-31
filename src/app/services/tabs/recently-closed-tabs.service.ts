@@ -98,6 +98,8 @@ export class RecentlyClosedTabsService implements TabsService {
 
   setTabTitle(windowIndex: number, tabIndex: number, title: string) { /* do nothing */ }
 
+  suspendTab(windowIndex: number, tabIndex: number) { /* do nothing */ }
+
   modifySessionListState(mutate: Mutator<SessionListState>) {
     console.log(getCurrentTimeStringWithMillis(), '- updating recently closed windows');
     const sessionListState = this.sessionStateUpdated.getValue().deepCopy();

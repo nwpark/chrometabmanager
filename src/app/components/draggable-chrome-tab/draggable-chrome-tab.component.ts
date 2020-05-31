@@ -86,6 +86,10 @@ export class DraggableChromeTabComponent implements OnInit {
     this.titleTextComponent.showEditForm();
   }
 
+  suspendTab() {
+    this.props.tabsService.suspendTab(this.parentIndex, this.index);
+  }
+
   openContextMenu(event: MouseEvent) {
     this.contextMenuService.openContextMenu(event, this.getContextMenuItems(), this.viewContainerRef);
   }
@@ -99,8 +103,8 @@ export class DraggableChromeTabComponent implements OnInit {
       ];
       case SessionListId.Active: return [
         {title: 'Open', icon: 'open_in_new', tooltip: 'Open tab', callback: () => this.setTabActive(false)},
-        // todo: implement callback
-        {title: 'Suspend', icon: 'pause_circle_filled', tooltip: 'Suspend tab to free up memory and CPU consumed by chrome', callback: () => {}},
+        {title: 'Suspend', icon: 'pause_circle_filled', tooltip: 'Suspend tab to free up memory and CPU consumed by Chrome',
+          callback: () => this.suspendTab()},
         {title: 'Close', icon: 'close', tooltip: 'Close tab', callback: () => this.closeTab()}
       ];
     }

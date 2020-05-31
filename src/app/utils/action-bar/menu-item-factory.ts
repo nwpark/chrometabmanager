@@ -32,8 +32,8 @@ export class MenuItemFactory {
     return {
       title: 'Suspend tabs',
       icon: 'pause_circle_filled',
-      // tooltip: 'Suspend tabs to free up memory and CPU consumed by chrome. Tabs will be reloaded when next activated',
-      tooltip: 'Suspend tabs to free up memory and CPU consumed by chrome. Suspended tabs will remain visible on the tab strip but will be reloaded when next activated.',
+      // tooltip: 'Suspend tabs to free up memory and CPU consumed by Chrome. Tabs will be reloaded when next activated',
+      tooltip: 'Suspend tabs to free up memory and CPU consumed by Chrome. Suspended tabs will remain visible on the tab strip but will be reloaded when next activated.',
       callback
     };
   }

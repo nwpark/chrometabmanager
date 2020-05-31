@@ -154,6 +154,14 @@ export class ChromeTabsService implements TabsService {
     }, {storeResult: false});
   }
 
+  suspendTab(windowIndex: number, tabIndex: number) {
+    this.modifySessionListState(sessionListState => {
+      const tabId = sessionListState.getTabIdFromWindow(windowIndex, tabIndex) as number;
+      sessionListState.setTabSuspended(windowIndex, tabIndex);
+      chrome.tabs.discard(tabId);
+    }, {storeResult: false});
+  }
+
   suspendTabsInWindow(sessionIndex: number) {
     this.getSessionListState().getSessionAtIndex(sessionIndex).window.tabs.forEach(chromeTab => {
       if (!chromeTab.active && !chromeTab.discarded) {
