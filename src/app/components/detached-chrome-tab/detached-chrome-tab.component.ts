@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef} from '@angular/core';
 import {AnimationState, closeTabAnimation, closeWindowAnimation} from '../../animations';
 import {AnimationEvent, transition, trigger, useAnimation} from '@angular/animations';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
@@ -7,6 +7,8 @@ import {getTimeStampString} from '../../utils/date-utils';
 import {ChromeAPITabState} from '../../types/chrome-api/chrome-api-tab-state';
 import {SessionState} from '../../types/session/session-state';
 import {environment} from '../../../environments/environment';
+import {ContextMenuItem} from '../../types/action-bar/context-menu-item';
+import {ContextMenuService} from '../../services/context-menu.service';
 
 @Component({
   selector: 'app-detached-chrome-tab',
@@ -38,7 +40,9 @@ export class DetachedChromeTabComponent implements OnInit {
   lastModified: string;
 
   constructor(private changeDetectorRef: ChangeDetectorRef,
-              private domSanitizer: DomSanitizer) { }
+              private contextMenuService: ContextMenuService,
+              private domSanitizer: DomSanitizer,
+              private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit() {
     this.chromeAPITab = this.sessionState.session.tab;
@@ -59,8 +63,8 @@ export class DetachedChromeTabComponent implements OnInit {
     this.changeDetectorRef.detectChanges();
   }
 
-  setTabActive(event: MouseEvent) {
-    this.props.tabsService.setTabActive(this.chromeAPITab, event.ctrlKey);
+  setTabActive(openInNewTab: boolean) {
+    this.props.tabsService.setTabActive(this.chromeAPITab, openInNewTab);
   }
 
   closeTab() {
@@ -74,5 +78,16 @@ export class DetachedChromeTabComponent implements OnInit {
       this.setAnimationState(AnimationState.Complete);
       this.props.tabsService.removeSession(this.index);
     }
+  }
+
+  openContextMenu(event: MouseEvent) {
+    this.contextMenuService.openContextMenu(event, this.getContextMenuItems(), this.viewContainerRef);
+  }
+
+  private getContextMenuItems(): ContextMenuItem[] {
+    return [
+      {title: 'Restore', icon: 'open_in_new', tooltip: 'Restore tab', callback: () => this.setTabActive(false)},
+      {title: 'Remove', icon: 'delete', tooltip: 'Remove tab', callback: () => this.closeTab()}
+    ];
   }
 }

@@ -8,7 +8,8 @@
   <div class="detached-chrome-tab-wrapper">
     <div
       class="detached-chrome-tab-content"
-      (click)="setTabActive($event)">
+      (click)="setTabActive($event.ctrlKey)"
+      (contextmenu)="openContextMenu($event)">
       <div class="detached-chrome-tab-last-modified">
         {{lastModified}}
       </div>
