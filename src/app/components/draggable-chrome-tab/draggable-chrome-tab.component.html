@@ -6,7 +6,7 @@
   [@close-tab]="animationState"
   (@close-tab.done)="completeCloseAnimation($event)">
   <div
-    style="display: flex"
+    class="draggable-chrome-tab-content"
     [ngStyle]="{opacity: chromeTab.discarded ? 0.5 : 1}"
     (click)="setTabActive($event.ctrlKey)"
     (contextmenu)="openContextMenu($event)">
@@ -31,7 +31,7 @@
   </div>
   <button
     mat-icon-button
-    class="action-button-30"
+    class="action-button-30 draggable-chrome-tab-close-button"
     title="Close tab"
     (click)="closeTab()">
     <mat-icon class="action-icon-18" *ngIf="tabContainer.mouseOver">close</mat-icon>
