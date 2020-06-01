@@ -9,6 +9,7 @@
   <input
     #textInput
     type="text"
+    [ngClass]="textInputClass"
     [formControl]="_formControl"
     (blur)="_submitForm()"
     (keydown.enter)="_submitForm()"

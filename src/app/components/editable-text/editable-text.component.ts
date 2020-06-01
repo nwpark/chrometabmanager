@@ -9,6 +9,7 @@ import {FormControl} from '@angular/forms';
 export class EditableTextComponent implements OnInit {
 
   @Input() value: string;
+  @Input() textInputClass: string;
   @Output() valueUpdated: EventEmitter<string> = new EventEmitter<string>();
 
   @ViewChild('textInput', {static: false}) private textInput: ElementRef;

@@ -22,6 +22,7 @@
     <app-editable-text
       class="draggable-chrome-tab-title"
       [value]="title"
+      [textInputClass]="'draggable-chrome-tab-text-input-form'"
       (valueUpdated)="setTitle($event)">
       <div class="draggable-chrome-tab-title">
         <span *ngIf="!chromeTab.discarded">{{title}}</span>
