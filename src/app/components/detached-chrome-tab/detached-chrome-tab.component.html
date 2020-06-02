@@ -1,28 +1,32 @@
 <div
   appMouseOver
   #tabContainer=app-mouse-over
-  [ngClass]="{'detached-chrome-tab': true, 'chrome-tab-firstchild': isFirstChild, 'chrome-tab-lastchild': isLastChild}"
+  [ngClass]="{'detached-chrome-tab': true, 'detached-chrome-tab-firstchild': isFirstChild, 'detached-chrome-tab-lastchild': isLastChild}"
   [title]="chromeAPITab.url"
   [@close-tab]="animationState"
   (@close-tab.done)="completeCloseAnimation($event)">
-  <div class="detached-chrome-tab-inner">
+  <div class="detached-chrome-tab-wrapper">
+    <div
+      class="detached-chrome-tab-content"
+      (click)="setTabActive($event.ctrlKey)"
+      (contextmenu)="openContextMenu($event)">
+      <div class="detached-chrome-tab-last-modified">
+        {{lastModified}}
+      </div>
+      <div class="detached-chrome-tab-vertical-divider"></div>
+      <img
+        class="detached-chrome-tab-favicon-icon"
+        [src]="faviconIconUrl">
+      <div class="detached-chrome-tab-title">
+        {{title}}
+      </div>
+    </div>
     <button
       mat-icon-button
-      class="action-button-30"
-      style="float: right"
+      class="action-button-30 detached-chrome-tab-close-button"
       title="Close tab"
       (click)="closeTab()">
       <mat-icon class="action-icon-18" *ngIf="tabContainer.mouseOver">close</mat-icon>
     </button>
-    <div
-      class="chrome-tab-title"
-      (click)="setTabActive($event)">
-      <div class="last-modified">{{lastModified}}</div>
-      <div class="detached-chrome-tab-vertical-divider"></div>
-      <img
-        class="favicon-icon"
-        [src]="faviconIconUrl">
-      {{title}}
-    </div>
   </div>
 </div>

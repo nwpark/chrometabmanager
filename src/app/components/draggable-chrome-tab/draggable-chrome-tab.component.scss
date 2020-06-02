@@ -3,7 +3,9 @@
   $foreground-palette: map-get($theme, foreground);
 
   .draggable-chrome-tab {
+    display: flex;
     height: 30px; /* TAB_HEIGHT */
+    line-height: 30px; /* TAB_HEIGHT */
     background: map-get($background-palette, background);
     cursor: pointer;
     user-select: none;
@@ -14,21 +16,33 @@
   }
 }
 
-.chrome-tab-title {
-  width: 368px;
-  line-height: 30px; /* TAB_HEIGHT */
+.draggable-chrome-tab-content {
+  display: flex;
+  flex: auto;
+  min-width: 0; // See explanation at https://bugzilla.mozilla.org/show_bug.cgi?id=1086218#c4
+}
+
+.draggable-chrome-tab-title {
   font-size: small;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.favicon-icon {
-  display: inline-block;
+.draggable-chrome-tab-favicon-icon {
+  flex: none;
+  align-self: center;
   width: 16px;
   height: 16px;
-  vertical-align: middle;
   padding: 0 10px;
   color: rgba(0, 0, 0, 0.65);
   font-size: 16px;
+}
+
+.draggable-chrome-tab-close-button {
+  flex: none;
+}
+
+.draggable-chrome-tab-text-input-form {
+  width: 200px;
 }

@@ -8,7 +8,7 @@ export const releaseNotes_0_6_3: ReleaseNotes = {
     details: ['Dark theme can be now enabled from the options page.']
   }, {
     title: 'Saved tabs will now be immediately suspended once opened.',
-    details: ['This will save memory and CPU consumed by chrome and dramatically improve performance when opening windows with large numbers of tabs.']
+    details: ['This will save memory and CPU consumed by Chrome and dramatically improve performance when opening windows with large numbers of tabs.']
   }, {
     title: 'The background image should now load faster.'
   }]

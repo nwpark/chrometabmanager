@@ -4,6 +4,7 @@
 
   .detached-chrome-tab {
     height: 30px; /* TAB_HEIGHT */
+    line-height: 30px; /* TAB_HEIGHT */
     background: map-get($background-palette, background);
     cursor: pointer;
     user-select: none;
@@ -13,51 +14,62 @@
     color: map-get($foreground-palette, text);
   }
 
-  .detached-chrome-tab-inner:hover {
+  .detached-chrome-tab-wrapper {
+    display: flex;
+  }
+  .detached-chrome-tab-wrapper:hover {
     background: map-get($background-palette, hover);
   }
 
   .detached-chrome-tab-vertical-divider {
-    display: inline-block;
+    flex: none;
     height: 20px; /* TAB_HEIGHT */
     border-left: 1px solid map-get($foreground-palette, divider);
     transform: translateY(5px);
   }
 }
 
-.chrome-tab-lastchild {
+.detached-chrome-tab-lastchild {
   border-bottom: 1px solid dimgrey;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
   margin-bottom: 20px;
 }
-.chrome-tab-firstchild {
+.detached-chrome-tab-firstchild {
   border-top: 1px solid dimgrey;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
 
-.chrome-tab-title {
-  width: 368px;
-  line-height: 30px; /* TAB_HEIGHT */
+.detached-chrome-tab-content {
+  display: flex;
+  flex: auto;
+  min-width: 0; // See explanation at https://bugzilla.mozilla.org/show_bug.cgi?id=1086218#c4
+}
+
+.detached-chrome-tab-title {
   font-size: small;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.favicon-icon {
-  display: inline-block;
+.detached-chrome-tab-favicon-icon {
+  flex: none;
+  align-self: center;
   width: 16px;
   height: 16px;
-  vertical-align: middle;
   padding: 0 10px;
   color: rgba(0, 0, 0, 0.65);
   font-size: 16px;
 }
 
-.last-modified {
+.detached-chrome-tab-last-modified {
+  flex: none;
   padding-left: 10px;
   padding-right: 10px;
-  display: inline-block;
+}
+
+.detached-chrome-tab-close-button {
+  flex: none;
 }

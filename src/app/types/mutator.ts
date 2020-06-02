@@ -1,1 +1,1 @@
-export type Mutator<T> = (t: T) => T;
+export type Mutator<T> = (t: T) => T | void;

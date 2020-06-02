@@ -7,26 +7,17 @@
     rowHeight="fit"
     (window:resize)="onResize($event)">
     <mat-grid-tile *ngIf="cols > 1">
-      <app-saved-sessions-list
-        class="full-height-column"
-        [sessionListState]="savedSessionState$ | async"
-        [props]="savedSessionProps">
+      <app-saved-sessions-list class="full-height-column">
       </app-saved-sessions-list>
     </mat-grid-tile>
 
     <mat-grid-tile>
-      <app-active-sessions-list
-        class="full-height-column"
-        [sessionListState]="activeSessionState$ | async"
-        [props]="activeSessionProps">
+      <app-active-sessions-list class="full-height-column">
       </app-active-sessions-list>
     </mat-grid-tile>
 
     <mat-grid-tile *ngIf="cols > 2">
-      <app-closed-sessions-list
-        class="full-height-column"
-        [sessionListState]="closedSessionState$ | async"
-        [props]="recentlyClosedSessionProps">
+      <app-closed-sessions-list class="full-height-column">
       </app-closed-sessions-list>
     </mat-grid-tile>
   </mat-grid-list>

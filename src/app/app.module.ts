@@ -25,6 +25,8 @@ import {ActiveSessionsListComponent} from './components/session-lists/active-ses
 import {ClosedSessionsListComponent} from './components/session-lists/closed-sessions-list/closed-sessions-list.component';
 import {SyncStatusComponent} from './components/sync-status/sync-status.component';
 import {DisableSyncDialogComponent} from './components/dialogs/disable-sync-dialog/disable-sync-dialog.component';
+import {ContextMenuComponent} from './components/context-menu/context-menu.component';
+import { EditableTextComponent } from './components/editable-text/editable-text.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,9 @@ import {DisableSyncDialogComponent} from './components/dialogs/disable-sync-dial
     ActiveSessionsListComponent,
     ClosedSessionsListComponent,
     SyncStatusComponent,
-    DisableSyncDialogComponent
+    DisableSyncDialogComponent,
+    ContextMenuComponent,
+    EditableTextComponent
   ],
   imports: [
     BrowserModule,
@@ -61,7 +65,8 @@ import {DisableSyncDialogComponent} from './components/dialogs/disable-sync-dial
     RuntimeErrorDialogComponent,
     BasicDialogComponent,
     DriveLoginDialogComponent,
-    DisableSyncDialogComponent
+    DisableSyncDialogComponent,
+    ContextMenuComponent
   ],
   providers: [
     {provide: ErrorHandler, useClass: RuntimeErrorHandler}

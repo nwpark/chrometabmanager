@@ -7,6 +7,9 @@ import {validateSessionMap} from '../../types/session/session-map';
 import {UndefinedObjectError} from '../../types/errors/UndefinedObjectError';
 import {WebpageTitleCache} from '../../types/webpage-title-cache';
 import {createDefaultOAuth2TokenState, OAuth2TokenState} from '../../types/o-auth2-token-state';
+import {md5Checksum} from '../../utils/hash-utils';
+import {createRuntimeError} from '../../types/errors/runtime-error';
+import {ErrorCode} from '../../types/errors/error-code';
 
 @Injectable({
   providedIn: 'root'
@@ -122,14 +125,19 @@ export class LocalStorageService {
     });
   }
 
-  setSavedWindowsState(sessionListState: SessionListState): Promise<void> {
-    return new Promise<void>(resolve => {
-      chrome.storage.local.set({
-        [StorageKeys.SavedWindows]: sessionListState.getSessionMap(),
-        [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
-      }, () => {
-        this.messagePassingService.broadcastSavedSessions(sessionListState);
-        resolve();
+  setSavedWindowsState(sessionListState: SessionListState, previousValueChecksum: string): Promise<void> {
+    return this.getSavedWindowsState().then(prevSessionListState => {
+      if (previousValueChecksum !== md5Checksum(prevSessionListState)) {
+        return Promise.reject(createRuntimeError(ErrorCode.StorageUpdateRequestNotCoherent));
+      }
+      return new Promise<void>(resolve => {
+        chrome.storage.local.set({
+          [StorageKeys.SavedWindows]: sessionListState.getSessionMap(),
+          [StorageKeys.SavedWindowsLayoutState]: sessionListState.getLayoutState()
+        }, () => {
+          this.messagePassingService.broadcastSavedSessions(sessionListState);
+          resolve();
+        });
       });
     });
   }

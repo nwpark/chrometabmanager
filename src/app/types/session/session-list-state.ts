@@ -125,6 +125,14 @@ export class SessionListState {
     this.sessionStates[index].layoutState.title = title;
   }
 
+  setTabTitle(windowIndex: number, tabIndex: number, title: string) {
+    this.sessionStates[windowIndex].session.window.tabs[tabIndex].title = title;
+  }
+
+  setTabSuspended(windowIndex: number, tabIndex: number) {
+    this.sessionStates[windowIndex].session.window.tabs[tabIndex].discarded = true;
+  }
+
   removeExpiredSessions(maxSessionCount: number) {
     while (this.sessionStates.length > maxSessionCount) {
       this.sessionStates.pop();
@@ -190,6 +198,10 @@ export class SessionListState {
       return a.url.localeCompare(b.url);
     });
     return this.sessionStates[sessionIndex].session.window.tabs;
+  }
+
+  deepCopy(): SessionListState {
+    return SessionListState.fromSessionListState(JSON.parse(JSON.stringify(this)));
   }
 
   equals(other: SessionListState): boolean {

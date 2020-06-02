@@ -9,12 +9,13 @@
   <app-draggable-chrome-tab
     cdkDrag
     class="chrome-tab-border"
-    *ngFor="let tab of chromeAPIWindow.tabs"
+    *ngFor="let tab of chromeAPIWindow.tabs; index as tabIndex"
     [cdkDragData]="tab"
     [cdkDragDisabled]="!isDragEnabled(tab)"
     [chromeTab]="tab"
     [props]="props"
     [parentIndex]="index"
+    [index]="tabIndex"
     (cdkDragStarted)="beginDrag()">
   </app-draggable-chrome-tab>
 

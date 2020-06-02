@@ -5,28 +5,36 @@
   [title]="chromeTab.url"
   [@close-tab]="animationState"
   (@close-tab.done)="completeCloseAnimation($event)">
+  <div
+    class="draggable-chrome-tab-content"
+    [ngStyle]="{opacity: chromeTab.discarded ? 0.5 : 1}"
+    (click)="setTabActive($event.ctrlKey)"
+    (contextmenu)="openContextMenu($event)">
+    <img
+      class="draggable-chrome-tab-favicon-icon"
+      [src]="faviconIconUrl"
+      *ngIf="!isLoading()">
+    <div
+      class="draggable-chrome-tab-favicon-icon"
+      *ngIf="isLoading()">
+      <mat-spinner [diameter]="16"></mat-spinner>
+    </div>
+    <app-editable-text
+      class="draggable-chrome-tab-title"
+      [value]="title"
+      [textInputClass]="'draggable-chrome-tab-text-input-form'"
+      (valueUpdated)="setTitle($event)">
+      <div class="draggable-chrome-tab-title">
+        <span *ngIf="!chromeTab.discarded">{{title}}</span>
+        <em *ngIf="chromeTab.discarded">(suspended) {{title}}</em>
+      </div>
+    </app-editable-text>
+  </div>
   <button
     mat-icon-button
-    class="action-button-30"
-    style="float: right"
+    class="action-button-30 draggable-chrome-tab-close-button"
     title="Close tab"
     (click)="closeTab()">
     <mat-icon class="action-icon-18" *ngIf="tabContainer.mouseOver">close</mat-icon>
   </button>
-  <div
-    class="chrome-tab-title"
-    [ngStyle]="{opacity: chromeTab.discarded ? 0.5 : 1}"
-    (click)="setTabActive($event)">
-    <img
-      class="favicon-icon"
-      [src]="faviconIconUrl"
-      *ngIf="!isLoading()">
-    <div
-      class="favicon-icon"
-      *ngIf="isLoading()">
-      <mat-spinner [diameter]="16"></mat-spinner>
-    </div>
-    <span *ngIf="!chromeTab.discarded">{{title}}</span>
-    <em *ngIf="chromeTab.discarded">(suspended) {{title}}</em>
-  </div>
 </div>

@@ -12,13 +12,12 @@ import {MessageReceiverService} from '../messaging/message-receiver.service';
 import {ErrorDialogService} from '../error-dialog.service';
 import {ErrorDialogDataFactory} from '../../utils/error-dialog-data-factory';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
+import {Mutator} from '../../types/mutator';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecentlyClosedTabsService implements TabsService {
-
-  sessionListState: SessionListState;
 
   private sessionStateUpdated: BehaviorSubject<SessionListState>;
   public sessionStateUpdated$: Observable<SessionListState>;
@@ -30,7 +29,6 @@ export class RecentlyClosedTabsService implements TabsService {
               private ngZone: NgZone) {
     this.sessionStateUpdated = new BehaviorSubject(SessionListState.empty());
     this.sessionStateUpdated$ = this.sessionStateUpdated.asObservable();
-    this.sessionListState = this.sessionStateUpdated.getValue();
     this.localStorageService.getRecentlyClosedSessionsState().then(sessionListState => {
       this.setSessionListState(sessionListState);
     }, error => this.handleStorageReadError(error));
@@ -41,32 +39,35 @@ export class RecentlyClosedTabsService implements TabsService {
 
   private setSessionListState(sessionListState: SessionListState) {
     console.log(getCurrentTimeStringWithMillis(), '- refreshing recently closed windows');
-    this.sessionListState = sessionListState;
-    this.sessionStateUpdated.next(this.sessionListState);
+    this.sessionStateUpdated.next(sessionListState);
   }
 
   getSessionListState(): SessionListState {
-    return this.sessionListState;
+    return this.sessionStateUpdated.getValue();
   }
 
-  @modifiesState()
   toggleSessionListDisplay() {
-    this.sessionListState.toggleDisplay();
+    this.modifySessionListState(sessionListState => {
+      sessionListState.toggleDisplay();
+    });
   }
 
-  @modifiesState()
   removeTab(windowIndex: number, tabId: SessionId) {
-    this.sessionListState.removeTab(windowIndex, tabId);
+    this.modifySessionListState(sessionListState => {
+      sessionListState.removeTab(windowIndex, tabId);
+    });
   }
 
-  @modifiesState()
   removeSession(index: number) {
-    this.sessionListState.removeSession(index);
+    this.modifySessionListState(sessionListState => {
+      sessionListState.removeSession(index);
+    });
   }
 
-  @modifiesState()
   toggleSessionDisplay(index: number) {
-    this.sessionListState.toggleSessionDisplay(index);
+    this.modifySessionListState(sessionListState => {
+      sessionListState.toggleSessionDisplay(index);
+    });
   }
 
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean) {
@@ -77,9 +78,10 @@ export class RecentlyClosedTabsService implements TabsService {
     }
   }
 
-  @modifiesState()
   clear() {
-    this.sessionListState.clear();
+    this.modifySessionListState(sessionListState => {
+      sessionListState.clear();
+    });
   }
 
   insertWindow(sessionState: SessionState, index: number) { /* do nothing */ }
@@ -94,10 +96,16 @@ export class RecentlyClosedTabsService implements TabsService {
 
   setSessionTitle(index: number, title: string) { /* do nothing */ }
 
-  onStateModified() {
+  setTabTitle(windowIndex: number, tabIndex: number, title: string) { /* do nothing */ }
+
+  suspendTab(windowIndex: number, tabIndex: number) { /* do nothing */ }
+
+  modifySessionListState(mutate: Mutator<SessionListState>) {
     console.log(getCurrentTimeStringWithMillis(), '- updating recently closed windows');
-    this.sessionStateUpdated.next(this.sessionListState);
-    this.localStorageService.setRecentlyClosedSessionsState(this.sessionListState);
+    const sessionListState = this.sessionStateUpdated.getValue().deepCopy();
+    mutate(sessionListState);
+    this.sessionStateUpdated.next(sessionListState);
+    this.localStorageService.setRecentlyClosedSessionsState(sessionListState);
   }
 
   handleStorageReadError(error: Error) {

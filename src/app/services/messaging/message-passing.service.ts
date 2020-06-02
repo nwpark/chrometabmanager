@@ -36,7 +36,7 @@ export class MessagePassingService {
   private savedSessionSyncMessageSender = new DebouncedMessageSender(MessagePassingService.SAVED_SESSION_SYNC_MESSAGE, MessagePassingService.MESSAGE_DEBOUNCE_TIME);
   private closedSessionMessageSender = new DebouncedMessageSender(MessagePassingService.CLOSED_SESSION_MESSAGE, MessagePassingService.MESSAGE_DEBOUNCE_TIME);
   private deviceIdRequestSender = new RespondableMessageSender<void, string>(MessagePassingService.DEVICE_ID_REQUEST);
-  private updateDriveSavedSessionsRequestSender = new RespondableMessageSender<SessionListState, any>(MessagePassingService.UPDATE_DRIVE_SAVED_SESSIONS_REQUEST);
+  private updateDriveSavedSessionsRequestSender = new RespondableMessageSender<PatchRequestData, any>(MessagePassingService.UPDATE_DRIVE_SAVED_SESSIONS_REQUEST);
   private loadDriveFileDataRequestSender = new RespondableMessageSender<void, SessionListState>(MessagePassingService.LOAD_DRIVE_FILE_DATA_REQUEST);
   private insertChromeWindowRequestSender = new SimpleMessageSender<InsertWindowMessageData>(MessagePassingService.INSERT_WINDOW_REQUEST);
   private authStatusMessageSender = new SimpleMessageSender<boolean>(MessagePassingService.AUTH_STATUS_MESSAGE);
@@ -91,8 +91,8 @@ export class MessagePassingService {
     return this.deviceIdRequestSender.sendRequest();
   }
 
-  requestUpdateDriveSavedSessions(sessionListState: SessionListState): Promise<any> {
-    return this.updateDriveSavedSessionsRequestSender.sendRequest(sessionListState);
+  requestUpdateDriveSavedSessions(requestData: PatchRequestData): Promise<any> {
+    return this.updateDriveSavedSessionsRequestSender.sendRequest(requestData);
   }
 
   requestLoadDriveFileData(): Promise<SessionListState> {
@@ -105,4 +105,9 @@ export class MessagePassingService {
 export interface InsertWindowMessageData {
   sessionState: SessionState;
   index: number;
+}
+
+export interface PatchRequestData {
+  sessionListState: SessionListState;
+  previousValueChecksum: string;
 }

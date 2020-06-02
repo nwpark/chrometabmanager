@@ -1,35 +1,22 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild,
-  ViewEncapsulation
-} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {SessionComponentProps} from '../../types/chrome-window-component-data';
 import {PreferencesService} from '../../services/preferences.service';
 import {ActionBarService} from '../../services/action-bar.service';
 import {getTimeStampString} from '../../utils/date-utils';
 import {ChromeAPIWindowState} from '../../types/chrome-api/chrome-api-window-state';
 import {SessionState} from '../../types/session/session-state';
-import {SessionLayoutState} from '../../types/session/session-layout-state';
 import {SessionActionButton} from '../../types/action-bar/session-action-button';
 import {SessionMenuItem} from '../../types/action-bar/session-menu-item';
 import {ActionButtonFactory} from '../../utils/action-bar/action-button-factory';
 import {Subject} from 'rxjs';
 import {Preferences} from '../../types/preferences';
 import {takeUntil} from 'rxjs/operators';
+import {EditableTextComponent} from '../editable-text/editable-text.component';
 
 @Component({
   selector: 'app-chrome-window-header',
   templateUrl: './chrome-window-header.component.html',
-  styleUrls: ['./chrome-window-header.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['./chrome-window-header.component.scss']
 })
 export class ChromeWindowHeaderComponent implements OnDestroy, OnInit {
 
@@ -41,17 +28,16 @@ export class ChromeWindowHeaderComponent implements OnDestroy, OnInit {
   @Output() chromeWindowClose = new EventEmitter();
   @Output() chromeWindowToggleDisplay = new EventEmitter();
 
+  @ViewChild(EditableTextComponent, {static: false}) titleTextComponent: EditableTextComponent;
+
   chromeAPIWindow: ChromeAPIWindowState;
-  layoutState: SessionLayoutState;
   actionButtons: SessionActionButton[];
   actionMenuItems: SessionMenuItem[];
   preferences: Preferences;
   lastModified: string;
   menuOpen = false;
-
-  @ViewChild('titleInput', {static: false}) titleInput: ElementRef;
-  titleFormControl: FormControl;
-  showEditForm = false;
+  title: string;
+  isHidden: boolean;
 
   constructor(private changeDetectorRef: ChangeDetectorRef,
               private preferencesService: PreferencesService,
@@ -59,13 +45,16 @@ export class ChromeWindowHeaderComponent implements OnDestroy, OnInit {
 
   ngOnInit() {
     this.chromeAPIWindow = this.sessionState.session.window;
-    this.layoutState = this.sessionState.layoutState;
+    this.title = this.sessionState.layoutState.title;
+    this.isHidden = this.sessionState.layoutState.hidden;
     this.actionMenuItems = this.actionBarService.createSessionMenuItems(this.props.sessionListId);
     this.actionButtons = [
-      ActionButtonFactory.createMinimizeButton(() => this.chromeWindowToggleDisplay.emit()),
+      ActionButtonFactory.createMinimizeButton(() => {
+        this.isHidden = !this.isHidden;
+        this.chromeWindowToggleDisplay.emit();
+      }),
       ActionButtonFactory.createCloseButton(() => this.chromeWindowClose.emit())
     ];
-    this.titleFormControl = new FormControl(this.layoutState.title);
     if (this.sessionState.session.lastModified) {
       this.lastModified = getTimeStampString(this.sessionState.session.lastModified);
     }
@@ -77,22 +66,12 @@ export class ChromeWindowHeaderComponent implements OnDestroy, OnInit {
     });
   }
 
-  // todo: dragdrop service
   editTitle() {
-    this.showEditForm = true;
-    this.changeDetectorRef.detectChanges();
-    this.titleInput.nativeElement.focus();
-    this.titleInput.nativeElement.select();
+    this.titleTextComponent.showEditForm();
   }
 
-  submitTitleForm() {
-    this.props.tabsService.setSessionTitle(this.index, this.titleFormControl.value);
-    this.showEditForm = false;
-  }
-
-  cancelTitleFormEdit() {
-    this.titleFormControl.setValue(this.layoutState.title);
-    this.showEditForm = false;
+  setTitle(title: string) {
+    this.props.tabsService.setSessionTitle(this.index, title);
   }
 
   setMenuOpen(menuOpen: boolean) {

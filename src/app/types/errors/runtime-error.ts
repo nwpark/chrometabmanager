@@ -40,6 +40,15 @@ export function addErrorTrace(trace: any): (error: any) => Promise<any> {
   };
 }
 
+export function handleRuntimeError<T>(errorCode: ErrorCode, errorHandler: (error: RuntimeError) => T): (error) => Promise<T> {
+  return (error: any) => {
+    if (isRuntimeError(error) && error.errorCode === errorCode) {
+      return Promise.resolve(errorHandler(error));
+    }
+    return Promise.reject(error);
+  };
+}
+
 export function mapToRuntimeError(errorCode: ErrorCode, details?: any): (error: any) => Promise<any> {
   return (error: any) => {
     const runtimeError: RuntimeError = {errorCode, details, cause: convertToRuntimeError(error)};

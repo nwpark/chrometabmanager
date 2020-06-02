@@ -9,6 +9,7 @@ import {DriveStorageService} from '../drive-api/drive-storage.service';
 import {DriveAccountService} from '../drive-api/drive-account.service';
 import {getCurrentTimeStringWithMillis} from '../../utils/date-utils';
 import {getSyncStatusDetails} from '../../types/sync-status';
+import {md5Checksum} from '../../utils/hash-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -40,11 +41,11 @@ export class StorageService {
     });
   }
 
-  setSavedWindowsState(sessionListState: SessionListState): Promise<void> {
+  setSavedWindowsState(sessionListState: SessionListState, previousValueChecksum: string): Promise<void> {
     return this.shouldUseSyncStorage().then(shouldUseSyncStorage => {
       return shouldUseSyncStorage
-        ? this.driveStorageService.setSavedWindowsState(sessionListState)
-        : this.localStorageService.setSavedWindowsState(sessionListState);
+        ? this.driveStorageService.setSavedWindowsState(sessionListState, previousValueChecksum)
+        : this.localStorageService.setSavedWindowsState(sessionListState, previousValueChecksum);
     });
   }
 
@@ -85,13 +86,15 @@ export class StorageService {
     ]).then(res => {
       const [savedSessionStateSync, savedSessionStateLocal] = res;
       if (storageCopyDirection === StorageCopyDirection.FromLocalToSync) {
+        const previousValueChecksum = md5Checksum(savedSessionStateSync);
         savedSessionStateLocal.addAll(savedSessionStateSync);
-        return this.driveStorageService.setSavedWindowsState(savedSessionStateLocal).then(() => {
+        return this.driveStorageService.setSavedWindowsState(savedSessionStateLocal, previousValueChecksum).then(() => {
           this.savedSessionStateSync.next(savedSessionStateLocal);
         });
       } else {
+        const previousValueChecksum = md5Checksum(savedSessionStateLocal);
         savedSessionStateSync.addAll(savedSessionStateLocal);
-        return this.localStorageService.setSavedWindowsState(savedSessionStateSync).then(() => {
+        return this.localStorageService.setSavedWindowsState(savedSessionStateSync, previousValueChecksum).then(() => {
           this.savedSessionStateLocal.next(savedSessionStateSync);
         });
       }

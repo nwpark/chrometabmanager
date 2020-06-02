@@ -19,6 +19,8 @@ export interface TabsService {
 
   removeTab(windowIndex: number, tabId: SessionId);
 
+  setTabTitle(windowIndex: number, tabIndex: number, title: string);
+
   removeSession(index: number);
 
   toggleSessionListDisplay();
@@ -30,4 +32,6 @@ export interface TabsService {
   setTabActive(chromeTab: ChromeAPITabState, openInNewTab: boolean);
 
   insertWindow(sessionState: SessionState, index: number);
+
+  suspendTab(windowIndex: number, tabIndex: number);
 }

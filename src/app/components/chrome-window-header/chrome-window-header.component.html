@@ -1,7 +1,7 @@
 <div
   appMouseOver
   #headerDiv=app-mouse-over
-  [ngClass]="layoutState.hidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
+  [ngClass]="isHidden ? 'chrome-window-header-hidden' : 'chrome-window-header'">
   <!--Action bar-->
   <div class="chrome-window-action-bar">
     <button
@@ -33,10 +33,10 @@
       <button
         class="action-button-30"
         mat-icon-button
-        [matTooltip]="layoutState.hidden ? button.titleWhenHidden || button.title : button.title"
+        [matTooltip]="isHidden ? button.titleWhenHidden || button.title : button.title"
         matTooltipClass="tooltip-reduced-margin"
         (click)="button.callback()">
-        <mat-icon class="action-icon-18-black">{{layoutState.hidden ? button.iconWhenHidden || button.icon : button.icon}}</mat-icon>
+        <mat-icon class="action-icon-18-black">{{isHidden ? button.iconWhenHidden || button.icon : button.icon}}</mat-icon>
       </button>
     </ng-container>
   </div>
@@ -51,17 +51,19 @@
   </button>
 
   <!--Title text-->
-  <div class="chrome-window-title">
+  <app-editable-text
+    class="chrome-window-title"
+    [value]="title"
+    (valueUpdated)="setTitle($event)">
     <div
       style="display: inline-block"
       appMouseOver
       #titleTextDiv=app-mouse-over
       matTooltip="Edit title"
       matTooltipClass="tooltip-reduced-margin"
-      *ngIf="!showEditForm"
       (click)="editTitle()">
-      {{lastModified || layoutState.title}}
-      <span *ngIf="layoutState.hidden"> ({{chromeAPIWindow.tabs.length}} tabs)</span>
+      {{lastModified || title}}
+      <span *ngIf="isHidden"> ({{chromeAPIWindow.tabs.length}} tabs)</span>
       <div
         style="display: inline-block"
         class="action-button-30">
@@ -70,23 +72,5 @@
         </mat-icon>
       </div>
     </div>
-
-    <form *ngIf="showEditForm" (ngSubmit)="submitTitleForm()">
-      <input
-        #titleInput
-        type="text"
-        [formControl]="titleFormControl"
-        (blur)="submitTitleForm()"
-        (keydown.enter)="submitTitleForm()"
-        (keydown.escape)="cancelTitleFormEdit()">
-      <button
-        mat-icon-button
-        class="action-button-30"
-        type="submit"
-        matTooltip="Save title"
-        matTooltipClass="tooltip-reduced-margin">
-        <mat-icon class="action-icon-18-black">save_alt</mat-icon>
-      </button>
-    </form>
-  </div>
+  </app-editable-text>
 </div>

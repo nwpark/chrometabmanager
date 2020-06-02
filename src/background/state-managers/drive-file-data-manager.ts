@@ -7,6 +7,7 @@ import {OAuth2Service} from '../../app/services/oauth2/o-auth-2.service';
 import {DriveFileContentRequestHandler} from './drive-file-data-manager/drive-file-content-request-handler';
 import {DriveFilePatchRequestHandler} from './drive-file-data-manager/drive-file-patch-request-handler';
 import {FileMutex} from '../types/file-mutex';
+import {PatchRequestData} from '../../app/services/messaging/message-passing.service';
 
 export class DriveFileDataManager {
 
@@ -37,9 +38,9 @@ export class DriveFileDataManager {
     });
   }
 
-  private patchSessionListStateFile(sessionListState: SessionListState): Promise<any> {
+  private patchSessionListStateFile(requestData: PatchRequestData): Promise<any> {
     return this.requestSavedSessionsFileId().then(fileId => {
-      return this.filePatchRequestHandler.patch(fileId, sessionListState);
+      return this.filePatchRequestHandler.patch(fileId, requestData);
     });
   }
 

@@ -68,7 +68,14 @@ export class DriveAccountService {
   setSyncInProgress(syncInProgress: boolean): Promise<void> {
     return this.modifyLoginStatus(loginStatus => {
       loginStatus.syncInProgress = syncInProgress;
-      return loginStatus;
+    });
+  }
+
+  performSyncUpdate<T>(syncUpdate: () => Promise<T>) {
+    return this.setSyncInProgress(true).then(() => {
+      return syncUpdate();
+    }).finally(() => {
+      return this.setSyncInProgress(false);
     });
   }
 
@@ -81,7 +88,6 @@ export class DriveAccountService {
   setSavedSessionsFileId(fileId: string): Promise<void> {
     return this.modifyLoginStatus(loginStatus => {
       loginStatus.savedSessionsFileId = fileId;
-      return loginStatus;
     });
   }
 
@@ -91,7 +97,8 @@ export class DriveAccountService {
 
   private modifyLoginStatus(mutate: Mutator<DriveLoginStatus>): Promise<void> {
     return this.getLoginStatus().then(loginStatus => {
-      return this.updateLoginStatus(mutate(loginStatus));
+      mutate(loginStatus);
+      return this.updateLoginStatus(loginStatus);
     });
   }
 
