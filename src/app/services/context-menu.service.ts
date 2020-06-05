@@ -1,6 +1,7 @@
 import {ComponentFactoryResolver, Injectable, ViewContainerRef} from '@angular/core';
 import {ContextMenuComponent} from '../components/context-menu/context-menu.component';
 import {ContextMenuItem} from '../types/action-bar/context-menu-item';
+import {take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,9 @@ export class ContextMenuService {
     const componentRef = viewContainerRef.createComponent(componentFactory);
     componentRef.instance.setPosition(event.clientX, event.clientY);
     componentRef.instance.menuItems = menuItems;
-    componentRef.instance.contextMenuClosed.subscribe(() => {
+    componentRef.instance.contextMenuClosed$.pipe(
+      take(1)
+    ).subscribe(() => {
       componentRef.destroy();
     });
   }

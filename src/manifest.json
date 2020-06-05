@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Chrome Tab Manager",
-  "version": "0.7.3",
+  "version": "0.7.4",
 
   "description": "A simple, powerful tab manager.",
   "icons": {
@@ -18,7 +18,7 @@
     "persistent": false
   },
   "browser_action": {
-    "default_title": "Chrome Tab Manager v0.7.3-alpha"
+    "default_title": "Chrome Tab Manager v0.7.4-alpha"
   },
 
   "permissions": [
@@ -39,7 +39,5 @@
 
   "chrome_url_overrides": {
     "newtab": "index.html"
-  },
-
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhHsznree13cLzq/J3NqbjYUiLjyoe2an9mxnAxvsD7Nmgd/RZNoT8q7MT1WjZqThN3c5AmhqerNIkx03qiww39GbrysIInlN/3tjdI+eEvyeuzQ/3LuPFYRf5Rj0VjkNKBf+294645eOs0ip96J8lSiO7Bot+qR0PY90Ttrnpp8ZNpYH/mxzsEL+SkA/nuq0NU4ZIg88cvmVKy97mkwLhAjqirdq/FxMTb3UqXOEUnABwsWLk69z00CdeG3tYorQeCcrC9bbpFnX2Dz15Y60xTz8rUeWV6Jxfw9hz18xYoVb6nmacFB363iewwy6oIXdpSA49gXIOCs/FNlMFRkSrQIDAQAB"
+  }
 }
