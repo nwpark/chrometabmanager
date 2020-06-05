@@ -6,7 +6,6 @@ import {BasicDialogAction, BasicDialogData} from '../../../types/errors/basic-di
   selector: 'app-basic-dialog',
   templateUrl: './basic-dialog.component.html',
   styleUrls: ['./basic-dialog.component.scss'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class BasicDialogComponent implements OnInit {
 
@@ -17,8 +16,7 @@ export class BasicDialogComponent implements OnInit {
               private dialogRef: MatDialogRef<BasicDialogComponent>) { }
 
   ngOnInit() {
-    const width = this.data.width || this.DEFAULT_WIDTH;
-    this.width = `${width}px`;
+    this.width = `${this.data.width || this.DEFAULT_WIDTH}px`;
   }
 
   performAction(action: BasicDialogAction) {

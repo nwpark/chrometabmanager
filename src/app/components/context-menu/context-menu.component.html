@@ -1,7 +1,8 @@
 <div
   style="visibility: hidden; position: fixed"
-  [style.left]="contextMenuPositionX"
-  [style.top]="contextMenuPositionY"
+  [style.left]="_contextMenuPositionX"
+  [style.top]="_contextMenuPositionY"
+  (menuClosed)="_contextMenuClosed()"
   [matMenuTriggerFor]="contextMenu"
   [matMenuTriggerRestoreFocus]="false">
 </div>
