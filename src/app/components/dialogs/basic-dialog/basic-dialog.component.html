@@ -3,16 +3,18 @@
     <mat-icon class="dialog-title-icon" *ngIf="data.titleIcon">{{data.titleIcon}}</mat-icon>
     {{data.title}}
   </div>
-  <div mat-dialog-content>
+  <div
+    class="dialog-content"
+    mat-dialog-content>
     <div
       class="dialog-emphasised-content"
       *ngIf="data.contentEmphasisedHTML"
       [innerHTML]="data.contentEmphasisedHTML">
     </div>
-  </div>
-  <div
-    *ngIf="data.contentHTML"
-    [innerHTML]="data.contentHTML">
+    <div
+      *ngIf="data.contentHTML"
+      [innerHTML]="data.contentHTML">
+    </div>
   </div>
   <div mat-dialog-actions>
     <button
