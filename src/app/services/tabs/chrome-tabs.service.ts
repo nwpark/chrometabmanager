@@ -154,6 +154,14 @@ export class ChromeTabsService implements TabsService {
     }, {storeResult: false});
   }
 
+  removeDuplicateTabs(windowIndex: number) {
+    this.modifySessionListState(sessionListState => {
+      sessionListState.removeDuplicateTabs(windowIndex).forEach(removedTab => {
+        chrome.tabs.remove(removedTab.id as number);
+      });
+    }, {storeResult: false});
+  }
+
   suspendTab(windowIndex: number, tabIndex: number) {
     this.modifySessionListState(sessionListState => {
       const tabId = sessionListState.getTabIdFromWindow(windowIndex, tabIndex) as number;

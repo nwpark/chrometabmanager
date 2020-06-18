@@ -58,6 +58,9 @@ export class ActionBarService {
       MenuItemFactory.createSortButton(sessionIndex => {
         this.chromeTabsService.sortTabsInWindow(sessionIndex);
       }),
+      MenuItemFactory.createRemoveDuplicateTabsButton(sessionIndex => {
+        this.chromeTabsService.removeDuplicateTabs(sessionIndex);
+      }),
       MenuItemFactory.createSuspendTabsButton(sessionIndex => {
         this.chromeTabsService.suspendTabsInWindow(sessionIndex);
       })

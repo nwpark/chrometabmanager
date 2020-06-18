@@ -37,4 +37,13 @@ export class MenuItemFactory {
       callback
     };
   }
+
+  static createRemoveDuplicateTabsButton(callback: MenuItemCallback): SessionMenuItem {
+    return {
+      title: 'Remove duplicate tabs',
+      icon: 'delete_sweep',
+      tooltip: 'Remove duplicate tabs',
+      callback
+    };
+  }
 }

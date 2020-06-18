@@ -200,6 +200,18 @@ export class SessionListState {
     return this.sessionStates[sessionIndex].session.window.tabs;
   }
 
+  removeDuplicateTabs(windowIndex: number): ChromeAPITabState[] {
+    const chromeWindow = this.getSessionAtIndex(windowIndex).window;
+    const urlSet = new Set(chromeWindow.tabs.map(chromeTab => chromeTab.url));
+    const duplicateTabs = chromeWindow.tabs.filter(chromeTab => {
+      return !urlSet.delete(chromeTab.url);
+    });
+    chromeWindow.tabs = chromeWindow.tabs.filter(chromeTab => {
+      return !duplicateTabs.find(duplicateTab => duplicateTab.id === chromeTab.id);
+    });
+    return duplicateTabs;
+  }
+
   deepCopy(): SessionListState {
     return SessionListState.fromSessionListState(JSON.parse(JSON.stringify(this)));
   }
