@@ -11,7 +11,7 @@ import {
   MatMenuModule,
   MatProgressBarModule,
   MatProgressSpinnerModule,
-  MatSlideToggleModule,
+  MatSlideToggleModule, MatTabsModule,
   MatTooltipModule
 } from '@angular/material';
 import {ScrollingModule} from '@angular/cdk/scrolling';
@@ -31,7 +31,8 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
     MatMenuModule,
     MatTooltipModule,
     MatDialogModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatTabsModule
   ]
 })
 export class MaterialModule {}

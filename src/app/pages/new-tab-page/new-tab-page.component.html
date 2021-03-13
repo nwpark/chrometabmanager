@@ -7,8 +7,10 @@
     rowHeight="fit"
     (window:resize)="onResize($event)">
     <mat-grid-tile *ngIf="cols > 1">
-      <app-saved-sessions-list class="full-height-column">
-      </app-saved-sessions-list>
+<!--      <app-saved-sessions-list class="full-height-column">-->
+<!--      </app-saved-sessions-list>-->
+      <app-session-list-group class="full-height-column">
+      </app-session-list-group>
     </mat-grid-tile>
 
     <mat-grid-tile>

@@ -27,6 +27,7 @@ import {SyncStatusComponent} from './components/sync-status/sync-status.componen
 import {DisableSyncDialogComponent} from './components/dialogs/disable-sync-dialog/disable-sync-dialog.component';
 import {ContextMenuComponent} from './components/context-menu/context-menu.component';
 import { EditableTextComponent } from './components/editable-text/editable-text.component';
+import { SessionListGroupComponent } from './components/session-lists/session-list-group/session-list-group.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { EditableTextComponent } from './components/editable-text/editable-text.
     SyncStatusComponent,
     DisableSyncDialogComponent,
     ContextMenuComponent,
-    EditableTextComponent
+    EditableTextComponent,
+    SessionListGroupComponent
   ],
   imports: [
     BrowserModule,
