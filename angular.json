@@ -23,7 +23,8 @@
             "assets": [
               "src/manifest.json",
               "src/assets",
-              "src/options.html"
+              "src/options.html",
+              "src/style-photo.css"
             ],
             "styles": [
               "src/styles.scss",
