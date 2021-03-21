@@ -6,20 +6,52 @@
     style="height: 100%"
     rowHeight="fit"
     (window:resize)="onResize($event)">
-    <mat-grid-tile *ngIf="cols > 1">
-      <app-saved-sessions-list class="full-height-column">
-      </app-saved-sessions-list>
+    <mat-grid-tile *ngIf="cols == 1" style="overflow: auto">
+      <div>
+        <app-active-sessions-list class="full-height-column">
+        </app-active-sessions-list>
+
+        <app-saved-sessions-list class="full-height-column">
+        </app-saved-sessions-list>
+
+        <app-closed-sessions-list class="full-height-column">
+        </app-closed-sessions-list>
+      </div>
     </mat-grid-tile>
 
-    <mat-grid-tile>
-      <app-active-sessions-list class="full-height-column">
-      </app-active-sessions-list>
-    </mat-grid-tile>
+    <ng-container *ngIf="cols == 2">
+      <mat-grid-tile style="overflow: auto">
+        <app-saved-sessions-list class="full-height-column">
+        </app-saved-sessions-list>
+      </mat-grid-tile>
 
-    <mat-grid-tile *ngIf="cols > 2">
-      <app-closed-sessions-list class="full-height-column">
-      </app-closed-sessions-list>
-    </mat-grid-tile>
+      <mat-grid-tile style="overflow: auto">
+        <div>
+          <app-active-sessions-list class="full-height-column">
+          </app-active-sessions-list>
+
+          <app-closed-sessions-list class="full-height-column">
+          </app-closed-sessions-list>
+        </div>
+      </mat-grid-tile>
+    </ng-container>
+
+    <ng-container *ngIf="cols == 3">
+      <mat-grid-tile style="overflow: auto">
+        <app-saved-sessions-list class="full-height-column">
+        </app-saved-sessions-list>
+      </mat-grid-tile>
+
+      <mat-grid-tile style="overflow: auto">
+        <app-active-sessions-list class="full-height-column">
+        </app-active-sessions-list>
+      </mat-grid-tile>
+
+      <mat-grid-tile style="overflow: auto">
+        <app-closed-sessions-list class="full-height-column">
+        </app-closed-sessions-list>
+      </mat-grid-tile>
+    </ng-container>
   </mat-grid-list>
 </div>
 

@@ -63,5 +63,5 @@ export const collapseListAnimation = animation([
 export const expandListAnimation = animation([
   style({ height: '0', overflow: 'hidden' }),
   animate('400ms cubic-bezier(0,0,0.2,1)',
-    style({ height: '*', overflow: 'hidden' }))
+    style({ height: '*', overflow: 'hidden', marginBottom: '20px' }))
 ]);
