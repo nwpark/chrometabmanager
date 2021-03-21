@@ -46,4 +46,13 @@ export class MenuItemFactory {
       callback
     };
   }
+
+  static createAddMissingButton(callback: MenuItemCallback): SessionMenuItem {
+    return {
+      title: 'Add missing tabs to window',
+      icon: 'open_in_new',
+      tooltip: 'Add missing tabs to current window',
+      callback
+    };
+  }
 }

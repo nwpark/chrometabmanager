@@ -139,6 +139,18 @@ export class ChromeTabsService implements TabsService {
     }, {storeResult: false});
   }
 
+  insertMissing(sessionState: SessionState) {
+    chrome.tabs.query({currentWindow: true}, tabs => {
+      const currentUrlSet = new Set(tabs.map(chromeTab => chromeTab.url));
+      sessionState.session.window.tabs.forEach(tab => {
+        if (!currentUrlSet.has(tab.url)) {
+          const url: string = tab.url
+          chrome.tabs.create({url, active: false})
+        }
+      })
+    })
+  }
+
   moveWindowInList(sourceIndex: number, targetIndex: number) {
     this.modifySessionListState(sessionListState => {
       sessionListState.moveSessionInList(sourceIndex, targetIndex);

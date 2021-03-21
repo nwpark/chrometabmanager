@@ -75,6 +75,10 @@ export class ActionBarService {
       }),
       MenuItemFactory.createSortButton(sessionIndex => {
         this.savedTabsService.sortTabsInWindow(sessionIndex);
+      }),
+      MenuItemFactory.createAddMissingButton(sessionIndex => {
+        const sessionState = this.savedTabsService.getSessionListState().getSessionState(sessionIndex);
+        this.chromeTabsService.insertMissing(sessionState);
       })
     ];
   }
